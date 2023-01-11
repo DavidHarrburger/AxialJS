@@ -1,0 +1,9 @@
+{
+    "mode": "development",
+    "build_directory": "/build",
+    "project_directory": "/project",
+    "pages":
+    [
+        { "name": "main" }
+    ]
+}

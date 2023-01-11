@@ -1,0 +1,69 @@
+.axial_loader_layer
+{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    visibility: hidden;
+}
+.axial_loader_background
+{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+}
+.axial_loader_content
+{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.axial_loader_holder
+{
+    width: 300px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #000;
+}
+.axial_loader_icon
+{
+    width: 40px;
+    height: 40px;
+    margin: 20px;
+    border-radius: 50%;
+
+    border-top: 5px solid #000;
+    border-left: 5px solid #000;
+    border-bottom: 5px solid #000;
+    border-right: 5px solid transparent;
+}
+.axial_loader_number
+{
+    width: 100%;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 10px;
+}
+.axial_loader_text
+{
+    width: 100%;
+    font-weight: 600;
+    text-align: center;
+}
+@keyframes axial_loader_icon_animation
+{
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

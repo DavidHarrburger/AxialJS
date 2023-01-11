@@ -1,0 +1,26 @@
+.ax-progress-element
+{
+    box-sizing: border-box;
+    padding: 0;
+    /*overflow: hidden;*/
+}
+
+.ax-progress-bar
+{
+    position: relative; // for indeterminate ?? see what :o)
+    height: 100%;
+    box-sizing: border-box;
+    transition-property: width;
+    transition-duration: 800ms;
+}
+
+
+.ax-progress-indicator
+{
+    position: relative;
+    width: 32px;
+    height: 32px;
+    margin-left: -16px;
+    transition-property: left;
+    transition-duration: 800ms;
+}

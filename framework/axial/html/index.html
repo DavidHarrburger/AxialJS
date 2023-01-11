@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <title>AXIAL</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+
+    <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body>
+
+    <!-- TEMPLATES -->
+
+    <!-- AXIAL TEMPLATES -->
+    <!-- AxialButton -->
+    <template id="axial-button-template">
+        <link rel="stylesheet" href="./styles.css">
+        <slot name="axial-label">Label</slot>
+    </template>
+
+    <!-- AxialToggleButtonGroup -->
+    <template id="axial-toggle-button-group-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div class="axial_toggle_button_group-holder">
+            <slot name="axial-content"></slot>
+        </div>
+    </template>
+
+    <!-- AxialViewerBase : TODO RENAME AxialViewer-->
+    <template id="axial-viewer-base-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div class="axial_viewer_base-holder">
+            <slot name="axial-content"></slot>
+        </div>
+    </template>
+
+    <!-- END AXIAL TEMPLATES -->
+    
+    <div id="axialBackgroundLayer" class="ax-background-layer">
+    </div>
+    
+    <div id="axialMainLayer" class="ax-main-layer">
+    </div>
+
+    <div id="axialPopupLayer" class="axial_popup_layer">
+        <div id="axialPopupObfuscator" class="axial_popup_obfuscator"></div>
+    </div>
+    
+    <div id="axialTooltipLayer" class="ax-tooltip-layer">
+    </div>
+
+    <div id="axialLoaderLayer" class="axial_loader_layer">
+        <div id="axialLoaderBackground" class="axial_loader_background"></div>
+        <div id="axialLoaderContent" class="axial_loader_content">
+            <div id="axialLoaderHolder" class="axial_loader_holder">
+                <div id="axialLoaderIcon" class="axial_loader_icon"></div>
+                <div id="axialLoaderNumber" class="axial_loader_number"></div>
+                <div id="axialLoaderText" class="axial_loader_text"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="./application.js" defer></script>
+    
+</body>
+</html>

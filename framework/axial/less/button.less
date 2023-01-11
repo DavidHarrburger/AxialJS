@@ -1,0 +1,50 @@
+@import "./variables.less";
+
+.ax-button-base
+{
+    box-sizing: border-box;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: pointer;
+}
+
+/* NEW SHADOW */
+.axial_button_base
+{
+    cursor: pointer;
+}
+
+.axial_button
+{
+    overflow: hidden;
+
+    width: -moz-fit-content;
+    width: fit-content;
+    height: auto;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 14px;
+    padding-right: 14px;
+    margin: 10px;
+
+    background-color: @AxialButton___backgroundColor;
+    border-radius: @AxialButton___borderRadius;
+    box-shadow: @AxialButton___boxShadow;
+    color: @AxialButton___color;
+    font-weight: @AxialButton___fontWeight;
+}
+
+.axial_toggle_button_group-holder
+{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
