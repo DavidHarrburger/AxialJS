@@ -1,9 +1,11 @@
 {
     "mode": "development",
-    "build_directory": "/build",
-    "project_directory": "/project",
+    "build_directory": "build",
+    "project_directory": "project",
+    "files_to_copy":[],
+    "directories_to_copy":[],
     "pages":
     [
-        { "name": "main" }
+        { "name": "main", "path": "" }
     ]
 }

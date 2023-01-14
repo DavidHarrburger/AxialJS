@@ -1,18 +1,21 @@
 "use strict";
 
 import EventEmitter from "events";
-import process, { config } from "process";
+import process from "process";
 import path from "path";
 import fse from "fs-extra";
 import less from "less";
 import webpack from "webpack";
+import os from "os";
 
 class AxialCommands extends EventEmitter
 {
     /**
      * @type { Set }
      */
-    #commands = new Set( [ "init", "new", "build", "config" ] );
+    #commands = new Set( [ "init", "newpage", "build", "config" ] );
+
+    #paramsNew = new Set( ["-name", "-template", "-path" ] );
 
     /**
      * @type { String }
@@ -62,21 +65,24 @@ class AxialCommands extends EventEmitter
             }
             */
 
+            const params = commandLineArguments.slice(3);
+
             switch( currentCommand )
             {
                 case "init":
-                    this.init();
+                    this.#init();
                 break;
 
-                case "new":
+                case "newpage":
+                    this.#newpage(params);
                 break;
 
                 case "build":
-                    this.build();
+                    this.#build();
                 break;
 
                 case "config":
-                    this.#getAxialConfiguration();
+                    this.#config();
                 break;
 
                 default:
@@ -90,22 +96,66 @@ class AxialCommands extends EventEmitter
 
     async #getAxialConfiguration()
     {
+        let config = undefined;
         try
         {
             const axialConfigurationPath = path.resolve(this.#currentDirectory, this.#configurationFileName);
             const data = await fse.readFile(axialConfigurationPath, "utf-8");
             const json = JSON.parse(data);
-            console.log(json.mode);
+            if( json )
+            {
+                config = json;
+            }
         }
         catch(err)
         {
             console.log(err);
         }
+        finally
+        {
+            return config;
+        }
     }
 
-    async init()
+    async #writeAxialConfiguration( json )
     {
-        const frameworkDirectory = this.#axialDirectory + this.#frameworkDirectory;
+        // TODO check on json
+        try
+        {
+            const axialConfigurationPath = path.resolve(this.#currentDirectory, this.#configurationFileName);
+            const options = { spaces: 4, EOL: os.EOL };
+            await fse.writeJson(axialConfigurationPath, json, options);
+        }
+        catch( err )
+        {
+            console.log(err);
+        }
+    }
+
+    async #config()
+    {
+        try
+        {
+            const config =  await this.#getAxialConfiguration();
+            if( config )
+            {
+                console.log(config);
+            }
+            else
+            {
+                console.log("[AXIAL_ERROR] 'axial-config.json' file not found. Use 'axial init' to init your project.");
+            }
+        }
+        catch( err )
+        {
+            if( err ) { console.log(err); }
+        }
+    }
+
+    async #init()
+    {
+        //const frameworkDirectory = this.#axialDirectory + this.#frameworkDirectory;
+        const frameworkDirectory = path.resolve(this.#axialDirectory+this.#frameworkDirectory);
         try
         {
             await fse.copy(frameworkDirectory, this.#currentDirectory);
@@ -114,84 +164,146 @@ class AxialCommands extends EventEmitter
         {
             console.log(err);
         }
-        
     }
 
-    new( name = "" )
+    async #newpage( params )
     {
-
-    }
-
-    async build()
-    {
-        console.log("AxialCommands.build()");
-        // copy
-        try
-        {
-            const htmlSource = this.#currentDirectory + "/project/main/index.html";
-            const htmlDest = this.#currentDirectory + "/build/index.html";
-            await fse.copy(htmlSource, htmlDest);
-        }
-        catch(err)
-        {
-            console.log(err);
-        }
-
-        // less
-        
-        const cssSource = this.#currentDirectory + "/project/main/less/styles.less";
-        const cssSourcePath = path.resolve(cssSource);
-        console.log(cssSourcePath);
-        const cssDest = path.resolve(this.#currentDirectory, "build/styles.css");
+        console.log("AxialCommands.new()");
 
         try
         {
-            const cssInput = await fse.readFile(cssSource, "utf-8");
-            console.log(cssInput);
-            const cssOutput = await less.render(cssInput, {filename: cssSourcePath});
-            console.log(cssOutput);
-            await fse.outputFile(cssDest, cssOutput.css);
-        }
-        catch(err)
-        {
-            console.log(err);
-        }
-        
-
-        // webpack
-        //const jsInput = this.#currentDirectory + "/project/main/js/Application.js";
-        const jsInput = path.resolve(this.#currentDirectory, "project/main/js/Application.js");
-        console.log(jsInput);
-        //const jsOutputPath = this.#currentDirectory + "/build";
-        const jsOutputPath = path.resolve(this.#currentDirectory, "build");
-        console.log(jsOutputPath);
-
-        const webpackConfig = 
-        {
-            mode: "development",
-            entry: jsInput,
-            output:
+            // get config
+            const config = await this.#getAxialConfiguration();
+            if( config == undefined )
             {
-                path: jsOutputPath,
-                filename: "application.js"
+                console.log("[AXIAL_ERROR] 'axial-config.json' file not found. Use 'axial init' to init your project.");
+                return;
             }
 
-        }
+            // check params
+            console.log(params);
+            const paramsLength = params.length;
+            // TODO : check if ok
 
-        const compiler = webpack( webpackConfig );
-        
-        compiler.run( (err, stats) =>
+            // params
+            let nameProp;
+            let templateProp;
+            let pathProp;
+
+            let newPageObject = {};
+            for( let i = 0; i< paramsLength; i++ )
+            {
+                if( i % 2 != 0 ) { continue; }
+                const param = params[i];
+                if( this.#paramsNew.has(param) == false )
+                {
+                    console.log("[AXIAL_ERROR] unknown 'new' parameter");
+                    return;
+                }
+
+                const tempValue = params[i+1];
+                // check if exist else return
+
+
+                if( param == "-name" )
+                {
+                    // check if value is ok
+                    for( let i = 0; i < config.pages.length; i++ )
+                    {
+                        const pageName = config.pages[i].name;
+                        if( pageName == tempValue )
+                        {
+                            console.log("[AXIAL_ERROR] the name you used already exists");
+                            return;
+                        }
+                    }
+                    newPageObject.name = tempValue;
+                }
+                else if( param == "-template" )
+                {
+                    // TODO
+                }
+                else if( param == "-path" )
+                {
+                    // check if value is ok
+                    newPageObject.path = tempValue;
+                }
+            }
+            const templatePath = path.resolve(this.#currentDirectory, "axial/templates/page");
+            const newPagePath = path.resolve(this.#currentDirectory, "project", newPageObject.name);
+            console.log(templatePath);
+            console.log(newPagePath);
+            await fse.copy(templatePath, newPagePath);
+
+            const newConfig = config;
+            newConfig.pages.push(newPageObject);
+            await this.#writeAxialConfiguration(newConfig);
+        }
+        catch(err)
         {
             console.log(err);
+        }
+    }
 
-            compiler.close( (closeErr) =>
+    async #build()
+    {
+        console.log("AxialCommands.build()");
+        try
+        {
+            // get config
+            const config = await this.#getAxialConfiguration();
+            const pages = config.pages;
+            const pagesLength = pages.length;
+
+            for( let i = 0; i < pagesLength; i++ )
             {
-                console.log("close");
-                console.log(closeErr);
-            })
-        });
-        
-        
+                const pageModel = pages[i];
+
+                // html
+                const htmlSource = path.resolve(this.#currentDirectory, config.project_directory, pageModel.name, "index.html" );
+                const htmlDest =  path.resolve(this.#currentDirectory, config.build_directory, pageModel.path, "index.html");
+                await fse.copy(htmlSource, htmlDest);
+
+                // less
+                const cssSource = this.#currentDirectory + "/" + config.project_directory + "/" + pageModel.name + "/less/styles.less";
+                const cssSourcePath = path.resolve(cssSource);
+                const cssDest = path.resolve(this.#currentDirectory, config.build_directory, pageModel.path, "styles.css");
+
+                const cssInput = await fse.readFile(cssSource, "utf-8");
+                const cssOutput = await less.render(cssInput, {filename: cssSourcePath});
+                await fse.outputFile(cssDest, cssOutput.css);
+
+                // js webpack
+                const jsInput = path.resolve(this.#currentDirectory, config.project_directory, pageModel.name, "js/Application.js");
+                const jsOutputPath = path.resolve(this.#currentDirectory, config.build_directory, pageModel.path);
+
+                const webpackConfig = 
+                {
+                    mode: config.mode,
+                    entry: jsInput,
+                    output:
+                    {
+                        path: jsOutputPath,
+                        filename: "application.js"
+                    }
+                }
+
+                const compiler = webpack( webpackConfig );
+                
+                compiler.run( (err, stats) =>
+                {
+                    if( err ) { console.log(err); }
+                    compiler.close( (closeErr) =>
+                    {
+                        if( closeErr ) { console.log(closeErr); }
+                    })
+                });
+            }
+        }
+        catch(err)
+        {
+            console.log(err);
+        }
     }
 
     
