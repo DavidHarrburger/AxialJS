@@ -16,6 +16,7 @@ class AxialCommands extends EventEmitter
     #commands = new Set( [ "init", "newpage", "build", "config" ] );
 
     #paramsNew = new Set( ["-name", "-template", "-path" ] );
+    #paramsBuild = new Set( ["-dev", "-prod" ] );
 
     /**
      * @type { String }
@@ -42,13 +43,13 @@ class AxialCommands extends EventEmitter
     {
         super();
         this.#currentDirectory = process.cwd();
-        console.log("CURRENT DIRECTORY = " + this.#currentDirectory);
+        //console.log("CURRENT DIRECTORY = " + this.#currentDirectory);
 
         const commandLineArguments = process.argv;
         /// TODO : manage errors
 
         this.#axialDirectory =  commandLineArguments[1].split("\\bin\\axial.js")[0];
-        console.log("AXIAL CLI DIRECTORY = " + this.#axialDirectory);
+        //console.log("AXIAL CLI DIRECTORY = " + this.#axialDirectory);
         
         const commandLineArgumentsLength = commandLineArguments.length;
 
@@ -78,11 +79,15 @@ class AxialCommands extends EventEmitter
                 break;
 
                 case "build":
-                    this.#build();
+                    this.#build(params);
                 break;
 
                 case "config":
                     this.#config();
+                break;
+
+                case "upload":
+                    this.#upload();
                 break;
 
                 default:
@@ -134,6 +139,7 @@ class AxialCommands extends EventEmitter
 
     async #config()
     {
+        console.log("AXIAL CONFIG");
         try
         {
             const config =  await this.#getAxialConfiguration();
@@ -154,8 +160,9 @@ class AxialCommands extends EventEmitter
 
     async #init()
     {
+        console.log("AXIAL INIT");
         //const frameworkDirectory = this.#axialDirectory + this.#frameworkDirectory;
-        const frameworkDirectory = path.resolve(this.#axialDirectory+this.#frameworkDirectory);
+        const frameworkDirectory = path.resolve(this.#axialDirectory + this.#frameworkDirectory);
         try
         {
             await fse.copy(frameworkDirectory, this.#currentDirectory);
@@ -168,7 +175,7 @@ class AxialCommands extends EventEmitter
 
     async #newpage( params )
     {
-        console.log("AxialCommands.new()");
+        console.log("AXIAL NEW");
 
         try
         {
@@ -245,15 +252,58 @@ class AxialCommands extends EventEmitter
         }
     }
 
-    async #build()
+    async #build( params )
     {
-        console.log("AxialCommands.build()");
+        console.log("AXIAL BUILD");
+        const startTime = Date.now();
         try
         {
             // get config
             const config = await this.#getAxialConfiguration();
+
+            let mode = config.mode || "development";
+            
+            console.log(params);
+            const paramsLength = params.length;
+            for( let i = 0; i < paramsLength; i++ )
+            {
+                const param = params[i];
+                if( this.#paramsBuild.has(param) == false )
+                {
+                    console.log("[AXIAL_ERROR] unknown 'new' parameter");
+                    return;
+                }
+                if( param == "-dev" )  { mode = "development"; }
+                if( param == "-prod" ) { mode = "production"; }
+            }
+
             const pages = config.pages;
             const pagesLength = pages.length;
+
+            // get vars for the process
+            const buildDirectoryPath = path.resolve(this.#currentDirectory, config.build_directory);
+
+            // clean
+            const clean = config.clean_on_build;
+            if( clean == true )
+            {
+                // clean build
+                await fse.emptyDir(buildDirectoryPath);
+            }
+
+            // directories to copy
+            const dirToCopy = config.directories_to_copy;
+            if( dirToCopy )
+            {
+                const dirToCopyLength = dirToCopy.length;
+                for( let i = 0; i < dirToCopyLength; i++ )
+                {
+                    const dirToCopyModel = dirToCopy[i];
+                    const dirSource = path.resolve(this.#currentDirectory, dirToCopyModel.source);
+                    const dirDest = path.resolve(this.#currentDirectory, config.build_directory, dirToCopyModel.dest);
+                    await fse.copy(dirSource, dirDest);
+                }
+            }
 
             for( let i = 0; i < pagesLength; i++ )
             {
@@ -279,7 +329,7 @@ class AxialCommands extends EventEmitter
 
                 const webpackConfig = 
                 {
-                    mode: config.mode,
+                    mode: mode,
                     entry: jsInput,
                     output:
                     {
@@ -304,8 +354,44 @@ class AxialCommands extends EventEmitter
         {
             console.log(err);
         }
+        finally
+        {
+            const endTime = Date.now();
+            const deltaTime = endTime - startTime;
+            console.log("BUILD DONE (ms) : ");
+            console.log( deltaTime );
+        }
     }
 
+    async #upload()
+    {
+        console.log("AXIAL UPLOAD");
+        try
+        {
+            // get config
+            const config = await this.#getAxialConfiguration();
+
+            // get vars for the process
+            const buildDirectoryPath = path.resolve(this.#currentDirectory, config.build_directory);
+            const localhostServerPath = config.server_localhost == "" ? undefined : path.resolve(config.server_localhost);
+
+            // clean
+            const clean = config.clean_on_build;
+            if( clean == true )
+            {
+                // clean localhost
+                if( localhostServerPath != undefined )
+                {
+                    await fse.emptyDir(localhostServerPath);
+                }
+            }
+            await fse.copy(buildDirectoryPath, localhostServerPath);
+        }
+        catch(err)
+        {
+            console.log(err);
+        }
+    }
     
     test()
     {

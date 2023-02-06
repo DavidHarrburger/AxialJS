@@ -2,6 +2,8 @@
     "mode": "development",
     "build_directory": "build",
     "project_directory": "project",
+    "clean_on_build": true,
+    "server_localhost": "",
     "files_to_copy":[],
     "directories_to_copy":[],
     "pages":
