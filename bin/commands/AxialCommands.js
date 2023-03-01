@@ -198,7 +198,7 @@ class AxialCommands extends EventEmitter
             let pathProp;
 
             let newPageObject = {};
-            for( let i = 0; i< paramsLength; i++ )
+            for( let i = 0; i < paramsLength; i++ )
             {
                 if( i % 2 != 0 ) { continue; }
                 const param = params[i];
@@ -237,7 +237,7 @@ class AxialCommands extends EventEmitter
                 }
             }
             const templatePath = path.resolve(this.#currentDirectory, "axial/templates/page");
-            const newPagePath = path.resolve(this.#currentDirectory, "project", newPageObject.name);
+            const newPagePath = path.resolve(this.#currentDirectory, config.project_directory, config.pages_directory, newPageObject.name);
             console.log(templatePath);
             console.log(newPagePath);
             await fse.copy(templatePath, newPagePath);
@@ -310,12 +310,12 @@ class AxialCommands extends EventEmitter
                 const pageModel = pages[i];
 
                 // html
-                const htmlSource = path.resolve(this.#currentDirectory, config.project_directory, pageModel.name, "index.html" );
+                const htmlSource = path.resolve(this.#currentDirectory, config.project_directory, config.pages_directory, pageModel.name, "index.html" );
                 const htmlDest =  path.resolve(this.#currentDirectory, config.build_directory, pageModel.path, "index.html");
                 await fse.copy(htmlSource, htmlDest);
 
                 // less
-                const cssSource = this.#currentDirectory + "/" + config.project_directory + "/" + pageModel.name + "/less/styles.less";
+                const cssSource = this.#currentDirectory + "/" + config.project_directory + "/" + config.pages_directory + "/" + pageModel.name + "/less/styles.less";
                 const cssSourcePath = path.resolve(cssSource);
                 const cssDest = path.resolve(this.#currentDirectory, config.build_directory, pageModel.path, "styles.css");
 
@@ -324,7 +324,7 @@ class AxialCommands extends EventEmitter
                 await fse.outputFile(cssDest, cssOutput.css);
 
                 // js webpack
-                const jsInput = path.resolve(this.#currentDirectory, config.project_directory, pageModel.name, "js/Application.js");
+                const jsInput = path.resolve(this.#currentDirectory, config.project_directory, config.pages_directory, pageModel.name, "js/Page.js");
                 const jsOutputPath = path.resolve(this.#currentDirectory, config.build_directory, pageModel.path);
 
                 const webpackConfig = 
