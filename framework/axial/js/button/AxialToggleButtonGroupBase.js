@@ -20,10 +20,12 @@ class AxialToggleButtonGroupBase extends AxialComponentBase
     {
         super();
         this.#boundToggleChangedHandler = this.#toggleChangedHandler.bind(this);
+        console.log("end group base constructor");
     }
 
     _finalizeComponent()
     {
+        super._finalizeComponent();
         const tempToggles = this.children;
         const tempTogglesLength = tempToggles.length;
 
@@ -32,7 +34,10 @@ class AxialToggleButtonGroupBase extends AxialComponentBase
             for( let i = 0; i < tempTogglesLength; i++ )
             {
                 const tempToggle = tempToggles[i];
-                if( tempToggle instanceof AxialToggleButtonBase == true )
+                this.add(tempToggle);
+                console.log(tempToggle instanceof AxialToggleButtonBase === true);
+                
+                if( tempToggle instanceof AxialToggleButtonBase === true )
                 {
                     this.add(tempToggle);
                 }
@@ -40,6 +45,7 @@ class AxialToggleButtonGroupBase extends AxialComponentBase
                 {
                     throw new Error("Elements in an AxialToggleButtonGroupBase must be or extends AxialToggleButtonBase");
                 }
+                
             }
         }
     }

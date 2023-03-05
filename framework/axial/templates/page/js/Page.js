@@ -1,2 +1,3 @@
 "use strict"
-console.log("Hello Axial");
+import { LocalPage } from "./LocalPage";
+const LOCAL_PAGE = new LocalPage();

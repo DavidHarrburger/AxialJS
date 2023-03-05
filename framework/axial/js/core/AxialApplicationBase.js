@@ -224,7 +224,7 @@ class AxialApplicationBase extends EventTarget
      */
     _onApplicationDomLoaded(event)
     {
-        console.log("AxialApplicationBase._onApplicationDomLoaded()");
+        //console.log("AxialApplicationBase._onApplicationDomLoaded()");
     }
 
     ///
@@ -262,7 +262,7 @@ class AxialApplicationBase extends EventTarget
      */
     _onApplicationPageLoaded(event)
     {
-        console.log("AxialApplicationBase._onApplicationPageLoaded()");
+        //console.log("AxialApplicationBase._onApplicationPageLoaded()");
     }
 
     get useApplicationResize() { return this.useApplicationResize; }
