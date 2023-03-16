@@ -1,9 +1,12 @@
 "use strict"
 
-import { AxialButtonBase  } from "./AxialButtonBase";
+import { AxialToggleButtonBase } from "./AxialToggleButtonBase";
 
-class AxialButton extends AxialButtonBase
+class AxialToggleCheck extends AxialToggleButtonBase
 {
+    /** @type { HTMLElement } */
+    #signElement;
+
     /** @type { HTMLElement } */
     #labelElement;
 
@@ -12,11 +15,15 @@ class AxialButton extends AxialButtonBase
      */
     #label = "Label";
 
+    #unselectedScale = "scale(0)";
+    #selectedScale = "scale(1)";
+
+
     constructor()
     {
         super();
-        this.classList.add("axial_button");
-        this.template = "axial-button-template";
+        this.classList.add("axial_toggle_check");
+        this.template = "axial-toggle-check-template";
     }
 
     static get observedAttributes()
@@ -26,6 +33,7 @@ class AxialButton extends AxialButtonBase
 
     connectedCallback()
     {
+        this.#signElement = this.shadowRoot.getElementById("signElement");
         this.#labelElement = this.shadowRoot.getElementById("labelElement");
 
         const tempLabel = this.getAttribute("axial-label");
@@ -48,8 +56,24 @@ class AxialButton extends AxialButtonBase
             this.#labelElement.innerHTML = newValue;
         }
     }
+    
+    _onToggleChanged()
+    {
+        super._onToggleChanged();
+        
+        if( this.#signElement )
+        {
+            if( this.selected === true )
+            {
+                this.#signElement.style.transform = this.#selectedScale;
+            }
+            else
+            {
+                this.#signElement.style.transform = this.#unselectedScale;
+            }
+        }
+    }
 }
 
-window.customElements.define("axial-button", AxialButton);
-
-export { AxialButton }
+window.customElements.define("axial-toggle-check", AxialToggleCheck);
+export { AxialToggleCheck }

@@ -5,10 +5,10 @@ import { AxialToggleButtonBase } from "./AxialToggleButtonBase";
 class AxialToggleSwitch extends AxialToggleButtonBase
 {
     /** @type { HTMLElement } */
-    #circle;
+    #circleElement;
 
     #unselectedLeft = "0px";
-    #selectedLeft = "30px";
+    #selectedLeft = "15px";
 
     constructor()
     {
@@ -19,22 +19,22 @@ class AxialToggleSwitch extends AxialToggleButtonBase
 
     connectedCallback()
     {
-        this.#circle = this.shadowRoot.getElementById("circle");
+        this.#circleElement = this.shadowRoot.getElementById("circleElement");
     }
 
     _onToggleChanged()
     {
         super._onToggleChanged();
         
-        if( this.#circle )
+        if( this.#circleElement )
         {
             if( this.selected === true )
             {
-                this.#circle.style.left = this.#selectedLeft;
+                this.#circleElement.style.left = this.#selectedLeft;
             }
             else
             {
-                this.#circle.style.left = this.#unselectedLeft;
+                this.#circleElement.style.left = this.#unselectedLeft;
             }
         }
     }

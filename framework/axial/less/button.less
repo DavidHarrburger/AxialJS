@@ -1,8 +1,10 @@
+/* AxialButtonBase */
 .axial_button_base
 {
     cursor: pointer;
 }
 
+/* AxialButton */
 .axial_button
 {
     overflow: hidden;
@@ -24,46 +26,60 @@
     background-color: @AxialButton___backgroundColor;
     border-radius: @AxialButton___borderRadius;
     box-shadow: @AxialButton___boxShadow;
+}
+.axial_button-label
+{
     color: @AxialButton___color;
     font-weight: @AxialButton___fontWeight;
 }
 
-.axial_toggle_button_group-holder
+/* AxialToggleCheck */
+.axial_toggle_check
 {
-    width: 100%;
-    height: 100%;
+    width: -moz-fit-content;
+    width: fit-content;
+    /*min-width: 42px;*/
+    height: 42px;
+    min-height: 42px;
+    padding: 4px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.axial_toggle_check-border
+{
     display: flex;
     flex-direction: column;
-}
-
-/* AxialToggleSwitch */
-.axial_toggle_switch
-{
-    width: 72px;
-    min-height: 42px;
-    height: 42px;
-    border-radius: 21px;
-    border: 3px solid #fff;
-    padding: 4px;
+    justify-content: center;
+    align-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
     background-color: #111;
+    margin-right: 12px;
+    border: solid 2px #fff;
 }
-.axial_toggle_switch-circle
+.axial_toggle_check-sign
 {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    border: 3px solid #fff;
-    position: relative;
-    left: 0px;
-    transition-property: left;
+    display: block;
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    background-color: #fff;
+    transform: scale(0);
+    transition-property: transform;
     transition-duration: 200ms;
 }
+.axial_toggle_check-label
+{
+    color: @AxialToggleCheck___color;
+}
+
 /* AxialToggleRadio */
 .axial_toggle_radio
 {
     width: -moz-fit-content;
     width: fit-content;
-    /*min-width: 42px;*/
     height: 42px;
     min-height: 42px;
     padding: 4px;
@@ -93,5 +109,32 @@
     background-color: #fff;
     transform: scale(0);
     transition-property: transform;
+    transition-duration: 200ms;
+}
+.axial_toggle_radio-label
+{
+    color: @AxialToggleRadio___color;
+}
+
+/* AxialToggleSwitch */
+.axial_toggle_switch
+{
+    width: 46px;
+    min-height: 30px;
+    height: 30px;
+    border-radius: 15px;
+    border: 2px solid #fff;
+    padding: 4px;
+    background-color: #111;
+}
+.axial_toggle_switch-circle
+{
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    position: relative;
+    left: 0px;
+    transition-property: left;
     transition-duration: 200ms;
 }
