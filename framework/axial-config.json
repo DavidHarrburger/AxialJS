@@ -6,7 +6,12 @@
     "clean_on_build": true,
     "server_localhost": "",
     "files_to_copy":[],
-    "directories_to_copy":[],
+    "directories_to_copy": [
+        {
+            "source": "assets",
+            "dest": "assets"
+        }
+    ],
     "pages":
     [
         { "name": "main", "path": "" }

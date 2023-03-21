@@ -569,10 +569,12 @@ class AxialComponentBase extends HTMLElement
         const eventType = event.type;
 
         // just down, move up and cancel right now so no need to process others
+        
         if( eventType == "pointerover" || eventType == "pointerenter" || eventType == "pointerout" || eventType == "pointerleave" )
         {
             return;
         }
+        
 
         console.log(eventType);
 

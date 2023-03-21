@@ -30,14 +30,15 @@ class AxialViewerBase extends AxialComponentBase
     #index = -1;
 
     /**
-     * @type { HTMLDivElement }
-     */
-    #holder;
-
-    /**
-     * Cached duration. Used to know if we have long touch or just a quick finger move
+     * Cached duration. Used to know if we have long touch or just a quick finger move.
+     * @type { Number }
      */
     #duration = 0;
+
+    /**
+     * @type { Number }
+     */
+    #durationLimit = 200;
 
     /**
      * Cached X distance for swipe between views.
@@ -48,16 +49,15 @@ class AxialViewerBase extends AxialComponentBase
     #direction = 0;
 
     #currentTransition = "none";
-    #boundAnimationFinish;
+    #boundAnimationFinishHandler;
+    #boundAnimationCenterHandler;
 
     #oldAnimation;
     #newAnimation;
 
-    #animationDuration = 1000;
+    #animationDuration = 600;
     #animationExpected = 0;
     #animationFinished = 0;
-
-    
 
     static #TRANSITIONS = Object.freeze(new Set(["none", "fade", "slide"]));
     static get TRANSITIONS()
@@ -74,7 +74,8 @@ class AxialViewerBase extends AxialComponentBase
         this.#boundManipulationFinishedHandler = this.#manipulationFinishedHandler.bind(this);
         this.#boundManipulationCancelledHandler = this.#manipulationCancelledHandler.bind(this);
 
-        this.#boundAnimationFinish = this.#animationFinish.bind(this);
+        this.#boundAnimationFinishHandler = this.#animationFinishHandler.bind(this);
+        this.#boundAnimationCenterHandler = this.#animationCenterHandler.bind(this);
 
         this.addEventListener("manipulationStarted", this.#boundManipulationStartedHandler);
         this.addEventListener("manipulationChanged", this.#boundManipulationChangedHandler);
@@ -82,34 +83,25 @@ class AxialViewerBase extends AxialComponentBase
         this.addEventListener("manipulationCancelled", this.#boundManipulationCancelledHandler);
 
         this.classList.add("axial_viewer_base");
-        this.template = "axial-viewer-base-template";
         this.isResizable = true;
+    }
+
+    static get observedAttributes()
+    {
+        return ["axial-manipulation", "axial-transition"];
     }
 
     _finalizeComponent()
     {
-        // ui : check the children length and get the holder
-        const children = this.shadowRoot.children;
+        const children = this.children;
         const childrenLength = children.length;
-        if( childrenLength != 2 ) { throw new Error("AxialViewerBase seems to not have the correct template"); }
 
-        const tempHolder = children[1];
-        if( tempHolder.classList.contains("axial_viewer_base-holder") == true )
-        {
-            this.#holder = tempHolder;
-        }
-
-        const slot = this.#holder.children[0];
-        if( slot == undefined || slot == null ) { throw new Error("AxialViewerBase seems to not have the correct template"); }
-
-        const tempViews = slot.assignedElements();
-        const tempViewsLength = tempViews.length;
-        if( tempViewsLength > 0 )
+        if( childrenLength > 0 )
         {
             this.#index = 0;
-            for( let i = 0; i < tempViewsLength; i++ )
+            for( let i = 0; i < childrenLength; i++ )
             {
-                const tempView = tempViews[i];
+                const tempView = children[i];
                 if( tempView instanceof AxialViewBase == true )
                 {
                     this.#views.push(tempView);
@@ -120,6 +112,15 @@ class AxialViewerBase extends AxialComponentBase
                 }
             }
             this.#adjustViews();
+        }
+    }
+
+    connectedCallback()
+    {
+        const manipulationAttribute = this.getAttribute("axial-manipulation");
+        if( manipulationAttribute !== null )
+        {
+            this.manipulationEnable = true;
         }
     }
 
@@ -174,7 +175,7 @@ class AxialViewerBase extends AxialComponentBase
             
         }
         this.#views.push(view);
-        this.#holder.appendChild(view);
+        this.appendChild(view);
         if( this.#index == -1 )
         {
             this.#index = 0;
@@ -282,16 +283,16 @@ class AxialViewerBase extends AxialComponentBase
         
         this.#oldAnimation = this.#oldView.animate(
             [{ display: "block" , opacity: 1 },  { display: "block" , opacity: 0 } ],
-            { iterations: 1 , duration: this.#animationDuration, fill: "both" }
+            { iterations: 1 , duration: this.#animationDuration }
         );
-        this.#oldAnimation.addEventListener("finish", this.#boundAnimationFinish);
+        this.#oldAnimation.addEventListener("finish", this.#boundAnimationFinishHandler);
         
 
         this.#newAnimation = this.#newView.animate(
             [ { display: "block" , opacity: 0 },  { display: "block" , opacity: 1 } ],
-            { iterations: 1 , duration: this.#animationDuration, fill: "both" }
+            { iterations: 1 , duration: this.#animationDuration }
         );
-        this.#newAnimation.addEventListener("finish", this.#boundAnimationFinish);
+        this.#newAnimation.addEventListener("finish", this.#boundAnimationFinishHandler);
     }
 
     #slide()
@@ -306,17 +307,17 @@ class AxialViewerBase extends AxialComponentBase
             [{ left: "0px" },  { left: oldFinalX } ],
             { iterations: 1 , duration: this.#animationDuration }
         );
-        this.#oldAnimation.addEventListener("finish", this.#boundAnimationFinish);
+        this.#oldAnimation.addEventListener("finish", this.#boundAnimationFinishHandler);
         
 
         this.#newAnimation = this.#newView.animate(
             [ { left: newStartX },  { left: "0px" } ],
             { iterations: 1 , duration: this.#animationDuration }
         );
-        this.#newAnimation.addEventListener("finish", this.#boundAnimationFinish);
+        this.#newAnimation.addEventListener("finish", this.#boundAnimationFinishHandler);
     }
 
-    #animationFinish( event )
+    #animationFinishHandler( event )
     {
         //console.log(event);
         this.#animationFinished += 1;
@@ -324,8 +325,8 @@ class AxialViewerBase extends AxialComponentBase
         if( this.#animationExpected == this.#animationFinished )
         {
             console.log("DONE");
-            this.#oldAnimation.removeEventListener("finish", this.#boundAnimationFinish);
-            this.#newAnimation.removeEventListener("finish", this.#boundAnimationFinish);
+            this.#oldAnimation.removeEventListener("finish", this.#boundAnimationFinishHandler);
+            this.#newAnimation.removeEventListener("finish", this.#boundAnimationFinishHandler);
 
             this.#oldView._onViewLeft();
             this.#newView._onViewEntered();
@@ -339,6 +340,12 @@ class AxialViewerBase extends AxialComponentBase
             
             this.#adjustViews();
         }
+    }
+
+    #animationCenterHandler( event )
+    {
+        this.#oldAnimation.removeEventListener("finish", this.#boundAnimationCenterHandler);
+        this.#adjustViews();
     }
 
     #adjustViews()
@@ -369,7 +376,7 @@ class AxialViewerBase extends AxialComponentBase
         const viewsLength = this.#views.length;
         if( viewsLength == 0 ) { return; }
 
-        const holderWidth = this.#holder.offsetWidth;
+        const currentWidth = this.offsetWidth;
 
         this.#distanceX = 0; // ensure we have the good value when the manipulation starts
         this.#duration = 0;
@@ -380,7 +387,7 @@ class AxialViewerBase extends AxialComponentBase
         if( previousView )
         {
             previousView.style.display = "block";
-            previousView.style.left = String(-holderWidth) + "px";
+            previousView.style.left = String(-currentWidth) + "px";
         }
         
         // next view
@@ -389,7 +396,7 @@ class AxialViewerBase extends AxialComponentBase
         if( nextView )
         {
             nextView.style.display = "block";
-            nextView.style.left = String(holderWidth) + "px";
+            nextView.style.left = String(currentWidth) + "px";
         }
     }
 
@@ -407,7 +414,7 @@ class AxialViewerBase extends AxialComponentBase
         if( viewsLength == 0 ) { return; }
 
 
-        const holderWidth = this.#holder.offsetWidth;
+        const currentWidth = this.offsetWidth;
         this.#distanceX += event.detail.deltaX;
 
         // current view
@@ -421,7 +428,7 @@ class AxialViewerBase extends AxialComponentBase
         if( previousView )
         {
             previousView.style.display = "initial";
-            previousView.style.left = String(-holderWidth + this.#distanceX) + "px";
+            previousView.style.left = String(-currentWidth + this.#distanceX) + "px";
         }
         
         // next view
@@ -430,9 +437,8 @@ class AxialViewerBase extends AxialComponentBase
         if( nextView )
         {
             nextView.style.display = "initial";
-            nextView.style.left = String(holderWidth + this.#distanceX) + "px";
+            nextView.style.left = String(currentWidth + this.#distanceX) + "px";
         }
-        
     }
 
     /**
@@ -441,8 +447,12 @@ class AxialViewerBase extends AxialComponentBase
      */
     #manipulationFinishedHandler(event)
     {
+        const viewsLength = this.#views.length;
+        if( viewsLength == 0 ) { return; }
         console.log(event.detail);
         console.log("MANIPULATION FINISHED !!!!");
+        this.#duration = event.detail.duration;
+        this.#animateAfterManipulation();
     }
 
     /**
@@ -455,6 +465,65 @@ class AxialViewerBase extends AxialComponentBase
         console.log("MANIPULATION CANCELLED !!!!");
     }
 
+    #animateAfterManipulation()
+    {
+        console.log("#animateAfterManipulation()");
+        const viewsLength = this.#views.length;
+        const currentWidth = this.offsetWidth;
+
+        //\\ special case distancex === 0
+
+        if( viewsLength == 1 ) // handle here this special case
+        {
+            //TODO : center the view and re init
+        }
+        else
+        {
+            this.#direction = this.#distanceX < 0 ? 1 : -1;
+            
+            const oldIndex = this.#index;
+            this.#oldView = this.#views[oldIndex];
+
+            const newIndex = this.#index + this.#direction;
+            this.#newView = this.#views[newIndex];
+
+            if( (this.#index == 0 && this.#direction < 0) || (this.#index == (viewsLength-1) && this.#direction > 0 ) )
+            {
+                console.log("CENTER VIEWS");
+
+                const oldFinalX = "0px";
+                this.#oldAnimation = this.#oldView.animate(
+                    [ { left: oldFinalX } ],
+                    { iterations: 1 , duration: this.#animationDuration }
+                );
+                this.#oldAnimation.addEventListener("finish", this.#boundAnimationCenterHandler);
+            }
+            else
+            {
+                console.log("MOVE VIEWS");
+
+                this.#animationFinished = 0;
+                this.#animationExpected = 2;
+
+                this.#index = newIndex;
+
+                const oldFinalX = String(currentWidth * -this.#direction) + "px";
+                this.#oldAnimation = this.#oldView.animate(
+                    [ { left: oldFinalX } ],
+                    { iterations: 1 , duration: this.#animationDuration }
+                );
+                this.#oldAnimation.addEventListener("finish", this.#boundAnimationFinishHandler);
+
+                const newFinalX = "0px";
+                this.#newAnimation = this.#newView.animate(
+                    [ { left: newFinalX } ],
+                    { iterations: 1 , duration: this.#animationDuration }
+                );
+                this.#newAnimation.addEventListener("finish", this.#boundAnimationFinishHandler);
+
+            }
+        }
+    }
 }
 
 window.customElements.define("axial-viewer-base", AxialViewerBase);
