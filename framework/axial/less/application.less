@@ -21,7 +21,9 @@ body
     overflow-x: hidden;
     overflow-y: hidden;
 
-    font-family: @Body___primaryFont;
+    font-family: @Body___mainFont;
+    background-color: @Body___backgroundColor;
+    color: @Body___textColor;
 
     -webkit-text-size-adjust: 100%;
     
@@ -29,6 +31,12 @@ body
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+}
+
+h1, h2, h3, h4, h5, h6
+{
+    font-family: @Body___headingFont;
+    color: @Body___headingColor;
 }
 
 input
@@ -45,9 +53,16 @@ input
     width: 100%;
     height: 100%;
 }
+
 .axial_main_layer
 {
     position: absolute;
     width: 100%;
     height: 100%;
+}
+
+.axial_scroller_base
+{
+    overflow-x: hidden;
+    overflow-y: auto;
 }
