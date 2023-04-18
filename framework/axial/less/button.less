@@ -31,6 +31,45 @@
 {
     color: @AxialButton___color;
     font-weight: @AxialButton___fontWeight;
+    font-family: @AxialButton___fontFamily;
+}
+
+/* AxialButtonIcon */
+.axial_button_icon
+{
+    overflow: hidden;
+
+    width: -moz-fit-content;
+    width: fit-content;
+    min-height: 42px;
+    height: auto;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 14px;
+    padding-right: 14px;
+
+    background-color: @AxialButtonIcon___backgroundColor;
+    border-radius: @AxialButtonIcon___borderRadius;
+    box-shadow: @AxialButtonIcon___boxShadow;
+
+    svg { fill: @AxialButtonIcon___svgFill; }
+}
+.axial_button_icon-label
+{
+    color: @AxialButtonIcon___color;
+    font-weight: @AxialButtonIcon___fontWeight;
+    font-family: @AxialButtonIcon___fontFamily;
+}
+.axial_button_icon-icon
+{
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
 }
 
 /* AxialToggleCheck */

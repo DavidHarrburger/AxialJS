@@ -204,7 +204,7 @@ class AxialCommands extends EventEmitter
                 const param = params[i];
                 if( this.#paramsNew.has(param) == false )
                 {
-                    console.log("[AXIAL_ERROR] unknown 'new' parameter");
+                    console.log("[AXIAL_ERROR] unknown 'newpage' parameter");
                     return;
                 }
 

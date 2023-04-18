@@ -8,6 +8,7 @@ import { AxialScrollerItemBase } from "../../axial/js/application/AxialScrollerI
 
 // button
 import { AxialButton } from "../../axial/js/button/AxialButton";
+import { AxialButtonIcon } from "../../axial/js/button/AxialButtonIcon";
 import { AxialToggleButtonGroupBase } from "../../axial/js/button/AxialToggleButtonGroupBase";
 import { AxialToggleCheck } from "../../axial/js/button/AxialToggleCheck";
 import { AxialToggleSwitch } from "../../axial/js/button/AxialToggleSwitch";
