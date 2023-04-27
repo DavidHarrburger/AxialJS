@@ -261,8 +261,6 @@ class AxialComponentBase extends HTMLElement
     attributeChangedCallback(name, oldValue, newValue)
     {
         if( this.isConnected == false ) { return; }
-        console.log("AxialComponentBase.attributeChangedCallback()");
-        console.log(name);
     }
 
     ///

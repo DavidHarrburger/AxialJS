@@ -15,7 +15,6 @@ class AxialScrollerBase extends AxialComponentBase
      */
     #boundIntersectionObserverHandler;
 
-
     constructor()
     {
         super();
@@ -29,14 +28,14 @@ class AxialScrollerBase extends AxialComponentBase
             thresholds.push(t);
         }
         
-        const intersectionObserverOptions = { root: this , threshold: thresholds }
+        const intersectionObserverOptions = { root: document , threshold: thresholds }
         this.#intersectionOberserver = new IntersectionObserver( this.#boundIntersectionObserverHandler, intersectionObserverOptions );
 
     }
 
     #intersectionObserverHandler( entries, observer )
     {
-        console.log(entries);
+        //console.log(entries);
         const el = entries.length;
         for( let i = 0; i < el; i++ )
         {
@@ -53,7 +52,6 @@ class AxialScrollerBase extends AxialComponentBase
     _finalizeComponent()
     {
         const elements = this.getElementsByTagName("*");
-        console.log(elements);
         const el = elements.length;
         for( let i = 0; i < el; i++ )
         {
