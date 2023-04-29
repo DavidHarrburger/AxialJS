@@ -52,6 +52,7 @@ input
     user-select: text;
 }
 
+/* layers */
 .axial_background_layer
 {
     position: absolute;
@@ -66,6 +67,25 @@ input
     height: 100%;
 }
 
+.axial_intro_layer
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+
+    /* temp */
+    display: none;
+}
+
+/* header */
+.axial_header
+{
+    position: absolute;
+    width: 100%;
+    height: @Header___height;
+}
+
+/* application components */
 .axial_scroller_base
 {
     overflow-x: hidden;
@@ -80,4 +100,10 @@ input
     animation-play-state: paused;
     animation-iteration-count: 1;
     animation-timing-function: ease-out;
+}
+
+/* utils */
+.axial_spacer
+{
+    flex-grow: 1;
 }
