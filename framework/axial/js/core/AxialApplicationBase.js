@@ -18,7 +18,34 @@ class AxialApplicationBase extends EventTarget
     #boundApplicationResizeHandler;
     #boundWindowResizeHandler;
     
+    /// layers
+    /**
+     * @private
+     * @type { HTMLElement }
+     */
+    #backgroundLayer = undefined;
+
+    /**
+     * @private
+     * @type { HTMLElement }
+     */
+    #mainLayer = undefined;
+
+    /**
+     * @private
+     * @type { HTMLElement }
+     */
+    #introLayer = undefined;
+
     /// properties
+
+    /**
+     * @private
+     * @type { String }
+     * @default undefined
+     */
+    #dataPath = undefined;
+
     /**
      * @private
      * @type { any }
@@ -157,8 +184,40 @@ class AxialApplicationBase extends EventTarget
     get isDesktop() { return this.#isDesktop; }
 
     ///
+    /// PART: LAYERS
+    ///
+
+    get backgroundLayer() { return this.#backgroundLayer; }
+
+    get mainLayer() { return this.#mainLayer; }
+
+    get introLayer() { return this.#introLayer; }
+
+    ///
     /// PART: DATA
     ///
+
+    /**
+     * Get or set data to the application.
+     * @type { any }
+     * @param { any } value 
+     */
+    get dataPath()
+    {
+        return this.#dataPath;
+    }
+    set dataPath( value )
+    {
+        if( typeof value !== "string" )
+        {
+            throw new TypeError("String value required");
+        }
+        this.#dataPath = value;
+        if( this.#applicationPageLoaded === true )
+        {
+            this.#loadData;
+        }
+    }
 
     /**
      * Get or set data to the application.
@@ -176,6 +235,25 @@ class AxialApplicationBase extends EventTarget
         this._onApplicationDataChanged();
         const dataChangedEvent = new CustomEvent("applicationDataChanged", { detail: this.#data });
         this.dispatchEvent(dataChangedEvent);
+    }
+
+    /**
+     * Load data using the dataPath property if the page is loaded. The data property is filled with the result.
+     * @private
+     */
+    async #loadData()
+    {
+        try
+        {
+            const response = await fetch( this.#dataPath, { method: "GET" } );
+            const json = await response.json();
+            this.data = json;
+            console.log(json);
+        }
+        catch( err )
+        {
+            console.log(err);
+        }
     }
 
     /**
@@ -247,6 +325,15 @@ class AxialApplicationBase extends EventTarget
     #applicationPageLoadedHandler(event)
     {
         this.#applicationPageLoaded = true;
+
+        this.#backgroundLayer = document.getElementById("axialBackgroundLayer");
+        this.#mainLayer = document.getElementById("axialMainLayer");
+        this.#introLayer = document.getElementById("axialIntroLayer");
+
+        if( this.#dataPath !== undefined )
+        {
+            this.#loadData();
+        }
 
         if( this._onApplicationPageLoaded )
         {

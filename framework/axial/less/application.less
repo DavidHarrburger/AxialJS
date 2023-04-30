@@ -36,6 +36,7 @@ body
 a
 {
     text-decoration: none;
+    color: @Body___textColor;
 }
 
 h1, h2, h3, h4, h5, h6
@@ -77,12 +78,127 @@ input
     display: none;
 }
 
+/* burger */
+.axial_burger_holder
+{
+    position: absolute;
+    top: 0px;
+    right: 20px;
+    width: auto;
+    height: @Header___height;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.axial_burger
+{
+    width: 40px;
+    height: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.axial_burger_line
+{
+    width: 24px;
+    height: 2px;
+    border-radius: 1px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    background-color: @Burger___lineColor;
+}
+
+/* main */
+.axial_main
+{
+    position: absolute;
+    width: 100%;
+    top: @Header___height;
+    bottom: 0px;
+}
+.axial_main_scroller
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
 /* header */
 .axial_header
 {
     position: absolute;
     width: 100%;
     height: @Header___height;
+}
+.axial_header_background
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: @Header___backgroundColor;
+}
+.axial_header_nav_holder
+{
+    display: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+.axial_header_nav
+{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.axial_header_nav_link
+{
+    height: fit-content;
+
+    margin-left: 4px;
+    margin-right: 4px;
+
+    font-family: @Body___navFont;
+    font-weight: @Body___navFontWeight;
+    color: @Body___navColor;
+    
+}
+.axial_header_logo_holder
+{
+    pointer-events: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.axial_header_logo
+{
+    pointer-events: all;
+    width: @HeaderLogo___width;
+    height: @HeaderLogo___height;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+.axial_header_logo_image
+{
+    width: 100%;
+    height: auto;
+}
+
+/* footer */
+.axial_footer
+{
+    padding-left: @Body___globalHorizontalPadding;
+    padding-right: @Body___globalHorizontalPadding;
 }
 
 /* application components */
@@ -91,6 +207,22 @@ input
     overflow-x: hidden;
     overflow-y: auto;
 }
+
+/*
+.axial_scroller_base::-webkit-scrollbar
+{
+    background-color: transparent;
+}
+.axial_scroller_base::-webkit-scrollbar-track
+{
+    background-color: transparent;
+}
+.axial_scroller_base::-webkit-scrollbar-thumb
+{
+    background-color: transparent;
+}
+*/
+
 
 .axial_scroller_item_base
 {

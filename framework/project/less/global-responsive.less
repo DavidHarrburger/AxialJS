@@ -37,5 +37,47 @@ cf boostrap : https://getbootstrap.com/docs/5.0/layout/breakpoints/
 /* XXL */
 @media screen and ( min-width: 1400px )
 {
+    /* VARIABLES */
+    /* Header */
+    @Header___height: 120px;
+
+    /* Header Logo */
+    @HeaderLogo___width: 80px;
+    @HeaderLogo___height: 80px;
+
+    /* ELEMENTS */
+    /* burger */
+    .axial_burger_holder
+    {
+        display: none;
+    }
+
+    /* header */
+    .axial_header
+    {
+        height: @Header___height;
+    }
+
+    .axial_header_nav_holder
+    {
+        display: block;
+    }
+
+    .axial_header_logo_holder
+    {
+        justify-content: flex-start;
+    }
+
+    .axial_header_logo
+    {
+        width: @HeaderLogo___width;
+        height: @HeaderLogo___height;
+    }
+
+    /* main */
+    .axial_main
+    {
+        top: @Header___height;
+    }
     
 }
