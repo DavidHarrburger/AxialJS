@@ -339,8 +339,8 @@ class AxialPopupBase extends AxialComponentBase
         switch( this.#displayMode )
         {
             case "none":
-                this.style.left = "initial";
-                this.style.top = "initial";
+                //this.style.left = "initial";
+                //this.style.top = "initial";
             break;
 
             case "window":

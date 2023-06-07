@@ -4,14 +4,9 @@
     "project_directory": "project",
     "pages_directory": "pages",
     "clean_on_build": true,
-    "server_localhost": "",
+    "server_localhost": "static",
     "files_to_copy":[],
-    "directories_to_copy": [
-        {
-            "source": "assets",
-            "dest": "assets"
-        }
-    ],
+    "directories_to_copy": [],
     "pages":
     [
         { "name": "main", "path": "" }

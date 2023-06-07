@@ -1,7 +1,7 @@
 {
   "name": "axial-js",
   "version": "0.1.0",
-  "description": "A Javascript front-end framework",
+  "description": "A Javascript fullstack framework",
   "type": "module",
   "main": "bin/axial.js",
   "scripts": {
@@ -27,8 +27,8 @@
   },
   "homepage": "https://github.com/DavidHarrburger/AxialJS#readme",
   "dependencies": {
-    "fs-extra": "^11.1.0",
+    "fs-extra": "11.1.1",
     "less": "^4.1.3",
-    "webpack": "^5.75.0"
+    "webpack": "5.85.0"
   }
 }

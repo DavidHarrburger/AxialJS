@@ -114,7 +114,27 @@ class AxialApplicationBase extends EventTarget
      * @type { String | undefined }
      * @default undefined
      */
-    #language = undefined
+    #language = undefined;
+
+    /**
+     * @private
+     * @type { Boolean }
+     * @default false
+     */
+    #useParallax = false;
+
+    /**
+     * @private
+     * @type { Array.<HTMLElement> }
+     * @default undefined
+     */
+    #parallaxElements = undefined;
+
+    /**
+     * @private
+     * @type { Function }
+     */
+    #boundParallaxMoveHandler;
 
     /**
      * Create the main AxialApplicationBase and make it a property of its window.
@@ -149,6 +169,7 @@ class AxialApplicationBase extends EventTarget
         this.#boundApplicationPageLoadedHandler = this.#applicationPageLoadedHandler.bind(this);
         this.#boundApplicationResizeHandler = this.#applicationResizeHandler.bind(this);
         this.#boundWindowResizeHandler = this.#windowResizeHandler.bind(this);
+        this.#boundParallaxMoveHandler = this.#parallaxMoveHandler.bind(this);
         
         window.addEventListener("DOMContentLoaded", this.#boundApplicationDomLoadedHandler);
         window.addEventListener("load", this.#boundApplicationPageLoadedHandler);
@@ -213,10 +234,13 @@ class AxialApplicationBase extends EventTarget
             throw new TypeError("String value required");
         }
         this.#dataPath = value;
+        // to check
+        /*
         if( this.#applicationPageLoaded === true )
         {
             this.#loadData;
         }
+        */
     }
 
     /**
@@ -243,17 +267,24 @@ class AxialApplicationBase extends EventTarget
      */
     async #loadData()
     {
+        if( this.#dataPath === undefined ) { return; }
+
         try
         {
             const response = await fetch( this.#dataPath, { method: "GET" } );
             const json = await response.json();
             this.data = json;
-            console.log(json);
+            //console.log(json);
         }
         catch( err )
         {
             console.log(err);
         }
+    }
+
+    _loadData()
+    {
+        this.#loadData();
     }
 
     /**
@@ -263,7 +294,7 @@ class AxialApplicationBase extends EventTarget
      */
     _onApplicationDataChanged()
     {
-        //console.log("AxialApplicationBase._onApplicationDataChanged()");
+        console.log("AxialApplicationBase._onApplicationDataChanged()");
     }
 
     ///
@@ -330,10 +361,11 @@ class AxialApplicationBase extends EventTarget
         this.#mainLayer = document.getElementById("axialMainLayer");
         this.#introLayer = document.getElementById("axialIntroLayer");
 
+        /*
         if( this.#dataPath !== undefined )
         {
             this.#loadData();
-        }
+        }*/
 
         if( this._onApplicationPageLoaded )
         {
@@ -397,6 +429,91 @@ class AxialApplicationBase extends EventTarget
     _onApplicationResize()
     {
         console.log("AxialApplicationBase._onApplicationResize()");
+    }
+
+    ///
+    /// PART: PARALLAX
+    ///
+
+    get useParallax() { return this.#useParallax; }
+    set useParallax( value )
+    {
+        if( typeof value !== "boolean" )
+        {
+            throw new TypeError("Boolean value required");
+        }
+        if( this.#useParallax == value ) { return; }
+        this.#useParallax = value;
+        
+        if( this.#useParallax == true )
+        {
+            this.#addParallax();
+        }
+        else
+        {
+            this.#removeParallax();
+        }
+    }
+
+    /**
+     * @private
+     * @param { PointerEvent } event 
+     */
+    #parallaxMoveHandler( event )
+    {
+        //console.log(event);
+        const px = event.clientX;
+        const py = event.clientY;
+
+        const ww = window.innerWidth;
+        const wh = window.innerHeight;
+
+        const cx = ww / 2;
+        const cy = wh / 2;
+
+        const dx = (px - cx) / cx;
+        const dy = (py - cy) / cy;
+
+        for( const element of this.#parallaxElements )
+        {
+            const parallaxX = Number(element.getAttribute("axial-parallax-x"));
+            const translateX = "translateX(" + String( dx * parallaxX) + "px) ";
+            
+
+            const parallaxY = Number(element.getAttribute("axial-parallax-y"));
+            const translateY = "translateY(" + String( dy * parallaxY) + "px) ";
+            //console.log(translateY);
+
+            const parallaxRotateY = Number(element.getAttribute("axial-parallax-ry"));
+            const rotateY = "rotateY(" + String( dx * parallaxRotateY) + "deg) ";
+
+            const finalTransform = translateX + " " + translateY + " " + rotateY;
+            
+            const currentTransform = window.getComputedStyle(element).transform; // see later maybe cache the initial transform
+            
+            element.style.transform = finalTransform;
+        }
+    }
+
+    #addParallax()
+    {
+        this.#parallaxElements = new Array();
+        const allElements = document.getElementsByTagName("*");
+
+        for( const element of allElements )
+        {
+            const isParallax = element.hasAttribute("axial-parallax");
+            if( isParallax )
+            {
+                this.#parallaxElements.push(element);
+            }
+        }
+        document.addEventListener("pointermove", this.#boundParallaxMoveHandler);
+    }
+
+    #removeParallax()
+    {
+        document.removeEventListener("pointermove", this.#boundParallaxMoveHandler);
     }
 }
 

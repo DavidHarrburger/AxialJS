@@ -1,0 +1,56 @@
+/* AxialCrossContainer */
+.axial_cross_container
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.axial_cross_container_element
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+.axial_cross_container-center
+{
+    transform: translate(0%,0%);
+}
+.axial_cross_container-top
+{
+    transform: translate(0%,-100%);
+}
+.axial_cross_container-right
+{
+    transform: translate(100%,0%);
+}
+.axial_cross_container-bottom
+{
+    transform: translate(0%,100%);
+}
+.axial_cross_container-left
+{
+    transform: translate(-100%,0%);
+}
+
+/* AxialSliderBase */
+.axial_slider_base
+{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.axial_slider_item_base
+{
+    position: absolute;
+    
+    height: 100%;
+    width: auto;
+    cursor: pointer;
+
+    transition-property: left;
+    transition-duration: 500ms;
+    transition-timing-function: ease;
+}

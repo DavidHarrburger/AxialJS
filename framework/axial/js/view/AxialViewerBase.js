@@ -228,7 +228,6 @@ class AxialViewerBase extends AxialComponentBase
         const viewEnteringEvent = new CustomEvent("viewEntering");
         this.dispatchEvent(viewEnteringEvent);
 
-
         // main code
         this.#direction = index > this.#index ? -1 : 1;
         this.#index = index;
@@ -301,14 +300,12 @@ class AxialViewerBase extends AxialComponentBase
         const w = this.offsetWidth;
         const oldFinalX = String(this.#direction * w) + "px";
         const newStartX = String(this.#direction * -w) + "px";
-
         
         this.#oldAnimation = this.#oldView.animate(
             [{ left: "0px" },  { left: oldFinalX } ],
             { iterations: 1 , duration: this.#animationDuration }
         );
         this.#oldAnimation.addEventListener("finish", this.#boundAnimationFinishHandler);
-        
 
         this.#newAnimation = this.#newView.animate(
             [ { left: newStartX },  { left: "0px" } ],
@@ -337,7 +334,9 @@ class AxialViewerBase extends AxialComponentBase
 
             const viewEnteredEvent = new CustomEvent("viewEntered");
             this.dispatchEvent(viewEnteredEvent);
-            
+
+            this.manipulationEnable = true;
+
             this.#adjustViews();
         }
     }
@@ -345,6 +344,7 @@ class AxialViewerBase extends AxialComponentBase
     #animationCenterHandler( event )
     {
         this.#oldAnimation.removeEventListener("finish", this.#boundAnimationCenterHandler);
+        this.manipulationEnable = true;
         this.#adjustViews();
     }
 
@@ -372,7 +372,8 @@ class AxialViewerBase extends AxialComponentBase
      */
     #manipulationStartedHandler(event)
     {
-        console.log(event.detail);
+        //console.log(event.detail);
+        console.log("manipulationStartedHandler + isManipulating = " + this.isManipulating);
         const viewsLength = this.#views.length;
         if( viewsLength == 0 ) { return; }
 
@@ -408,7 +409,9 @@ class AxialViewerBase extends AxialComponentBase
     {
         // assumes the holder with does not change : so I should cache the initial value.
         // but I prefer write get the holder on each move and later will add a percentage factor
-        console.log(event.detail);
+        //console.log(event.detail);
+
+        console.log("manipulationChangedHandler + isManipulating = " + this.isManipulating);
 
         const viewsLength = this.#views.length;
         if( viewsLength == 0 ) { return; }
@@ -447,9 +450,10 @@ class AxialViewerBase extends AxialComponentBase
      */
     #manipulationFinishedHandler(event)
     {
+        console.log("manipulationFinishedHandler + isManipulating = " + this.isManipulating);
         const viewsLength = this.#views.length;
         if( viewsLength == 0 ) { return; }
-        console.log(event.detail);
+        //console.log(event.detail);
         console.log("MANIPULATION FINISHED !!!!");
         this.#duration = event.detail.duration;
         this.#animateAfterManipulation();
@@ -467,6 +471,7 @@ class AxialViewerBase extends AxialComponentBase
 
     #animateAfterManipulation()
     {
+        this.manipulationEnable = false;
         console.log("#animateAfterManipulation()");
         const viewsLength = this.#views.length;
         const currentWidth = this.offsetWidth;

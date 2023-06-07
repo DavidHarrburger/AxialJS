@@ -45,6 +45,24 @@ class AxialComponentBase extends HTMLElement
 
     /**
      * @private
+     * @type { Boolean }
+     * @default false
+     */
+    #useResizeObserver = false;
+
+    /**
+     * @private
+     * @type { ResizeObserver }
+     */
+    #resizeObserver;
+
+    /**
+     * @type { Function }
+     */
+    #boundResizeObserverHandler;
+
+    /**
+     * @private
      * @type { Set }
      */
     #states = new Set(["init"]);
@@ -128,6 +146,7 @@ class AxialComponentBase extends HTMLElement
         window.addEventListener("DOMContentLoaded", this.#boundDomLoadedHandler);
 
         this.#boundResizeHandler = this.#resizeHandler.bind(this);
+        this.#boundResizeObserverHandler = this.#resizeObserverHandler.bind(this);
 
         this.#boundManipulationEnterHandler     = this.#manipulationEnterHandler.bind(this);
         this.#boundManipulationDownHandler      = this.#manipulationDownHandler.bind(this);
@@ -139,6 +158,8 @@ class AxialComponentBase extends HTMLElement
         this.#boundManipulationCancelHandler    = this.#manipulationCancelHandler.bind(this);
 
         this.classList.add("axial_component_base");
+
+        this.#resizeObserver = new ResizeObserver( this.#boundResizeObserverHandler );
     }
 
     ///
@@ -290,7 +311,7 @@ class AxialComponentBase extends HTMLElement
      */
     _onDataChanged()
     {
-        console.log("AxialComponentBase._onDataChanged()");
+        //console.log("AxialComponentBase._onDataChanged()");
     }
 
     ///
@@ -325,10 +346,34 @@ class AxialComponentBase extends HTMLElement
     }
 
     /**
+     * 
+     */
+    get useResizeObserver() { return this.useResizeObserver; }
+    set useResizeObserver( value )
+    {
+        if( typeof value !== "boolean" )
+        {
+            throw new TypeError("Boolean value required");
+        }
+        if( this.#useResizeObserver == value ) { return; }
+        this.#useResizeObserver = value;
+        
+        if( this.#useResizeObserver == false )
+        {
+            this.#resizeObserver.unobserve(this);
+        }
+        else
+        {
+            this.#resizeObserver.observe(this);
+        }
+    }
+
+
+    /**
      * The handler of the window resize event, bounded into the Axial component.
      * @param { Event } event - The resize event.
      */
-    #resizeHandler(event)
+    #resizeHandler( event )
     {
         this._resize();
     }
@@ -336,9 +381,32 @@ class AxialComponentBase extends HTMLElement
     /**
      * If the AxialComponentBase.isResizable property is setted to true, this method is called each time the window is resized.
      * @public
-     * @abstract
+     * @override
      */
     _resize() {}
+
+    /**
+     * To bind the callback inside the component
+     * @param { Array.<ResizeObserverEntry> } entries 
+     * @param { ResizeObserver } observer 
+     */
+    #resizeObserverHandler( entries, observer )
+    {
+        this._observerResize( entries, observer );
+
+        const elementResizedEvent = new CustomEvent("elementResized", { bubbles: true, detail: { entries: entries, observer, observer } } );
+        this.dispatchEvent(elementResizedEvent);
+    }
+
+
+    /**
+     * Plays the natural Resize Observer call back
+     * @override
+     * @param { Array.<ResizeObserverEntry> } entries 
+     * @param { ResizeObserver } observer 
+     */
+    _observerResize( entries, observer ) {}
+
 
     ///
     /// PART: STATES
@@ -574,7 +642,7 @@ class AxialComponentBase extends HTMLElement
         }
         
 
-        console.log(eventType);
+        //console.log(eventType);
 
         // POINTER CANCEL
         if( eventType == "pointercancel" )
@@ -679,6 +747,8 @@ class AxialComponentBase extends HTMLElement
                 this.#manipulationDistance = 0;
                 this.#manipulationDeltaScale = 0;
                 this.#manipulationAngle = 0;
+
+                this.#restartManipulation();
 
                 // DISPATCH
                 const manipulationEventDetail = this.#createManipulationEventDetail();

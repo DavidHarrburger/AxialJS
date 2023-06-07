@@ -51,7 +51,7 @@ class AxialPopupManager
         AxialPopupManager.#animationDuration = value;
     }
 
-    static #animationTimingFunction = "linear";
+    static #animationTimingFunction = "ease";
     static get animationTimingFunction() { return AxialPopupManager.#animationTimingFunction; }
     static set animationTimingFunction( value )
     {
@@ -155,7 +155,7 @@ class AxialPopupManager
         {
             throw new TypeError( "AxialPopupBase value expected" );
         }
-
+        
         /*
         if( AxialPopupManager.#currentPopup == popup )
         {
@@ -168,6 +168,7 @@ class AxialPopupManager
             if( AxialPopupManager.#currentPopup != popup )
             {
                 AxialPopupManager.#nextPopup = popup;
+                AxialPopupManager.hidePopup();
             }
             return;
         }
@@ -262,7 +263,18 @@ class AxialPopupManager
             AxialPopupManager.#currentPopup.dispatchEvent(popupHiddenEvent);
 
             AxialPopupManager.#currentPopup.style.visibility = "hidden";
-            AxialPopupManager.#currentPopup = undefined;
+            if( AxialPopupManager.#nextPopup !== undefined )
+            {
+                const nextPopup = AxialPopupManager.#nextPopup
+                AxialPopupManager.#currentPopup = undefined;
+                AxialPopupManager.#nextPopup = undefined;
+                AxialPopupManager.showPopup(nextPopup);
+            }
+            else
+            {
+                AxialPopupManager.#currentPopup = undefined;
+            }
+            
         }
         else
         {
@@ -316,7 +328,10 @@ class AxialPopupManager
     {
         //console.log("popup hide animation end");
         const popup = AxialPopupManager.#currentPopup;
+        const nextPopup = AxialPopupManager.#nextPopup;
+        
         AxialPopupManager.#currentPopup = undefined;
+        AxialPopupManager.#nextPopup = undefined;
 
         popup.removeEventListener("animationend", AxialPopupManager.#popupHideAnimationEndHandler);
 
@@ -328,6 +343,10 @@ class AxialPopupManager
         let popupHiddenEvent = new Event("popupHidden");
         popup.dispatchEvent(popupHiddenEvent);
 
+        if( nextPopup != undefined )
+        {
+            AxialPopupManager.showPopup(nextPopup);
+        }
     }
 }
 
