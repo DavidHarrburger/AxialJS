@@ -110,11 +110,11 @@ class AxialPopupManager
             throw new TypeError( "AxialPopupBase value expected" );
         }
 
-        if( AxialPopupManager.popups.has(popup) == true )
+        if( AxialPopupManager.#popups.has(popup) == true )
         {
             throw new Error( "This instance of popup is already registered" );
         }
-        AxialPopupManager.popups.add( popup );
+        AxialPopupManager.#popups.add( popup );
     }
 
     /**
@@ -155,13 +155,6 @@ class AxialPopupManager
         {
             throw new TypeError( "AxialPopupBase value expected" );
         }
-        
-        /*
-        if( AxialPopupManager.#currentPopup == popup )
-        {
-            return;
-        }
-        */
 
         if( AxialPopupManager.#currentPopup != undefined )
         {

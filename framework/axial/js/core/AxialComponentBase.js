@@ -88,13 +88,6 @@ class AxialComponentBase extends HTMLElement
      */
     #currentState = "init";
 
-
-    /**
-     * @private 
-     * @type { ShadowRoot }
-     */
-    //#shadow;
-
     /**
      * The identifier of the template we inject into the component's ShadowRoot.
      * @private
@@ -201,22 +194,9 @@ class AxialComponentBase extends HTMLElement
      */
     #buildShadow()
     {
-        //this.#shadow = this.attachShadow({ mode: "open"});
         this.attachShadow({ mode: "open"});
 
         // see to change template at runtime but in fact who will need really that
-        /*
-        const children = this.#shadow.children;
-        const childrenLength = children.length;
-        if( childrenLength > 0 )
-        {
-            while( this.#shadow.lastChild )
-            {
-                this.#shadow.removeChild( this.#shadow.lastChild );
-            }
-        }
-        */
-       
         
         const template = document.getElementById(this.#template);
         if( template )

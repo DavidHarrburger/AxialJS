@@ -15,8 +15,9 @@ class AxialCommands extends EventEmitter
      */
     #commands = new Set( [ "init", "newpage", "build", "config" ] );
 
-    #paramsNew = new Set( ["-name", "-template", "-path" ] );
-    #paramsBuild = new Set( ["-dev", "-prod" ] );
+    #paramsInit = new Set( [ "-front", "-server", "-electron" ] );
+    #paramsNew = new Set( [ "-name", "-template", "-path" ] );
+    #paramsBuild = new Set( [ "-dev", "-prod" ] );
 
     /**
      * @type { String }
@@ -71,7 +72,7 @@ class AxialCommands extends EventEmitter
             switch( currentCommand )
             {
                 case "init":
-                    this.#init();
+                    this.#init(params);
                 break;
 
                 case "newpage":
@@ -158,14 +159,62 @@ class AxialCommands extends EventEmitter
         }
     }
 
-    async #init()
+    /**
+     * 
+     * @param { Array.<String> } params 
+     */
+    async #init( params )
     {
         console.log("AXIAL INIT");
-        //const frameworkDirectory = this.#axialDirectory + this.#frameworkDirectory;
-        const frameworkDirectory = path.resolve(this.#axialDirectory + this.#frameworkDirectory);
+
+        const config =  await this.#getAxialConfiguration();
+        if( config != undefined )
+        {
+            console.log("[AXIAL_ERROR] the 'init' command has been already used");
+            return;
+        }
+
+        console.log(params);
+
+        let initTypeDirectory = "/framework_";
+
+        if( params.length == 0 )
+        {
+            initTypeDirectory = initTypeDirectory + "front";
+        }
+
+        if( params.length > 1 )
+        {
+            console.log("[AXIAL_ERROR] 'init' command can take only one parameter : '-front', '-server', '-electron'. Other parameters are ignored. ");
+        }
+
+        if( params.length > 0 )
+        {
+            const initType = params[0];
+            if( this.#paramsInit.has(initType) == false )
+            {
+                console.log("[AXIAL_ERROR] 'init' unknown parameter : use '-front', '-server', '-electron'.");
+                initTypeDirectory = initTypeDirectory + "front";
+            }
+            else
+            {
+                switch( initType )
+                {
+                    case "-front":    initTypeDirectory = initTypeDirectory + "front";    break;
+                    case "-server":   initTypeDirectory = initTypeDirectory + "server";   break;
+                    case "-electron": initTypeDirectory = initTypeDirectory + "electron"; break;
+                    default:          initTypeDirectory = initTypeDirectory + "front";    break;
+                }
+            }
+        }
+        
         try
         {
+            const frameworkDirectory = path.resolve(this.#axialDirectory + this.#frameworkDirectory);
             await fse.copy(frameworkDirectory, this.#currentDirectory);
+
+            const frameworkTypeDirectory = path.resolve(this.#axialDirectory + initTypeDirectory);
+            await fse.copy(frameworkTypeDirectory, this.#currentDirectory);
         }
         catch(err)
         {
@@ -270,7 +319,7 @@ class AxialCommands extends EventEmitter
                 const param = params[i];
                 if( this.#paramsBuild.has(param) == false )
                 {
-                    console.log("[AXIAL_ERROR] unknown 'new' parameter");
+                    console.log("[AXIAL_ERROR] unknown 'build' parameter");
                     return;
                 }
                 if( param == "-dev" )  { mode = "development"; }
@@ -326,6 +375,7 @@ class AxialCommands extends EventEmitter
                 // js webpack
                 const jsInput = path.resolve(this.#currentDirectory, config.project_directory, config.pages_directory, pageModel.name, "js/Page.js");
                 const jsOutputPath = path.resolve(this.#currentDirectory, config.build_directory, pageModel.path);
+                const jsOutput = config.js_output_filename || "application.js";
 
                 const webpackConfig = 
                 {
@@ -334,7 +384,7 @@ class AxialCommands extends EventEmitter
                     output:
                     {
                         path: jsOutputPath,
-                        filename: "application.js"
+                        filename: jsOutput
                     }
                 }
 

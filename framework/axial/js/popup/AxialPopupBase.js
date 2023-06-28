@@ -11,8 +11,7 @@ import { AxialPopupManager } from "./AxialPopupManager";
 class AxialPopupBase extends AxialComponentBase
 {
     // events
-    #boundPopupClickHandler;
-    #boundPopupHiddenHandler;
+    #boundPopupPointerDownHandler;
 
     /** @type { Number } */
     #offset = 0;
@@ -53,11 +52,9 @@ class AxialPopupBase extends AxialComponentBase
     {
         super();
         
-        this.#boundPopupClickHandler = this.#popupClickHandler.bind(this);
-        this.#boundPopupHiddenHandler = this.#popupHiddenHandler.bind(this);
+        this.#boundPopupPointerDownHandler = this.#popupPointerDownHandler.bind(this);
 
-        this.addEventListener("pointerdown", this.#boundPopupClickHandler);
-        this.addEventListener("popupHidden", this.#boundPopupHiddenHandler);
+        this.addEventListener("pointerdown", this.#boundPopupPointerDownHandler);
 
         this.classList.add("axial_popup_base");
         this.isResizable = true;
@@ -660,15 +657,9 @@ class AxialPopupBase extends AxialComponentBase
     /**
      * @private
      * Prevent the popup from being closed if user click outside of its DOMRect
-     * @param { Event } event 
+     * @param { PointerEvent } event 
      */
-    #popupClickHandler( event ) { event.stopImmediatePropagation(); }
-
-    #popupHiddenHandler( event )
-    {
-        //console.log("coucou popup hidden");
-        //console.log(AxialPopupManager.nextPopup);
-    }
+    #popupPointerDownHandler( event ) { event.stopImmediatePropagation(); }
 
     /**
      * @override
