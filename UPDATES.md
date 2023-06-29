@@ -2,6 +2,10 @@
 
 Find here what happened and when.
 
+## 2023 - 06 - 29
+
+Minor update : change pathes in the ```axial init``` command.
+
 ## 2023 - 06 - 28 
 
 Add parameters to the ```axial init``` command. By default, axial init will just create a front-end page with its compilation logic.<br>

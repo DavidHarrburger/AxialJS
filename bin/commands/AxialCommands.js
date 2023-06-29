@@ -167,6 +167,7 @@ class AxialCommands extends EventEmitter
     {
         console.log("AXIAL INIT");
 
+        // rewrite
         const config =  await this.#getAxialConfiguration();
         if( config != undefined )
         {
@@ -176,12 +177,7 @@ class AxialCommands extends EventEmitter
 
         console.log(params);
 
-        let initTypeDirectory = "/framework_";
-
-        if( params.length == 0 )
-        {
-            initTypeDirectory = initTypeDirectory + "front";
-        }
+        let initTypeDirectory = "";
 
         if( params.length > 1 )
         {
@@ -194,27 +190,30 @@ class AxialCommands extends EventEmitter
             if( this.#paramsInit.has(initType) == false )
             {
                 console.log("[AXIAL_ERROR] 'init' unknown parameter : use '-front', '-server', '-electron'.");
-                initTypeDirectory = initTypeDirectory + "front";
             }
             else
             {
                 switch( initType )
                 {
-                    case "-front":    initTypeDirectory = initTypeDirectory + "front";    break;
-                    case "-server":   initTypeDirectory = initTypeDirectory + "server";   break;
-                    case "-electron": initTypeDirectory = initTypeDirectory + "electron"; break;
-                    default:          initTypeDirectory = initTypeDirectory + "front";    break;
+                    case "-front":    initTypeDirectory =  "/front";    break;
+                    case "-server":   initTypeDirectory =  "/server";   break;
+                    case "-electron": initTypeDirectory =  "/electron"; break;
+                    default:          initTypeDirectory =  "";          break;
                 }
             }
         }
         
         try
         {
-            const frameworkDirectory = path.resolve(this.#axialDirectory + this.#frameworkDirectory);
+            //const frameworkDirectory = path.resolve(this.#axialDirectory + this.#frameworkDirectory);
+            const frameworkDirectory = path.resolve(this.#axialDirectory + this.#frameworkDirectory + "/common");
             await fse.copy(frameworkDirectory, this.#currentDirectory);
 
-            const frameworkTypeDirectory = path.resolve(this.#axialDirectory + initTypeDirectory);
-            await fse.copy(frameworkTypeDirectory, this.#currentDirectory);
+            if( initTypeDirectory != "" )
+            {
+                const frameworkTypeDirectory = path.resolve(this.#axialDirectory + this.#frameworkDirectory + initTypeDirectory);
+                await fse.copy(frameworkTypeDirectory, this.#currentDirectory);
+            }
         }
         catch(err)
         {
