@@ -54,6 +54,39 @@ input
     appearance: none;
 }
 
+input[type="file"]
+{
+    min-height: 60px;
+}
+input[type="file" i]
+{
+    font-family: @Body___mainFont;
+    color: @Body___textColor;
+}
+input[type="file"]::file-selector-button
+{
+    min-height: 42px;
+
+    cursor: pointer;
+
+    appearance: none;
+    border: none;
+    outline: none;
+
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 14px;
+    padding-right: 14px;
+
+    background-color: @AxialButton___backgroundColor;
+    border-radius: @AxialButton___borderRadius;
+    box-shadow: @AxialButton___boxShadow;
+
+    color: @AxialButton___color;
+    font-weight: @AxialButton___fontWeight;
+    font-family: @AxialButton___fontFamily;
+}
+
 /* layers */
 .axial_background_layer
 {

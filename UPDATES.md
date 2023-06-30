@@ -2,6 +2,10 @@
 
 Find here what happened and when.
 
+## 2023 - 06 - 30
+
+Basic Electron JS scope ! Add package.json for electron, main.js et preload-main.js.
+
 ## 2023 - 06 - 29
 
 Minor update : change pathes in the ```axial init``` command.
