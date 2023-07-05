@@ -2,6 +2,22 @@
 
 Find here what happened and when.
 
+## 2023 - 07 - 05
+
+Add commands tu run Electron and Electron Forge from axial.<br><br>
+
+**IMPORTANT NOTES** 
+* Tested only on Windows 11
+* Very basic scope
+* Not a lot of "make" options ;)
+* Please refer to [Electron](https://www.electronjs.org/) docs and [Electron Forge](https://www.electronforge.io/) docs.<br>
+
+Commands :<br>
+
+* ```axial electron ``` || ```axial electron -start``` to start the app. Run ```axial build -prod``` before ;)
+* ```axial electron -package``` to package the app.
+* ```axial electron -make``` to make the app. 
+
 ## 2023 - 06 - 30
 
 Basic Electron JS scope ! Add package.json for electron, main.js et preload-main.js.

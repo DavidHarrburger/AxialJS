@@ -59,7 +59,7 @@ class AxialToggleButtonBase extends AxialButtonBase
 
         this._onToggleChanged();
 
-        const toggleChangedEvent = new CustomEvent("toggleChanged");
+        const toggleChangedEvent = new CustomEvent("toggleChanged", { detail: { selected: this.#selected } } );
         this.dispatchEvent(toggleChangedEvent);
     }
 

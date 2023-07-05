@@ -8,16 +8,19 @@ import less from "less";
 import webpack from "webpack";
 import os from "os";
 
+import { api as electronForge } from "@electron-forge/core";
+
 class AxialCommands extends EventEmitter
 {
     /**
      * @type { Set }
      */
-    #commands = new Set( [ "init", "newpage", "build", "config" ] );
+    #commands = new Set( [ "init", "newpage", "build", "config", "electron" ] );
 
     #paramsInit = new Set( [ "-front", "-server", "-electron" ] );
     #paramsNew = new Set( [ "-name", "-template", "-path" ] );
     #paramsBuild = new Set( [ "-dev", "-prod" ] );
+    #paramsElectron = new Set( [ "-start", "-package", "-make", "-publish" ] ); //etc "-publish"  move to start atm
 
     /**
      * @type { String }
@@ -38,7 +41,6 @@ class AxialCommands extends EventEmitter
      * @type { String }
      */
     #frameworkDirectory = "/framework";
-    
 
     constructor()
     {
@@ -89,6 +91,10 @@ class AxialCommands extends EventEmitter
 
                 case "upload":
                     this.#upload();
+                break;
+
+                case "electron":
+                    this.#electron(params);
                 break;
 
                 default:
@@ -187,7 +193,7 @@ class AxialCommands extends EventEmitter
         if( params.length > 0 )
         {
             const initType = params[0];
-            if( this.#paramsInit.has(initType) == false )
+            if( this.#paramsInit.has(initType) === false )
             {
                 console.log("[AXIAL_ERROR] 'init' unknown parameter : use '-front', '-server', '-electron'.");
             }
@@ -229,7 +235,7 @@ class AxialCommands extends EventEmitter
         {
             // get config
             const config = await this.#getAxialConfiguration();
-            if( config == undefined )
+            if( config === undefined )
             {
                 console.log("[AXIAL_ERROR] 'axial-config.json' file not found. Use 'axial init' to init your project.");
                 return;
@@ -434,12 +440,89 @@ class AxialCommands extends EventEmitter
                     await fse.emptyDir(localhostServerPath);
                 }
             }
-            await fse.copy(buildDirectoryPath, localhostServerPath);
+            await fse.copy(buildDirectoryPath, localhostServerPath); // not sure I have to remove await
         }
         catch(err)
         {
             console.log(err);
         }
+    }
+
+    async #electron( params )
+    {
+        console.log("electron");
+        console.log(params);
+
+        try
+        {
+            // get config
+            const config = await this.#getAxialConfiguration();
+            if( config == undefined )
+            {
+                console.log("[AXIAL_ERROR] 'axial-config.json' file not found. Use 'axial init' to init your project.");
+                return;
+            }
+
+            let electronMethod = "start";
+            let electronConfig = this.#getElectronStartConfig();
+
+            if( params !== undefined && params.length == 1 )
+            {
+                const electronParam = params[0];
+                console.log(electronParam);
+                if( this.#paramsElectron.has(electronParam) === false )
+                {
+                    console.log("[AXIAL_ERROR] electron param not found");
+                    return;
+                }
+
+                switch( electronParam )
+                {
+                    case "-start":     electronMethod =  "start";    electronConfig = this.#getElectronStartConfig();   break;
+                    case "-package":   electronMethod =  "package";  electronConfig = this.#getElectronPackageConfig(); break;
+                    case "-make":      electronMethod =  "make";     electronConfig = this.#getElectronMakeConfig();    break;
+                    case "-publish":   electronMethod =  "start";    electronConfig = this.#getElectronStartConfig();   break; // WARNING move to publish when ready
+                    default:           electronMethod =  "start";    electronConfig = this.#getElectronStartConfig();   break;
+                }
+            }
+
+            console.log(electronMethod);
+            console.log(electronConfig);
+
+            await electronForge[electronMethod](electronConfig);
+
+            //const electronOutDir = path.resolve(this.#currentDirectory, "electron-package");
+            //console.log(electronOutDir);
+            //await electronForge.package( { dir: this.#currentDirectory, outDir: electronOutDir } );
+        }
+        catch(err)
+        {
+            console.log(err);
+        }
+    }
+
+    /// ELECTRON UTILS
+
+    #getElectronStartConfig()
+    {
+        return { dir: this.#currentDirectory, interactive: true };
+    }
+
+    #getElectronPackageConfig()
+    {
+        const electronOutDir = path.resolve(this.#currentDirectory, "electron-package");
+        return { dir: this.#currentDirectory, interactive: true, outDir: electronOutDir };
+    }
+
+    #getElectronMakeConfig()
+    {
+        const electronOutDir = path.resolve(this.#currentDirectory, "electron-package");
+        return { dir: this.#currentDirectory, interactive: true, outDir: electronOutDir };
+    }
+
+    #getElectronPublishConfig()
+    {
+        
     }
     
     test()
