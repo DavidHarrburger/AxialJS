@@ -2,6 +2,11 @@
 
 Find here what happened and when.
 
+## 2023 - 09 - 22
+
+Update packages with latest versions (important security fix in electron).<br>
+Add AxialNotifier into front-end framework.<br><br>
+
 ## 2023 - 07 - 05
 
 Add commands tu run Electron and Electron Forge from axial.<br><br>
@@ -20,7 +25,7 @@ Commands :<br>
 
 ## 2023 - 06 - 30
 
-Basic Electron JS scope ! Add package.json for electron, main.js et preload-main.js.
+Basic Electron JS scope ! Add package.json for electron, main.js et main-preload.js.
 
 ## 2023 - 06 - 29
 

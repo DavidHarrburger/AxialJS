@@ -282,7 +282,8 @@ class AxialPopupManager
 
     static #documentPopupClickHandler( event )
     {
-        //console.log("document popup manager pointer down for modal / non-modal");
+        // avoid double click when showing / hiding
+        if( AxialPopupManager.#isPlaying === true) { return; }
 
         // remove the listener to avoid double click
         document.removeEventListener("pointerdown", AxialPopupManager.#documentPopupClickHandler, false);

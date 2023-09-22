@@ -3,6 +3,7 @@ import { AxialApplicationBase } from "../../axial/js/core/AxialApplicationBase";
 import { AxialComponentBase } from "../../axial/js/core/AxialComponentBase";
 
 // application
+import { AxialNotifier } from "../../axial/js/application/AxialNotifier";
 import { AxialScrollerBase } from "../../axial/js/application/AxialScrollerBase";
 import { AxialScrollerItemBase } from "../../axial/js/application/AxialScrollerItemBase";
 

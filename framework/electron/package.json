@@ -9,6 +9,6 @@
   "author": "David Harrburger aka Daven Andreas",
   "license": "MIT",
   "devDependencies": {
-    "electron": "24.6.1"
+    "electron": "26.2.2"
   }
 }

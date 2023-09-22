@@ -61,6 +61,14 @@
         <div id="circleElement" class="axial_toggle_switch-circle"></div>
     </template>
 
+    <!-- AxialNotifier -->
+    <template id="axial-notifier-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div id="holder" class="axial_notifier_holder">
+            <div id="content" class="axial_notifier_content"></div>
+        </div>
+    </template>
+
     <!-- END AXIAL TEMPLATES -->
     
     <div id="axialBackgroundLayer" class="axial_background_layer">
@@ -89,6 +97,8 @@
             </div>
         </div>
     </div>
+
+    <axial-notifier id="notifier"></axial-notifier>
     
     <script src="./application.js" defer></script>
     

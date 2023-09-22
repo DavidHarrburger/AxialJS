@@ -30,34 +30,60 @@ class AxialViewerBase extends AxialComponentBase
     #index = -1;
 
     /**
-     * Cached duration. Used to know if we have long touch or just a quick finger move.
-     * @type { Number }
-     */
-    #duration = 0;
-
-    /**
-     * @type { Number }
-     */
-    #durationLimit = 200;
-
-    /**
      * Cached X distance for swipe between views.
      * @type { Number }
      */
     #distanceX = 0;
 
+    /**
+     * @type { Number }
+     */
     #direction = 0;
 
+    /**
+     * @type { String }
+     */
     #currentTransition = "none";
+
+    /**
+     * @type { Function }
+     */
     #boundAnimationFinishHandler;
+
+    /**
+     * @type { Function }
+     */
     #boundAnimationCenterHandler;
 
+    /**
+     * @type { Animation }
+     */
     #oldAnimation;
+
+    /**
+     * @type { Animation }
+     */
     #newAnimation;
 
+    /**
+     * @type { Number }
+     */
     #animationDuration = 600;
+
+    /**
+     * @type { Number }
+     */
     #animationExpected = 0;
+
+    /**
+     * @type { Number }
+     */
     #animationFinished = 0;
+
+    /**
+     * @type { Boolean }
+     */
+    #isChanging = false;
 
     static #TRANSITIONS = Object.freeze(new Set(["none", "fade", "slide"]));
     static get TRANSITIONS()
@@ -183,10 +209,45 @@ class AxialViewerBase extends AxialComponentBase
         this.#adjustViews();
     }
 
+    next()
+    {
+        if( this.#isChanging === true ) { return; }
+
+        const viewsLength = this.#views.length;
+        if( viewsLength < 2 ) { return; }
+
+        const currentIndex = this.#index;
+        const tempIndex = currentIndex + 1;
+
+        if( tempIndex >= viewsLength ) { return; }
+
+        console.log( "gotoViewByIndex at = " + tempIndex );
+
+        this.gotoViewByIndex(tempIndex, "slide")
+
+    }
+
+    previous()
+    {
+        if( this.#isChanging === true ) { return; }
+
+        const viewsLength = this.#views.length;
+        if( viewsLength < 2 ) { return; }
+
+        const currentIndex = this.#index;
+        const tempIndex = currentIndex - 1;
+
+        if( tempIndex < 0 ) { return; }
+
+        console.log( "gotoViewByIndex at = " + tempIndex );
+
+        this.gotoViewByIndex(tempIndex, "slide")
+    }
+
     /**
      * Go to a view via its index and play the associated transition if passed
-     * @param { Number } index - The index of the view we want to display
-     * @param { String } transition - The name of the transition we want to play.
+     * @param { Number } index The index of the view we want to display
+     * @param { String } transition The name of the transition we want to play.
      */
     gotoViewByIndex( index = 0, transition = "none" )
     {
@@ -200,7 +261,7 @@ class AxialViewerBase extends AxialComponentBase
         }
         
         if( index < 0 ) { throw new Error("index value can't be negative"); }
-        if( index > this.#views.length ) { throw new Error("index value can't excess the maximum of views in the viewer"); }
+        if( index >= this.#views.length ) { throw new Error("index value can't excess the maximum of views in the viewer"); }
         if( index == this.#index ) { return; } // 
 
         // other index checks ???
@@ -221,12 +282,14 @@ class AxialViewerBase extends AxialComponentBase
         this.#oldView._onViewLeaving();
         this.#newView._onViewEntering();
 
-        // fix it later
-        const viewLeavingEvent = new CustomEvent("viewLeaving");
-        this.dispatchEvent(viewLeavingEvent);
+        const viewLeavingEvent = new CustomEvent("viewLeaving", { bubbles: true, detail: { view: this.#oldView } } );
+        this.#oldView.dispatchEvent(viewLeavingEvent);
 
-        const viewEnteringEvent = new CustomEvent("viewEntering");
-        this.dispatchEvent(viewEnteringEvent);
+        const viewEnteringEvent = new CustomEvent("viewEntering", { bubbles: true, detail: { view: this.#newView } } );
+        this.#newView.dispatchEvent(viewEnteringEvent);
+
+        const viewerChangingEvent = new CustomEvent("viewerChanging", { detail: { oldView: this.#oldView, newView: this.#newView } } )
+        this.dispatchEvent(viewerChangingEvent);
 
         // main code
         this.#direction = index > this.#index ? -1 : 1;
@@ -244,12 +307,14 @@ class AxialViewerBase extends AxialComponentBase
             this.#oldView._onViewLeft();
             this.#newView._onViewEntered();
 
-            // fix it later : view should dispacth ?
-            const viewLeftEvent = new CustomEvent("viewLeft");
-            this.dispatchEvent(viewLeftEvent);
+            const viewLeftEvent = new CustomEvent("viewLeft", { bubbles: true, detail: { view: this.#oldView } } );
+            this.#oldView.dispatchEvent(viewLeftEvent);
 
-            const viewEnteredEvent = new CustomEvent("viewEntered");
-            this.dispatchEvent(viewEnteredEvent);
+            const viewEnteredEvent = new CustomEvent("viewEntered", { bubbles: true, detail: { view: this.#newView } } );
+            this.#newView.dispatchEvent(viewEnteredEvent);
+
+            const viewerChangedEvent = new CustomEvent("viewerChanged", { detail: { oldView: this.#oldView, newView: this.#newView } } )
+            this.dispatchEvent(viewerChangedEvent);
         }
         else
         {
@@ -329,11 +394,14 @@ class AxialViewerBase extends AxialComponentBase
             this.#newView._onViewEntered();
 
             // fix it later : view should dispacth ?
-            const viewLeftEvent = new CustomEvent("viewLeft");
-            this.dispatchEvent(viewLeftEvent);
+            const viewLeftEvent = new CustomEvent("viewLeft", { bubbles: true, detail: { view: this.#oldView } } );
+            this.#oldView.dispatchEvent(viewLeftEvent);
 
-            const viewEnteredEvent = new CustomEvent("viewEntered");
-            this.dispatchEvent(viewEnteredEvent);
+            const viewEnteredEvent = new CustomEvent("viewEntered", { bubbles: true, detail: { view: this.#newView } } );
+            this.#newView.dispatchEvent(viewEnteredEvent);
+
+            const viewerChangedEvent = new CustomEvent("viewerChanged", { detail: { oldView: this.#oldView, newView: this.#newView } } )
+            this.dispatchEvent(viewerChangedEvent);
 
             this.manipulationEnable = true;
 
@@ -356,7 +424,6 @@ class AxialViewerBase extends AxialComponentBase
 
         // re init ?
         this.#distanceX = 0;
-        this.#duration = 0;
 
         for( let i = 0; i < viewsLength; i++ )
         {
@@ -380,7 +447,6 @@ class AxialViewerBase extends AxialComponentBase
         const currentWidth = this.offsetWidth;
 
         this.#distanceX = 0; // ensure we have the good value when the manipulation starts
-        this.#duration = 0;
 
         // previous view
         const previousIndex = this.#index - 1;
@@ -455,7 +521,6 @@ class AxialViewerBase extends AxialComponentBase
         if( viewsLength == 0 ) { return; }
         //console.log(event.detail);
         console.log("MANIPULATION FINISHED !!!!");
-        this.#duration = event.detail.duration;
         this.#animateAfterManipulation();
     }
 
