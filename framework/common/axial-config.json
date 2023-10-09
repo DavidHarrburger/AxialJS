@@ -6,7 +6,17 @@
     "clean_on_build": true,
     "server_localhost": "static",
     "files_to_copy":[],
-    "directories_to_copy": [],
+    "directories_to_copy":
+    [
+        {
+            "source": "assets",
+            "dest": "assets"
+        },
+        {
+            "source": "fonts",
+            "dest": "fonts"
+        }
+    ],
     "js_output_filename": "application.js",
     "pages":
     [

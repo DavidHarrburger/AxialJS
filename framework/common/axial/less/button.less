@@ -9,8 +9,7 @@
 {
     overflow: hidden;
 
-    width: -moz-fit-content;
-    width: fit-content;
+    width: auto;
     min-height: 42px;
     height: auto;
 
@@ -19,19 +18,21 @@
     align-items: center;
 
     padding-top: 10px;
-    padding-bottom: 10px;
+    padding-bottom: 8px;
     padding-left: 14px;
     padding-right: 14px;
 
-    background-color: @AxialButton___backgroundColor;
-    border-radius: @AxialButton___borderRadius;
-    box-shadow: @AxialButton___boxShadow;
+    border-radius: var(--component___borderRadius);
+
+    background-color: var(--AxialButton___backgroundColor);
+    box-shadow: var(--AxialButton___boxShadow);
 }
 .axial_button-label
 {
-    color: @AxialButton___color;
-    font-weight: @AxialButton___fontWeight;
-    font-family: @AxialButton___fontFamily;
+    width: 100%;
+    text-align: center;
+    color: var(--AxialButton___textColor);
+    font-weight: var(--AxialButton___fontWeight);
 }
 
 /* AxialButtonIcon */
@@ -49,21 +50,21 @@
     align-items: center;
 
     padding-top: 10px;
-    padding-bottom: 10px;
+    padding-bottom: 8px;
     padding-left: 14px;
     padding-right: 14px;
 
-    background-color: @AxialButtonIcon___backgroundColor;
-    border-radius: @AxialButtonIcon___borderRadius;
-    box-shadow: @AxialButtonIcon___boxShadow;
+    border-radius: var(--component___borderRadius);
 
-    svg { fill: @AxialButtonIcon___svgFill; }
+    background-color: var(--AxialButtonIcon___backgroundColor);
+    box-shadow: var(--AxialButtonIcon___boxShadow);
+
+    svg { fill: var(--AxialButtonIcon___svgFill); }
 }
 .axial_button_icon-label
 {
-    color: @AxialButtonIcon___color;
-    font-weight: @AxialButtonIcon___fontWeight;
-    font-family: @AxialButtonIcon___fontFamily;
+    color: var(--AxialButtonIcon___textColor);
+    font-weight: var(--AxialButtonIcon___fontWeight);
 }
 .axial_button_icon-icon
 {
@@ -111,7 +112,7 @@
 }
 .axial_toggle_check-label
 {
-    color: @AxialToggleCheck___color;
+    color: var(--AxialToggleCheck___textColor);
 }
 
 /* AxialToggleRadio */
@@ -135,9 +136,9 @@
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    background-color: #111;
+    background-color: var(--black);
     margin-right: 12px;
-    border: solid 2px #fff;
+    border: solid 2px var(--white);
 }
 .axial_toggle_radio-circle
 {
@@ -145,14 +146,14 @@
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background-color: #fff;
+    background-color: var(--white);
     transform: scale(0);
     transition-property: transform;
     transition-duration: 200ms;
 }
 .axial_toggle_radio-label
 {
-    color: @AxialToggleRadio___color;
+    color: var(--AxialToggleRadio___color);
 }
 
 /* AxialToggleSwitch */
@@ -162,16 +163,16 @@
     min-height: 30px;
     height: 30px;
     border-radius: 15px;
-    border: 2px solid #fff;
+    border: 2px solid var(--white);
     padding: 4px;
-    background-color: #111;
+    background-color: var(--black);
 }
 .axial_toggle_switch-circle
 {
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    border: 2px solid #fff;
+    border: 2px solid var(--white);
     position: relative;
     left: 0px;
     transition-property: left;

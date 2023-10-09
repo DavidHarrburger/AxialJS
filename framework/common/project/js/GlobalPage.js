@@ -7,6 +7,10 @@ import { AxialNotifier } from "../../axial/js/application/AxialNotifier";
 import { AxialScrollerBase } from "../../axial/js/application/AxialScrollerBase";
 import { AxialScrollerItemBase } from "../../axial/js/application/AxialScrollerItemBase";
 
+// admin
+import { AxialLoginForm } from "../../axial/js/admin/AxialLoginForm";
+import { AxialRegistrationForm } from "../../axial/js/admin/AxialRegistrationForm";
+
 // button
 import { AxialButton } from "../../axial/js/button/AxialButton";
 import { AxialButtonIcon } from "../../axial/js/button/AxialButtonIcon";

@@ -2,6 +2,13 @@
 
 Find here what happened and when.
 
+## 2023 - 10 - 09
+
+* Add first routes into the back end and remove less.css vars.
+* Add Raleway font
+* Add first back-end components<br><br>
+
+
 ## 2023 - 09 - 22
 
 Update packages with latest versions (important security fix in electron).<br>

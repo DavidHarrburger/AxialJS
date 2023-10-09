@@ -21,11 +21,12 @@ body
     overflow-x: hidden;
     overflow-y: hidden;
 
-    font-family: @Body___mainFont;
-    background-color: @Body___backgroundColor;
-    color: @Body___textColor;
+    font-family: var(--body___mainFont);
+    background-color: var(--body___backgroundColor);
+    color: var(--body___textColor);
 
     -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
     
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -36,22 +37,48 @@ body
 a
 {
     text-decoration: none;
-    color: @Body___textColor;
+    color: var(--body___textColor);
+}
+a:visited
+{
+    text-decoration: none;
+    color: var(--body___textColor);
 }
 
 h1, h2, h3, h4, h5, h6
 {
-    font-family: @Body___headingFont;
-    color: @Body___headingColor;
+    color: var(--themeColor);
 }
 
 input
 {
-    -webkit-user-select: text;
-    -moz-user-select: text;
-    -ms-user-select: text;
+    -webkit-user-select: text;   
     user-select: text;
+
     appearance: none;
+
+    display: block;
+    width: 100%;
+    min-height: 42px;
+    
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 3px;
+    padding-bottom: 4px;
+
+    font-family: var(--body___mainFont);
+    font-size: var(--input___fontSize);
+    font-weight: var(--input___fontWeight);
+    border-radius: var(--component___borderRadius);
+    border: 2px solid var(--greyDark);
+    background-color: var(--white);
+    outline: none;
+}
+
+input::placeholder
+{
+    font-size: var(--input___placeholderFontSize);
+    font-weight: var(--input___placeholderFontWeight);
 }
 
 input[type="file"]
@@ -60,8 +87,8 @@ input[type="file"]
 }
 input[type="file" i]
 {
-    font-family: @Body___mainFont;
-    color: @Body___textColor;
+    font-family: var(--body___mainFont);
+    color: var(--body___textColor);
 }
 input[type="file"]::file-selector-button
 {
@@ -74,17 +101,34 @@ input[type="file"]::file-selector-button
     outline: none;
 
     padding-top: 10px;
-    padding-bottom: 10px;
+    padding-bottom: 8px;
     padding-left: 14px;
     padding-right: 14px;
 
-    background-color: @AxialButton___backgroundColor;
-    border-radius: @AxialButton___borderRadius;
-    box-shadow: @AxialButton___boxShadow;
+    font-family:        var(--body___mainFont);
+    border-radius:      var(--component___borderRadius);
 
-    color: @AxialButton___color;
-    font-weight: @AxialButton___fontWeight;
-    font-family: @AxialButton___fontFamily;
+    font-weight:        var(--AxialButton___fontWeight);
+    color:              var(--AxialButton___textColor);
+    background-color:   var(--AxialButton___backgroundColor);
+    box-shadow:         var(--AxialButton___boxShadow);
+
+}
+textarea
+{
+    display: block;
+    resize: none;
+
+    width: 100%;
+    height: 100%;
+    min-height: 200px;
+    padding: 10px;
+
+    border-radius: 0;
+    border: 2px solid var(--black);
+    background-color: var(--white);
+    outline: none;
+    
 }
 
 /* layers */
@@ -112,130 +156,60 @@ input[type="file"]::file-selector-button
     display: none;
 }
 
-/* burger */
-.axial_burger_holder
-{
-    position: absolute;
-    top: 0px;
-    right: 20px;
-    width: auto;
-    height: @Header___height;
 
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.axial_burger
-{
-    width: 40px;
-    height: 40px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    
-}
-
-.axial_burger_line
-{
-    width: 24px;
-    height: 2px;
-    border-radius: 1px;
-    margin-top: 3px;
-    margin-bottom: 3px;
-    background-color: @Burger___lineColor;
-}
-
-/* main */
-.axial_main
-{
-    position: absolute;
-    width: 100%;
-    top: @Header___height;
-    bottom: 0px;
-}
-.axial_main_scroller
-{
-    position: absolute;
-    width: 100%;
-    height: 100%;
-}
 /* header */
 .axial_header
 {
     position: absolute;
     width: 100%;
-    height: @Header___height;
+    height: var(--header___height);
 }
 .axial_header_background
 {
     position: absolute;
     width: 100%;
     height: 100%;
-    background-color: @Header___backgroundColor;
+
+    background-color: var(--header___backgroundColor);
 }
-.axial_header_nav_holder
+.axial_header_content
 {
-    display: none;
     position: absolute;
     width: 100%;
     height: 100%;
-}
-.axial_header_nav
-{
-    width: 100%;
-    height: 100%;
+
     display: flex;
     flex-direction: row;
-    justify-content: center;
     align-items: center;
-}
-.axial_header_nav_link
-{
-    height: fit-content;
 
-    margin-left: 4px;
-    margin-right: 4px;
-
-    font-family: @Body___navFont;
-    font-weight: @Body___navFontWeight;
-    color: @Body___navColor;
-    
+    padding-left:var(--header___paddingH);
+    padding-right:var(--header___paddingH);
+    padding-top:var(--header___paddingV);
+    padding-bottom:var(--header___paddingV);
 }
-.axial_header_logo_holder
+.axial_header_title
 {
-    pointer-events: none;
+    font-size: var(--headerTitle___fontSize);
+    font-weight: var(--headerTitle___fontWeight);
+}
+/* main */
+.axial_main
+{
     position: absolute;
     width: 100%;
-    height: 100%;
-    
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
+    top: var(--header___height);
+    bottom: 0px;
 }
-.axial_header_logo
-{
-    pointer-events: all;
-    width: @HeaderLogo___width;
-    height: @HeaderLogo___height;
-    /*
-    margin-left: 20px;
-    margin-right: 20px;
-    */
-}
-.axial_header_logo_image
-{
-    width: 100%;
-    height: auto;
-}
-
 /* footer */
 .axial_footer
 {
-    padding-left: @Body___globalHorizontalPadding;
-    padding-right: @Body___globalHorizontalPadding;
+    padding-left: var(--footer___paddingH);
+    padding-right: var(--footer___paddingV);;}
+
+/* utils */
+.axial_spacer
+{
+    flex-grow: 1;
 }
 
 /* application components */
@@ -244,21 +218,6 @@ input[type="file"]::file-selector-button
     overflow-x: hidden;
     overflow-y: auto;
 }
-
-/*
-.axial_scroller_base::-webkit-scrollbar
-{
-    background-color: transparent;
-}
-.axial_scroller_base::-webkit-scrollbar-track
-{
-    background-color: transparent;
-}
-.axial_scroller_base::-webkit-scrollbar-thumb
-{
-    background-color: transparent;
-}
-*/
 
 .axial_scroller_item_base
 {
@@ -270,11 +229,7 @@ input[type="file"]::file-selector-button
     animation-timing-function: ease-out;
 }
 
-/* utils */
-.axial_spacer
-{
-    flex-grow: 1;
-}
+
 
 /* Notifier */
 .axial_notifier
@@ -301,9 +256,8 @@ input[type="file"]::file-selector-button
     width: 100%;
     height: auto;
     padding: 10px;
-    background-color: #232323;
-    color: #fff;
+    background-color: var(--greyLight);
     min-height: 40px;
-    border-radius: 6px;
-    box-shadow: 0px 1px 3px #111;
+    border-radius: var(--component___borderRadius);
+    box-shadow: 0px 1px 3px var(--black);
 }
