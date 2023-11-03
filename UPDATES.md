@@ -2,6 +2,10 @@
 
 Find here what happened and when.
 
+## 2023 - 11 - 03
+* Create a new page from the template/pages folder : ```axial newpage -name name_of_the_page -template base -path distant_path```
+* Front-end : new components and styles to design websites faster
+
 ## 2023 - 10 - 09
 
 * Add first routes into the back end and remove less.css vars.

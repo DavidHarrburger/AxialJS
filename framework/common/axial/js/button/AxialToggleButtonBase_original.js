@@ -1,11 +1,9 @@
 "use strict"
 
-import { AxialPopupBase } from "../popup/AxialPopupBase";
-import { AxialPopupManager } from "../popup/AxialPopupManager";
 import { AxialButtonBase } from "./AxialButtonBase";
 import { AxialToggleButtonGroupBase } from "./AxialToggleButtonGroupBase";
 
-class AxialToggleButtonBase extends AxialButtonBase
+class AxialToggleButtonBase_original extends AxialButtonBase
 {
     // events
     #boundToggleClickHandler;
@@ -15,17 +13,10 @@ class AxialToggleButtonBase extends AxialButtonBase
 
     /** @type { AxialToggleButtonGroupBase } */
     #buttonGroup = undefined;
-
-    /** @type { AxialPopupBase } */
-    #popup = undefined;
-
-    /** @type { Functionn } */
-    #boundPopupHidingHandler;
     
     constructor()
     {
         super();
-        this.#boundPopupHidingHandler = this.#popupHidingHandler.bind(this);
         this.#boundToggleClickHandler = this.#toggleClickHandler.bind(this);
         this.addEventListener("click", this.#boundToggleClickHandler);
     }
@@ -58,60 +49,19 @@ class AxialToggleButtonBase extends AxialButtonBase
         this.#buttonGroup.add(this);
     }
 
-    get popup() { return this.#popup; }
-    set popup( value )
-    {
-        if( value instanceof AxialPopupBase == false )
-        {
-            throw new TypeError("AxialPopupBase value expected");
-        }
-        if( value == this.#popup )
-        {
-            return;
-        }
-        if( this.#popup != undefined )
-        {
-            this.#popup.removeEventListener("popupHiding", this.#boundPopupHidingHandler);
-        }
-        this.#popup = value;
-        this.#popup.addEventListener("popupHiding", this.#boundPopupHidingHandler);
-    }
-
     #toggleClickHandler( event )
     {
-        // experimental : check when popup is modal or not and what happen in a toggle button group
-        if( this.selected === false && AxialPopupManager.currentPopup == this.#popup )
-        {
-            return;
-        }
-
-        // TODO IMPORTANT also return on double click tap when the popup is playing ;)
-
+        console.log("toggle button clicked");
         if( this.#selected == true && this.#buttonGroup != undefined && this.#buttonGroup.forceSelection == true )
         {
             return;
         }
         this.#selected = !this.#selected;
 
-        if( this.#selected === true && this.#popup != undefined )
-        {
-            this.popup.show();
-        }
-
         this._onToggleChanged();
 
         const toggleChangedEvent = new CustomEvent("toggleChanged", { detail: { selected: this.#selected } } );
         this.dispatchEvent(toggleChangedEvent);
-    }
-
-    /**
-     * 
-     * @param { CustomEvent } event 
-     */
-    #popupHidingHandler( event )
-    {
-        this.#selected = false;
-        this._onToggleChanged();
     }
 
     /**
@@ -122,5 +72,5 @@ class AxialToggleButtonBase extends AxialButtonBase
 
 }
 
-window.customElements.define("axial-toggle-button-base", AxialToggleButtonBase);
-export { AxialToggleButtonBase }
+//window.customElements.define("axial-toggle-button-base", AxialToggleButtonBase);
+//export { AxialToggleButtonBase }

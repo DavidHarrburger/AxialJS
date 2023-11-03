@@ -74,8 +74,8 @@ class AxialPopupBase extends AxialComponentBase
      * @return { Number }
      * @default 10
      */
-    static get arrowSize() { return this.#arrowSize; }
-    static set arrowSize( value )
+    get arrowSize() { return this.#arrowSize; }
+    set arrowSize( value )
     {
         if( typeof value !== "boolean" )
         {

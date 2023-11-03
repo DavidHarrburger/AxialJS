@@ -167,7 +167,7 @@ class AxialPopupManager
         }
 
         // we ensure the document will not respond to click (that hides the popup)
-        document.removeEventListener("pointerdown", AxialPopupManager.#documentPopupClickHandler, false);
+        document.removeEventListener("pointerdown", AxialPopupManager.#documentPopupClickHandler, {capture: false} );
 
         if( AxialPopupManager.#currentPopup == undefined )
         {
@@ -176,7 +176,7 @@ class AxialPopupManager
             const isModal = popup.isModal;
             if( isModal == false )
             {
-                document.addEventListener("pointerdown", AxialPopupManager.#documentPopupClickHandler, false);
+                document.addEventListener("pointerdown", AxialPopupManager.#documentPopupClickHandler, {capture: false} );
             }
 
             const duration = String(AxialPopupManager.#animationDuration) + "ms";
@@ -193,14 +193,14 @@ class AxialPopupManager
             
             AxialPopupManager.#currentPopup._onShowing();
 
-            let popupShowingEvent = new Event("popupShowing");
+            let popupShowingEvent = new CustomEvent("popupShowing");
             AxialPopupManager.#currentPopup.dispatchEvent(popupShowingEvent);
             
             if( AxialPopupManager.#currentPopup.animationShow == "none" )
             {
                 AxialPopupManager.#currentPopup._onShown();
 
-                let popupShownEvent = new Event("popupShown");
+                let popupShownEvent = new CustomEvent("popupShown");
                 AxialPopupManager.#currentPopup.dispatchEvent(popupShownEvent);
             }
             else
@@ -229,7 +229,7 @@ class AxialPopupManager
     static hidePopup()
     {
         // ensure the document pointer down handler is removed. It should be, but just in case
-        document.removeEventListener("pointerdown", AxialPopupManager.#documentPopupClickHandler, false);
+        document.removeEventListener("pointerdown", AxialPopupManager.#documentPopupClickHandler, {capture: false});
         
         // just in case
         if( AxialPopupManager.#currentPopup == undefined ) { return; } // no need to hide
@@ -245,14 +245,14 @@ class AxialPopupManager
 
         AxialPopupManager.#currentPopup._onHiding();
 
-        let popupHidingEvent = new Event("popupHiding");
+        let popupHidingEvent = new CustomEvent("popupHiding");
         AxialPopupManager.#currentPopup.dispatchEvent(popupHidingEvent);
         
         if( AxialPopupManager.#currentPopup.animationHide == "none" )
         {
             AxialPopupManager.#currentPopup._onHidden();
 
-            let popupHiddenEvent = new Event("popupHidden");
+            let popupHiddenEvent = new CustomEvent("popupHidden");
             AxialPopupManager.#currentPopup.dispatchEvent(popupHiddenEvent);
 
             AxialPopupManager.#currentPopup.style.visibility = "hidden";
@@ -286,7 +286,7 @@ class AxialPopupManager
         if( AxialPopupManager.#isPlaying === true) { return; }
 
         // remove the listener to avoid double click
-        document.removeEventListener("pointerdown", AxialPopupManager.#documentPopupClickHandler, false);
+        document.removeEventListener("pointerdown", AxialPopupManager.#documentPopupClickHandler, {capture: false} );
 
         // this handler is added only if the popup is non modal. By the way, we expect to hide the popup
         AxialPopupManager.hidePopup();
@@ -314,7 +314,7 @@ class AxialPopupManager
 
         AxialPopupManager.#currentPopup._onShown();
 
-        let popupShownEvent = new Event("popupShown");
+        let popupShownEvent = new CustomEvent("popupShown");
         AxialPopupManager.#currentPopup.dispatchEvent(popupShownEvent);
     }
 
@@ -334,7 +334,7 @@ class AxialPopupManager
 
         popup._onHidden();
         
-        let popupHiddenEvent = new Event("popupHidden");
+        let popupHiddenEvent = new CustomEvent("popupHidden");
         popup.dispatchEvent(popupHiddenEvent);
 
         if( nextPopup != undefined )

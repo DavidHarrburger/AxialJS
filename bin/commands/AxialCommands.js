@@ -17,9 +17,9 @@ class AxialCommands extends EventEmitter
      */
     #commands = new Set( [ "init", "newpage", "build", "config", "electron" ] );
 
-    #paramsInit = new Set( [ "-front", "-server", "-electron" ] );
-    #paramsNew = new Set( [ "-name", "-template", "-path" ] );
-    #paramsBuild = new Set( [ "-dev", "-prod" ] );
+    #paramsInit =     new Set( [ "-front", "-server", "-electron" ] );
+    #paramsNewPage =  new Set( [ "-name", "-template", "-path" ] );
+    #paramsBuild =    new Set( [ "-dev", "-prod" ] );
     #paramsElectron = new Set( [ "-start", "-package", "-make", "-publish" ] ); //etc "-publish"  move to start atm
 
     /**
@@ -229,7 +229,7 @@ class AxialCommands extends EventEmitter
 
     async #newpage( params )
     {
-        console.log("AXIAL NEW");
+        console.log("AXIAL NEWPAGE");
 
         try
         {
@@ -256,15 +256,18 @@ class AxialCommands extends EventEmitter
             {
                 if( i % 2 != 0 ) { continue; }
                 const param = params[i];
-                if( this.#paramsNew.has(param) == false )
+                if( this.#paramsNewPage.has(param) === false )
                 {
                     console.log("[AXIAL_ERROR] unknown 'newpage' parameter");
                     return;
                 }
 
                 const tempValue = params[i+1];
-                // check if exist else return
-
+                if( tempValue === undefined )
+                {
+                    console.log("[AXIAL_ERROR] the 'newpage' parameter of param " + param + " does not exist and it is required");
+                    return;
+                }
 
                 if( param == "-name" )
                 {
@@ -282,7 +285,7 @@ class AxialCommands extends EventEmitter
                 }
                 else if( param == "-template" )
                 {
-                    // TODO
+                    newPageObject.template = tempValue;
                 }
                 else if( param == "-path" )
                 {
@@ -290,7 +293,7 @@ class AxialCommands extends EventEmitter
                     newPageObject.path = tempValue;
                 }
             }
-            const templatePath = path.resolve(this.#currentDirectory, "axial/templates/page");
+            const templatePath = path.resolve(this.#currentDirectory, "axial/templates/pages", newPageObject.template);
             const newPagePath = path.resolve(this.#currentDirectory, config.project_directory, config.pages_directory, newPageObject.name);
             console.log(templatePath);
             console.log(newPagePath);

@@ -19,87 +19,6 @@
 
 <body>
 
-    <!-- TEMPLATES -->
-    <!-- AXIAL TEMPLATES -->
-    
-    <!-- AxialButton -->
-    <template id="axial-button-template">
-        <link rel="stylesheet" href="./styles.css">
-        <div id="labelElement" class="axial_button-label">Label</div>
-    </template>
-
-    <!-- AxialButtonIcon -->
-    <template id="axial-button-icon-template">
-        <link rel="stylesheet" href="./styles.css">
-        <div id="iconElement" class="axial_button_icon-icon">
-            <slot name="axial-icon">ICON</slot>
-        </div>
-        <div id="labelElement" class="axial_button_icon-label">Label</div>
-    </template>
-
-    <!-- AxialToggleCheck -->
-    <template id="axial-toggle-check-template">
-        <link rel="stylesheet" href="./styles.css">
-        <div id="borderElement" class="axial_toggle_check-border">
-            <div id="signElement" class="axial_toggle_check-sign"></div>
-        </div>
-        <div id="labelElement" class="axial_toggle_check-label">Label</div>
-    </template>
-
-    <!-- AxialToggleRadio -->
-    <template id="axial-toggle-radio-template">
-        <link rel="stylesheet" href="./styles.css">
-        <div id="borderElement" class="axial_toggle_radio-border">
-            <div id="circleElement" class="axial_toggle_radio-circle"></div>
-        </div>
-        <div id="labelElement" class="axial_toggle_radio-label">Label</div>
-    </template>
-
-    <!-- AxialToggleSwitch -->
-    <template id="axial-toggle-switch-template">
-        <link rel="stylesheet" href="./styles.css">
-        <div id="circleElement" class="axial_toggle_switch-circle"></div>
-    </template>
-
-    <!-- AxialNotifier -->
-    <template id="axial-notifier-template">
-        <link rel="stylesheet" href="./styles.css">
-        <div id="holder" class="axial_notifier_holder">
-            <div id="content" class="axial_notifier_content"></div>
-        </div>
-    </template>
-
-    <!-- AxialLoginForm -->
-    <template id="axial-login-form-template">
-        <link rel="stylesheet" href="./styles.css">
-        <form id="form" class="axial_login_form-form">
-            <label for="emailInput">Email:</label>
-            <input class="axial_login_form-input" type="email" name="emailInput" id="email" required minlength="8" maxlength="60">
-            
-            <label for="passwordInput">Password:</label>
-            <input class="axial_login_form-input" type="password" name="passwordInput" id="password" required minlength="12">
-            
-            <axial-button id="button" axial-label="Submit" class="axial_login_form-button"></axial-button>
-        </form>
-    </template>
-
-    <!-- AxialRegistrationForm -->
-    <template id="axial-registration-form-template">
-        <link rel="stylesheet" href="./styles.css">
-        <form id="form" class="axial_login_form-form">
-            <label for="usernameInput">Username:</label>
-            <input class="axial_registration_form-input" type="text" name="usernameInput" id="username" required minlength="4" maxlength="30">
-
-            <label for="emailInput">Email:</label>
-            <input class="axial_registration_form-input" type="email" name="emailInput" id="email" required minlength="8" maxlength="60">
-            
-            <label for="passwordInput">Password:</label>
-            <input class="axial_registration_form-input" type="password" name="passwordInput" id="password" required minlength="12">
-            
-            <axial-button id="button" axial-label="Register" class="axial_registration_form-button"></axial-button>
-        </form>
-    </template>
-
     <!-- END AXIAL TEMPLATES -->
     
     <div id="axialBackgroundLayer" class="axial_background_layer">
@@ -129,8 +48,6 @@
             </div>
         </div>
     </div>
-
-    <axial-notifier id="notifier"></axial-notifier>
     
     <script src="./application.js" defer></script>
     

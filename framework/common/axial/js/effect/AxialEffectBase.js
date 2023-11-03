@@ -1,12 +1,19 @@
 "use strict"
-
-import { Environment } from "../core/Environment";
-import { AxialEase } from "../easing/AxialEase";
+import { AxialEase } from "./AxialEase";
 
 const AXIAL_CSS_TRANSFORM_FUNCTIONS = new Set(["matrix", "matrix3d", "translate", "translateX", "translateY", "translateZ", "scale", "scale3d", "scaleX", "scaleY", "scaleZ", "rotate", "rotate3d", "rotateX", "rotateY", "rotateZ", "skew", "skewX", "skewY"]); 
 
-class AxialEffectBase
+class AxialEffectBase extends EventTarget
 {
+    /** @type { HTMLElement } */
+    #target;
+
+    /** @type { String } */
+    #property;
+
+    /** @type { Number } */
+    #duration = 500;
+
     constructor()
     {
         this._target;
@@ -24,24 +31,25 @@ class AxialEffectBase
         this._isRunning = false;
         this._startTime = 0;
         this._unit = "";
+        
     }
 
     /**
      * @public
      * Get or set the Element targeted by the effect. 
-     * @type { Element }
-     * @param { Element } value
-     * @return { Element }
+     * @type { HTMLElement }
+     * @param { HTMLElement } value
+     * @return { HTMLElement }
      */
-    get target() { return this._target; }
+    get target() { return this.#target; }
     set target( value )
     {
-        if( value instanceof HTMLElement == false )
+        if( value instanceof HTMLElement === false )
         {
-            throw new TypeError("Object value expected");
+            throw new TypeError("HTMLElement value expected");
         }
-        if( value == this._target ) { return; }
-        this._target = value;
+        if( value == this.#target ) { return; }
+        this.#target = value;
     }
 
     /**
@@ -51,14 +59,14 @@ class AxialEffectBase
      * @param { String } value
      * @return { String }
      */
-    get property() { return this._property; }
+    get property() { return this.#property; }
     set property( value )
     {
         if( typeof value !== "string" )
         {
             throw new TypeError("String value expected");
         }
-        if( !this._target )
+        if( this.#target == undefined )
         {
             throw new ReferenceError("The 'target' property of AxialEffectBase must be setted before its property value (because this setter check the property)");
         }
