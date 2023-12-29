@@ -1,7 +1,7 @@
 "use strict"
 
 // framework imports
-import { AxialComponentBase } from "../core/AxialComponentBase";
+import { AxialComponentBase } from "../core/AxialComponentBase.js";
 
 /**
  * Base class to create a progress component such as a progress bar or circle.

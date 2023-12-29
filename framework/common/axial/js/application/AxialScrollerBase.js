@@ -1,7 +1,7 @@
 "use strict"
 
-import { AxialComponentBase } from "../core/AxialComponentBase";
-import { AxialScrollerItemBase } from "./AxialScrollerItemBase";
+import { AxialComponentBase } from "../core/AxialComponentBase.js";
+import { AxialScrollerItemBase } from "./AxialScrollerItemBase.js";
 
 class AxialScrollerBase extends AxialComponentBase
 {

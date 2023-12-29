@@ -1,7 +1,7 @@
 "use strict"
 
-import { AxialComponentBase } from "../core/AxialComponentBase";
-import { AxialPopupManager } from "./AxialPopupManager";
+import { AxialComponentBase } from "../core/AxialComponentBase.js";
+import { AxialPopupManager } from "./AxialPopupManager.js";
 
 /**
  * @public

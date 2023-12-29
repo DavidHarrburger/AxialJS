@@ -1,7 +1,7 @@
 "use strict"
 
-import { AxialPopupManager } from "../popup/AxialPopupManager";
-import { AxialToggleButtonBase } from "./AxialToggleButtonBase";
+import { AxialPopupManager } from "../popup/AxialPopupManager.js";
+import { AxialToggleButtonBase } from "./AxialToggleButtonBase.js";
 
 class AxialBurgerButton extends AxialToggleButtonBase
 {

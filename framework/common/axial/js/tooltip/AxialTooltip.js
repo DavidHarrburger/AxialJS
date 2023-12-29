@@ -1,6 +1,6 @@
 "use strict"
 
-import { AxialTooltipBase } from "./AxialTooltipBase";
+import { AxialTooltipBase } from "./AxialTooltipBase.js";
 
 class AxialTooltip extends AxialTooltipBase
 {

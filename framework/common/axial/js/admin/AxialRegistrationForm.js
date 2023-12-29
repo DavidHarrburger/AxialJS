@@ -1,7 +1,7 @@
 "use strict"
 
-import { AxialComponentBase  } from "../core/AxialComponentBase";
-import { AxialButton } from "../button/AxialButton";
+import { AxialComponentBase  } from "../core/AxialComponentBase.js";
+import { AxialButton } from "../button/AxialButton.js";
 
 class AxialRegistrationForm extends AxialComponentBase
 {

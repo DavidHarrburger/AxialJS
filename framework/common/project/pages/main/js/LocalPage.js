@@ -1,6 +1,6 @@
 "use strict"
 
-import { GlobalPage } from "../../../js/GlobalPage";
+import { GlobalPage } from "../../../js/GlobalPage.js";
 
 class LocalPage extends GlobalPage
 {

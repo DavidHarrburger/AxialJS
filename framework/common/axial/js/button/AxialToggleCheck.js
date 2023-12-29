@@ -1,6 +1,6 @@
 "use strict"
 
-import { AxialToggleButtonBase } from "./AxialToggleButtonBase";
+import { AxialToggleButtonBase } from "./AxialToggleButtonBase.js";
 
 class AxialToggleCheck extends AxialToggleButtonBase
 {

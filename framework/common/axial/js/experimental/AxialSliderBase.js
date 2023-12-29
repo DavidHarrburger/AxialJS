@@ -1,8 +1,8 @@
 "use strict"
 
-import { AxialComponentBase } from "../core/AxialComponentBase";
-import { DomUtils } from "../utils/DomUtils";
-import { AxialSliderItemBase } from "./AxialSliderItemBase";
+import { AxialComponentBase } from "../core/AxialComponentBase.js";
+import { DomUtils } from "../utils/DomUtils.js";
+import { AxialSliderItemBase } from "./AxialSliderItemBase.js";
 
 class AxialSliderBase extends AxialComponentBase
 {

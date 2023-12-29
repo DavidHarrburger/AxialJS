@@ -1,6 +1,6 @@
 "use strict"
 
-import { AxialPopupBase } from "./AxialPopupBase";
+import { AxialPopupBase } from "./AxialPopupBase.js";
 
 /**
  * @public

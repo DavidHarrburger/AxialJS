@@ -1,6 +1,6 @@
 "use strict"
 
-import { AxialComponentBase } from "../core/AxialComponentBase";
+import { AxialComponentBase } from "../core/AxialComponentBase.js";
 
 class AxialCrossContainer extends AxialComponentBase
 {

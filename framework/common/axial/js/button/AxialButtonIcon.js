@@ -1,6 +1,6 @@
 "use strict"
 
-import { AxialButtonBase  } from "./AxialButtonBase";
+import { AxialButtonBase  } from "./AxialButtonBase.js";
 
 class AxialButtonIcon extends AxialButtonBase
 {

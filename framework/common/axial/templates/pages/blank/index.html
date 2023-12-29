@@ -11,7 +11,7 @@
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
-    
+
     <meta property="og:url"                 content="" />
     <meta property="og:type"                content="website" />
     <meta property="og:title"               content="" />
@@ -122,7 +122,7 @@
     <!-- AxialMessageForm -->
     <template id="axial-message-form-template">
         <link rel="stylesheet" href="./styles.css">
-        <form id="form" class="axial_message_form-form">
+        <form id="form" class="axial_login_form-form">
             
             <label for="nameInput">Vos nom et prénom :</label>
             <input class="axial_message_form-input" type="text" name="nameInput" id="name" required minlength="12">
@@ -133,53 +133,7 @@
             <label for="messageArea">Votre message :</label>
             <textarea class="axial_message_form-input" name="messageArea" id="password" required maxlength="300"></textarea>
             
-            <axial-button id="button" axial-label="Envoyer" class="axial_message_form-button"></axial-button>
-        </form>
-    </template>
-
-    <!-- AxialContactForm -->
-    <template id="axial-contact-form-template">
-        <link rel="stylesheet" href="./styles.css">
-        <form id="form" class="axial_contact_form-form">
-            
-            <div class="axial_form_utils_grid">
-                <div class="axial_form_utils_column-1">
-                    <label for="name">Votre prénom :</label>
-                    <input class="axial_contact_form-input" type="text" name="nameInput" id="name" minlength="3" required autocomplete="given-name">
-                </div>
-                
-                <div class="axial_form_utils_column-2">
-                    <label for="surname">Votre nom :</label>
-                    <input class="axial_contact_form-input" type="text" name="surnameInput" id="surname" minlength="4" required autocomplete="family-name">
-                </div>
-            </div>
-
-            <label for="email">Votre email :</label>
-            <input class="axial_contact_form-input" type="email" name="emailInput" id="email" minlength="8" maxlength="60" required autocomplete="email">
-
-            <label for="tel">Votre téléphone :</label>
-            <input class="axial_contact_form-input" type="tel" name="telInput" id="tel" minlength="10" maxlength="10" pattern="[0-9]{10}" required autocomplete="tel">
-
-            <label for="address">Votre adresse :</label>
-            <input class="axial_contact_form-input" type="text" name="addressInput" id="address" minlength="16" maxlength="256" required autocomplete="street-address">
-
-            <div class="axial_form_utils_grid">
-                <div class="axial_form_utils_column-1">
-                    <label for="zip">Votre code postal :</label>
-                    <input class="axial_contact_form-input" type="text" name="zipInput" id="zip" minlength="5" maxlength="5" pattern="[0-9]{5}" required autocomplete="postal-code">
-                </div>
-                <div class="axial_form_utils_column-2">
-                    <label for="city">Votre ville :</label>
-                    <input class="axial_contact_form-input" type="text" name="cityInput" id="city" minlength="3" maxlength="32" required autocomplete="address-level2">
-                </div>
-            </div>
-            
-            <label for="message">Votre message :</label>
-            <textarea class="axial_contact_form-input" name="messageArea" id="message" required maxlength="300"></textarea>
-
-            <axial-toggle-check id="toggle" axial-label="J'ai lu et compris la politique de confidentialité." class="axial_contact_form-toggle"></axial-toggle-check>
-            
-            <axial-button id="button" axial-label="Envoyer" class="axial_contact_form-button"></axial-button>
+            <axial-button id="button" axial-label="Envoyer" class="axial_login_form-button"></axial-button>
         </form>
     </template>
 

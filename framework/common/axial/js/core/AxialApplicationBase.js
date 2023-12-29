@@ -1,9 +1,6 @@
 "use strict"
 
-/// axial imports
-/// please imports all the components classes in the html file where the templates lives OR in the main js application file
-
-import { LanguageUtils } from "../utils/LanguageUtils";
+import { LanguageUtils } from "../utils/LanguageUtils.js";
 
 /**
  * The main base class for your application.

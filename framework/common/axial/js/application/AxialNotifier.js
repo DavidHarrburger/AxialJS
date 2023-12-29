@@ -1,6 +1,6 @@
 "use strict"
 
-import { AxialComponentBase } from "../core/AxialComponentBase";
+import { AxialComponentBase } from "../core/AxialComponentBase.js";
 
 class AxialNotifier extends AxialComponentBase
 {
@@ -14,7 +14,7 @@ class AxialNotifier extends AxialComponentBase
     #timeoutId;
 
     /** @type { Number } */
-    #timeoutDelay = 2300;
+    #timeoutDelay = 4000;
 
     /** @type { Function} */
     #boundTimeoutHandler;
@@ -36,6 +36,7 @@ class AxialNotifier extends AxialComponentBase
 
     #timeoutHandler()
     {
+        clearTimeout(this.#timeoutId);
         this.hide();
     }
 
@@ -47,13 +48,16 @@ class AxialNotifier extends AxialComponentBase
         }
         //this.#holder.style.visibility = "visible";
         this.#holder.style.transform = "translateY(0%)";
+        if( this.#timeoutId )
+        {
+            clearTimeout(this.#timeoutId);
+        }
         this.#timeoutId = setTimeout(this.#boundTimeoutHandler, this.#timeoutDelay);
     }
 
     hide()
     {
         this.#holder.style.transform = "translateY(100%)";
-        clearTimeout(this.#timeoutId);
     }
 }
 

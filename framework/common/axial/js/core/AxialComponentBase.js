@@ -1,7 +1,7 @@
 "use strict"
 
 /// axial imports
-import { Point } from "../geom/Point";
+import { Point } from "../geom/Point.js";
 
 /**
  * The main base class for all components.

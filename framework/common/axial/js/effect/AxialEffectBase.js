@@ -1,5 +1,5 @@
 "use strict"
-import { AxialEase } from "./AxialEase";
+import { AxialEase } from "./AxialEase.js";
 
 const AXIAL_CSS_TRANSFORM_FUNCTIONS = new Set(["matrix", "matrix3d", "translate", "translateX", "translateY", "translateZ", "scale", "scale3d", "scaleX", "scaleY", "scaleZ", "rotate", "rotate3d", "rotateX", "rotateY", "rotateZ", "skew", "skewX", "skewY"]); 
 

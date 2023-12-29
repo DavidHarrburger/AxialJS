@@ -1,9 +1,9 @@
 "use strict"
 
-import { AxialPopupBase } from "../popup/AxialPopupBase";
-import { AxialPopupManager } from "../popup/AxialPopupManager";
-import { AxialButtonBase } from "./AxialButtonBase";
-import { AxialToggleButtonGroupBase } from "./AxialToggleButtonGroupBase";
+import { AxialPopupBase } from "../popup/AxialPopupBase.js";
+import { AxialPopupManager } from "../popup/AxialPopupManager.js";
+import { AxialButtonBase } from "./AxialButtonBase.js";
+import { AxialToggleButtonGroupBase } from "./AxialToggleButtonGroupBase.js";
 
 class AxialToggleButtonBase extends AxialButtonBase
 {
@@ -80,7 +80,7 @@ class AxialToggleButtonBase extends AxialButtonBase
     #toggleClickHandler( event )
     {
         // experimental : check when popup is modal or not and what happen in a toggle button group
-        if( this.selected === false && AxialPopupManager.currentPopup == this.#popup )
+        if( this.selected === false && AxialPopupManager.currentPopup != undefined && AxialPopupManager.currentPopup == this.#popup )
         {
             return;
         }

@@ -1,6 +1,6 @@
 "use strict";
 
-import { AxialComponentBase } from "../core/AxialComponentBase";
+import { AxialComponentBase } from "../core/AxialComponentBase.js";
 
 class AxialRateStars extends AxialComponentBase
 {

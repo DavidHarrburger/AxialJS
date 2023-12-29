@@ -1,6 +1,6 @@
 "use strict"
 
-import { AxialFavoriteManager } from "./AxialFavoriteManager";
+import { AxialFavoriteManager } from "./AxialFavoriteManager.js";
 
 class AxialLocalFavoriteManager extends AxialFavoriteManager
 {

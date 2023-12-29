@@ -4,7 +4,7 @@ import { AxialComponentBase } from "../core/AxialComponentBase.js";
 import { AxialButton } from "../button/AxialButton.js";
 import { AxialToggleCheck } from "../button/AxialToggleCheck.js";
 
-class AxialMessageForm extends AxialComponentBase
+class AxialContactForm extends AxialComponentBase
 {
     /// vars
     /** @type { String } */
@@ -24,7 +24,22 @@ class AxialMessageForm extends AxialComponentBase
     #name;
 
     /** @type { HTMLInputElement } */
+    #surname;
+
+    /** @type { HTMLInputElement } */
     #email;
+
+    /** @type { HTMLInputElement } */
+    #tel;
+
+    /** @type { HTMLInputElement } */
+    #address;
+
+    /** @type { HTMLInputElement } */
+    #zip;
+
+    /** @type { HTMLInputElement } */
+    #city;
 
     /** @type { HTMLTextAreaElement } */
     #message;
@@ -51,8 +66,8 @@ class AxialMessageForm extends AxialComponentBase
     constructor()
     {
         super();
-        this.classList.add("axial_message_form");
-        this.template = "axial-message-form-template";
+        this.classList.add("axial_contact_form");
+        this.template = "axial-contact-form-template";
 
         this.#boundFocusOutHandler = this.#focusOutHandler.bind(this);
         this.#boundToggleHandler = this.#toggleHandler.bind(this);
@@ -82,13 +97,28 @@ class AxialMessageForm extends AxialComponentBase
         this.#name = this.shadowRoot.getElementById("name");
         this.#name.addEventListener("focusout", this.#boundFocusOutHandler);
 
+        this.#surname = this.shadowRoot.getElementById("surname");
+        this.#surname.addEventListener("focusout", this.#boundFocusOutHandler);
+
         this.#email = this.shadowRoot.getElementById("email");
         this.#email.addEventListener("focusout", this.#boundFocusOutHandler);
+
+        this.#tel = this.shadowRoot.getElementById("tel");
+        this.#tel.addEventListener("focusout", this.#boundFocusOutHandler);
+
+        this.#address = this.shadowRoot.getElementById("address");
+        this.#address.addEventListener("focusout", this.#boundFocusOutHandler);
+
+        this.#zip = this.shadowRoot.getElementById("zip");
+        this.#zip.addEventListener("focusout", this.#boundFocusOutHandler);
+
+        this.#city = this.shadowRoot.getElementById("city");
+        this.#city.addEventListener("focusout", this.#boundFocusOutHandler);
 
         this.#message = this.shadowRoot.getElementById("message");
         this.#message.addEventListener("focusout", this.#boundFocusOutHandler);
 
-        this.#formElements.push(this.#name, this.#email, this.#message);
+        this.#formElements.push(this.#name, this.#surname, this.#email, this.#tel, this.#address, this.#zip, this.#city, this.#message);
 
         this.#toggle = this.shadowRoot.getElementById("toggle");
         this.#toggle.addEventListener("toggleChanged", this.#boundToggleHandler);
@@ -184,7 +214,17 @@ class AxialMessageForm extends AxialComponentBase
 
         try
         {
-            const infos = { name: this.#name.value, email: this.#email.value, message: this.#message.value };
+            const infos =
+            {
+                name: this.#name.value,
+                surname: this.#surname.value,
+                email: this.#email.value,
+                tel: this.#tel.value,
+                address: this.#address.value,
+                zip: this.#zip.value,
+                city: this.#city.value,
+                message: this.#message.value
+            };
             const response = await fetch(this.#path, { method: "POST", body: JSON.stringify(infos), headers: { "Content-Type":"application/json" } } );
             const json = await response.json();
             
@@ -208,5 +248,5 @@ class AxialMessageForm extends AxialComponentBase
     }
 }
 
-window.customElements.define("axial-message-form", AxialMessageForm);
-export { AxialMessageForm }
+window.customElements.define("axial-contact-form", AxialContactForm);
+export { AxialContactForm }

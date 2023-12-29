@@ -1,6 +1,6 @@
 "use strict";
 
-import { AxialViewBase } from "./AxialViewBase";
+import { AxialViewBase } from "./AxialViewBase.js";
 
 /// REWRITE BETTER AND ADD FUNCTIONS SUCHA AS DELETE AND SO ON
 /// PRIORITY LOW

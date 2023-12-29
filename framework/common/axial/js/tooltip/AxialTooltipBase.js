@@ -1,6 +1,6 @@
 "use strict"
 
-import { AxialTooltipManager } from "./AxialTooltipManager";
+import { AxialTooltipManager } from "./AxialTooltipManager.js";
 
 const AXIAL_TOOLTIP_POSITIONS = new Set(["top", "left", "right", "bottom"]);
 

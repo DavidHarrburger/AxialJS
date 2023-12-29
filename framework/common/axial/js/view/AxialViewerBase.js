@@ -1,7 +1,7 @@
 "use strict";
 
-import { AxialComponentBase } from "../core/AxialComponentBase";
-import { AxialViewBase } from "./AxialViewBase";
+import { AxialComponentBase } from "../core/AxialComponentBase.js";
+import { AxialViewBase } from "./AxialViewBase.js";
 
 class AxialViewerBase extends AxialComponentBase
 {

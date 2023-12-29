@@ -1,6 +1,6 @@
 "use strict"
 
-import { AxialApplicationBase } from "../../axial/js/core/AxialApplicationBase";
+import { AxialApplicationBase } from "../../axial/js/core/AxialApplicationBase.js";
 
 
 class GlobalPage extends AxialApplicationBase
@@ -8,7 +8,6 @@ class GlobalPage extends AxialApplicationBase
     constructor()
     {
         super();
-        console.log("Hello Axial GlobalPage");
     }
 }
 export { GlobalPage }

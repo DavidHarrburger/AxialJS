@@ -1,34 +1,28 @@
-/*
-xs 0
-s 576
-m 768
-l 992
-xl 1200
-xxl 1400
-
-cf boostrap : https://getbootstrap.com/docs/5.0/layout/breakpoints/
-*/
-
-/* S */
-@media screen and ( min-width: 576px )
+@media screen and ( min-width: 370px )
 {
     
 }
 
-/* M */
+@media screen and ( min-width: 420px )
+{
+    
+}
+
 @media screen and ( min-width: 768px )
 {
-    
-    
+    .axial_form_utils_grid
+    {
+        display: grid;
+    }
 }
 
-/* L */
 @media screen and ( min-width: 992px )
 {
     .axial_header_nav
     {
         display: flex;
     }
+
     /* AxialBurgerButton */
     .axial_burger_button
     {
@@ -36,20 +30,60 @@ cf boostrap : https://getbootstrap.com/docs/5.0/layout/breakpoints/
     }
 }
 
-/* XL */
 @media screen and ( min-width: 1200px )
 {
-    
+    :root
+    {
+        /* header */
+        --header___paddingH: 4%;
+        --header___paddingV: 10px;
+
+        /* header nav item */
+        --headerNavItem___fontSize: 20px;
+
+        /* footer */
+        --footer___paddingH: 4%;
+        --footer___paddingV: 0px;
+        --footer___sectionDirection: row;
+
+        /* sections */
+        --section___paddingH: 4%;
+        --section___paddingV: 40px;
+    }
 }
 
-/* XXL */
 @media screen and ( min-width: 1400px )
+{
+    :root
+    {
+        /* header */
+        --header___paddingH: 4%;
+        --header___paddingV: 10px;
+
+        /* header nav item */
+        --headerNavItem___fontSize: 21px;
+
+        /* footer */
+        --footer___paddingH: 4%;
+        --footer___paddingV: 0px;
+        --footer___sectionDirection: row;
+
+        /* sections */
+        --section___paddingH: 4%;
+        --section___paddingV: 40px;
+    }
+}
+
+@media screen and ( min-width: 1600px )
 {
     :root
     {
         /* header */
         --header___paddingH: 10%;
         --header___paddingV: 10px;
+
+        /* header nav item */
+        --headerNavItem___fontSize: 23px;
 
         /* footer */
         --footer___paddingH: 10%;

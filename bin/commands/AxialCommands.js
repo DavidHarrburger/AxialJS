@@ -293,6 +293,13 @@ class AxialCommands extends EventEmitter
                     newPageObject.path = tempValue;
                 }
             }
+
+            // awfull quick fix !!!
+            if( newPageObject.template === undefined )
+            {
+                newPageObject.template = "base";
+            }
+
             const templatePath = path.resolve(this.#currentDirectory, "axial/templates/pages", newPageObject.template);
             const newPagePath = path.resolve(this.#currentDirectory, config.project_directory, config.pages_directory, newPageObject.name);
             console.log(templatePath);
