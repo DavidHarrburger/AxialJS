@@ -2,6 +2,23 @@
 
 Find here what happened and when.
 
+## 2024 - 01 - 23 - Hello 3D!
+First, 1001 thanks to the 3D Community for your amazing work. Especially Three.js Community. You simply rocks and integrating your work in small framework is a real pleasure.
+I would like to especially thanks Mr Doob, creator of Three.js and Bruno Simon, creator of the Three JS Journey that i strongly recommend to 3D newbie :)
+Particles by Kenney
+Dependencies to add: ```npm install three gsap lil-gui```
+
+### Front-end
+Please note that are more experimental (even if it works like a charm a saved me a lot of time)
+* ```Axial3DViewer```, ```Axial3DGroup``` and ```Axial3DUtils``` can be now found in the axial/js/3d package.
+* New 3d Template page (see below for the templates) available as 'three'
+
+### Back-end
+* ```axial-server``` package here where you can define your constants
+* ```CryptoUtils``` just supports ```aes-256-cbc```
+
+<span style="color: #f00; background-color: #dedede; padding: 4px; font-weight: bold; border-radius: 3px;">&#128680; WARNING : I'm not at all a Security expert, a Crypto expert etc. So please check all this stuff with a professionnal.</span>
+
 ## 2023 - 11 - 03
 * Create a new page from the template/pages folder : ```axial newpage -name name_of_the_page -template base -path distant_path```
 * Front-end : new components and styles to design websites faster

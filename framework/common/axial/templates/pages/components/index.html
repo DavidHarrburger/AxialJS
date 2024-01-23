@@ -29,6 +29,11 @@
 
     <!-- TEMPLATES -->
     <!-- AXIAL TEMPLATES -->
+    <!-- Axial3DViewer -->
+    <template id="axial-3d-viewer-template">
+        <link rel="stylesheet" href="./styles.css">
+        <canvas id="canvas" class="axial_3d_canvas"></canvas>
+    </template>
     
     <!-- AxialButton -->
     <template id="axial-button-template">
@@ -88,14 +93,35 @@
         </div>
     </template>
 
+    <!-- AxialCrossContainer -->
+    <template id="axial-cross-container-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div id="center" class="axial_cross_container_element axial_cross_container-center">
+            <slot name="center">
+            </slot>
+        </div>
+        <div id="top" class="axial_cross_container_element axial_cross_container-top">
+            <slot name="top"></slot>
+        </div>
+        <div id="right" class="axial_cross_container_element axial_cross_container-right">
+            <slot name="right"></slot>
+        </div>
+        <div id="bottom" class="axial_cross_container_element axial_cross_container-bottom">
+            <slot name="bottom"></slot>
+        </div>
+        <div id="left" class="axial_cross_container_element axial_cross_container-left">
+            <slot name="left"></slot>
+        </div>
+    </template>
+
     <!-- AxialLoginForm -->
     <template id="axial-login-form-template">
         <link rel="stylesheet" href="./styles.css">
         <form id="form" class="axial_login_form-form">
-            <label for="emailInput">Email:</label>
+            <label for="email">Email:</label>
             <input class="axial_login_form-input" type="email" name="emailInput" id="email" required minlength="8" maxlength="60">
             
-            <label for="passwordInput">Password:</label>
+            <label for="password">Password:</label>
             <input class="axial_login_form-input" type="password" name="passwordInput" id="password" required minlength="12">
             
             <axial-button id="button" axial-label="Submit" class="axial_login_form-button"></axial-button>
@@ -106,13 +132,13 @@
     <template id="axial-registration-form-template">
         <link rel="stylesheet" href="./styles.css">
         <form id="form" class="axial_login_form-form">
-            <label for="usernameInput">Username:</label>
+            <label for="username">Username:</label>
             <input class="axial_registration_form-input" type="text" name="usernameInput" id="username" required minlength="4" maxlength="30">
 
-            <label for="emailInput">Email:</label>
+            <label for="email">Email:</label>
             <input class="axial_registration_form-input" type="email" name="emailInput" id="email" required minlength="8" maxlength="60">
             
-            <label for="passwordInput">Password:</label>
+            <label for="password">Password:</label>
             <input class="axial_registration_form-input" type="password" name="passwordInput" id="password" required minlength="12">
             
             <axial-button id="button" axial-label="Register" class="axial_registration_form-button"></axial-button>
@@ -124,14 +150,16 @@
         <link rel="stylesheet" href="./styles.css">
         <form id="form" class="axial_message_form-form">
             
-            <label for="nameInput">Vos nom et prénom :</label>
+            <label for="name">Vos nom et prénom :</label>
             <input class="axial_message_form-input" type="text" name="nameInput" id="name" required minlength="12">
 
-            <label for="emailInput">Votre email :</label>
+            <label for="email">Votre email :</label>
             <input class="axial_message_form-input" type="email" name="emailInput" id="email" required minlength="8" maxlength="60">
             
-            <label for="messageArea">Votre message :</label>
-            <textarea class="axial_message_form-input" name="messageArea" id="password" required maxlength="300"></textarea>
+            <label for="message">Votre message :</label>
+            <textarea class="axial_message_form-input" name="messageArea" id="message" required maxlength="300"></textarea>
+
+            <axial-toggle-check id="toggle" axial-label="J'ai lu et compris la politique de confidentialité." class="axial_message_form-toggle"></axial-toggle-check>
             
             <axial-button id="button" axial-label="Envoyer" class="axial_message_form-button"></axial-button>
         </form>

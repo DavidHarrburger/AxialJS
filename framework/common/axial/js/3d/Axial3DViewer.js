@@ -1,26 +1,39 @@
 "use strict"
 
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
+
 import * as THREE from "three";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
-
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
-import { UnrealBloomPass  } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
-import { BloomPass  } from "three/examples/jsm/postprocessing/BloomPass.js";
-import { FilmPass } from "three/examples/jsm/postprocessing/FilmPass.js";
-import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
+import { Pass } from "three/examples/jsm/postprocessing/Pass.js";
+
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+
+import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
+
+//import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
+
+import GUI from "lil-gui";
 
 class Axial3DViewer extends AxialComponentBase
 {
-
-    /// THREE
     /** @type { Number } */
-    #wi = 0;
+    #wi;
 
     /** @type { Number } */
-    #hi = 0;
+    #hi;
+
+    /** @type { Boolean } */
+    #isReady = false;
+
+    /** @type { Boolean } */
+    #useComposer = false;
+
+    /** @type { HTMLCanvasElement } */
+    #canvas;
 
     /** @type { THREE.Scene } */
     #scene;
@@ -31,102 +44,395 @@ class Axial3DViewer extends AxialComponentBase
     /** @type { THREE.WebGLRenderer } */
     #renderer;
 
-    /** @type { THREE.AmbientLight } */
-    #ambLight;
+    /** @type { THREE.LoadingManager } */
+    #loadingManager;
 
-    /** @type { THREE.AmbientLight } */
-    #dirLight;
+    /** @type { THREE.Clock } */
+    #clock;
 
-    /** @type { GLTFLoader } */
-    #loader;
+    /** @type { OrbitControls } */
+    #controls;
 
-    /** @type { THREE.Object3D } */
-    #gltf;
-
-    /** @type { THREE.Object3D } */
-    #model;
-
-    /** @type { THREE.Mesh } */
-    #cube;
-
-    /** @type { THREE.Group } */
-    #group;
-
-    /// vars
-    /** @type { Number } */
-    #rotationY = 0;
-
-    /** @type { Number } */
-    #rotationX = 0;
-
-    /** @type { Number } */
-    #rotationStep = 0.1;
-
-    // effect composer
     /** @type { EffectComposer } */
     #composer;
 
-    /** @type { Boolean } */
-    #useComposer = false;
+    /** @type { RenderPass } */
+    #renderPass;
 
+    /** @type { Array } */
+    #composerPasses; // unused but could be later
 
-    /// control
-    /** @type { Boolean } */
-    #useKeyboard = false;
+    /** @type { GUI } */
+    #gui;
 
-    /** @type { Boolean } */
-    #usePointers = false;
-
-
+    // ANIMATION LOOP
     /** @type { Function } */
     #boundAnimate;
 
-    // handlers
     /** @type { Function } */
-    #boundLoadSuccess;
+    #boundLoadStartHandler;
 
     /** @type { Function } */
-    #boundKeyDownHandler;
+    #boundLoadProgressHandler;
 
     /** @type { Function } */
-    #boundPointerDown3DHandler;
+    #boundLoadCompleteHandler;
+
+    /** @type { Function } */
+    #boundLoadErrorHandler;
+
+    /** @type { THREE.TextureLoader } */
+    #textureLoader;
+
+    /** @type { RGBELoader } */
+    #rgbeLoader;
+
+    /** @type { FontLoader } */
+    #fontLoader;
+
+    /** @type { Function } */
+    #boundTextureLoadCompleteHandler;
+
+    /** @type { Function } */
+    #boundRgbeLoadCompleteHandler;
+
+    /** @type { Function } */
+    #boundFontLoadCompleteHandler;
+
+    /// POINTERS
+    /** @type { Boolean } */
+    #usePointers = false;
 
     /** @type { Function } */
     #boundPointerMove3DHandler;
 
-    /** @type { Function } */
-    #boundPointerUp3DHandler;
-
     constructor()
     {
         super();
+
+        // axial
         this.classList.add("axial_3d_viewer");
+        this.template = "axial-3d-viewer-template";
+        this.isResizable = true;
 
+        // three rendering
         this.#boundAnimate = this.#animate.bind(this);
-        this.#boundLoadSuccess = this.#loadSucces.bind(this);
 
-        this.#boundKeyDownHandler = this.#keyDownHandler.bind(this);
-
-        this.#boundPointerDown3DHandler = this.#pointerDown3DHandler.bind(this);
+        // pointers
         this.#boundPointerMove3DHandler = this.#pointerMove3DHandler.bind(this);
-        this.#boundPointerUp3DHandler = this.#pointerUp3DHandler.bind(this);
+
+        // loading manager
+        this.#boundLoadStartHandler    = this.#loadStartHandler.bind(this);
+        this.#boundLoadProgressHandler = this.#loadProgressHandler.bind(this);
+        this.#boundLoadCompleteHandler = this.#loadCompleteHandler.bind(this);
+        this.#boundLoadErrorHandler    = this.#loadErrorHandler.bind(this);
+
+        this.#loadingManager = new THREE.LoadingManager();
+        this.#loadingManager.onStart    = this.#boundLoadStartHandler;
+        this.#loadingManager.onProgress = this.#boundLoadProgressHandler;
+        this.#loadingManager.onLoad     = this.#boundLoadCompleteHandler;
+        this.#loadingManager.onError    = this.#boundLoadErrorHandler;
+
+        // texture loader
+        this.#boundTextureLoadCompleteHandler = this.#textureLoadCompleteHandler.bind(this);
+        this.#textureLoader = new THREE.TextureLoader( this.#loadingManager );
+
+        // rgbe loader
+        this.#boundRgbeLoadCompleteHandler = this.#rgbeLoadCompleteHandler.bind(this);
+        this.#rgbeLoader = new RGBELoader( this.#loadingManager );
+
+        // font loader
+        this.#boundFontLoadCompleteHandler = this.#fontLoadCompleteHandler.bind(this);
+        this.#fontLoader = new FontLoader();
     }
 
     /**
-     * Add or remove Keyboard control
+     * @type { Boolean }
+     * @readonly
+     */
+    get isReady() { return this.#isReady; };
+
+    /**
+     * @type { THREE.LoadingManager }
+     * @readonly
+     */
+    get loadingManager() { return this.#loadingManager; }
+
+    /**
+     * @type { GUI }
+     * @readonly
+     */
+    get gui() { return this.#gui; }
+
+    /**
+     * @type { THREE.Scene }
+     * @readonly
+     */
+    get scene() { return this.#scene; }
+
+    /**
+     * @type { THREE.PerspectiveCamera }
+     * @readonly
+     */
+    get camera() { return this.#camera; }
+    
+    /**
+     * @type { OrbitControls }
+     * @readonly
+     */
+    get controls() { return this.#controls; }
+
+    /**
+     * @type { THREE.Clock }
+     * @readonly
+     */
+    get clock() { return this.#clock; }
+
+    /**
+     * @type { THREE.WebGLRenderer }
+     * @readonly
+     */
+    get renderer() { return this.#renderer; }
+
+    /**
      * @type { Boolean }
      */
-    get useKeyboard() { return this.#useKeyboard; }
-    set useKeyboard( value )
+    get useComposer() { return this.#useComposer; }
+    set useComposer( value )
     {
         if( typeof value !== "boolean" )
         {
-            throw new TypeError("Boolean value required");
+            throw new TypeError("Boolean value expected");
         }
-        if( this.#useKeyboard === value ) { return; }
-        this.#useKeyboard = value;
-        this.#useKeyboard === true ? document.addEventListener("keydown", this.#boundKeyDownHandler) : document.removeEventListener("keydown", this.#boundKeyDownHandler); 
+        this.#useComposer = value;
     }
+
+    connectedCallback()
+    {
+        super.connectedCallback();
+        // get properties
+        this.#buildComponent();
+    }
+
+    #buildComponent()
+    {
+        this.#wi = this.clientWidth;
+        this.#hi = this.clientHeight;
+
+        this.#canvas = this.shadowRoot.getElementById("canvas");
+        // throw here if element not found
+        
+        this.#scene = new THREE.Scene();
+
+        this.#camera =  new THREE.PerspectiveCamera(75, this.#wi / this.#hi, 0.1, 100);
+        this.#camera.position.x = 0;
+        this.#camera.position.y = 0;
+        this.#camera.position.z = 4;
+
+        this.#renderer = new THREE.WebGLRenderer( { canvas: this.#canvas } );
+        this.#renderer.setSize( this.#wi, this.#hi );
+        this.#renderer.setPixelRatio( Math.min( window.devicePixelRatio, 2 ) );
+
+        this.#composer = new EffectComposer( this.#renderer );
+        this.#composer.setSize( this.#wi, this.#hi );
+        this.#composer.setPixelRatio( Math.min( window.devicePixelRatio, 2 ) );
+
+        this.#renderPass = new RenderPass( this.#scene, this.#camera );
+        this.#composer.addPass( this.#renderPass );
+
+        this.#controls = new OrbitControls( this.#camera, this.#canvas );
+        this.#controls.enableDamping = true;
+
+        this.#gui = new GUI();
+
+        this.#isReady = true;
+        const sceneReadyEvent = new CustomEvent("sceneReady");
+        this.dispatchEvent(sceneReadyEvent);
+    }
+
+    /**
+     * 
+     * @param { Number } ts 
+     */
+    #animate( ts )
+    {
+        this._onRender();
+
+        this.#controls.update();
+        if( this.#useComposer === false )
+        {
+            this.#renderer.render( this.#scene, this.#camera );
+        }
+        else
+        {
+            this.#composer.render();
+        }
+        
+        window.requestAnimationFrame( this.#boundAnimate );
+    }
+
+    /**
+     * 
+     * @param { THREE.Object3D } object3d 
+     */
+    add( object3d )
+    {
+        this.#scene.add( object3d );
+    }
+
+    /**
+     * 
+     * @param { Pass } pass 
+     */
+    addPass( pass )
+    {
+        this.#composer.addPass( pass );
+    }
+
+    /**
+     * @public
+     */
+    startRendering()
+    {
+        this.#clock = new THREE.Clock();
+        //this.#renderer.render( this.#scene, this.#camera );
+        this.#boundAnimate();
+    }
+
+    /**
+     * 
+     * @abstract
+     */
+    _resize()
+    {
+        this.#wi = this.clientWidth;
+        this.#hi = this.clientHeight;
+
+        if( this.#isReady === false ) { return; }
+
+        this.#camera.aspect = this.#wi / this.#hi;
+        this.#camera.updateProjectionMatrix();
+
+        this.#renderer.setSize( this.#wi, this.#hi );
+        this.#renderer.setPixelRatio( Math.min( window.devicePixelRatio, 2) );
+    }
+
+    /**
+     * Compute here all the changes of the 3D Scene (objects, lights, animations etc.)
+     * By default the _onRender method comes w/ some special tasks that are more for the example
+     * @abstract
+     */
+    _onRender()
+    {
+        const elapsedTime = this.#clock.getElapsedTime();
+
+        // temp but keep to not break page
+        const children = this.#scene.children;
+        for( const child of children )
+        {
+            if( child.isAxial === true )
+            {
+                if( child.autoRotateX === true ) { child.rotation.x += child.rotateFactorX; }
+                if( child.autoRotateY === true ) { child.rotation.y += child.rotateFactorY; }
+                if( child.autoRotateZ === true ) { child.rotation.z += child.rotateFactorZ; }
+            }
+        }
+
+        const renderEvent = new CustomEvent( "render", {bubbles: true, detail: { eTime: elapsedTime}});
+        this.dispatchEvent( renderEvent );
+    }
+
+    ///
+    /// LOADING MANAGER
+    ///
+
+    #loadStartHandler( url, itemsLoaded, itemsTotal )
+    {
+        console.log("start");
+    }
+
+    #loadProgressHandler( url, itemsLoaded, itemsTotal )
+    {
+        console.log(`Loading manager progress @ ${url}`);
+    }
+
+    #loadCompleteHandler()
+    {
+        console.log("loadingManager Complete")
+    }
+
+    #loadErrorHandler( url )
+    {
+        console.log(`Error loading file @ url ${url}`);
+    }
+
+    ///
+    /// TextureLoader
+    ///
+
+    #textureLoadCompleteHandler( texture )
+    {
+        const textureEvent = new CustomEvent( "textureLoaded", { bubbles: true, detail: { type: "texture", texture: texture } } );
+        this.dispatchEvent(textureEvent);
+    }
+
+    loadTexture( url )
+    {
+        this.#textureLoader.load( url, this.#boundTextureLoadCompleteHandler );
+    }
+
+    getTexture( url )
+    {
+        return this.#textureLoader.load( url );
+    }
+
+    ///
+    /// RGBELoader
+    ///
+
+    #rgbeLoadCompleteHandler( data, texData )
+    {
+        console.log("rgbe loader complete");
+        const textureEvent = new CustomEvent( "textureLoaded", { bubbles: true, detail: { type: "rgbe", texture: data, textureData: texData } } );
+        this.dispatchEvent(textureEvent);
+    }
+
+    loadRGBE( url )
+    {
+        this.#rgbeLoader.load( url, this.#boundRgbeLoadCompleteHandler );
+    }
+
+    async getRGBETextureAsync( url )
+    {
+        try
+        {
+            return await this.#rgbeLoader.loadAsync( url );
+        }
+        catch( err )
+        {
+            console.log(err);
+        }
+    }
+
+    ///
+    /// FontLoader
+    ///
+
+    #fontLoadCompleteHandler( font )
+    {
+        console.log("font loaded");
+        const fontEvent = new CustomEvent( "fontLoaded", { bubbles: true, detail: { type: "font", font: font } } );
+        this.dispatchEvent(fontEvent);
+    }
+
+    loadFont( url )
+    {
+        this.#fontLoader.load(url, this.#boundFontLoadCompleteHandler);
+    }
+
+    ///
+    /// Pointers
+    ///
 
     /**
      * Add or remove Mouse and Touch control
@@ -143,198 +449,12 @@ class Axial3DViewer extends AxialComponentBase
         this.#usePointers = value;
         if( this.usePointers === true )
         {
-            this.addEventListener("pointermove", this.#boundPointerMove3DHandler);
+            document.addEventListener("pointermove", this.#boundPointerMove3DHandler);
         }
         else
         {
-            this.removeEventListener("pointermove", this.#boundPointerMove3DHandler);
+            document.removeEventListener("pointermove", this.#boundPointerMove3DHandler);
         }
-    }
-
-    connectedCallback()
-    {
-        super.connectedCallback();
-        this.#buildComponent();
-    }
-
-    #buildComponent()
-    {
-        this.#wi = this.clientWidth;
-        this.#hi = this.clientHeight;
-
-        this.#scene = new THREE.Scene();
-
-        this.#camera = new THREE.PerspectiveCamera(60, this.#wi / this.#hi, 0.01, 10);
-        
-        //this.#camera.position.x = 3;
-        this.#camera.position.z = 0.3;
-        //this.#camera.lookAt(0, 0, 0);
-
-        this.#renderer = new THREE.WebGLRenderer( { alpha: true } );
-        this.#renderer.domElement.classList.add("axial_3d_viewer-canvas");
-        this.#renderer.setPixelRatio(window.devicePixelRatio);
-        this.#renderer.setSize(this.#wi, this.#hi);
-        this.appendChild(this.#renderer.domElement);
-
-        // group
-        this.#group = new THREE.Group();
-        this.#scene.add( this.#group );
-
-        // light
-        this.#dirLight = new THREE.DirectionalLight( 0xffffff, 3);
-        this.#dirLight.position.set( -2, 2, 4);
-        this.#scene.add( this.#dirLight );
-
-        this.#loader = new GLTFLoader();
-        this.#loader.load( "../assets/supervision.glb", this.#boundLoadSuccess );
-
-        /*
-        const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-        const material = new THREE.MeshStandardMaterial();
-        this.#cube = new THREE.Mesh( geometry, material );
-        this.#scene.add( this.#cube );
-        */
-
-        // effects
-        const renderPass = new RenderPass( this.#scene, this.#camera );
-        //const unrealBloomPass = new UnrealBloomPass(150, 1, 1, 1);
-        const bloomPass = new BloomPass(1, 25, 4);
-        const filmPass = new FilmPass( 1, 0.5 );
-        const outputPass = new OutputPass();
-        
-        // composer
-        this.#composer = new EffectComposer( this.#renderer );
-        this.#composer.addPass( renderPass );
-        //this.#composer.addPass( unrealBloomPass );
-        this.#composer.addPass( bloomPass );
-        this.#composer.addPass( filmPass );
-        this.#composer.addPass( outputPass );
-        
-        //this.#start();
-        
-    }
-
-    #start()
-    {
-        window.requestAnimationFrame( this.#boundAnimate );
-    }
-
-    #animate( ts )
-    {
-        //console.log(ts);
-        const time = ts * 0.001;
-
-        this.#wi = this.clientWidth;
-        this.#hi = this.clientHeight;
-
-        this.#renderer.setSize(this.#wi, this.#hi);
-        
-        this.#camera.aspect = this.#wi / this.#hi;
-        this.#camera.updateProjectionMatrix();
-
-        /*
-        if( this.#cube )
-        {
-            this.#cube.rotation.x = time;
-            this.#cube.rotation.y = time;
-            this.#cube.rotation.z = time;
-        }
-        */
-
-        
-        if( this.#model )
-        {
-            //this.#group.rotation.y = time;
-            this.#group.rotation.y = this.#rotationY;
-            this.#group.rotation.x = this.#rotationX;   
-        }
-        
-        
-        //this.#renderer.render( this.#scene, this.#camera );
-        this.#composer.render();
-        
-        
-        window.requestAnimationFrame( this.#boundAnimate );
-    }
-
-    #loadSucces( gltf )
-    {
-        console.log(gltf);
-        this.#gltf = gltf;
-        this.#initViewer();
-    }
-
-    #initViewer()
-    {
-        this.#model = this.#gltf.scene || this.#gltf.scenes[0];
-
-        const box = new THREE.Box3().setFromObject( this.#model );
-        box.getCenter(this.#model.position);
-        this.#model.position.multiplyScalar(-1);
-        const size = box.getSize( new THREE.Vector3() );
-        console.log(size);
-        
-
-        //this.#model.position.x = -1;
-        //model.position.y += center.y / 2;
-        //model.position.z += -center.z / 2;
-
-        //this.#camera.position.copy(center);
-        //console.log(this.#camera.position.z);
-        //this.#camera.position.z += size / 1.5;
-        //this.#camera.position.z = 1;
-
-        //this.#camera.lookAt(center);
-
-        const cameraZ = size.z * 11;
-        console.log(cameraZ);
-
-        //this.#camera.position.z = cameraZ;
-        //this.#camera.updateProjectionMatrix();
-
-        this.#group.add(this.#model);
-
-        this.#start();
-    }
-
-    /**
-     * Manage rotation with the keys
-     * @param { KeyboardEvent } event 
-     */
-    #keyDownHandler( event )
-    {
-        console.log(event.key);
-        const key = event.key;
-        switch( key )
-        {
-            case "ArrowLeft":
-                this.#rotationY -= this.#rotationStep;
-            break;
-
-            case "ArrowRight":
-                this.#rotationY += this.#rotationStep;
-            break;
-
-            case "ArrowUp":
-                this.#rotationX -= this.#rotationStep;
-            break;
-
-            case "ArrowDown":
-                this.#rotationX += this.#rotationStep;
-            break;
-
-            default:
-            break;
-        }
-    }
-
-    /**
-     * Manage the behaviour of the #group with mouse or fingers
-     * @param { PointerEvent } event 
-     */
-    #pointerDown3DHandler( event )
-    {
-        const pointerType = event.pointerType;
     }
 
     /**
@@ -343,6 +463,7 @@ class Axial3DViewer extends AxialComponentBase
      */
     #pointerMove3DHandler( event )
     {
+        //console.log( "pointerMove");
         const pointerType = event.pointerType;
         
         const ww = window.innerWidth;
@@ -351,6 +472,9 @@ class Axial3DViewer extends AxialComponentBase
         const cx = ww / 2;
         const cy = wh / 2;
 
+        let percentX = 0;
+        let percentY = 0;
+
         switch( pointerType )
         {
             case "mouse":
@@ -358,29 +482,55 @@ class Axial3DViewer extends AxialComponentBase
 
                 const px = event.pageX;
                 const dx = px - cx;
-                //console.log(dx);
-                const percentX = dx / cx;
-                console.log(percentX);
+                percentX = dx / cx;
 
-                this.#rotationY = (Math.PI / 2) * percentX;
+                const py = event.pageY;
+                const dy = py - cy;
+                percentY = dy / cy;
+
             break;
 
             default:
             break;
         }
+
+        const children = this.#scene.children;
+        for( const child of children )
+        {
+            if( child.isAxial === true )
+            {
+                if( child.moveOnPointers === true )
+                {
+                    let finalRY = THREE.MathUtils.degToRad( child.pointerInitRotateY );
+                    if( percentX >= 0 )
+                    {
+                        const dax = child.pointerMaxRotateY - child.pointerInitRotateY;
+                        finalRY += THREE.MathUtils.degToRad( dax * percentX );
+                    }
+                    else
+                    {
+                        const dax = child.pointerInitRotateY - child.pointerMinRotateY;
+                        finalRY += THREE.MathUtils.degToRad( dax * percentX );
+                    }
+
+                    let finalRX = THREE.MathUtils.degToRad( child.pointerInitRotateX );
+                    if( percentY >= 0 )
+                    {
+                        const day = child.pointerMaxRotateX - child.pointerInitRotateX;
+                        finalRX += THREE.MathUtils.degToRad( day * percentY );
+                    }
+                    else
+                    {
+                        const day = child.pointerInitRotateX - child.pointerMinRotateX;
+                        finalRX += THREE.MathUtils.degToRad( day * percentY );
+                    }
+
+                    child.rotation.y = finalRY;
+                    child.rotation.x = finalRX;
+                }
+            }
+        }
     }
-
-    /**
-     * Manage the behaviour of the #group with mouse or fingers
-     * @param { PointerEvent } event 
-     */
-    #pointerUp3DHandler( event )
-    {
-        const pointerType = event.pointerType;
-    }
-
-    
-
 }
 
 window.customElements.define("axial-3d-viewer", Axial3DViewer);

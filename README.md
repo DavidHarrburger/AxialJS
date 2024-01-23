@@ -53,9 +53,10 @@ axial upload
 ***You are ready to have fun, see the [Getting Started](##GettingStarted) section to learn how to create new pages and build them!***
 
 ## Roadmap
-* Add SCSS support
-* Add Standard CSS Support
+* Move to Vite instead of webpack
+* Remove Less to go only w/ pure css
 * Add SSH and FTP support in the configuration file (to upload your build once it is created)
-* Finalize basic Web components
+* Finalize basic Web components (Calendar, Dropdown ...)
+* Add Database MongoDB start script
 
 ## Getting Started
