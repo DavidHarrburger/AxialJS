@@ -6,23 +6,20 @@ html
 {
     -webkit-tap-highlight-color: transparent;
     text-shadow: none;
-    overflow-x: hidden;
-    overflow-y: hidden;
 }
 body
 {
-    position: fixed;
     width: 100%;
-    height: 100%;
+    min-height: 100vh;
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    overflow-y: hidden;
+    overflow-y: auto;
 
     font-family: var(--body___mainFont);
     background-color: var(--body___backgroundColor);
     color: var(--body___textColor);
-
+    
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
     
@@ -44,7 +41,7 @@ a:visited
 
 h1, h2, h3, h4, h5, h6
 {
-    color: var(--themeColor);
+    color: var(--white);
 }
 input
 {
@@ -119,40 +116,53 @@ textarea
     min-height: 200px;
     padding: 10px;
 
+    font-family: var(--body___mainFont);
+    font-size: var(--input___fontSize);
+    font-weight: var(--input___fontWeight);
     border-radius: var(--component___borderRadius);
     border: 2px solid var(--black);
     background-color: var(--white);
 }
 
 /* layers */
-.axial_background_layer
+.axial_layer_base
 {
-    position: absolute;
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+}
+.axial_background_layer
+{
+    background-color: transparent;
+}
+.axial_3d_layer
+{
+    background-color: transparent;
 }
 .axial_main_layer
 {
-    position: absolute;
-    width: 100%;
-    height: 100%;
+    position: relative;
+    min-width: 100%;
+    min-height: 100vh;
+    overflow: hidden;
 }
-.axial_intro_layer
-{
-    position: absolute;
-    width: 100%;
-    height: 100%;
-
-    /* temp */
-    display: none;
-}
+.axial_intro_layer        { z-index: 2; }
+.axial_popup_layer        { z-index: 3; }
+.axial_notification_layer { z-index: 4; }
+.axial_overlay_layer      { z-index: 5; }
+.axial_tooltip_layer      { z-index: 6; }
 
 /* header */
 .axial_header
 {
-    position: absolute;
+    position: fixed;
     width: 100%;
     height: var(--header___height);
+    z-index: 1;
 }
 .axial_header_background
 {
@@ -194,6 +204,12 @@ textarea
     height: var(--headerLogo___height);
     width: auto;
 }
+.axial_header_logo_img
+{
+    display: block;
+    height: var(--headerLogo___height);
+    width: auto;
+}
 .axial_header_nav
 {
     height: 100%;
@@ -209,19 +225,22 @@ textarea
     justify-content: center;
     width: auto;
     height: 100%;
-    margin-left:  var(--headerNavItem___marginH);
+    margin-left: var(--headerNavItem___marginH);
     margin-right: var(--headerNavItem___marginH);
-    font-size:    var(--headerNavItem___fontSize);
-    font-weight:  var(--headerNavItem___fontWeight);
+    font-size: var(--headerNavItem___fontSize);
+    font-weight: var(--headerNavItem___fontWeight);
     cursor: pointer;
 }
-.axial_header_nav_item-label { margin-bottom: 4px; }
+.axial_header_nav_item-label
+{
+    margin-bottom: 4px;
+}
 .axial_header_nav_item-line
 {
     width: 100%;
     height: 2px;
     border-radius: 1px;
-    background-color: var(--themeColor);
+    background-color: var(--white);
 
     transform-origin: center;
     transform: scaleX(0);
@@ -234,21 +253,19 @@ textarea
 {
     transform: scaleX(1);
 }
-
 .axial_header_nav_item_separator
 {
     margin-left: 10px;
     margin-right: 10px;
 }
+
 /* main */
 .axial_main
 {
-    position: absolute;
+    position: relative;
+    display: block;
     width: 100%;
-    top: var(--header___height);
-    bottom: 0px;
-    overflow-x: hidden;
-    overflow-y: auto;
+    min-height: 100vh;
 }
 
 /* section */
@@ -256,10 +273,7 @@ textarea
 {
     position: relative;
     width: 100%;
-    height: auto;
-
-    /* TEMP */
-    min-height: 300px;
+    min-height: 100vh;
 }
 .axial_section_background
 {
@@ -271,15 +285,16 @@ textarea
 {
     position: relative;
     width: 100%;
-    height: 100%;
+    min-height: 100vh;
 }
 
 /* section utils */
 .axial_section_padding
 {
+    padding-top:    var(--header___height);
+
     padding-left:   var(--section___paddingH);
     padding-right:  var(--section___paddingH);
-    padding-top:    var(--section___paddingV);
     padding-bottom: var(--section___paddingV);
 }
 .axial_section_subtitle
@@ -357,6 +372,13 @@ textarea
 .axial_spacer
 {
     flex-grow: 1;
+}
+.axial_parallax
+{
+    will-change: transform;
+    /*transform: translate3d(0, 0, 0);*/
+    translate: 0px 0px;
+    scale: 1;
 }
 
 /* application components */

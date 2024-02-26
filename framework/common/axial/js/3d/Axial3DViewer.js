@@ -12,11 +12,13 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
 
 //import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
 
 import GUI from "lil-gui";
+
 
 class Axial3DViewer extends AxialComponentBase
 {
@@ -32,6 +34,9 @@ class Axial3DViewer extends AxialComponentBase
     /** @type { Boolean } */
     #useComposer = false;
 
+    /** @type { Boolean } */
+    #useControls = false;
+
     /** @type { HTMLCanvasElement } */
     #canvas;
 
@@ -40,6 +45,9 @@ class Axial3DViewer extends AxialComponentBase
 
     /** @type { THREE.PerspectiveCamera } */
     #camera;
+
+    /** @type { THREE.Group } */
+    #cameraGroup;
 
     /** @type { THREE.WebGLRenderer } */
     #renderer;
@@ -87,6 +95,15 @@ class Axial3DViewer extends AxialComponentBase
     /** @type { RGBELoader } */
     #rgbeLoader;
 
+    /** @type { GLTFLoader } */
+    #gltfLoader;
+
+    /** @type { DRACOLoader } */
+    #dracoLoader;
+
+    /** @type { String } */
+    #dracoDecoderPath;
+
     /** @type { FontLoader } */
     #fontLoader;
 
@@ -95,6 +112,9 @@ class Axial3DViewer extends AxialComponentBase
 
     /** @type { Function } */
     #boundRgbeLoadCompleteHandler;
+
+    /** @type { Function } */
+    #boundGltfLoadCompleteHandler;
 
     /** @type { Function } */
     #boundFontLoadCompleteHandler;
@@ -141,6 +161,13 @@ class Axial3DViewer extends AxialComponentBase
         this.#boundRgbeLoadCompleteHandler = this.#rgbeLoadCompleteHandler.bind(this);
         this.#rgbeLoader = new RGBELoader( this.#loadingManager );
 
+        // draco loader
+        this.#dracoLoader = new DRACOLoader();
+
+        // gltf loader
+        this.#boundGltfLoadCompleteHandler = this.#gltfLoadCompleteHandler.bind(this);
+        this.#gltfLoader = new GLTFLoader( this.#loadingManager );
+
         // font loader
         this.#boundFontLoadCompleteHandler = this.#fontLoadCompleteHandler.bind(this);
         this.#fontLoader = new FontLoader();
@@ -171,6 +198,12 @@ class Axial3DViewer extends AxialComponentBase
     get scene() { return this.#scene; }
 
     /**
+     * @type { THREE.Group }
+     * @readonly
+     */
+    get cameraGroup() { return this.#cameraGroup; }
+
+    /**
      * @type { THREE.PerspectiveCamera }
      * @readonly
      */
@@ -193,6 +226,46 @@ class Axial3DViewer extends AxialComponentBase
      * @readonly
      */
     get renderer() { return this.#renderer; }
+
+    /**
+     * @type { String }
+     */
+    get dracoDecoderPath() { return this.#dracoDecoderPath; }
+    set dracoDecoderPath( value )
+    {
+        if( typeof value !== "string" )
+        {
+            throw new TypeError("String value required");
+        }
+        this.#dracoDecoderPath = value;
+        if( this.#dracoLoader !== undefined )
+        {
+            this.#dracoLoader.setDecoderPath( this.#dracoDecoderPath );
+            if( this.#gltfLoader !== undefined )
+            {
+                this.#gltfLoader.setDRACOLoader( this.#dracoLoader );
+            }
+        }
+    }
+
+    /**
+     * @type { Boolean }
+     */
+    get useControls() { return this.#useControls; }
+    set useControls( value )
+    {
+        if( typeof value !== "boolean" )
+        {
+            throw new TypeError("Boolean value expected");
+        }
+        this.#useControls = value;
+
+        if( this.#useControls === true && this.#controls == undefined )
+        {
+            this.#controls = new OrbitControls( this.#camera, this.#canvas );
+            this.#controls.enableDamping = true;
+        }
+    }
 
     /**
      * @type { Boolean }
@@ -224,12 +297,21 @@ class Axial3DViewer extends AxialComponentBase
         
         this.#scene = new THREE.Scene();
 
+        this.#cameraGroup = new THREE.Group();
+        this.#scene.add( this.#cameraGroup );
+
         this.#camera =  new THREE.PerspectiveCamera(75, this.#wi / this.#hi, 0.1, 100);
         this.#camera.position.x = 0;
         this.#camera.position.y = 0;
-        this.#camera.position.z = 4;
+        this.#camera.position.z = 4; // 4
+        this.#cameraGroup.add( this.#camera );
 
-        this.#renderer = new THREE.WebGLRenderer( { canvas: this.#canvas } );
+        this.#renderer = new THREE.WebGLRenderer(
+        {
+            canvas: this.#canvas,
+            alpha: true,
+            antialias: true
+        });
         this.#renderer.setSize( this.#wi, this.#hi );
         this.#renderer.setPixelRatio( Math.min( window.devicePixelRatio, 2 ) );
 
@@ -240,8 +322,9 @@ class Axial3DViewer extends AxialComponentBase
         this.#renderPass = new RenderPass( this.#scene, this.#camera );
         this.#composer.addPass( this.#renderPass );
 
-        this.#controls = new OrbitControls( this.#camera, this.#canvas );
-        this.#controls.enableDamping = true;
+        // KEEP IMPORTANT
+        //this.#controls = new OrbitControls( this.#camera, this.#canvas );
+        //this.#controls.enableDamping = true;
 
         this.#gui = new GUI();
 
@@ -258,7 +341,11 @@ class Axial3DViewer extends AxialComponentBase
     {
         this._onRender();
 
-        this.#controls.update();
+        if( this.#useControls === true && this.#controls != undefined )
+        {
+            this.#controls.update();
+        }
+    
         if( this.#useComposer === false )
         {
             this.#renderer.render( this.#scene, this.#camera );
@@ -327,6 +414,7 @@ class Axial3DViewer extends AxialComponentBase
         const elapsedTime = this.#clock.getElapsedTime();
 
         // temp but keep to not break page
+        
         const children = this.#scene.children;
         for( const child of children )
         {
@@ -337,6 +425,7 @@ class Axial3DViewer extends AxialComponentBase
                 if( child.autoRotateZ === true ) { child.rotation.z += child.rotateFactorZ; }
             }
         }
+        
 
         const renderEvent = new CustomEvent( "render", {bubbles: true, detail: { eTime: elapsedTime}});
         this.dispatchEvent( renderEvent );
@@ -381,6 +470,12 @@ class Axial3DViewer extends AxialComponentBase
         this.#textureLoader.load( url, this.#boundTextureLoadCompleteHandler );
     }
 
+    /**
+     * Directly returns the texture once its loaded without dispatching event like in the loadTexture() method.
+     * The instance of the THREE.LoadingManager works normally.
+     * @param { String } url 
+     * @returns { THREE.Texture }
+     */
     getTexture( url )
     {
         return this.#textureLoader.load( url );
@@ -392,7 +487,7 @@ class Axial3DViewer extends AxialComponentBase
 
     #rgbeLoadCompleteHandler( data, texData )
     {
-        console.log("rgbe loader complete");
+        //console.log("rgbe loader complete");
         const textureEvent = new CustomEvent( "textureLoaded", { bubbles: true, detail: { type: "rgbe", texture: data, textureData: texData } } );
         this.dispatchEvent(textureEvent);
     }
@@ -412,6 +507,22 @@ class Axial3DViewer extends AxialComponentBase
         {
             console.log(err);
         }
+    }
+
+    ///
+    /// GLTFLoader
+    ///
+
+    loadGLTF( url )
+    {
+        this.#gltfLoader.load( url, this.#boundGltfLoadCompleteHandler );
+    }
+
+    #gltfLoadCompleteHandler( gltf )
+    {
+        //console.log(gltf);
+        const gltfEvent = new CustomEvent( "gltfLoaded", { bubbles: true, detail: { object: gltf } } );
+        this.dispatchEvent(gltfEvent);
     }
 
     ///

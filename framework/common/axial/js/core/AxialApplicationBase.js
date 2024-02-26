@@ -14,25 +14,6 @@ class AxialApplicationBase extends EventTarget
     #boundApplicationPageLoadedHandler;
     #boundApplicationResizeHandler;
     #boundWindowResizeHandler;
-    
-    /// layers
-    /**
-     * @private
-     * @type { HTMLElement }
-     */
-    #backgroundLayer = undefined;
-
-    /**
-     * @private
-     * @type { HTMLElement }
-     */
-    #mainLayer = undefined;
-
-    /**
-     * @private
-     * @type { HTMLElement }
-     */
-    #introLayer = undefined;
 
     /// properties
 
@@ -113,25 +94,67 @@ class AxialApplicationBase extends EventTarget
      */
     #language = undefined;
 
+    ///
+    /// SCROLL PARALLAX
+    ///
+
+    /// parallax elements
+    
     /**
-     * @private
+     * The main container / holder we use to calculte the parallax regarding the scroll
+     * Default looking for the 'main' tag of the page
+     * Even it's a little bit opiniated, you should not really have to change it
+     * @type { HTMLElement }
+     */
+    #scrollParallaxHolder;
+
+    /** @type { HTMLCollection } */
+    #scrollParallaxSections;
+
+    /// parallax vars
+    /**
      * @type { Boolean }
-     * @default false
      */
-    #useParallax = false;
+    #useScrollParallax = false;
 
     /**
-     * @private
-     * @type { Array.<HTMLElement> }
-     * @default undefined
+     * @type { Number }
      */
-    #parallaxElements = undefined;
+    #scrollParallaxY = 0;
 
     /**
-     * @private
+     * @type { Number }
+     */
+    #scrollParallaxRatio = 0;
+
+    /**
+     * @type { Number }
+     */
+    #scrollParallaxAnimationId = undefined;
+
+    /**
+     * @type { Number }
+     */
+    #scrollParallaxTimeStart = 0;
+
+    /**
+     * @type { Number }
+     */
+    #scrollParallaxTimePrevious = 0;
+
+    /** @type { Set.<String> } */
+    #parallaxRatios = new Set( ["inner", "outer"] );
+
+    /**
      * @type { Function }
      */
-    #boundParallaxMoveHandler;
+    #boundScrollHandler;
+
+    /**
+     * @type { Function }
+     */
+    #boundScrollParallax;
+
 
     /**
      * Create the main AxialApplicationBase and make it a property of its window.
@@ -162,11 +185,19 @@ class AxialApplicationBase extends EventTarget
             this.#isDesktop = true;
         }
 
+        // dom - lifecycle
         this.#boundApplicationDomLoadedHandler = this.#applicationDomLoadedHandler.bind(this);
         this.#boundApplicationPageLoadedHandler = this.#applicationPageLoadedHandler.bind(this);
+
+        // resize
         this.#boundApplicationResizeHandler = this.#applicationResizeHandler.bind(this);
         this.#boundWindowResizeHandler = this.#windowResizeHandler.bind(this);
-        this.#boundParallaxMoveHandler = this.#parallaxMoveHandler.bind(this);
+
+        // scroll and parallax
+        this.#boundScrollHandler = this.#scrollHandler.bind(this);
+        this.#boundScrollParallax = this.#scrollParallax.bind(this);
+        
+        //this.#boundParallaxMoveHandler = this.#parallaxMoveHandler.bind(this);
         
         window.addEventListener("DOMContentLoaded", this.#boundApplicationDomLoadedHandler);
         window.addEventListener("load", this.#boundApplicationPageLoadedHandler);
@@ -200,16 +231,6 @@ class AxialApplicationBase extends EventTarget
     get isAndroid() { return this.#isAndroid; }
 
     get isDesktop() { return this.#isDesktop; }
-
-    ///
-    /// PART: LAYERS
-    ///
-
-    get backgroundLayer() { return this.#backgroundLayer; }
-
-    get mainLayer() { return this.#mainLayer; }
-
-    get introLayer() { return this.#introLayer; }
 
     ///
     /// PART: DATA
@@ -314,6 +335,16 @@ class AxialApplicationBase extends EventTarget
     #applicationDomLoadedHandler(event)
     {
         this.#applicationDomLoaded = true;
+        
+        // scroll parallax
+        this.#scrollParallaxHolder = document.getElementsByTagName("main")[0];
+        this.#scrollParallaxSections = document.getElementsByTagName("section");
+
+        console.log( "this.useScrollParallax = " + this.useScrollParallax);
+        if( this.useScrollParallax === true )
+        {
+            this.#prepareParallax();
+        }
 
         if( this._onApplicationDomLoaded )
         {
@@ -354,10 +385,8 @@ class AxialApplicationBase extends EventTarget
     {
         this.#applicationPageLoaded = true;
 
-        this.#backgroundLayer = document.getElementById("axialBackgroundLayer");
-        this.#mainLayer = document.getElementById("axialMainLayer");
-        this.#introLayer = document.getElementById("axialIntroLayer");
-
+        // parallax
+        window.addEventListener("scroll", this.#boundScrollHandler);
         /*
         if( this.#dataPath !== undefined )
         {
@@ -425,92 +454,186 @@ class AxialApplicationBase extends EventTarget
 
     _onApplicationResize()
     {
-        console.log("AxialApplicationBase._onApplicationResize()");
+        //console.log("AxialApplicationBase._onApplicationResize()");
     }
 
     ///
-    /// PART: PARALLAX
+    /// PART: SCROLL PARALLAX
     ///
 
-    get useParallax() { return this.#useParallax; }
-    set useParallax( value )
+    get useScrollParallax() { return this.#useScrollParallax; }
+    set useScrollParallax( value )
     {
         if( typeof value !== "boolean" )
         {
             throw new TypeError("Boolean value required");
         }
-        if( this.#useParallax == value ) { return; }
-        this.#useParallax = value;
-        
-        if( this.#useParallax == true )
+        if( this.#useScrollParallax === value ) { return; }
+        this.#useScrollParallax = value;
+
+        if( this.#applicationPageLoaded === true && this.#useScrollParallax === true )
         {
-            this.#addParallax();
-        }
-        else
-        {
-            this.#removeParallax();
+            console.log("go for parallax");
         }
     }
 
-    /**
-     * @private
-     * @param { PointerEvent } event 
-     */
-    #parallaxMoveHandler( event )
+
+    #scrollHandler( event )
     {
-        //console.log(event);
-        const px = event.clientX;
-        const py = event.clientY;
-
-        const ww = window.innerWidth;
-        const wh = window.innerHeight;
-
-        const cx = ww / 2;
-        const cy = wh / 2;
-
-        const dx = (px - cx) / cx;
-        const dy = (py - cy) / cy;
-
-        for( const element of this.#parallaxElements )
+        if( this.#scrollParallaxHolder != undefined )
         {
-            const parallaxX = Number(element.getAttribute("axial-parallax-x"));
-            const translateX = "translateX(" + String( dx * parallaxX) + "px) ";
-            
-
-            const parallaxY = Number(element.getAttribute("axial-parallax-y"));
-            const translateY = "translateY(" + String( dy * parallaxY) + "px) ";
-            //console.log(translateY);
-
-            const parallaxRotateY = Number(element.getAttribute("axial-parallax-ry"));
-            const rotateY = "rotateY(" + String( dx * parallaxRotateY) + "deg) ";
-
-            const finalTransform = translateX + " " + translateY + " " + rotateY;
-            
-            const currentTransform = window.getComputedStyle(element).transform; // see later maybe cache the initial transform
-            
-            element.style.transform = finalTransform;
+            const scrollMax = this.#scrollParallaxHolder.offsetHeight - window.innerHeight;
+            this.#scrollParallaxY = window.scrollY;
+            this.#scrollParallaxRatio = this.#scrollParallaxY / scrollMax;
         }
     }
 
-    #addParallax()
+    #scrollParallax( ts )
     {
-        this.#parallaxElements = new Array();
-        const allElements = document.getElementsByTagName("*");
-
-        for( const element of allElements )
+        // time calculation
+        if( this.#scrollParallaxTimeStart === 0 )
         {
-            const isParallax = element.hasAttribute("axial-parallax");
-            if( isParallax )
+            this.#scrollParallaxTimeStart = ts;
+            this.#scrollParallaxTimePrevious = ts;
+        }
+        const eTime = ts - this.#scrollParallaxTimeStart;
+        const dTime = eTime - this.#scrollParallaxTimePrevious;
+        this.#scrollParallaxTimePrevious = eTime;
+
+        // sections
+        const h = window.innerHeight;
+        for( const section of this.#scrollParallaxSections )
+        {
+            const sectionBounds = section.getBoundingClientRect();
+
+            // TODO Check what happens w/ sections larger than the height
+
+            // outer ratio
+            let outerSectionRatio = 0;
+            if( sectionBounds.top >= h )
             {
-                this.#parallaxElements.push(element);
+                sectionRatio = 0;
+                outerSectionRatio = 0;
+            }
+            else if( (sectionBounds.top + sectionBounds.height) <= 0 )
+            {
+                sectionRatio = 1;
+                outerSectionRatio = 1;
+            }
+            else
+            {
+                sectionRatio = 1 - (sectionBounds.top + sectionBounds.height) / (sectionBounds.height + h );
+                outerSectionRatio = 1 - (sectionBounds.top + sectionBounds.height) / (sectionBounds.height + h );
+            }
+
+            // inner ratio
+            let innerSectionRatio = 0;
+            let innerBottomLimit = h / 2 + sectionBounds.height / 2;
+            let innerTopLimit = h / 2 - sectionBounds.height / 2 - sectionBounds.height;
+
+            if( sectionBounds.top >= innerBottomLimit )
+            {
+                innerSectionRatio = 0;
+            }
+            else if( sectionBounds.top <= innerTopLimit )
+            {
+                innerSectionRatio = 1;
+            }
+            else
+            {
+                innerSectionRatio = 1 - ( sectionBounds.top - innerTopLimit ) / ( 2 * sectionBounds.height );
+            }
+
+            const parallaxItems = section.getElementsByClassName("axial_parallax");            
+            if( parallaxItems.length > 0 )
+            {
+                for( const item of parallaxItems )
+                {
+                    // ratio
+                    let tempRatio = item.getAttribute("axial-parallax-ratio");
+                    tempRatio = this.#parallaxRatios.has( tempRatio ) === true ? tempRatio : "outer";
+                    
+                    let itemRatio = tempRatio == "inner" ? innerSectionRatio : outerSectionRatio;
+
+                    // unit
+                    const unit = "px";
+
+                    // mode
+                    const mode = item.getAttribute("axial-parallax-mode");
+                    if( mode == "in" && itemRatio > 0.5 ) { itemRatio = 0.5; }
+                    if( mode == "out" && itemRatio < 0.5 ) { itemRatio = 0.5; }
+
+                    // current translate
+                    const currentTranslate = item.style.translate.replaceAll("px", "");
+                    const currentTranslateValues = currentTranslate.split(" ");
+
+                    // y
+                    let finalY = 0;
+                    const py = Number( item.getAttribute("axial-parallax-y") );
+                    const cy = Number( currentTranslateValues[1] );
+                    const ny = py - (2 * itemRatio) * py;
+                    const fy = cy + ( ny - cy ) * dTime/200;
+                    finalY = isNaN(fy) == true ? 0 : fy;
+
+                    // x
+                    let finalX = 0;
+                    const px = Number( item.getAttribute("axial-parallax-x") );
+                    const cx = Number( currentTranslateValues[0] );
+                    const nx = px - (2 * itemRatio) * px;
+                    const fx = cx + ( nx - cx ) * dTime/200;
+                    finalX = isNaN(fx) == true ? 0 : fx;
+
+                    // scale
+                    let fscale = 1; // safer cause I'm coding at midnight
+                    const tempScale = item.getAttribute("axial-parallax-scale");
+                    const pscale = tempScale === null ? 1 : Number(tempScale);
+
+                    if( pscale !=  1 )
+                    {
+                        const cscale = Number(item.style.scale);
+                        const nscale = ((pscale - 1) * (1-2*itemRatio)) + 1;
+                        const tfscale = cscale + ( nscale - cscale ) * dTime/200;
+                        fscale = tfscale;
+                    }
+                    
+                    const translate = String(finalX) + unit + " " + String(finalY) + unit;
+                    const scale = fscale;
+
+                    item.style.translate = translate;
+                    item.style.scale = scale;
+                }
+            }
+
+            if( this._onParallaxSectionChanged )
+            {
+                this._onParallaxSectionChanged( section, outerSectionRatio, innerSectionRatio, eTime, dTime );
             }
         }
-        document.addEventListener("pointermove", this.#boundParallaxMoveHandler);
+        window.requestAnimationFrame( this.#boundScrollParallax );
     }
 
-    #removeParallax()
+    #prepareParallax()
     {
-        document.removeEventListener("pointermove", this.#boundParallaxMoveHandler);
+        const parallaxItems = document.getElementsByClassName("axial_parallax");
+        for( const item of parallaxItems )
+        {
+            const py = Number( item.getAttribute("axial-parallax-y") );
+            const px = Number( item.getAttribute("axial-parallax-x") );
+            
+            const tempScale =  item.getAttribute("axial-parallax-scale") ;
+            const pscale = tempScale === null ? 1 : tempScale;
+            
+            const translate = px + "px " + py + "px";
+            const scale = pscale;
+
+            item.style.translate = translate;
+            item.style.scale = scale;
+        }
+    }
+
+    _onParallaxSectionChanged( section, outer, inner, elapsed, delta )
+    {
+
     }
 }
 

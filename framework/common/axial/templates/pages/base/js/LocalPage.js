@@ -9,4 +9,5 @@ class LocalPage extends GlobalPage
         super();
     }
 }
+
 export { LocalPage }

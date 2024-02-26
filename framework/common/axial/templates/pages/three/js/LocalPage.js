@@ -23,7 +23,7 @@ class LocalPage extends GlobalPage
         super._onApplicationDomLoaded( event );
 
         this.#viewer = document.getElementById("viewer");
-        //this.#viewer.addEventListener( "render", this.#boundRenderHandler);
+        this.#viewer.addEventListener( "render", this.#boundRenderHandler);
         
         //this.#viewer.renderer.setClearColor( "#262837" );
         //this.#viewer.renderer.shadowMap.enabled = true;
@@ -43,6 +43,16 @@ class LocalPage extends GlobalPage
 
     #buildPage()
     {
+        // camera
+        //this.#viewer.camera.position.set(3, 3, 3);
+        //this.#viewer.camera.updateProjectionMatrix();
+
+        // controls
+        this.#viewer.useControls = true;
+
+        // objects / materials / loaders
+
+        // render the scene
         this.#viewer.startRendering();
     }
 }

@@ -9,6 +9,11 @@ class AxialButtonBase extends AxialComponentBase
         super();
         this.classList.add("axial_button_base");
     }
+
+    connectedCallback()
+    {
+        super.connectedCallback();
+    }
 }
 
 window.customElements.define("axial-button-base", AxialButtonBase);

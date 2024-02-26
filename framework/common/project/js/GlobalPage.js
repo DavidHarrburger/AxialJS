@@ -2,7 +2,6 @@
 
 import { AxialApplicationBase } from "../../axial/js/core/AxialApplicationBase.js";
 
-
 class GlobalPage extends AxialApplicationBase
 {
     constructor()
@@ -10,4 +9,5 @@ class GlobalPage extends AxialApplicationBase
         super();
     }
 }
+
 export { GlobalPage }

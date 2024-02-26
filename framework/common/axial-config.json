@@ -20,6 +20,11 @@
     "js_output_filename": "application.js",
     "pages":
     [
-        { "name": "main", "path": "" }
+        {
+            "name": "main",
+            "path": "",
+            "template": "",
+            "build": true
+        }
     ]
 }

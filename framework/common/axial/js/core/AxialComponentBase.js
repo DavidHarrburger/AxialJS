@@ -1,8 +1,5 @@
 "use strict"
 
-/// axial imports
-import { Point } from "../geom/Point.js";
-
 /**
  * The main base class for all components.
  * @class
@@ -11,21 +8,40 @@ import { Point } from "../geom/Point.js";
 class AxialComponentBase extends HTMLElement
 {
     /// static
+    /** @type { Set.<String> } */
     static #MANIPULATION_TYPES = Object.freeze( new Set(["none", "swipe"]) );
 
     /// events
-    // dom (for lifecycle in specific cases) /// TEST PURPOSE
+    // dom (for lifecycle in specific cases)
+    /** @type { Function } */
     #boundDomLoadedHandler;
     // resize
+    /** @type { Function } */
     #boundResizeHandler;
+
     // manipulation
+    /** @type { Function } */
     #boundManipulationEnterHandler;
+    
+    /** @type { Function } */
     #boundManipulationDownHandler;
+
+    /** @type { Function } */
     #boundManipulationOverHandler;
+
+    /** @type { Function } */
     #boundManipulationMoveHandler;
+
+    /** @type { Function } */
     #boundManipulationOutHandler;
+
+    /** @type { Function } */
     #boundManipulationUpHandler;
+
+    /** @type { Function } */
     #boundManipulationLeaveHandler;
+
+    /** @type { Function } */
     #boundManipulationCancelHandler;
 
     /// properties
@@ -122,12 +138,41 @@ class AxialComponentBase extends HTMLElement
      */
     #cachedPointers = new Array();
 
-    #manipulationDuration = 0; // diff between first timeStampand the latest
-    #manipulationDeltaX = 0; // diff x axis between first pointEvent and the latest
-    #manipulationDeltaY = 0; // diff x axis between first pointEvent and the latest
-    #manipulationDistance = 0; // distance between the 2 points
-    #manipulationDeltaScale = 0; // a calculated factor for pich / zoom gesture
-    #manipulationAngle = 0; // the current angle
+    /**
+     * diff between first timeStampand the latest
+     * @type { Number }
+     */
+    #manipulationDuration = 0;
+
+    /**
+     * diff x axis between first pointEvent and the latest
+     * @type { Number }
+     */
+    #manipulationDeltaX = 0;
+
+    /**
+     * diff x axis between first pointEvent and the latest
+     * @type { Number }
+     */
+    #manipulationDeltaY = 0;
+
+    /**
+     * distance between the 2 points
+     * @type { Number }
+     */
+    #manipulationDistance = 0;
+
+    /**
+     * a calculated factor for pinch / zoom gesture
+     * @type { Number }
+     */
+    #manipulationDeltaScale = 0;
+
+    /**
+     * the current angle
+     * @type { Number }
+     */
+    #manipulationAngle = 0;
 
     constructor()
     {
@@ -167,7 +212,7 @@ class AxialComponentBase extends HTMLElement
     static get observedAttributes()
     {
         //console.log("AxialComponentBase#observedAttributes()");
-        return new Array();
+        return ["axial-template"];
     }
 
     /**
@@ -184,9 +229,7 @@ class AxialComponentBase extends HTMLElement
         }
         if( this.#template == value ) { return; }
         this.#template = value;
-        this.#buildShadow();
     }
-
 
     /**
      * Clone the node of the template into the ShadowRoot of the component
@@ -194,7 +237,7 @@ class AxialComponentBase extends HTMLElement
      */
     #buildShadow()
     {
-        this.attachShadow({ mode: "open"});
+        this.attachShadow( { mode: "open" } );
 
         // see to change template at runtime but in fact who will need really that
         
@@ -225,6 +268,12 @@ class AxialComponentBase extends HTMLElement
     connectedCallback()
     {
         //console.log("AxialComponentBase.connectedCallback()");
+        
+        // buildShadow if template
+        if( this.#template !== "" )
+        {
+            this.#buildShadow();
+        }
     }
 
     /**
@@ -261,7 +310,18 @@ class AxialComponentBase extends HTMLElement
      */
     attributeChangedCallback(name, oldValue, newValue)
     {
-        if( this.isConnected == false ) { return; }
+        /*
+        if( name === "axial-template" )
+        {
+            console.log("TEMPLATE ATTENTION REQUIRED")
+            console.log(name, newValue);
+        }
+        */
+
+        if( name === "axial-template" && newValue !== null && newValue !== "")
+        {
+            this.#template = newValue;
+        }
     }
 
     ///
@@ -467,9 +527,9 @@ class AxialComponentBase extends HTMLElement
         {
             throw new TypeError("String value required");
         }
-        if( this.#states.has(stateName) == false )
+        if( this.#states.has(stateName) === false )
         {
-            throw new Error(`The state "${stateName}" is not registered`);
+            throw new Error(`The state ${stateName} is not registered`);
         }
         this.#states.delete(stateName);
     }
@@ -818,5 +878,4 @@ class AxialComponentBase extends HTMLElement
 }
 
 window.customElements.define("axial-component-base", AxialComponentBase);
-
 export { AxialComponentBase }

@@ -1,9 +1,10 @@
 "use strict"
 
-import { AxialButton } from "../button/AxialButton.js";
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
+import { AxialButton } from "../button/AxialButton.js";
+import { AxialToggleCheck } from "../button/AxialToggleCheck.js";
 
-class AxialLoginForm extends AxialComponentBase
+class AxialMessageForm extends AxialComponentBase
 {
     /// vars
     /** @type { String } */
@@ -20,10 +21,16 @@ class AxialLoginForm extends AxialComponentBase
 
     /// ui
     /** @type { HTMLInputElement } */
-    #email;
+    #name;
 
     /** @type { HTMLInputElement } */
-    #password;
+    #email;
+
+    /** @type { HTMLTextAreaElement } */
+    #message;
+
+    /** @type { AxialToggleCheck } */
+    #toggle;
 
     /** @type { AxialButton } */
     #button;
@@ -36,15 +43,19 @@ class AxialLoginForm extends AxialComponentBase
     #boundFocusOutHandler;
 
     /** @type { Function } */
+    #boundToggleHandler;
+
+    /** @type { Function } */
     #boundButtonClickHandler;
 
     constructor()
     {
         super();
-        this.classList.add("axial_login_form");
-        this.template = "axial-login-form-template";
+        this.classList.add("axial_message_form");
+        this.template = "axial-message-form-template";
 
         this.#boundFocusOutHandler = this.#focusOutHandler.bind(this);
+        this.#boundToggleHandler = this.#toggleHandler.bind(this);
         this.#boundButtonClickHandler = this.#buttonClickHandler.bind(this);
     }
 
@@ -66,31 +77,56 @@ class AxialLoginForm extends AxialComponentBase
     {
         super.connectedCallback();
 
+        this.#path = this.getAttribute("axial-path");
+
+        this.#name = this.shadowRoot.getElementById("name");
+        this.#name.addEventListener("focusout", this.#boundFocusOutHandler);
+
         this.#email = this.shadowRoot.getElementById("email");
         this.#email.addEventListener("focusout", this.#boundFocusOutHandler);
 
-        this.#password = this.shadowRoot.getElementById("password");
-        this.#password.addEventListener("focusout", this.#boundFocusOutHandler);
+        this.#message = this.shadowRoot.getElementById("message");
+        this.#message.addEventListener("focusout", this.#boundFocusOutHandler);
 
-        this.#formElements.push(this.#email, this.#password);
+        this.#formElements.push(this.#name, this.#email, this.#message);
+
+        this.#toggle = this.shadowRoot.getElementById("toggle");
+        this.#toggle.addEventListener("toggleChanged", this.#boundToggleHandler);
 
         this.#button = this.shadowRoot.getElementById("button");
-        this.#button.addEventListener("click", this.#boundButtonClickHandler);
     }
 
     #checkFormValidity()
     {
-        let formValid = true;
+        let isValidForm = true;
         for( const element of this.#formElements )
         {
             const elementValid = element.validity.valid;
             if( elementValid === false )
             {
-                formValid = false;
+                isValidForm = false;
                 break;
             }
         }
-        return formValid;
+
+        if( this.#toggle.selected === false )
+        {
+            isValidForm = false;
+        }
+
+        
+        if( isValidForm === true )
+        {
+            this.#button.style.opacity = "1";
+            this.#button.style.pointerEvents = "auto";
+            this.#button.addEventListener("click", this.#boundButtonClickHandler);
+        }
+        else
+        {
+            this.#button.style.opacity = "0.5";
+            this.#button.style.pointerEvents = "none";
+            this.#button.removeEventListener("click", this.#boundButtonClickHandler);
+        }
     }
 
     /**
@@ -110,22 +146,19 @@ class AxialLoginForm extends AxialComponentBase
         {
             element.style.borderColor = this.#errorColor;
         }
-        const isValidForm = this.#checkFormValidity();
-        if( isValidForm === true )
-        {
-            this.#button.style.opacity = "1";
-            this.#button.style.pointerEvents = "auto";
-        }
-        else
-        {
-            this.#button.style.opacity = "0.5";
-            this.#button.style.pointerEvents = "none";
-        }
+        this.#checkFormValidity();
+    }
+
+    #toggleHandler( event )
+    {
+        this.#checkFormValidity();
     }
 
     #buttonClickHandler( event )
     {
         this.#button.removeEventListener("click", this.#boundButtonClickHandler);
+        this.#button.style.opacity = "0.5";
+        this.#button.style.pointerEvents = "none";
         this.#sendForm();
     }
 
@@ -137,42 +170,45 @@ class AxialLoginForm extends AxialComponentBase
             element.style.backgroundColor = "#fff";
             element.style.borderColor = this.#defaultColor;
         }
-
-        this.#button.style.opacity = "0.5";
-        this.#button.style.pointerEvents = "none";
-        this.#button.addEventListener("click", this.#boundButtonClickHandler);
+        this.#toggle.selected = false;
     }
 
     async #sendForm()
     {
         if( this.#path === "" )
         {
-            throw new Error("AxialLoginForm.path is not defined");
+            throw new Error("AxialMessageForm.path is not defined");
         }
+
+        const formSendingEvent = new CustomEvent("formSending");
+        this.dispatchEvent(formSendingEvent);
 
         try
         {
-            const infos = { email: this.#email.value, password: this.#password.value };
-            const response = await fetch(this.#path, { method: "POST", mode:"cors", body: JSON.stringify(infos), headers: { "Content-Type":"application/json" } } );
+            const infos = { name: this.#name.value, email: this.#email.value, message: this.#message.value };
+            const response = await fetch(this.#path, { method: "POST", body: JSON.stringify(infos), headers: { "Content-Type":"application/json" } } );
             const json = await response.json();
             
-            if( json && json.status == "ok" &&json.message == "connected" )
+            if( json )
             {
-                window.location.href = "../admin";
+                const formSentEvent = new CustomEvent("formSent", { detail: { response: json} } );
+                this.dispatchEvent(formSentEvent);
             }
 
         }
         catch( err )
         {
             console.log(err);
+            const formErrorEvent = new CustomEvent("formError", { detail: { error: err} } );
+            this.dispatchEvent(formErrorEvent);
+
         }
         finally
         {
             this.#clearForm();
-            
         }
     }
 }
 
-window.customElements.define("axial-login-form", AxialLoginForm);
-export { AxialLoginForm }
+window.customElements.define("axial-message-form", AxialMessageForm);
+export { AxialMessageForm }

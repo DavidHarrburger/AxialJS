@@ -34,35 +34,31 @@
         <canvas id="canvas" class="axial_3d_canvas"></canvas>
     </template>
 
-    <div id="axialBackgroundLayer" class="axial_background_layer">
-    </div>
-    
-    <div id="axialMainLayer" class="axial_main_layer">
+    <!-- AxialNotifier -->
+    <template id="axial-notifier-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div id="holder" class="axial_notifier_holder">
+            <div id="content" class="axial_notifier_content"></div>
+        </div>
+    </template>
+
+    <div id="axialBackgroundLayer" class="axial_layer_base axial_background_layer">
         <axial-3d-viewer id="viewer" class="axial_3d_viewer-full"></axial-3d-viewer>
     </div>
+    
+    <div id="axialMainLayer" class="axial_main_layer"></div>
 
-    <div id="axialPopupLayer" class="axial_popup_layer">
+    <div id="axialIntroLayer" class="axial_layer_base axial_intro_layer"></div>
+
+    <div id="axialPopupLayer" class="axial_layer_base axial_popup_layer">
         <div id="axialPopupObfuscator" class="axial_popup_obfuscator"></div>
     </div>
+
+    <div id="axialNotificationLayer" class="axial_layer_base axial_notification_layer"></div>
     
-    <div id="axialTooltipLayer" class="ax-tooltip-layer">
-    </div>
+    <div id="axialOverlayLayer" class="axial_layer_base axial_overlay_layer"></div>
 
-    <div id="axialIntroLayer" class="axial_intro_layer">
-    </div>
-
-    <div id="axialLoaderLayer" class="axial_loader_layer">
-        <div id="axialLoaderBackground" class="axial_loader_background"></div>
-        <div id="axialLoaderContent" class="axial_loader_content">
-            <div id="axialLoaderHolder" class="axial_loader_holder">
-                <div id="axialLoaderIcon" class="axial_loader_icon"></div>
-                <div id="axialLoaderNumber" class="axial_loader_number"></div>
-                <div id="axialLoaderText" class="axial_loader_text"></div>
-            </div>
-        </div>
-    </div>
-
-    <axial-notifier id="notifier"></axial-notifier>
+    <div id="axialTooltipLayer" class="axial_layer_base axial_tooltip_layer"></div>
     
     <script src="./application.js" defer></script>
     

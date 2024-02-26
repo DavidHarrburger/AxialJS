@@ -252,6 +252,10 @@ class AxialCommands extends EventEmitter
             let pathProp;
 
             let newPageObject = {};
+            
+            newPageObject.build = true;
+            //newPageObject.active = true; //later
+            
             for( let i = 0; i < paramsLength; i++ )
             {
                 if( i % 2 != 0 ) { continue; }
@@ -372,6 +376,14 @@ class AxialCommands extends EventEmitter
             for( let i = 0; i < pagesLength; i++ )
             {
                 const pageModel = pages[i];
+
+                let shouldBuildPage = true;
+                if( pageModel.build != undefined)
+                {
+                    shouldBuildPage = pageModel.build;
+                }
+
+                if( shouldBuildPage === false ) { continue; }
 
                 // html
                 const htmlSource = path.resolve(this.#currentDirectory, config.project_directory, config.pages_directory, pageModel.name, "index.html" );

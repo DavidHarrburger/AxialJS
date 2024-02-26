@@ -30,6 +30,11 @@ class AxialToggleButtonBase extends AxialButtonBase
         this.addEventListener("click", this.#boundToggleClickHandler);
     }
 
+    connectedCallback()
+    {
+        super.connectedCallback();
+    }
+
     get selected() { return this.#selected; }
     set selected( value )
     {

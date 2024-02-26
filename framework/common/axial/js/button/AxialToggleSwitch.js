@@ -19,6 +19,8 @@ class AxialToggleSwitch extends AxialToggleButtonBase
 
     connectedCallback()
     {
+        super.connectedCallback();
+        
         this.#circleElement = this.shadowRoot.getElementById("circleElement");
     }
 

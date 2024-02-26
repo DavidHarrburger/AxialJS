@@ -2,6 +2,14 @@
 
 Find here what happened and when.
 
+## 2024 - 02 - 26 
+Mainly a front-end update
+* Rework the base structure of the pages to have fixed header and whole scrolling, scupe for sroll parallax
+* Rework lifecycle of web components
+* Remove unused packages and classes
+* Move ```admin``` package to ```form``` and add ```AxialSignoutButton```
+* Add ```AxialTickerBase``` class in the ```effect``` package
+
 ## 2024 - 01 - 23 - Hello 3D!
 First, 1001 thanks to the 3D Community for your amazing work. Especially Three.js Community. You simply rocks and integrating your work in small framework is a real pleasure.
 I would like to especially thanks Mr Doob, creator of Three.js and Bruno Simon, creator of the Three JS Journey that i strongly recommend to 3D newbie :)

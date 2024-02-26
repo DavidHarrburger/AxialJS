@@ -33,6 +33,8 @@ class AxialToggleCheck extends AxialToggleButtonBase
 
     connectedCallback()
     {
+        super.connectedCallback();
+        
         this.#signElement = this.shadowRoot.getElementById("signElement");
         this.#labelElement = this.shadowRoot.getElementById("labelElement");
 

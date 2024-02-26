@@ -42,10 +42,12 @@ class AxialBurgerButton extends AxialToggleButtonBase
         this.#bottom = this.shadowRoot.getElementById("bottom");
     }
 
+    /*
     _finalizeComponent()
     {
         this.popup = AxialPopupManager.getPopupById("axialPopupBurger");
     }
+    */
 
     _onToggleChanged()
     {

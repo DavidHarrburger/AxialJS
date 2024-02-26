@@ -1,8 +1,8 @@
 "use strict"
 
-import { AxialButtonBase  } from "./AxialButtonBase.js";
+import { AxialToggleButtonBase  } from "./AxialToggleButtonBase.js";
 
-class AxialButton extends AxialButtonBase
+class AxialToggleButton extends AxialToggleButtonBase
 {
     /// elements
     /** @type { HTMLElement } */
@@ -46,14 +46,69 @@ class AxialButton extends AxialButtonBase
     constructor()
     {
         super();
-        this.classList.add("axial_button");
-        this.template = "axial-button-template";
+        this.classList.add("axial_toggle_button");
+        this.template = "axial-toggle-button-template";
 
         this.#boundEnterHandler = this.#enterHandler.bind(this);
         this.#boundLeaveHandler = this.#leaveHandler.bind(this);
 
         this.addEventListener("pointerenter", this.#boundEnterHandler);
         this.addEventListener("pointerleave", this.#boundLeaveHandler);
+    }
+
+    static get observedAttributes()
+    {
+        return [ "axial-template", "axial-text", "axial-icon-position" ];
+    }
+
+    connectedCallback()
+    {
+        super.connectedCallback();
+
+        this.#background = this.shadowRoot.getElementById("background");
+        this.#foreground = this.shadowRoot.getElementById("foreground");
+        this.#content = this.shadowRoot.getElementById("content");
+        this.#icon = this.shadowRoot.getElementById("icon");
+        
+        this.#label = this.shadowRoot.getElementById("label");
+        if( this.#label )
+        {
+            this.#label.innerHTML = this.#text;
+        }
+        
+        this.#iconSlot = this.shadowRoot.getElementById("iconSlot");
+
+        this.#layoutComponent();
+    }
+
+    attributeChangedCallback(name, oldValue, newValue)
+    {
+        super.attributeChangedCallback(name, oldValue, newValue);
+        if( name === "axial-text" )
+        {
+            this.#text = newValue;
+            if( this.#label )
+            {
+                this.#label.innerHTML = this.#text;
+            }
+        }
+
+        if( name === "axial-icon-position" )
+        {
+            if( this.#iconPositions.has(newValue) === true )
+            {
+                this.#iconPosition = newValue;
+            }
+        }
+
+        
+        /*
+        if( this.isConnected === true )
+        {
+            this.#layoutComponent();
+        }
+        */
+        
     }
 
     ///
@@ -134,61 +189,6 @@ class AxialButton extends AxialButtonBase
         }
     }
 
-    static get observedAttributes()
-    {
-        return [ "axial-template", "axial-text", "axial-icon-position" ];
-    }
-
-    connectedCallback()
-    {
-        super.connectedCallback();
-
-        this.#background = this.shadowRoot.getElementById("background");
-        this.#foreground = this.shadowRoot.getElementById("foreground");
-        this.#content = this.shadowRoot.getElementById("content");
-        this.#icon = this.shadowRoot.getElementById("icon");
-        
-        this.#label = this.shadowRoot.getElementById("label");
-        if( this.#label )
-        {
-            this.#label.innerHTML = this.#text;
-        }
-        
-        this.#iconSlot = this.shadowRoot.getElementById("iconSlot");
-
-        this.#layoutComponent();
-    }
-
-    attributeChangedCallback(name, oldValue, newValue)
-    {
-        super.attributeChangedCallback(name, oldValue, newValue);
-        if( name === "axial-text" )
-        {
-            this.#text = newValue;
-            if( this.#label )
-            {
-                this.#label.innerHTML = this.#text;
-            }
-        }
-
-        if( name === "axial-icon-position" )
-        {
-            if( this.#iconPositions.has(newValue) === true )
-            {
-                this.#iconPosition = newValue;
-            }
-        }
-
-        
-        /*
-        if( this.isConnected === true )
-        {
-            this.#layoutComponent();
-        }
-        */
-        
-    }
-
     ///
     /// EVENTS
     ///
@@ -199,9 +199,12 @@ class AxialButton extends AxialButtonBase
      */
     #enterHandler( event )
     {
-        if( this.#foreground )
+        if( this.selected === false )
         {
-            this.#foreground.style.backgroundColor = "rgba(255, 255, 255, 0.18)";
+            if( this.#foreground )
+            {
+                this.#foreground.style.backgroundColor = "rgba(255, 255, 255, 0.18)";
+            }
         }
     }
 
@@ -211,14 +214,33 @@ class AxialButton extends AxialButtonBase
      */
     #leaveHandler( event )
     {
-        if( this.#foreground )
+        if( this.selected === false )
         {
-            this.#foreground.style.backgroundColor = "rgba(255, 255, 255, 0)";
+            if( this.#foreground )
+            {
+                this.#foreground.style.backgroundColor = "rgba(255, 255, 255, 0)";
+            }
         }
     }
 
-
+    _onToggleChanged()
+    {
+        if( this.selected === false )
+        {
+            if( this.#foreground )
+            {
+                this.#foreground.style.backgroundColor = "rgba(255, 255, 255, 0)";
+            }
+        }
+        else
+        {
+            if( this.#foreground )
+            {
+                this.#foreground.style.backgroundColor = "rgba(255, 255, 255, 0.18)";
+            }
+        }
+    }
 }
 
-window.customElements.define("axial-button", AxialButton);
-export { AxialButton }
+window.customElements.define("axial-toggle-button", AxialToggleButton);
+export { AxialToggleButton }

@@ -5,6 +5,7 @@ import { AxialToggleButtonBase } from "./AxialToggleButtonBase.js";
 
 class AxialToggleButtonGroupBase extends AxialComponentBase
 {
+    /** @type { Function } */
     #boundToggleChangedHandler;
 
     /** @type { Array<AxialToggleButtonBase> } */
@@ -22,9 +23,14 @@ class AxialToggleButtonGroupBase extends AxialComponentBase
         this.#boundToggleChangedHandler = this.#toggleChangedHandler.bind(this);
     }
 
+    connectedCallback()
+    {
+        super.connectedCallback();
+    }
+    
     _finalizeComponent()
     {
-        const tempToggles = this.getElementsByTagName("*"); // this.children
+        const tempToggles = this.children; // this.getElementsByTagName("*");
         const tempTogglesLength = tempToggles.length;
 
         if( tempTogglesLength > 0 )
@@ -37,16 +43,11 @@ class AxialToggleButtonGroupBase extends AxialComponentBase
                 {
                     this.add(tempToggle);
                 }
-                /*
-                else
-                {
-                    throw new Error("Elements in an AxialToggleButtonGroupBase must be or extends AxialToggleButtonBase");
-                }
-                */
-                
+                //else { throw new Error("Elements in an AxialToggleButtonGroupBase must be or extends AxialToggleButtonBase"); }
             }
         }
     }
+    
 
     /**
      * Returns a copy of the current AxialToggleButtonBase in the group.

@@ -2,7 +2,10 @@
 
 class Point
 {
+    /** @type { Number } */
     #x;
+
+    /** @type { Number } */
     #y;
     
     /**

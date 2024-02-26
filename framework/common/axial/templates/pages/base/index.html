@@ -3,16 +3,12 @@
 <head>
     <meta charset="utf-8">
 
-    <!-- ELECTRON -->
-    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'"> -->
-    <!-- <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'"> -->
-
     <title>AXIAL</title>
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
 
-    <meta property="og:url"                 content="" />
+    <meta property="og:url"                 content="https://dndev.fr/" />
     <meta property="og:type"                content="website" />
     <meta property="og:title"               content="" />
     <meta property="og:description"         content="" />
@@ -20,7 +16,7 @@
     <meta property="og:image:width"         content="" />
     <meta property="og:image:height"        content="" />
     
-    <link rel="icon" type="image/x-icon" href="./assets/favicon/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="../assets/favicon/favicon.ico">
 
     <link rel="stylesheet" href="./styles.css">
 </head>
@@ -28,9 +24,15 @@
 <body>
 
     <!--$$$ COMPONENTS_ENTRY_POINT $$$-->
-
-    <div id="axialBackgroundLayer" class="axial_background_layer">
-    </div>
+    <!-- AxialNotifier -->
+    <template id="axial-notifier-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div id="holder" class="axial_notifier_holder">
+            <div id="content" class="axial_notifier_content"></div>
+        </div>
+    </template>
+    
+    <div id="axialBackgroundLayer" class="axial_layer_base axial_background_layer"></div>
     
     <div id="axialMainLayer" class="axial_main_layer">
 
@@ -38,40 +40,9 @@
         <header class="axial_header">
             <div class="axial_header_background"></div>
             <div class="axial_header_content">
-                <a class="axial_header_logo" href="./" target="_self">
-                    <img class="axial_header_logo_img" alt="logo" src="" width="100" height="100">
+                <a class="axial_header_logo" href="../" target="_self">
+                    <img class="axial_header_logo_img" alt="logo" src="../assets/logo-dnd.png" width="500" height="500">
                 </a>
-                <div class="axial_spacer"></div>
-                <axial-navigation-helper id="mainNavigationHelper">
-                    <nav class="axial_header_nav">
-                        <a class="axial_header_nav_item" target="_self" href="./item">
-                            <div class="axial_header_nav_item-label">Item 1</div>
-                            <div class="axial_header_nav_item-line"></div>
-                        </a>
-                        
-                        <div class="axial_header_nav_item_separator"></div>
-
-                        <a class="axial_header_nav_item" target="_self" href="./item2/">
-                            <div class="axial_header_nav_item-label">Item 2</div>
-                            <div class="axial_header_nav_item-line"></div>
-                        </a>
-
-                        <div class="axial_header_nav_item_separator"></div>
-
-                        <a class="axial_header_nav_item" target="_self" href="./item3/">
-                            <div class="axial_header_nav_item-label">Item 3</div>
-                            <div class="axial_header_nav_item-line"></div>
-                        </a>
-
-                        <div class="axial_header_nav_item_separator"></div>
-
-                        <a class="axial_header_nav_item" target="_self" href="./item4/">
-                            <div class="axial_header_nav_item-label">Item 4</div>
-                            <div class="axial_header_nav_item-line"></div>
-                        </a>
-                    </nav>
-                </axial-navigation-helper>
-                <axial-burger-button id="axialBurgerButton"></axial-burger-button>
             </div>
         </header>
 
@@ -81,7 +52,31 @@
             <!-- FIRST SECTION -->
             <section class="axial_section">
                 <div class="axial_section_background"></div>
-                <div class="axial_section_content axial_section_padding"></div>
+                <div class="axial_section_content axial_section_padding">SECTION 1</div>
+            </section>
+
+            <!-- FIRST SECTION -->
+            <section class="axial_section">
+                <div class="axial_section_background"></div>
+                <div class="axial_section_content axial_section_padding">SECTION 2</div>
+            </section>
+
+            <!-- FIRST SECTION -->
+            <section class="axial_section">
+                <div class="axial_section_background"></div>
+                <div class="axial_section_content axial_section_padding">SECTION 3</div>
+            </section>
+
+            <!-- FIRST SECTION -->
+            <section class="axial_section">
+                <div class="axial_section_background"></div>
+                <div class="axial_section_content axial_section_padding">SECTION 4</div>
+            </section>
+
+            <!-- FIRST SECTION -->
+            <section class="axial_section">
+                <div class="axial_section_background"></div>
+                <div class="axial_section_content axial_section_padding">SECTION 5</div>
             </section>
 
             <!--$$$ FOOTER_ENTRY_POINT $$$-->
@@ -93,31 +88,21 @@
             </footer>
 
         </main>
-
+        
     </div>
 
-    <div id="axialPopupLayer" class="axial_popup_layer">
+    <div id="axialIntroLayer" class="axial_layer_base axial_intro_layer"></div>
+
+    <div id="axialPopupLayer" class="axial_layer_base axial_popup_layer">
         <div id="axialPopupObfuscator" class="axial_popup_obfuscator"></div>
     </div>
     
-    <div id="axialTooltipLayer" class="ax-tooltip-layer">
-    </div>
+    <div id="axialNotificationLayer" class="axial_layer_base axial_notification_layer"></div>
 
-    <div id="axialIntroLayer" class="axial_intro_layer">
-    </div>
+    <div id="axialOverlayLayer" class="axial_layer_base axial_overlay_layer"></div>
 
-    <div id="axialLoaderLayer" class="axial_loader_layer">
-        <div id="axialLoaderBackground" class="axial_loader_background"></div>
-        <div id="axialLoaderContent" class="axial_loader_content">
-            <div id="axialLoaderHolder" class="axial_loader_holder">
-                <div id="axialLoaderIcon" class="axial_loader_icon"></div>
-                <div id="axialLoaderNumber" class="axial_loader_number"></div>
-                <div id="axialLoaderText" class="axial_loader_text"></div>
-            </div>
-        </div>
-    </div>
+    <div id="axialTooltipLayer" class="axial_layer_base axial_tooltip_layer"></div>
 
-    <axial-notifier id="notifier"></axial-notifier>
     
     <script src="./application.js" defer></script>
     
