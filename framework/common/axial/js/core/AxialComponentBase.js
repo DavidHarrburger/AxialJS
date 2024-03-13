@@ -388,7 +388,7 @@ class AxialComponentBase extends HTMLElement
     /**
      * 
      */
-    get useResizeObserver() { return this.useResizeObserver; }
+    get useResizeObserver() { return this.#useResizeObserver; }
     set useResizeObserver( value )
     {
         if( typeof value !== "boolean" )

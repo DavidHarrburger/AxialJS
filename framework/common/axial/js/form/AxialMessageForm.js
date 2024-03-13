@@ -24,6 +24,9 @@ class AxialMessageForm extends AxialComponentBase
     #name;
 
     /** @type { HTMLInputElement } */
+    #surname;
+
+    /** @type { HTMLInputElement } */
     #email;
 
     /** @type { HTMLTextAreaElement } */
@@ -82,13 +85,16 @@ class AxialMessageForm extends AxialComponentBase
         this.#name = this.shadowRoot.getElementById("name");
         this.#name.addEventListener("focusout", this.#boundFocusOutHandler);
 
+        this.#surname = this.shadowRoot.getElementById("surname");
+        this.#surname.addEventListener("focusout", this.#boundFocusOutHandler);
+
         this.#email = this.shadowRoot.getElementById("email");
         this.#email.addEventListener("focusout", this.#boundFocusOutHandler);
 
         this.#message = this.shadowRoot.getElementById("message");
         this.#message.addEventListener("focusout", this.#boundFocusOutHandler);
 
-        this.#formElements.push(this.#name, this.#email, this.#message);
+        this.#formElements.push(this.#name, this.#surname, this.#email, this.#message);
 
         this.#toggle = this.shadowRoot.getElementById("toggle");
         this.#toggle.addEventListener("toggleChanged", this.#boundToggleHandler);
@@ -185,13 +191,13 @@ class AxialMessageForm extends AxialComponentBase
 
         try
         {
-            const infos = { name: this.#name.value, email: this.#email.value, message: this.#message.value };
+            const infos = { name: this.#name.value, surname: this.#surname.value, email: this.#email.value, message: this.#message.value };
             const response = await fetch(this.#path, { method: "POST", body: JSON.stringify(infos), headers: { "Content-Type":"application/json" } } );
             const json = await response.json();
             
             if( json )
             {
-                const formSentEvent = new CustomEvent("formSent", { detail: { response: json} } );
+                const formSentEvent = new CustomEvent("formSent", { detail: { response: json } } );
                 this.dispatchEvent(formSentEvent);
             }
 
@@ -199,7 +205,7 @@ class AxialMessageForm extends AxialComponentBase
         catch( err )
         {
             console.log(err);
-            const formErrorEvent = new CustomEvent("formError", { detail: { error: err} } );
+            const formErrorEvent = new CustomEvent("formError", { detail: { error: err } } );
             this.dispatchEvent(formErrorEvent);
 
         }

@@ -95,7 +95,40 @@ class AxialApplicationBase extends EventTarget
     #language = undefined;
 
     ///
-    /// SCROLL PARALLAX
+    /// PART: STATS
+    ///
+
+    /**
+     * @private
+     * @type { Object }
+     */
+    #statsObject =
+    {
+        url: window.location.href,
+        dom: false,
+        load: false
+    };
+
+    /**
+     * @private
+     * @type { Boolean }
+     */
+    #useStats = false;
+
+    /**
+     * @private
+     * @type { String }
+     */
+    #statsPath;
+
+    /**
+     * @private
+     * @type { Function }
+     */
+    #boundApplicationBeforeUnloadHandler;
+
+    ///
+    /// PART : SCROLL PARALLAX
     ///
 
     /// parallax elements
@@ -155,6 +188,32 @@ class AxialApplicationBase extends EventTarget
      */
     #boundScrollParallax;
 
+    ///
+    /// PART : TRANSITION LAYER
+    ///
+
+    /**
+     * @private
+     * @type { HTMLElement }
+     */
+    #transitionLayer;
+
+    /**
+     * @private
+     * @type { Boolean }
+     */
+    #usePageTransitions = false;
+
+    /**
+     * @orivate
+     * @type { Function }
+     */
+    #boundAnchorClickHandler;
+
+    /**
+     * @type { String }
+     */
+    #nextLocation;
 
     /**
      * Create the main AxialApplicationBase and make it a property of its window.
@@ -193,6 +252,12 @@ class AxialApplicationBase extends EventTarget
         this.#boundApplicationResizeHandler = this.#applicationResizeHandler.bind(this);
         this.#boundWindowResizeHandler = this.#windowResizeHandler.bind(this);
 
+        // stats
+        this.#boundApplicationBeforeUnloadHandler = this.#applicationBeforeUnloadHandler.bind(this);
+
+        // transition layer
+        this.#boundAnchorClickHandler = this.#anchorClickHandler.bind(this);
+
         // scroll and parallax
         this.#boundScrollHandler = this.#scrollHandler.bind(this);
         this.#boundScrollParallax = this.#scrollParallax.bind(this);
@@ -201,6 +266,7 @@ class AxialApplicationBase extends EventTarget
         
         window.addEventListener("DOMContentLoaded", this.#boundApplicationDomLoadedHandler);
         window.addEventListener("load", this.#boundApplicationPageLoadedHandler);
+        window.addEventListener("beforeunload", this.#boundApplicationBeforeUnloadHandler);
     }
 
     get language() { return this.#language; }
@@ -252,13 +318,6 @@ class AxialApplicationBase extends EventTarget
             throw new TypeError("String value required");
         }
         this.#dataPath = value;
-        // to check
-        /*
-        if( this.#applicationPageLoaded === true )
-        {
-            this.#loadData;
-        }
-        */
     }
 
     /**
@@ -310,9 +369,54 @@ class AxialApplicationBase extends EventTarget
      * @public
      * @abstract
      */
-    _onApplicationDataChanged()
+    _onApplicationDataChanged() {}
+
+    ///
+    /// PART: STATS
+    ///
+
+    get useStats() { return this.#useStats; }
+    set useStats( value )
     {
-        console.log("AxialApplicationBase._onApplicationDataChanged()");
+        if( typeof value !== "boolean" )
+        {
+            throw new TypeError("Boolean value required");
+        }
+        this.#useStats = value;
+    }
+
+    get statsPath() { return this.#statsPath; }
+    set statsPath( value )
+    {
+        if( typeof value !== "string" )
+        {
+            throw new TypeError("String value required");
+        }
+        // control value here could be cool for https
+        this.#statsPath = value;
+    }
+
+    async #sendStats()
+    {
+        try
+        {
+            if( this.#useStats === true && this.#statsPath !== undefined )
+            {
+                //this.#statsObject.end = new Date();
+                console.log(JSON.stringify(this.#statsObject));
+                const response = await fetch( this.#statsPath, { method: "POST", keepalive: true, body: JSON.stringify(this.#statsObject), headers: { "Content-Type":"application/json" } } );
+            }
+        }
+        catch(err)
+        {
+            console.log("STATS ERROR")
+            console.log(err);
+        }
+    }
+
+    async #applicationBeforeUnloadHandler( event )
+    {
+        await this.#sendStats();
     }
 
     ///
@@ -335,12 +439,38 @@ class AxialApplicationBase extends EventTarget
     #applicationDomLoadedHandler(event)
     {
         this.#applicationDomLoaded = true;
+
+        // stats
+        this.#statsObject.dom = true;
+
+        // transition layer
+        this.#transitionLayer = document.getElementById("axialTransitionLayer");
+
+        const anchors = document.getElementsByTagName("a");
+        for( const anchor of anchors )
+        {
+            anchor.addEventListener("click", this.#boundAnchorClickHandler);
+        }
+
+        if( this.#usePageTransitions === true )
+        {
+            if( this._preparePageTransitions )
+            {
+                this._preparePageTransitions();
+            }
+        }
+        else
+        {
+            if( this.#transitionLayer )
+            {
+                this.#transitionLayer.style.display = "none";
+            }
+        }
         
         // scroll parallax
         this.#scrollParallaxHolder = document.getElementsByTagName("main")[0];
         this.#scrollParallaxSections = document.getElementsByTagName("section");
 
-        console.log( "this.useScrollParallax = " + this.useScrollParallax);
         if( this.useScrollParallax === true )
         {
             this.#prepareParallax();
@@ -381,17 +511,23 @@ class AxialApplicationBase extends EventTarget
      * Call its associated _onApplicationPageLoaded method.
      * @private
      */
-    #applicationPageLoadedHandler(event)
+    #applicationPageLoadedHandler( event )
     {
         this.#applicationPageLoaded = true;
 
-        // parallax
+        //  --> go to add parallax
         window.addEventListener("scroll", this.#boundScrollHandler);
-        /*
-        if( this.#dataPath !== undefined )
+        if( this.useScrollParallax === true )
         {
-            this.#loadData();
-        }*/
+            window.requestAnimationFrame( this.#boundScrollParallax );
+        }
+
+        // transition layer
+        if( this.#usePageTransitions === true && this._playIntroTransition )
+        {
+            this._playIntroTransition();
+        }
+
 
         if( this._onApplicationPageLoaded )
         {
@@ -405,10 +541,7 @@ class AxialApplicationBase extends EventTarget
      * @param { Event } event - The load event of the window.
      * @abstract
      */
-    _onApplicationPageLoaded(event)
-    {
-        //console.log("AxialApplicationBase._onApplicationPageLoaded()");
-    }
+    _onApplicationPageLoaded( event ) {}
 
     get useApplicationResize() { return this.useApplicationResize; }
     set useApplicationResize( value )
@@ -452,10 +585,10 @@ class AxialApplicationBase extends EventTarget
         }
     }
 
-    _onApplicationResize()
-    {
-        //console.log("AxialApplicationBase._onApplicationResize()");
-    }
+    /**
+     * @abstract
+     */
+    _onApplicationResize() {}
 
     ///
     /// PART: SCROLL PARALLAX
@@ -512,17 +645,14 @@ class AxialApplicationBase extends EventTarget
             let outerSectionRatio = 0;
             if( sectionBounds.top >= h )
             {
-                sectionRatio = 0;
                 outerSectionRatio = 0;
             }
             else if( (sectionBounds.top + sectionBounds.height) <= 0 )
             {
-                sectionRatio = 1;
                 outerSectionRatio = 1;
             }
             else
             {
-                sectionRatio = 1 - (sectionBounds.top + sectionBounds.height) / (sectionBounds.height + h );
                 outerSectionRatio = 1 - (sectionBounds.top + sectionBounds.height) / (sectionBounds.height + h );
             }
 
@@ -631,10 +761,82 @@ class AxialApplicationBase extends EventTarget
         }
     }
 
-    _onParallaxSectionChanged( section, outer, inner, elapsed, delta )
-    {
+    /**
+     * @abstract
+     * @param { HTMLElement } section 
+     * @param { Number } outer 
+     * @param { Number } inner 
+     * @param { Number } elapsed 
+     * @param { Number } delta 
+     */
+    _onParallaxSectionChanged( section, outer, inner, elapsed, delta ) {}
 
+    ///
+    /// PART : TRANSITION LAYER
+    ///
+
+    /**
+     * @readonly
+     */
+    get transitionLayer() { return this.#transitionLayer; }
+
+    get usePageTransitions() { return this.#usePageTransitions; }
+    set usePageTransitions( value )
+    {
+        if( typeof value !== "boolean" )
+        {
+            throw new TypeError("Boolean value required");
+        }
+        if( this.#usePageTransitions === value ) { return; }
+        this.#usePageTransitions = value;
     }
+
+    get nextLocation() { return this.#nextLocation; }
+    set nextLocation( value )
+    {
+        if( typeof value !== "string" )
+        {
+            throw new TypeError("String value required");
+        }
+        this.#nextLocation = value;
+    }
+
+    /**
+     * 
+     * @param { MouseEvent } event 
+     */
+    #anchorClickHandler( event )
+    {
+        if( this.#usePageTransitions === true )
+        {
+            event.preventDefault();
+            const href = event.currentTarget.href;
+            if( href == window.location.href ) { return; }
+            this.#nextLocation = href;
+            if( this._playOutroTransition )
+            {
+                this._playOutroTransition();
+            }
+        }
+    }
+
+    /**
+     * Add your ouwn logic to prepare the transition between the pages
+     * @abstract
+     */
+    _preparePageTransitions() {}
+
+    /**
+     * Here you place the code to play the intro transition
+     * This function is played when the page is loaded
+     * @abstract
+     */
+    _playIntroTransition() {}
+
+    /**
+     * @abstract
+     */
+    _playOutroTransition() {}
 }
 
 export { AxialApplicationBase }

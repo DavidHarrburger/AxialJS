@@ -2,9 +2,15 @@
 
 Find here what happened and when.
 
+## 2024 - 03 - 13 
+
+* AxialMessageForm little review
+* Add stat in backend and front  - not finished yet
+* Intro / outro experimental layer
+
 ## 2024 - 02 - 26 
 Mainly a front-end update
-* Rework the base structure of the pages to have fixed header and whole scrolling, scupe for sroll parallax
+* Rework the base structure of the pages to have fixed header and whole scrolling, scope for sroll parallax
 * Rework lifecycle of web components
 * Remove unused packages and classes
 * Move ```admin``` package to ```form``` and add ```AxialSignoutButton```

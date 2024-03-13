@@ -136,18 +136,27 @@
         <link rel="stylesheet" href="./styles.css">
         <form id="form" class="axial_login_form-form">
             
-            <label for="name">Vos nom et prénom :</label>
-            <input class="axial_message_form-input" type="text" name="nameInput" id="name" required minlength="12">
+            <div class="axial_form_utils_grid">
+                <div class="axial_form_utils_column-1">
+                    <label for="name">Votre prénom :</label>
+                    <input class="axial_contact_form-input" type="text" name="nameInput" id="name" minlength="3" required autocomplete="given-name">
+                </div>
+                
+                <div class="axial_form_utils_column-2">
+                    <label for="surname">Votre nom :</label>
+                    <input class="axial_contact_form-input" type="text" name="surnameInput" id="surname" minlength="4" required autocomplete="family-name">
+                </div>
+            </div>
 
             <label for="email">Votre email :</label>
             <input class="axial_message_form-input" type="email" name="emailInput" id="email" required minlength="8" maxlength="60">
             
-            <label for="message">Votrez message :</label>
+            <label for="message">Votre message :</label>
             <textarea class="axial_message_form-input" name="messageArea" id="message" required maxlength="300"></textarea>
 
             <axial-toggle-check id="toggle" axial-label="J'ai lu et compris la politique de confidentialité." class="axial_message_form-toggle"></axial-toggle-check>
             
-            <axial-button id="button" axial-label="Envoyer" class="axial_login_form-button"></axial-button>
+            <axial-button id="button" axial-text="Envoyer" class="axial_login_form-button"></axial-button>
         </form>
     </template>
 
