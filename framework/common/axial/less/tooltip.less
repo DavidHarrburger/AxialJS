@@ -1,90 +1,40 @@
-.ax-tooltip-layer
-{
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    width: 100%;
-}
-
-.ax-tooltip
+/* TOOLTIP NEW 2024 */
+.axial_tooltip_base
 {
     position: absolute;
     visibility: hidden;
-    display: flex;
-}
-.ax-tooltip-arrow
-{
-    position: absolute;
-    visibility: hidden;
-}
-
-.ax-tooltip-label
-{
-    height: auto;
-
-    min-height: 10px;
-    min-width: 10px;
-    max-width: 180px;
     
-    padding: 9px;
-    text-align: left;
-    display: flex;
-    font-weight: 400;
+    opacity: 1;
+    transform: translate(0%, 0%);
+
+    transition-property: none;
+    transition-duration: 500ms;
+    transition-timing-function: ease;
+
+    padding-left: 14px;
+    padding-right: 14px;
+    padding-bottom: 14px;
+    padding-top: 14px;
+
+    border: 1px solid #000;
+    background-color: rgba(0, 0, 0, 0.73);
+    backdrop-filter: blur(8px);
+    color: var(--white);
+    border-radius: 10px;
     font-size: 13px;
-
-    color: #fff;
-    background-color: #000;
+    font-weight: 600;
 }
 
-.ax-tooltip-element
+/* OVERLAY NEW 2024 */
+.axial_overlay_base
 {
     position: absolute;
+    visibility: hidden;
     
-    min-height: 10px;
-    min-width: 10px;
-    max-width: 180px;
-    height: auto;
-    padding: 12px;
-    text-align: left;
-    display: flex;
-    font-weight: 400;
-    font-size: 12px;
+    opacity: 1;
+    transform: translate(0%, 0%);
 
-    color: #fff;
-    background-color: #000;
-}
-
-.ax-tooltip-icon-space
-{
-    padding-right: 10px;
-}
-
-
-/* arrow up */
-.ax-tooltip-arrow-bottom
-{
-    border-left: 6px solid transparent;
-    border-right: 6px solid transparent;
-    border-bottom: 6px solid #000;
-}
-/* arrow down */
-.ax-tooltip-arrow-top
-{
-    border-left: 6px solid transparent;
-    border-right: 6px solid transparent;
-    border-top: 6px solid #000;
-}
-/* arrow left */
-.ax-tooltip-arrow-right
-{
-    border-bottom: 6px solid transparent;
-    border-top: 6px solid transparent;
-    border-right: 6px solid #000;
-}
-/* arrow right */
-.ax-tooltip-arrow-left
-{
-    border-bottom: 6px solid transparent;
-    border-top: 6px solid transparent;
-    border-left: 6px solid #000;
+    transition-property: none;
+    transition-duration: 500ms;
+    transition-timing-function: ease;
 }

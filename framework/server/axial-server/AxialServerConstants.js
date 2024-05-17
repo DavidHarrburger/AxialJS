@@ -12,3 +12,9 @@ export const EMAIL_PASS = "";
 export const EMAIL_PORT = 465;
 export const EMAIL_USER = "";
 export const EMAIL_RECIPIENT = "";
+
+export const AUTH_LOGIN_PATH = "/login_example";
+export const AUTH_PATHES = 
+[
+    { path: "/for_example" }
+];

@@ -1,0 +1,16 @@
+<!-- AxialRegistrationForm -->
+<template id="axial-registration-form-template">
+    <link rel="stylesheet" href="./styles.css">
+    <form id="form" class="axial_login_form-form">
+        <label for="username">Username:</label>
+        <input class="axial_registration_form-input" type="text" name="usernameInput" id="username" required minlength="4" maxlength="30">
+
+        <label for="email">Email:</label>
+        <input class="axial_registration_form-input" type="email" name="emailInput" id="email" required minlength="8" maxlength="60">
+        
+        <label for="password">Password:</label>
+        <input class="axial_registration_form-input" type="password" name="passwordInput" id="password" required minlength="12">
+        
+        <axial-button id="button" axial-label="Register" class="axial_registration_form-button"></axial-button>
+    </form>
+</template>

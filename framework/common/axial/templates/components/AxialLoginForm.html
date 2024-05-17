@@ -1,0 +1,13 @@
+<!-- AxialLoginForm -->
+<template id="axial-login-form-template">
+    <link rel="stylesheet" href="./styles.css">
+    <form id="form" class="axial_login_form-form">
+        <label for="emailInput">Email:</label>
+        <input class="axial_login_form-input" type="email" name="emailInput" id="email" required minlength="8" maxlength="60">
+        
+        <label for="passwordInput">Password:</label>
+        <input class="axial_login_form-input" type="password" name="passwordInput" id="password" required minlength="12">
+        
+        <axial-button id="button" axial-label="Submit" class="axial_login_form-button"></axial-button>
+    </form>
+</template>

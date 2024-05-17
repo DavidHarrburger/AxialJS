@@ -1,8 +1,36 @@
+import
+{
+    DATABASE_URL,
+    DATABASE_NAME,
+
+    CRYPTO_ALGORITHM,
+    CRYPTO_KEY,
+    CRYPTO_IV,
+
+    JWT_SECRET_KEY,
+
+    EMAIL_HOST,
+    EMAIL_PASS,
+    EMAIL_PORT,
+    EMAIL_USER,
+    EMAIL_RECIPIENT,
+
+    AUTH_LOGIN_PATH,
+    AUTH_PATHES
+}
+from "./axial-server/AxialServerConstants.js";
+import { AxialMongoUtils } from "./axial-server/AxialMongoUtils.js";
+import { AxialCryptoUtils } from "./axial-server/AxialCryptoUtils.js";
+
 import express from "express";
 import path from "node:path";
+import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
 
 import nodemailer from "nodemailer";
+import cookieParser from "cookie-parser";
+import jwt from "jsonwebtoken";
+import { MongoClient, ServerApiVersion } from "mongodb";
 
 const FILENAME = fileURLToPath( import.meta.url );
 const DIRNAME = path.dirname(FILENAME);
@@ -10,12 +38,7 @@ const DIRNAME = path.dirname(FILENAME);
 const BASIC_OK = { status: "ok" };
 const BASIC_KO = { status: "ko" };
 
-const EMAIL_HOST = "your.host.net";
-const EMAIL_PASS = "your_super_password";
-const EMAIL_PORT = 465;
-const EMAIL_USER = "no-reply@domain.com";
-const EMAIL_RECIPIENT = "recipient@domain.com";
-
+/*
 const EMAIL_TRANSPORTER = nodemailer.createTransport(
 {
     host: EMAIL_HOST,
@@ -27,6 +50,24 @@ const EMAIL_TRANSPORTER = nodemailer.createTransport(
         pass: EMAIL_PASS
     }
 });
+*/
+
+/*
+const MONGO_CLIENT = new MongoClient( DATABASE_URL,
+    {
+        serverApi:
+        {
+            version: ServerApiVersion.v1,
+            strict: true,
+            deprecationErrors: true,
+        }
+    }
+);
+*/
+
+///
+/// AXIAL MIDDLEWARES
+///
 
 /**
  * 
@@ -47,17 +88,135 @@ const startMiddleware = function ( request, response, next )
  * @param { Express.Response } response 
  * @param { Function } next 
  */
+const authMiddleware = async function( request, response, next )
+{
+    // First check if auth path is authorized
+    const requestedPath = request.path;
+    let authRequired = false;
+
+    for( const authPath of AUTH_PATHES )
+    {
+        if( requestedPath === authPath.path || requestedPath === ( authPath.path + "/" ) )
+        {
+            authRequired = true;
+            break;
+        }
+    }
+
+    //console.log( "authRequired = " + authRequired );
+
+    if( authRequired === false )
+    {
+        next();
+        return;
+    }
+
+    // check now if user is already connected
+    const token = request.cookies.axial_auth_jwt;
+    console.log( "token = " + token );
+    if( token === undefined )
+    {
+        // token does not exist, the user is not connected so we redirect the user to ask connexion
+        response.redirect( AUTH_LOGIN_PATH );
+        return;
+    }
+
+    // we have a token, time to check it
+    try
+    {
+        const verifiedToken = jwt.verify(token, JWT_SECRET_KEY); // if invalid catch
+        const client = await MONGO_CLIENT.connect();
+        //console.log("test crash");
+        const db = client.db(DATABASE_NAME);
+        const users = db.collection("users");
+        const user = await users.findOne( { uuid: verifiedToken.uuid } );
+
+        if( user !== null )
+        {
+            // cool the token is ok and the user exists, he can go to the page
+            next();
+        }
+        else
+        {
+            // the user does not exist, weird. we redirect to the home
+            response.redirect( "/" );
+        }
+    }
+    catch( err )
+    {
+        console.log(err);
+        response.json( { status: "ko", error: err.message } );
+    }
+    finally
+    {
+        //await MONGO_CLIENT.close();
+    }
+};
+
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ * @param { Function } next 
+ */
 const finalMiddleware = function( request, response, next )
 {
     response.redirect("/");
 };
 
+///
+/// MAIL PART
+///
+const apiMailGetHandler = async function( request, response )
+{
+    try
+    {
+        const client = await MONGO_CLIENT.connect();
+        const db = client.db( DATABASE_NAME );
+        const collection = db.collection("mails");
+        const docs = await collection.find({}).toArray();
+        console.log(docs);
+        let mails = new Array();
+        for( const item of docs )
+        {
+            let mail = {};
+            for( const prop of Object.keys( item ) )
+            {
+                if( typeof item[prop] === "string" )
+                {
+                    mail[prop] = AxialCryptoUtils.decrypt( item[prop] );
+                }
+                else
+                {
+                    mail[prop] = item[prop];
+                }
+            }
+            mails.push( mail );
+        }
+        response.json( { status: "ok", mails: mails } );
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( { status: "ko", error: err } );
+    }
+};
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
 const apiMailMessagePostHandler = async function( request, response )
 {
     try
     {
-        const body = request.body;
-        const infos = { name: body.name, email: body.email, message: body.message };
+        let body = request.body;
+        const infos = { name: body.name, surname: body.surname, email: body.email, message: body.message };
+
+        // check body
+
+
+        //await AxialMongoUtils.registerInCollection( MONGO_CLIENT, "mails", body, true );
 
         let htmlFrom = "<h2>Votre message à dndev.fr !</h2>";
         htmlFrom += "<p>Merci d'avoir pris contact. Nous vous répondrons dans les plus brefs délais. Ci-dessous le message que vous avez envoyé :";
@@ -65,7 +224,7 @@ const apiMailMessagePostHandler = async function( request, response )
 
         const mailFrom = await EMAIL_TRANSPORTER.sendMail(
         {
-            from: "<" + EMAIL_USER + ">",
+            from: "<no-reply@dndev.fr>",
             to: infos.email,
             subject: "Votre message à dndev.fr",
             html: htmlFrom
@@ -93,6 +252,11 @@ const apiMailMessagePostHandler = async function( request, response )
     }
 };
 
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
 const apiMailContactPostHandler = async function( request, response )
 {
     try
@@ -143,7 +307,6 @@ const apiMailContactPostHandler = async function( request, response )
             html: htmlTo
         });
         
-
         response.json( { status: "ok", mid: mailFrom.messageId } );
     }
     catch( err )
@@ -153,6 +316,194 @@ const apiMailContactPostHandler = async function( request, response )
     }
 };
 
+///
+/// STATS PART
+///
+
+const apiStatsAddHandler = async function( request, response )
+{
+    try
+    {
+        const body = request.body;
+        await AxialMongoUtils.registerInCollection( MONGO_CLIENT, "stats", body );
+        response.json( BASIC_OK );
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( { status: "ko", error: err } );
+    }
+};
+
+const apiStatsGetHandler = async function( request, response )
+{
+    try
+    {
+        const client = await MONGO_CLIENT.connect();
+        const db = client.db( DATABASE_NAME );
+        const collection = db.collection("stats");
+        const docs = await collection.find({}).toArray();
+        response.json( { status: "ok", stats: docs } );
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( { status: "ko", error: err } );
+    }
+};
+
+///
+/// CRYPTO PART
+///
+
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiCryptoUuidHandler = function( request, response )
+{
+    try
+    {
+        const uuid = crypto.randomUUID();
+        response.json( { status: "ok", uuid: uuid } );
+    }
+    catch( err )
+    {
+        console.log(err);
+        response.json( { status: "ko", error: err } );
+    }
+};
+
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiCryptoKeyHandler = function( request, response )
+{
+    try
+    {
+        const n = Number(request.query.n);
+        const key = AxialCryptoUtils.generateKey(n);
+        response.json( { status: "ok", key: key } );
+    }
+    catch( err )
+    {
+        console.log(err);
+        response.json( { status: "ko", error: err } );
+    }
+};
+
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiCryptoEncryptHandler = function( request, response )
+{
+    try
+    {
+        const s = request.query.s;
+        if( s == undefined || s == "" )
+        {
+            response.json( { status: "ko", error: "no string provided" } );
+        }
+        else
+        {
+            const encrypted = AxialCryptoUtils.encrypt(s);
+            response.json( { status: "ok", encrypted: encrypted } );
+        }
+    }
+    catch( err )
+    {
+        console.log(err);
+        response.json( { status: "ko", error: err } );
+    }
+};
+
+///
+/// LOGIN PART
+///
+
+const apiAuthSigninHandler = async function( request, response )
+{
+    try
+    {
+        const body = request.body;
+
+        const email = body.email;
+        const password = body.password;
+
+        const client = await MONGO_CLIENT.connect();
+        const db = client.db( DATABASE_NAME );
+        const users = db.collection("users");
+        const encryptedEmail = AxialCryptoUtils.encrypt( email );
+        const user = await users.findOne( { email: encryptedEmail } );
+        
+        if( user === null )
+        {
+            response.json( { status: "ko", message: "user email not registered" } );
+        }
+        else
+        {
+            const encryptedPassword = AxialCryptoUtils.encrypt( password );
+            const passwordValid = user.password === encryptedPassword;
+            if( passwordValid === false )
+            {
+                // add a secure layer in the user object and a count on the server
+                response.json( { status: "ko", message: "wrong password" } );
+            }
+            else
+            {
+                console.log("it's okkkkkk");
+                const responseUser = { username: user.username };
+                const payload = 
+                {
+                    username: user.username,
+                    uuid: user.uuid,
+                };
+                const token = jwt.sign( JSON.stringify(payload), JWT_SECRET_KEY );
+
+                response.cookie( "axial_auth_jwt", token, { httpOnly: true } );
+                response.json( { status: "ok", message: "connected", user: responseUser } );
+            }
+        }
+    }
+    catch( err )
+    {
+        response.json( { status: "ko", error: err.message } );
+    }
+    finally
+    {
+        //await MONGO_CLIENT.close();
+    }
+};
+
+
+const apiAuthSignupHandler = function( request, response )
+{
+    response.json( BASIC_OK );
+};
+
+// post
+const apiAuthSignoutHandler = function( request, response )
+{
+    try
+    {
+        response.clearCookie( "axial_auth_jwt", { httpOnly: true } );
+        response.json( { status: "ok", message: "disconnected" } );
+    }
+    catch(err)
+    {
+        console.log(err);
+    }
+};
+
+///
+/// SERVER ROUTES
+///
+
 const AXIAL_SERVER_APPLICATION = express();
 
 AXIAL_SERVER_APPLICATION.disable("x-powered-by");
@@ -160,11 +511,27 @@ AXIAL_SERVER_APPLICATION.disable("x-powered-by");
 AXIAL_SERVER_APPLICATION.use( startMiddleware );
 AXIAL_SERVER_APPLICATION.use( express.json() );
 AXIAL_SERVER_APPLICATION.use( express.urlencoded( { extended: true } ) );
+AXIAL_SERVER_APPLICATION.use( cookieParser() );
 
-AXIAL_SERVER_APPLICATION.post( "/api/mail/message", apiMailMessagePostHandler );
-AXIAL_SERVER_APPLICATION.post( "/api/mail/contact", apiMailContactPostHandler );
+//AXIAL_SERVER_APPLICATION.use( authMiddleware );
 
-AXIAL_SERVER_APPLICATION.use( express.static( path.join( DIRNAME, "static" )) );
+//AXIAL_SERVER_APPLICATION.get( "/api/mail/get", apiMailGetHandler );
+//AXIAL_SERVER_APPLICATION.post( "/api/mail/message", apiMailMessagePostHandler );
+//AXIAL_SERVER_APPLICATION.post( "/api/mail/contact", apiMailContactPostHandler );
+
+//AXIAL_SERVER_APPLICATION.get( "/api/stats/get", apiStatsGetHandler );
+//AXIAL_SERVER_APPLICATION.post( "/api/stats/add", apiStatsAddHandler );
+
+//AXIAL_SERVER_APPLICATION.get( "/api/crypto/uuid", apiCryptoUuidHandler );
+//AXIAL_SERVER_APPLICATION.get( "/api/crypto/key", apiCryptoKeyHandler );
+//AXIAL_SERVER_APPLICATION.get( "/api/crypto/encrypt", apiCryptoEncryptHandler );
+
+//AXIAL_SERVER_APPLICATION.post( "/api/auth/signin", apiAuthSigninHandler);
+// //AXIAL_SERVER_APPLICATION.post( "/api/auth/signup", apiAuthSignupHandler);
+//AXIAL_SERVER_APPLICATION.post( "/api/auth/signout", apiAuthSignoutHandler);
+
+AXIAL_SERVER_APPLICATION.use( "/", express.static( path.join( DIRNAME, "static" )) );
+
 AXIAL_SERVER_APPLICATION.use( finalMiddleware );
 
 export default AXIAL_SERVER_APPLICATION;

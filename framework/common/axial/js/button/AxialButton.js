@@ -134,6 +134,21 @@ class AxialButton extends AxialButtonBase
         }
     }
 
+    get text() { return this.#text; }
+    set text( value )
+    {
+        if( typeof value !== "string" )
+        {
+            throw new TypeError("String value required");
+        }
+        if( this.#text === value ) { return; }
+        this.#text = value;
+        if( this.#label )
+        {
+            this.#label.innerHTML = this.#text;
+        }
+    }
+
     static get observedAttributes()
     {
         return [ "axial-template", "axial-text", "axial-icon-position" ];

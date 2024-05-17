@@ -60,7 +60,7 @@ class AxialToggleButtonBase extends AxialButtonBase
 
         /// TODO : remove from previous button group is the toggle is already on a group ;)
         this.#buttonGroup = value;
-        this.#buttonGroup.add(this);
+        this.#buttonGroup.addToggle(this);
     }
 
     get popup() { return this.#popup; }

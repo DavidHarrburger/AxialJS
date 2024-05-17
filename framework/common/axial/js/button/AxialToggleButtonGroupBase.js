@@ -41,7 +41,7 @@ class AxialToggleButtonGroupBase extends AxialComponentBase
                 //this.add(tempToggle);
                 if( tempToggle instanceof AxialToggleButtonBase === true )
                 {
-                    this.add(tempToggle);
+                    this.addToggle(tempToggle);
                 }
                 //else { throw new Error("Elements in an AxialToggleButtonGroupBase must be or extends AxialToggleButtonBase"); }
             }
@@ -150,7 +150,7 @@ class AxialToggleButtonGroupBase extends AxialComponentBase
      * If another button is selected, then unselect it and update the value
      * @param { AxialToggleButtonBase } toggle 
      */
-    add( toggle )
+    addToggle( toggle )
     {
         if( toggle instanceof AxialToggleButtonBase == false )
         {
@@ -165,6 +165,13 @@ class AxialToggleButtonGroupBase extends AxialComponentBase
             this.#toggles.push( toggle );
             toggle.addEventListener("toggleChanged", this.#boundToggleChangedHandler);
         }
+
+        
+        if( this.contains( toggle ) === false )
+        {
+            this.appendChild( toggle );
+        }
+        
     }
 
     /**
@@ -172,7 +179,7 @@ class AxialToggleButtonGroupBase extends AxialComponentBase
      * TODO : if the removed button was selected, then update the selectedIndex value
      * @param { AxialToggleButtonBase } toggle 
      */
-    remove( toggle )
+    removeToggle( toggle )
     {
         if( toggle instanceof AxialToggleButtonBase == false )
         {
@@ -242,5 +249,4 @@ class AxialToggleButtonGroupBase extends AxialComponentBase
 }
 
 window.customElements.define("axial-toggle-button-group-base", AxialToggleButtonGroupBase);
-
 export { AxialToggleButtonGroupBase }

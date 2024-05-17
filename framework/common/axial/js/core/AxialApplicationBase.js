@@ -1,6 +1,9 @@
 "use strict"
 
 import { LanguageUtils } from "../utils/LanguageUtils.js";
+import { AxialOverlayManager } from "../overlay/AxialOverlayManager.js";
+import { AxialOverlayBase } from "../overlay/AxialOverlayBase.js";
+import { AxialTooltipBase } from "../tooltip/AxialTooltipBase.js";
 
 /**
  * The main base class for your application.
@@ -9,13 +12,9 @@ import { LanguageUtils } from "../utils/LanguageUtils.js";
  */
 class AxialApplicationBase extends EventTarget
 {
-    /// events
-    #boundApplicationDomLoadedHandler;
-    #boundApplicationPageLoadedHandler;
-    #boundApplicationResizeHandler;
-    #boundWindowResizeHandler;
-
-    /// properties
+    ///
+    /// PART : DATA
+    ///
 
     /**
      * @private
@@ -31,6 +30,46 @@ class AxialApplicationBase extends EventTarget
      */
     #data = undefined;
 
+    ///
+    /// PART : ENV
+    ///
+
+    /**
+     * @private
+     * @type { Boolean }
+     * @default false
+     */
+    #isIOS = false;
+
+    /**
+     * @private
+     * @type { Boolean }
+     * @default false
+     */
+    #isAndroid = false;
+
+    /**
+     * @private
+     * @type { Boolean }
+     * @default false
+     */
+    #isDesktop = false;
+
+    ///
+    /// PART : LANGUAGE
+    ///
+
+    /**
+     * @private 
+     * @type { String | undefined }
+     * @default undefined
+     */
+    #language = undefined;
+
+    ///
+    /// PART : DOM
+    ///
+
     /**
      * @private
      * @type { Boolean }
@@ -40,10 +79,26 @@ class AxialApplicationBase extends EventTarget
 
     /**
      * @private
+     * @type { Function }
+     */
+    #boundApplicationDomLoadedHandler;
+
+    /**
+     * @private
      * @type { Boolean }
      * @default false
      */
     #applicationPageLoaded = false;
+
+    /**
+     * @private
+     * @type { Function }
+     */
+    #boundApplicationPageLoadedHandler;
+
+    ///
+    /// PART : RESIZE
+    ///
 
     /**
      * @private
@@ -68,31 +123,15 @@ class AxialApplicationBase extends EventTarget
 
     /**
      * @private
-     * @type { Boolean }
-     * @default false
+     * @type { Function }
      */
-    #isIOS = false;
+    #boundApplicationResizeHandler;
 
     /**
      * @private
-     * @type { Boolean }
-     * @default false
+     * @type { Function }
      */
-    #isAndroid = false;
-
-    /**
-     * @private
-     * @type { Boolean }
-     * @default false
-     */
-    #isDesktop = false;
-
-    /**
-     * @private 
-     * @type { String | undefined }
-     * @default undefined
-     */
-    #language = undefined;
+    #boundWindowResizeHandler;
 
     ///
     /// PART: STATS
@@ -102,12 +141,7 @@ class AxialApplicationBase extends EventTarget
      * @private
      * @type { Object }
      */
-    #statsObject =
-    {
-        url: window.location.href,
-        dom: false,
-        load: false
-    };
+    #statsObject;
 
     /**
      * @private
@@ -123,34 +157,43 @@ class AxialApplicationBase extends EventTarget
 
     /**
      * @private
+     * @type { Boolean }
+     */
+    #statsSent = false;
+
+    /**
+     * @private
      * @type { Function }
      */
-    #boundApplicationBeforeUnloadHandler;
+    #boundApplicationVisibilityChangeHandler;
 
     ///
     /// PART : SCROLL PARALLAX
     ///
-
-    /// parallax elements
     
     /**
      * The main container / holder we use to calculte the parallax regarding the scroll
      * Default looking for the 'main' tag of the page
      * Even it's a little bit opiniated, you should not really have to change it
+     * @private
      * @type { HTMLElement }
      */
     #scrollParallaxHolder;
 
-    /** @type { HTMLCollection } */
+    /**
+     * @private
+     * @type { HTMLCollection }
+     */
     #scrollParallaxSections;
 
-    /// parallax vars
     /**
+     * @private
      * @type { Boolean }
      */
     #useScrollParallax = false;
 
     /**
+     * @private
      * @type { Number }
      */
     #scrollParallaxY = 0;
@@ -216,6 +259,16 @@ class AxialApplicationBase extends EventTarget
     #nextLocation;
 
     /**
+     * @type { Function }
+     */
+    #boundTransitionLayerEndHandler;
+
+    /**
+     * @type { Function }
+     */
+    #boundPageShowHandler;
+
+    /**
      * Create the main AxialApplicationBase and make it a property of its window.
      * The Application is freezed to avoid interference with others scripts.
      * @constructor
@@ -253,10 +306,34 @@ class AxialApplicationBase extends EventTarget
         this.#boundWindowResizeHandler = this.#windowResizeHandler.bind(this);
 
         // stats
-        this.#boundApplicationBeforeUnloadHandler = this.#applicationBeforeUnloadHandler.bind(this);
+        const statsDateStart = new Date();
+        this.#statsObject = 
+        {
+            url: window.location.href,
+            title: document.title,
+            referrer: document.referrer,
+            displayMode: window.height >= window.innerWidth ? "p" : "l",
+            dom: false,
+            load: false,
+            dateStart:
+            {
+                y: statsDateStart.getFullYear(),
+                m: statsDateStart.getMonth(),
+                j: statsDateStart.getDate(),
+                d: statsDateStart.getDay(),
+                h: statsDateStart.getHours(),
+                t: statsDateStart.getMinutes(),
+                s: statsDateStart.getSeconds(),
+            },
+            tsStart: Date.now()
+        }
+
+        this.#boundApplicationVisibilityChangeHandler = this.#applicationVisibilityChangeHandler.bind(this);
 
         // transition layer
         this.#boundAnchorClickHandler = this.#anchorClickHandler.bind(this);
+        this.#boundTransitionLayerEndHandler = this.#transitionLayerEndHandler.bind(this);
+        this.#boundPageShowHandler = this.#pageShowHandler.bind(this);
 
         // scroll and parallax
         this.#boundScrollHandler = this.#scrollHandler.bind(this);
@@ -266,7 +343,11 @@ class AxialApplicationBase extends EventTarget
         
         window.addEventListener("DOMContentLoaded", this.#boundApplicationDomLoadedHandler);
         window.addEventListener("load", this.#boundApplicationPageLoadedHandler);
-        window.addEventListener("beforeunload", this.#boundApplicationBeforeUnloadHandler);
+        window.addEventListener("pageshow", this.#boundPageShowHandler);
+        document.addEventListener("visibilitychange", this.#boundApplicationVisibilityChangeHandler);
+
+        // overlay
+        document.addEventListener("click", AxialOverlayManager.documentOverlayClickHandler);
     }
 
     get language() { return this.#language; }
@@ -398,25 +479,41 @@ class AxialApplicationBase extends EventTarget
 
     async #sendStats()
     {
+        if( this.#statsSent === true ) { return; }
+        if( this.#statsObject.url.indexOf("http://localhost") === 0 || this.#statsObject.url.indexOf("https://localhost") === 0 ) { return; }
         try
         {
             if( this.#useStats === true && this.#statsPath !== undefined )
             {
-                //this.#statsObject.end = new Date();
-                console.log(JSON.stringify(this.#statsObject));
+                const statsDateEnd = new Date();
+                this.#statsObject.dateEnd =
+                {
+                    y: statsDateEnd.getFullYear(),
+                    m: statsDateEnd.getMonth(),
+                    j: statsDateEnd.getDate(),
+                    d: statsDateEnd.getDay(),
+                    h: statsDateEnd.getHours(),
+                    t: statsDateEnd.getMinutes(),
+                    s: statsDateEnd.getSeconds(),
+                }
+                this.#statsObject.tsEnd = Date.now();
                 const response = await fetch( this.#statsPath, { method: "POST", keepalive: true, body: JSON.stringify(this.#statsObject), headers: { "Content-Type":"application/json" } } );
+                this.#statsSent = true;
             }
         }
         catch(err)
         {
-            console.log("STATS ERROR")
+            console.log("STATS ERROR");
             console.log(err);
         }
     }
-
-    async #applicationBeforeUnloadHandler( event )
+    
+    #applicationVisibilityChangeHandler( event )
     {
-        await this.#sendStats();
+        if( document.visibilityState === "hidden" )
+        {
+            this.#sendStats();
+        }
     }
 
     ///
@@ -445,28 +542,25 @@ class AxialApplicationBase extends EventTarget
 
         // transition layer
         this.#transitionLayer = document.getElementById("axialTransitionLayer");
+        if( this.#transitionLayer )
+        {
+            if( this.#usePageTransitions === false )
+            {
+                this.#transitionLayer.style.display = "none";
+            }
+            else
+            {
+                this.#transitionLayer.addEventListener("transitionend", this.#boundTransitionLayerEndHandler);
+            }
+        }
 
+        // nav helper
         const anchors = document.getElementsByTagName("a");
         for( const anchor of anchors )
         {
             anchor.addEventListener("click", this.#boundAnchorClickHandler);
         }
 
-        if( this.#usePageTransitions === true )
-        {
-            if( this._preparePageTransitions )
-            {
-                this._preparePageTransitions();
-            }
-        }
-        else
-        {
-            if( this.#transitionLayer )
-            {
-                this.#transitionLayer.style.display = "none";
-            }
-        }
-        
         // scroll parallax
         this.#scrollParallaxHolder = document.getElementsByTagName("main")[0];
         this.#scrollParallaxSections = document.getElementsByTagName("section");
@@ -513,7 +607,11 @@ class AxialApplicationBase extends EventTarget
      */
     #applicationPageLoadedHandler( event )
     {
+        // dom
         this.#applicationPageLoaded = true;
+
+        // stats
+        this.#statsObject.load = true;
 
         //  --> go to add parallax
         window.addEventListener("scroll", this.#boundScrollHandler);
@@ -521,13 +619,6 @@ class AxialApplicationBase extends EventTarget
         {
             window.requestAnimationFrame( this.#boundScrollParallax );
         }
-
-        // transition layer
-        if( this.#usePageTransitions === true && this._playIntroTransition )
-        {
-            this._playIntroTransition();
-        }
-
 
         if( this._onApplicationPageLoaded )
         {
@@ -562,6 +653,10 @@ class AxialApplicationBase extends EventTarget
             window.addEventListener("resize", this.#boundWindowResizeHandler);
         }
     }
+
+    ///
+    /// PART : RESIZE
+    ///
 
     #windowResizeHandler( event )
     {
@@ -807,36 +902,62 @@ class AxialApplicationBase extends EventTarget
      */
     #anchorClickHandler( event )
     {
+        if( event.currentTarget.href.indexOf("mailto:") == 0 ) { return; }
+        if( event.currentTarget.href.indexOf("tel:") == 0 ) { return; }
+        const url = new URL(event.currentTarget.href);
+
+        if( window.location.hostname != url.hostname ) { return; }
+
+        const hash = url.hash;
+        if( hash != "" )
+        {
+            const sectionId = hash.split("#")[1];
+            const section = document.getElementById(sectionId);
+            const main = document.getElementsByTagName("main")[0];
+            if( main )
+            {
+                event.preventDefault();
+                const bounds = section.getBoundingClientRect();
+                const scrollTopValue = bounds.y + window.scrollY;
+                window.scrollTo( { left: 0, top: scrollTopValue, behavior: "smooth" } );
+                return;
+            }
+        }
+        
+        // todo better here
         if( this.#usePageTransitions === true )
         {
             event.preventDefault();
             const href = event.currentTarget.href;
             if( href == window.location.href ) { return; }
             this.#nextLocation = href;
-            if( this._playOutroTransition )
+            
+            if( this.#transitionLayer )
             {
-                this._playOutroTransition();
+                this.#transitionLayer.style.transform = "translateY(0%)";
             }
         }
     }
 
-    /**
-     * Add your ouwn logic to prepare the transition between the pages
-     * @abstract
-     */
-    _preparePageTransitions() {}
+    #pageShowHandler( event )
+    {
+        if( this.#transitionLayer && this.#usePageTransitions === true )
+        {
+            this.#transitionLayer.style.transform = "translateY(-100%)";
+        }
+    }
 
-    /**
-     * Here you place the code to play the intro transition
-     * This function is played when the page is loaded
-     * @abstract
-     */
-    _playIntroTransition() {}
-
-    /**
-     * @abstract
-     */
-    _playOutroTransition() {}
+    #transitionLayerEndHandler( event )
+    {
+        if( this.#transitionLayer )
+        {
+            const transform = this.#transitionLayer.style.transform;
+            if( transform == "translateY(0%)" )
+            {
+                window.location.href = this.#nextLocation;
+            }
+        }
+    }
 }
 
 export { AxialApplicationBase }

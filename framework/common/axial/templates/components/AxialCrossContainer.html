@@ -1,0 +1,20 @@
+<!-- AxialCrossContainer -->
+<template id="axial-cross-container-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="center" class="axial_cross_container_element axial_cross_container-center">
+        <slot name="center">
+        </slot>
+    </div>
+    <div id="top" class="axial_cross_container_element axial_cross_container-top">
+        <slot name="top"></slot>
+    </div>
+    <div id="right" class="axial_cross_container_element axial_cross_container-right">
+        <slot name="right"></slot>
+    </div>
+    <div id="bottom" class="axial_cross_container_element axial_cross_container-bottom">
+        <slot name="bottom"></slot>
+    </div>
+    <div id="left" class="axial_cross_container_element axial_cross_container-left">
+        <slot name="left"></slot>
+    </div>
+</template>

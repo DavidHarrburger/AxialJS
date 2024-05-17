@@ -1,14 +1,20 @@
 "use strict"
 
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
+import { AxialOverlayManager } from "./AxialOverlayManager.js";
 
-class AxialTooltipBase extends AxialComponentBase
+class AxialOverlayBase extends AxialComponentBase
 {
+
     /** @type { Set } */
-    #TOOLTIP_POSITIONS = new Set( [ "bottom-left", "bottom-center", "bottom-right",
+    #OVERLAY_POSITIONS = new Set( [ "bottom-left", "bottom-center", "bottom-right",
                                     "right-top", "right-center", "right-bottom",
                                     "top-left", "top-center", "top-right",
                                     "left-top", "left-center", "left-bottom" ] );
+
+    #OVERLAY_SHOW_MODE = new Set( ["off", "over", "click"] );
+
+    #OVERLAY_HIDE_MODE = new Set( ["off", "out", "click"] );
 
     /** @type { Boolean } */
     #isBuilt = false;
@@ -21,6 +27,12 @@ class AxialTooltipBase extends AxialComponentBase
 
     /** @type { String } */
     #position = "bottom-left";
+
+    /** @type { String } */
+    #showMode = "click";
+
+    /** @type { String } */
+    #hideMode = "click";
 
     /** @type { Number } */
     #offset = 10;
@@ -35,22 +47,39 @@ class AxialTooltipBase extends AxialComponentBase
     #boundTransitionEndHandler;
 
     /** @type { Function } */
-    #boundTooltipTargetOverHandler;
+    #boundOverlayTargetOverHandler;
 
     /** @type { Function } */
-    #boundTooltipTargetOutHandler;
+    #boundOverlayTargetOutHandler;
 
     /** @type { Function } */
-    #boundTooltipTargetClickHandler;
+    #boundOverlayTargetClickHandler;
+
+    /** @type { Function } */
+    #boundOverlayClickHandler;
 
     constructor()
     {
         super();
-        this.classList.add("axial_tooltip_base");
-        this.#boundTooltipTargetOverHandler = this.#tooltipTargetOverHandler.bind(this);
-        this.#boundTooltipTargetOutHandler = this.#tooltipTargetOutHandler.bind(this);
+        this.classList.add("axial_overlay_base");
+        this.#boundOverlayTargetOverHandler = this.#overlayTargetOverHandler.bind(this);
+        this.#boundOverlayTargetOutHandler = this.#overlayTargetOutHandler.bind(this);
+        this.#boundOverlayTargetClickHandler = this.#overlayTargetClickHandler.bind(this);
+
+        this.#boundOverlayClickHandler = this.#overlayClickHandler.bind(this);
         
         this.#boundTransitionEndHandler = this.#transitionEndHandler.bind(this);
+
+        this.addEventListener("click", this.#boundOverlayClickHandler);
+        AxialOverlayManager.OVERLAYS.add(this);
+
+        const overlaysLayer = AxialOverlayManager.LAYER;
+        console.log("overlaysLayer = " + overlaysLayer);
+        if( overlaysLayer && overlaysLayer.contains(this) === false )
+        {
+            overlaysLayer.appendChild(this) ;
+        }
+        
     }
 
     /**
@@ -75,12 +104,40 @@ class AxialTooltipBase extends AxialComponentBase
             throw new TypeError("String value required");
         }
 
-        if( this.#TOOLTIP_POSITIONS.has( value ) === true )
+        if( this.#OVERLAY_POSITIONS.has( value ) === true )
         {
             this.#position = value;
         }
         
-        this.#layoutTooltip();
+        this.#layoutOverlay();
+    }
+
+    get showMode() { return this.#showMode; }
+    set showMode( value )
+    {
+        if( typeof value !== "string" )
+        {
+            throw new TypeError("String value required");
+        }
+
+        if( this.#OVERLAY_SHOW_MODE.has( value ) === true )
+        {
+            this.#showMode = value;
+        }
+    }
+
+    get hideMode() { return this.#hideMode; }
+    set hideMode( value )
+    {
+        if( typeof value !== "string" )
+        {
+            throw new TypeError("String value required");
+        }
+
+        if( this.#OVERLAY_HIDE_MODE.has( value ) === true )
+        {
+            this.#hideMode = value;
+        }
     }
 
     get useTransitions() { return this.#useTransitions; }
@@ -135,13 +192,14 @@ class AxialTooltipBase extends AxialComponentBase
         if( this.#isBuilt === true ) { return; }
 
         const tempTarget = this.getAttribute("axial-target");
+        console.log( tempTarget );
         if( tempTarget )
         {
             const element = document.getElementById(tempTarget);
             if( element )
             {
                 this.#target = element;
-                this.#addTooltipHandlers();
+                this.#addOverlayHandlers();
                 this.#isBuilt = true;
             }
         }
@@ -163,107 +221,135 @@ class AxialTooltipBase extends AxialComponentBase
         }
     }
 
-    #addTooltipHandlers()
+    #addOverlayHandlers()
     {
-        this.#target.addEventListener("pointerover", this.#boundTooltipTargetOverHandler);
-        this.#target.addEventListener("pointerout", this.#boundTooltipTargetOutHandler);
+        this.#target.addEventListener("pointerover", this.#boundOverlayTargetOverHandler);
+        this.#target.addEventListener("pointerout", this.#boundOverlayTargetOutHandler);
+        this.#target.addEventListener("click", this.#boundOverlayTargetClickHandler);
+    }
+
+    #overlayTargetOverHandler( event )
+    {
+        if( this.#showMode === "over" )
+        {
+            this.show();
+        }
+    }
+
+    #overlayTargetOutHandler( event )
+    {
+        if( this.#hideMode === "out" )
+        {
+            this.hide();
+        }
     }
 
     /**
-     * @param { PointerEvent } event 
+     * @param { MouseEvent } event 
      */
-    #tooltipTargetOverHandler( event )
+    #overlayTargetClickHandler( event )
     {
-        this.show();
+        console.log("overlay target clicked");
+        event.stopPropagation();
+
+        if( this.#showMode === "click" && this.#isShown === false )
+        {
+            this.show();
+            for( const overlay of AxialOverlayManager.OVERLAYS )
+            {
+                if( overlay.hideMode === "click" && overlay !== this )
+                {
+                    overlay.hide();
+                }
+            }
+            
+        }
+        else if( this.#hideMode === "click" && this.#isShown === true )
+        {
+            this.hide();
+        }
+
     }
 
-    /**
-     * @param { PointerEvent } event 
-     */
-    #tooltipTargetOutHandler( event )
-    {
-        this.hide();
-    }
-
-    #layoutTooltip()
+    #layoutOverlay()
     {
         if( this.#isShown === true ) { return; }
 
-        const tooltipBounds = this.getBoundingClientRect();
+        const overlayBounds = this.getBoundingClientRect();
         const targetBounds = this.#target.getBoundingClientRect();
 
-        let tooltipX;
-        let tooltipY;
+        let overlayX;
+        let overlayY;
 
         switch( this.#position )
         {
             // bottom
             case "bottom-left":
-                tooltipY = targetBounds.bottom + this.#offset;
-                tooltipX = targetBounds.left;
+                overlayY = targetBounds.bottom + this.#offset;
+                overlayX = targetBounds.left;
             break;
 
             case "bottom-center":
-                tooltipY = targetBounds.bottom + this.#offset;
-                tooltipX = targetBounds.left + (targetBounds.width / 2) - (tooltipBounds.width / 2);
+                overlayY = targetBounds.bottom + this.#offset;
+                overlayX = targetBounds.left + (targetBounds.width / 2) - (overlayBounds.width / 2);
             break;
 
             case "bottom-right":
-                tooltipY = targetBounds.bottom + this.#offset;
-                tooltipX = targetBounds.right - tooltipBounds.width;
+                overlayY = targetBounds.bottom + this.#offset;
+                overlayX = targetBounds.right - overlayBounds.width;
             break;
 
             // bottom
             case "right-top":
-                tooltipX = targetBounds.right + this.#offset;
-                tooltipY = targetBounds.top;
+                overlayX = targetBounds.right + this.#offset;
+                overlayY = targetBounds.top;
             break;
 
             case "right-center":
-                tooltipX = targetBounds.right + this.#offset;
-                tooltipY = targetBounds.top + (targetBounds.height / 2) - (tooltipBounds.height / 2);
+                overlayX = targetBounds.right + this.#offset;
+                overlayY = targetBounds.top + (targetBounds.height / 2) - (overlayBounds.height / 2);
             break;
 
             case "right-bottom":
-                tooltipX = targetBounds.right + this.#offset;
-                tooltipY = targetBounds.bottom - tooltipBounds.height;
+                overlayX = targetBounds.right + this.#offset;
+                overlayY = targetBounds.bottom - overlayBounds.height;
             break;
 
             // top
             case "top-left":
-                tooltipY = targetBounds.top - this.#offset - tooltipBounds.height;
-                tooltipX = targetBounds.left;
+                overlayY = targetBounds.top - this.#offset - overlayBounds.height;
+                overlayX = targetBounds.left;
             break;
 
             case "top-center":
-                tooltipY = targetBounds.top - this.#offset - tooltipBounds.height;
-                tooltipX = targetBounds.left + (targetBounds.width / 2) - (tooltipBounds.width / 2);
+                overlayY = targetBounds.top - this.#offset - overlayBounds.height;
+                overlayX = targetBounds.left + (targetBounds.width / 2)- (overlayBounds.width / 2);
             break;
 
             case "top-right":
-                tooltipY = targetBounds.top - this.#offset - tooltipBounds.height;
-                tooltipX = targetBounds.right - tooltipBounds.width;
+                overlayY = targetBounds.top - this.#offset - overlayBounds.height;
+                overlayX = targetBounds.right - overlayBounds.width;
             break;
 
             // left
             case "left-top":
-                tooltipX = targetBounds.left - this.#offset - tooltipBounds.width;
-                tooltipY = targetBounds.top;
+                overlayX = targetBounds.left - this.#offset - overlayBounds.width;
+                overlayY = targetBounds.top;
             break;
 
             case "left-center":
-                tooltipX = targetBounds.left - this.#offset - tooltipBounds.width;
-                tooltipY = targetBounds.top + (targetBounds.height / 2) - (tooltipBounds.height / 2);
+                overlayX = targetBounds.left - this.#offset - overlayBounds.width;
+                overlayY = targetBounds.top + (targetBounds.height / 2)- (overlayBounds.height / 2);
             break;
 
             case "left-bottom":
-                tooltipX = targetBounds.left - this.#offset - tooltipBounds.width;
-                tooltipY = targetBounds.bottom - tooltipBounds.height;
+                overlayX = targetBounds.left - this.#offset - overlayBounds.width;
+                overlayY = targetBounds.bottom - overlayBounds.height;
             break;
         }
 
-        this.style.left = String(tooltipX) + "px";
-        this.style.top = String(tooltipY) + "px";
+        this.style.left = String(overlayX) + "px";
+        this.style.top = String(overlayY) + "px";
 
         if( this.#useTransitions === true )
         {
@@ -291,8 +377,9 @@ class AxialTooltipBase extends AxialComponentBase
 
     show()
     {
+        console.log("overlay show call");
         if( this.#isShown === true ) { return; }
-        this.#layoutTooltip();
+        this.#layoutOverlay();
         this.style.visibility = "visible";
         this.#isShown = true;
         if( this.useTransitions === true )
@@ -317,6 +404,13 @@ class AxialTooltipBase extends AxialComponentBase
             this.style.visibility = "hidden";
         }
     }
+
+    /**
+     * @private
+     * Prevent the popup from being closed if user click outside of its DOMRect
+     * @param { PointerEvent } event 
+     */
+    #overlayClickHandler( event ) { event.stopImmediatePropagation(); }
 }
-window.customElements.define("axial-tooltip-base", AxialTooltipBase);
-export { AxialTooltipBase }
+window.customElements.define("axial-overlay-base", AxialOverlayBase);
+export { AxialOverlayBase }

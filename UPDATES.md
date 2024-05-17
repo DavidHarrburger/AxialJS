@@ -2,6 +2,13 @@
 
 Find here what happened and when.
 
+## 2024 - 05 - 17
+WEB COMPONENTS UPDATE
+* All webcomponents are now stored in the axial/template/components
+* Say Hello to Overlays and Tooltips, Calendar components
+* Flipbook component under dev
+* Enhancements here and there
+
 ## 2024 - 03 - 13 
 
 * AxialMessageForm little review

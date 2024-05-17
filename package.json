@@ -18,6 +18,7 @@
     "javascript",
     "js",
     "front-end",
+    "back-end",
     "cli"
   ],
   "author": "David Harrburger",
@@ -27,11 +28,11 @@
   },
   "homepage": "https://github.com/DavidHarrburger/AxialJS#readme",
   "dependencies": {
-    "@electron-forge/core": "7.3.0",
-    "@electron-forge/maker-squirrel": "7.3.0",
-    "@electron-forge/maker-zip": "7.3.0",
+    "@electron-forge/core": "7.3.1",
+    "@electron-forge/maker-squirrel": "7.3.1",
+    "@electron-forge/maker-zip": "7.3.1",
     "fs-extra": "11.2.0",
     "less": "4.2.0",
-    "webpack": "5.90.3"
+    "webpack": "5.91.0"
   }
 }
