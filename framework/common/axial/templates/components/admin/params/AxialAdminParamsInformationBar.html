@@ -1,0 +1,40 @@
+<!-- AxialAdminParamsInformationBar -->
+<template id="axial-admin-params-infobar-template">
+    <link rel="stylesheet" href="./styles.css">
+    <p class="axial_admin_params_infobar-p">
+        La barre d'information est une petite barre qui s'affiche en haut de chaque page.<br>
+        Elle vous permet de communiquer une information importante de manière temporaire comme une promotion ou une fermeture pour congés.<br>
+    </p>
+    <form>
+        <div class="axial_admin_form_item">
+            <label class="axial_admin_form_label">Activer / Désactiver la barre d'information :</label>
+            <div class="axial_admin_form_comp">
+                <axial-toggle-switch id="switch"></axial-toggle-switch>
+            </div>
+        </div>
+        <div class="axial_admin_form_item">
+            <label class="axial_admin_form_label">Message à afficher dans la barre :</label>
+            <div class="axial_admin_form_comp">
+                <input id="message" type="text">
+            </div>
+        </div>
+        <div class="axial_admin_form_item">
+            <label class="axial_admin_form_label">Date de début :</label>
+            <div class="axial_admin_form_comp">
+                <axial-dropdown-calendar id="calendarStart"></axial-dropdown-calendar>
+            </div>
+        </div>
+        <div class="axial_admin_form_item">
+            <label class="axial_admin_form_label">Date de fin :</label>
+            <div class="axial_admin_form_comp">
+                <axial-dropdown-calendar id="calendarEnd"></axial-dropdown-calendar>
+            </div>
+        </div>
+        <div class="axial_admin_form_item">
+            <label class="axial_admin_form_label">Sauvegarder les modifications :</label>
+            <div class="axial_admin_form_comp">
+                <axial-service-button id="button" axial-text="Enregistrer"></axial-service-button>
+            </div>
+        </div>
+    </form>
+</template>

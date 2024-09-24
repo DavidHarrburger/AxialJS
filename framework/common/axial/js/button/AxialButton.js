@@ -216,7 +216,7 @@ class AxialButton extends AxialButtonBase
     {
         if( this.#foreground )
         {
-            this.#foreground.style.backgroundColor = "rgba(255, 255, 255, 0.18)";
+            this.#foreground.style.opacity = "1";
         }
     }
 
@@ -228,7 +228,7 @@ class AxialButton extends AxialButtonBase
     {
         if( this.#foreground )
         {
-            this.#foreground.style.backgroundColor = "rgba(255, 255, 255, 0)";
+            this.#foreground.style.opacity = "0";
         }
     }
 

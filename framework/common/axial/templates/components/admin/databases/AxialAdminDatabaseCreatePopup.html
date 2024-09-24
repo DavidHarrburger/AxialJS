@@ -1,0 +1,14 @@
+<!-- AxialAdminDatabaseCreatePopup -->
+<template id="axial-admin-database-create-popup-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div class="axial_admin_popup-holder">
+        <div class="axial_admin_popup-header">
+            <div id="title" class="axial_admin_popup-title"></div>
+            <div class="axial_spacer"></div>
+            <axial-button id="closer" axial-text="Fermer"></axial-button>
+        </div>
+        <div class="axial_admin_popup-content">
+            <axial-admin-database-create-form id="databaseCreateForm" axial-get-path="../api/database/all" axial-post-path="../api/database/create"></axial-admin-database-create-form>
+        </div>
+    </div>
+</template>

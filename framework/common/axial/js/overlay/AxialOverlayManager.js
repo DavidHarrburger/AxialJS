@@ -9,7 +9,7 @@ class AxialOverlayManager
 
     static documentOverlayClickHandler( event )
     {
-        console.log("overlay document click");
+        //console.log("overlay document click");
         for( const overlay of AxialOverlayManager.#OVERLAYS )
         {
             if( overlay.hideMode === "click" )

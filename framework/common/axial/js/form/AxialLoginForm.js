@@ -2,6 +2,7 @@
 
 import { AxialButton } from "../button/AxialButton.js";
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
+import { AxialTogglePasswordButton } from "../admin/button/AxialTogglePasswordButton.js";
 
 class AxialLoginForm extends AxialComponentBase
 {
@@ -31,12 +32,18 @@ class AxialLoginForm extends AxialComponentBase
     /** @type { Array<HTMLInputElement> } */
     #formElements = new Array();
 
+    /// ui utils
+    /** @type { AxialTogglePasswordButton } */
+    #passwordButton;
+
     /// events
     /** @type { Function } */
     #boundFocusOutHandler;
 
     /** @type { Function } */
     #boundButtonClickHandler;
+
+    #boundPasswordButtonToggleChangedHandler
 
     constructor()
     {
@@ -46,6 +53,7 @@ class AxialLoginForm extends AxialComponentBase
 
         this.#boundFocusOutHandler = this.#focusOutHandler.bind(this);
         this.#boundButtonClickHandler = this.#buttonClickHandler.bind(this);
+        this.#boundPasswordButtonToggleChangedHandler =  this.#passwordButtonToggleChangedHandler.bind(this);
     }
 
     /**
@@ -78,6 +86,9 @@ class AxialLoginForm extends AxialComponentBase
 
         this.#button = this.shadowRoot.getElementById("button");
         this.#button.addEventListener("click", this.#boundButtonClickHandler);
+
+        this.#passwordButton = this.shadowRoot.getElementById("passwordButton");
+        this.#passwordButton.addEventListener("toggleChanged", this.#boundPasswordButtonToggleChangedHandler );
     }
 
     #checkFormValidity()
@@ -122,6 +133,18 @@ class AxialLoginForm extends AxialComponentBase
         {
             this.#button.style.opacity = "0.5";
             this.#button.style.pointerEvents = "none";
+        }
+    }
+
+    /**
+     * 
+     * @param { CustomEvent } event 
+     */
+    #passwordButtonToggleChangedHandler( event )
+    {
+        if( this.#password )
+        {
+            this.#passwordButton.selected === true ? this.#password.type = "text": this.#password.type = "password";
         }
     }
 

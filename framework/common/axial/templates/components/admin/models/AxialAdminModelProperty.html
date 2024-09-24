@@ -1,0 +1,17 @@
+<!-- AxialAdminModelProperty -->
+<template id="axial-admin-model-property-template">
+    <link rel="stylesheet" href="./styles.css">
+    <input name="nameInput" id="nameInput" type="text" required minlength="4" maxlength="64" autocomplete="off" pattern="[A-Za-z]+" class="axial_admin_model_property-name" placeholder="name">
+    <axial-dropdown-list id="dropdown" axial-text="type" class="axial_admin_model_property-dropdown"></axial-dropdown-list>
+    <input name="valueInput" id="valueInput" type="text" required minlength="4" maxlength="64" autocomplete="off" class="axial_admin_model_property-value" placeholder="value">
+    <select name="selectInput" id="selectInput" class="axial_admin_model_property-select">
+        <option value="">Select</option>
+    </select>
+    <div id="fileSelector" class="axial_admin_model_property-file_selector">
+        <axial-button id="fileButton" axial-text="Select" class="axial_admin_model_property-file_button"></axial-button>
+        <div id="fileViewer"></div>
+    </div>
+    
+    <div class="axial_spacer"></div>
+    <axial-toggle-check id="cryptedInput" axial-label="crypted"></axial-toggle-check>
+</template>

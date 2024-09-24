@@ -25,6 +25,42 @@
             "path": "",
             "template": "",
             "build": true
+        },
+        {
+            "name": "login",
+            "path": "login",
+            "template": "",
+            "build": true
+        },
+        {
+            "name": "admin",
+            "path": "admin",
+            "template": "",
+            "build": true
+        },
+        {
+            "name": "user",
+            "path": "user",
+            "template": "",
+            "build": true
+        },
+        {
+            "name": "client",
+            "path": "client",
+            "template": "",
+            "build": true
+        },
+        {
+            "name": "privacy",
+            "path": "privacy",
+            "template": "",
+            "build": true
+        },
+        {
+            "name": "legal",
+            "path": "legal",
+            "template": "",
+            "build": true
         }
     ]
 }

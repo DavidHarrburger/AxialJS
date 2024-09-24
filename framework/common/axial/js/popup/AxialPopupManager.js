@@ -2,17 +2,56 @@
 
 import { AxialPopupBase } from "./AxialPopupBase.js";
 
-/**
- * @public
- * AxialPopupManager is an helper class that show and hide popups. It's responsible of the lifecycle of the popups.
- */
 class AxialPopupManager
 {
-    // vars
-    static #popups = new Set();
-    static get popups()
+    static #POPUPS = new Set();
+    static get POPUPS() { return AxialPopupManager.#POPUPS; }
+
+    static get LAYER() { return document.getElementById("axialPopupLayer"); }
+
+
+    static get OBFUSCATOR()
     {
-        return AxialPopupManager.#popups;
+        return document.getElementById("axialPopupObfuscator");
+    }
+
+    static registerPopup( popup )
+    {
+        if( popup instanceof AxialPopupBase == false )
+        {
+            throw new TypeError( "AxialPopupBase value expected" );
+        }
+
+        if( AxialPopupManager.#POPUPS.has(popup) == true )
+        {
+            throw new Error( "This instance of popup is already registered" );
+        }
+        AxialPopupManager.#POPUPS.add( popup );
+    }
+
+    /**
+     * @public
+     * @static
+     * Get a popup, if registered, with the wrapped element id. Returns undefined if the popup is not registered.
+     * @param { String } id - The id of the element
+     * @returns { AxialPopupBase } The popup, if found, is an instance of AxialPopupBase
+     */
+    static getPopupById( id )
+    {
+        if( typeof id !== "string" )
+        {
+            throw new TypeError("String value expected");
+        }
+        let popupToReturn = undefined;
+        for( const popup of AxialPopupManager.POPUPS )
+        {
+            if( popup.id == id )
+            {
+                popupToReturn = popup;
+                break;
+            }
+        }
+        return popupToReturn;
     }
 
     /** @type { AxialPopupBase } */
@@ -39,107 +78,6 @@ class AxialPopupManager
     static get isPlaying()
     {
         return AxialPopupManager.#isPlaying;
-    }
-
-    // move duration and timing function to popup base
-    // cubic-bezier(.47,1.64,.41,.8)
-    static #animationDuration = 400;
-    static get animationDuration() { return AxialPopupManager.#animationDuration; }
-    static set animationDuration( value )
-    {
-        if( isNaN(value) == true ) { throw new Error("Number value expected"); }
-        AxialPopupManager.#animationDuration = value;
-    }
-
-    static #animationTimingFunction = "ease";
-    static get animationTimingFunction() { return AxialPopupManager.#animationTimingFunction; }
-    static set animationTimingFunction( value )
-    {
-        AxialPopupManager.#animationTimingFunction = value;
-    }
-
-    static #DISPLAY_MODES = Object.freeze(new Set(["none", "window", "target"]));
-    static get DISPLAY_MODES()
-    {
-        return AxialPopupManager.#DISPLAY_MODES;
-    }
-
-    static #ANIMATIONS = Object.freeze( new Set( ["none", "fade", "translate_up", "translate_down", "translate_left", "translate_right", "fade_translate_up", "fade_translate_down", "fade_translate_left", "fade_translate_right"] ) );
-    static get ANIMATIONS()
-    {
-        return AxialPopupManager.#ANIMATIONS;
-    }
-    
-    static #HORIZONTAL_ALIGNMENTS = Object.freeze(new Set(["none", "left", "center", "right"]));
-    static get HORIZONTAL_ALIGNMENTS()
-    {
-        return AxialPopupManager.#HORIZONTAL_ALIGNMENTS;
-    }
-
-    static #VERTICAL_ALIGNMENTS = Object.freeze(new Set(["none", "top", "center", "bottom"]));
-    static get VERTICAL_ALIGNMENTS()
-    {
-        return AxialPopupManager.#VERTICAL_ALIGNMENTS;
-    }
-
-    static #PRIVILEGED_AXIS = Object.freeze(new Set(["horizontal", "vertical"]));
-    static get PRIVILEGED_AXIS()
-    {
-        return AxialPopupManager.#PRIVILEGED_AXIS;
-    }
-
-    // ui
-    static get layer()
-    {
-        const element = document.getElementById("axialPopupLayer");
-        return element;
-    }
-
-    static get obfuscator()
-    {
-        const element = document.getElementById("axialPopupObfuscator");
-        return element;
-    }
-
-    // end new 2022
-
-    static registerPopup( popup )
-    {
-        if( popup instanceof AxialPopupBase == false )
-        {
-            throw new TypeError( "AxialPopupBase value expected" );
-        }
-
-        if( AxialPopupManager.#popups.has(popup) == true )
-        {
-            throw new Error( "This instance of popup is already registered" );
-        }
-        AxialPopupManager.#popups.add( popup );
-    }
-
-    /**
-     * @public
-     * @static
-     * Get a popup, if registered, with the wrapped element id. Returns undefined if the popup is not registered.
-     * @param { String } id - The id of the element
-     * @returns { AxialPopupBase } The popup, if found, is an instance of AxialPopupBase
-     */
-    static getPopupById( id )
-    {
-        if( typeof id !== "string" )
-        {
-            throw new TypeError("String value expected");
-        }
-        let popupToReturn = undefined;
-        for( const popup of AxialPopupManager.popups )
-        {
-            if( popup.id == id )
-            {
-                popupToReturn = popup;
-                break;
-            }
-        }
-        return popupToReturn;
     }
 
     /**
@@ -179,14 +117,14 @@ class AxialPopupManager
                 document.addEventListener("pointerdown", AxialPopupManager.#documentPopupClickHandler, {capture: false} );
             }
 
-            const duration = String(AxialPopupManager.#animationDuration) + "ms";
+            const duration = String(AxialPopupManager.#currentPopup.duration) + "ms";
             
             const useObfuscator = popup.useObfuscator;
             if( useObfuscator == true )
             {
-                AxialPopupManager.obfuscator.style.visibility = "visible";
-                AxialPopupManager.obfuscator.addEventListener("animationend", AxialPopupManager.#obfuscatorAnimationEndHandler);
-                AxialPopupManager.obfuscator.style.animation = duration + " linear 0ms 1 normal both running axial_obfuscator_fade-in";
+                AxialPopupManager.OBFUSCATOR.style.visibility = "visible";
+                AxialPopupManager.OBFUSCATOR.addEventListener("animationend", AxialPopupManager.#obfuscatorAnimationEndHandler);
+                AxialPopupManager.OBFUSCATOR.style.animation = duration + " linear 0ms 1 normal both running axial_obfuscator_fade-in";
             }
 
             AxialPopupManager.#currentPopup.style.visibility = "visible";
@@ -196,7 +134,7 @@ class AxialPopupManager
             let popupShowingEvent = new CustomEvent("popupShowing");
             AxialPopupManager.#currentPopup.dispatchEvent(popupShowingEvent);
             
-            if( AxialPopupManager.#currentPopup.animationShow == "none" )
+            if( AxialPopupManager.#currentPopup.animation == "none" )
             {
                 AxialPopupManager.#currentPopup._onShown();
 
@@ -206,8 +144,8 @@ class AxialPopupManager
             else
             {
                 AxialPopupManager.#isPlaying = true;
-                const animationName = "axial_popup_" + AxialPopupManager.#currentPopup.animationShow + "-in";
-                const atf = AxialPopupManager.#animationTimingFunction;
+                const animationName = "axial_popup_" + AxialPopupManager.#currentPopup.animation + "-in";
+                const atf = AxialPopupManager.#currentPopup.timingFunction;
                 const animationIn = duration + " " + atf + " 0ms 1 normal both running " + animationName;
                 AxialPopupManager.#currentPopup.addEventListener("animationend", AxialPopupManager.#popupShowAnimationEndHandler);
                 AxialPopupManager.#currentPopup.style.animation = animationIn;
@@ -234,13 +172,13 @@ class AxialPopupManager
         // just in case
         if( AxialPopupManager.#currentPopup == undefined ) { return; } // no need to hide
 
-        const duration = String(AxialPopupManager.#animationDuration) + "ms";
+        const duration = String(AxialPopupManager.#currentPopup.duration) + "ms";
         
         const useObfuscator = AxialPopupManager.#currentPopup.useObfuscator;
         if( useObfuscator == true )
         {
-            AxialPopupManager.obfuscator.addEventListener("animationend", AxialPopupManager.#obfuscatorAnimationEndHandler);
-            AxialPopupManager.obfuscator.style.animation = duration + " linear 0ms 1 normal both running axial_obfuscator_fade-out";
+            AxialPopupManager.OBFUSCATOR.addEventListener("animationend", AxialPopupManager.#obfuscatorAnimationEndHandler);
+            AxialPopupManager.OBFUSCATOR.style.animation = duration + " linear 0ms 1 normal both running axial_obfuscator_fade-out";
         }
 
         AxialPopupManager.#currentPopup._onHiding();
@@ -248,7 +186,7 @@ class AxialPopupManager
         let popupHidingEvent = new CustomEvent("popupHiding");
         AxialPopupManager.#currentPopup.dispatchEvent(popupHidingEvent);
         
-        if( AxialPopupManager.#currentPopup.animationHide == "none" )
+        if( AxialPopupManager.#currentPopup.animation == "none" )
         {
             AxialPopupManager.#currentPopup._onHidden();
 
@@ -272,8 +210,8 @@ class AxialPopupManager
         else
         {
             AxialPopupManager.#isPlaying = true;
-            const animationName = "axial_popup_" + AxialPopupManager.#currentPopup.animationHide + "-out";
-            const atf = AxialPopupManager.#animationTimingFunction;
+            const animationName = "axial_popup_" + AxialPopupManager.#currentPopup.animation + "-out";
+            const atf = AxialPopupManager.#currentPopup.timingFunction;
             const animationOut = duration + " " + atf + " 0ms 1 normal both running " + animationName;
             AxialPopupManager.#currentPopup.addEventListener("animationend", AxialPopupManager.#popupHideAnimationEndHandler);
             AxialPopupManager.#currentPopup.style.animation = animationOut;
@@ -295,13 +233,13 @@ class AxialPopupManager
     static #obfuscatorAnimationEndHandler( event )
     {
         //console.log("obfuscator animation end");
-        AxialPopupManager.obfuscator.removeEventListener("animationend", AxialPopupManager.#obfuscatorAnimationEndHandler);
+        AxialPopupManager.OBFUSCATOR.removeEventListener("animationend", AxialPopupManager.#obfuscatorAnimationEndHandler);
 
-        const styles = window.getComputedStyle(AxialPopupManager.obfuscator);
+        const styles = window.getComputedStyle(AxialPopupManager.OBFUSCATOR);
         const opacity = Number(styles.opacity);
         if( opacity == 0 )
         {
-            AxialPopupManager.obfuscator.style.visibility = "hidden";
+            AxialPopupManager.OBFUSCATOR.style.visibility = "hidden";
         }
     }
 

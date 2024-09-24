@@ -10,5 +10,14 @@ class MathUtils
     {
         return ( (Math.PI / 180 ) * degrees );
     }
+
+    /**
+     * Convert radians to degrees
+     * @param { Number } radians 
+     */
+    static radiansToDegrees( radians )
+    {
+        return ( ( 180 / Math.PI ) * radians );
+    }
 }
 export { MathUtils }

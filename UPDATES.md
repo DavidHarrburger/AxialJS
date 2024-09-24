@@ -2,6 +2,13 @@
 
 Find here what happened and when.
 
+## 2024 - 09 - 24
+FULLSTACK PRE UPDATE
+Axial is going fullstack with MongoDB. IMPORTANT : this is just a part of the update I'm developping and testing.
+The next update (planned in November) will adress the required fixes. Then I will write the documentation about that.
+You will be able soon to start a complete website with its admin counterpart to build SaaS, shops etc. in some minutes...
+
+
 ## 2024 - 05 - 17
 WEB COMPONENTS UPDATE
 * All webcomponents are now stored in the axial/template/components

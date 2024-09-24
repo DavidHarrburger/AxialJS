@@ -1,6 +1,7 @@
 "use strict"
 
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
+import { AxialTooltipManager } from "./AxialTooltipManager.js";
 
 class AxialTooltipBase extends AxialComponentBase
 {
@@ -23,7 +24,7 @@ class AxialTooltipBase extends AxialComponentBase
     #position = "bottom-left";
 
     /** @type { Number } */
-    #offset = 10;
+    #offset = 4;
 
     /** @type { String } */
     #transform = "translate(0%, 0%)";
@@ -51,6 +52,15 @@ class AxialTooltipBase extends AxialComponentBase
         this.#boundTooltipTargetOutHandler = this.#tooltipTargetOutHandler.bind(this);
         
         this.#boundTransitionEndHandler = this.#transitionEndHandler.bind(this);
+
+        AxialTooltipManager.TOOLTIPS.add(this);
+
+        const tooltipLayer = AxialTooltipManager.LAYER;
+        //console.log("overlaysLayer = " + overlaysLayer);
+        if( tooltipLayer && tooltipLayer.contains(this) === false )
+        {
+            tooltipLayer.appendChild(this) ;
+        }
     }
 
     /**
@@ -63,8 +73,17 @@ class AxialTooltipBase extends AxialComponentBase
     get target() { return this.#target; }
     set target( value )
     {
-        // do control here
+        if( value instanceof HTMLElement === false )
+        {
+            throw new Error("HTMLElement value expected")
+        }
+        if( this.#target != undefined )
+        {
+            this.#removeTooltipHandlers();
+        }
         this.#target = value;
+        this.#layoutTooltip();
+        this.#addTooltipHandlers();
     }
 
     get position() { return this.#position; }
@@ -124,11 +143,13 @@ class AxialTooltipBase extends AxialComponentBase
         
     }
 
+    /*
     _finalizeComponent()
     {
         super._finalizeComponent();
         this.#buildComponent();
     }
+    */
 
     #buildComponent()
     {
@@ -167,6 +188,12 @@ class AxialTooltipBase extends AxialComponentBase
     {
         this.#target.addEventListener("pointerover", this.#boundTooltipTargetOverHandler);
         this.#target.addEventListener("pointerout", this.#boundTooltipTargetOutHandler);
+    }
+
+    #removeTooltipHandlers()
+    {
+        this.#target.removeEventListener("pointerover", this.#boundTooltipTargetOverHandler);
+        this.#target.removeEventListener("pointerout", this.#boundTooltipTargetOutHandler);
     }
 
     /**

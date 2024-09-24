@@ -1,0 +1,12 @@
+<!-- AxialDropdownList -->
+<template id="axial-dropdown-list-template">
+    <link rel="stylesheet" href="./styles.css">
+    <axial-toggle-button id="toggle" axial-text="Select"></axial-toggle-button>
+    <div id="holder" class="axial_dropdown-holder">
+        <div id="content" class="axial_dropdown-content">
+            <axial-toggle-button-group-base id="group" class="axial_dropdown_list-group">
+                <slot id="group" name="axial-slot"></slot>
+            </axial-toggle-button-group-base>
+        </div>
+    </div>
+</template>

@@ -1,0 +1,15 @@
+<!-- AxialAdminToggleBarButton -->
+<template id="axial-admin-toggle-bar-button-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="background" class="axial_admin_toggle_bar_button-background"></div>
+    <div id="foreground" class="axial_admin_toggle_bar_button-foreground"></div>
+    <div id="content" class="axial_admin_toggle_bar_button-content">
+        <div id="icon" class="axial_admin_toggle_bar_button-icon">
+            <slot id="iconSlot" name="axial-icon"></slot>
+        </div>
+        <div id="iconToggle" class="axial_admin_toggle_bar_button-icontoggle">
+            <slot id="iconToggleSlot" name="axial-icon-toggle"></slot>
+        </div>
+        <div id="label" class="axial_admin_toggle_bar_button-label"></div>
+    </div>
+</template>

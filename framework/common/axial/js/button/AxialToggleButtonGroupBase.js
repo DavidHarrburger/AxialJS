@@ -30,19 +30,35 @@ class AxialToggleButtonGroupBase extends AxialComponentBase
     
     _finalizeComponent()
     {
-        const tempToggles = this.children; // this.getElementsByTagName("*");
-        const tempTogglesLength = tempToggles.length;
+        const children = this.children;
+        //console.log(children);
+        const childrenLength = children.length;
 
-        if( tempTogglesLength > 0 )
+        if( childrenLength > 0 )
         {
-            for( let i = 0; i < tempTogglesLength; i++ )
+            for( let i = 0; i < childrenLength; i++ )
             {
-                const tempToggle = tempToggles[i];
+                const child = children[i];
                 //this.add(tempToggle);
-                if( tempToggle instanceof AxialToggleButtonBase === true )
+                if( child instanceof AxialToggleButtonBase === true )
                 {
-                    this.addToggle(tempToggle);
+                    this.addToggle(child);
                 }
+                /*
+                else if( child instanceof HTMLSlotElement )
+                {
+                    console.log("SLOT FOUND !!!");
+                    const slotElements = child.assignedElements( { flatten: false } );
+                    console.log(slotElements);
+                    for( const se of slotElements )
+                    {
+                        if( se instanceof AxialToggleButtonBase === true )
+                        {
+                            this.addToggle(se);
+                        }
+                    }
+                }
+                */
                 //else { throw new Error("Elements in an AxialToggleButtonGroupBase must be or extends AxialToggleButtonBase"); }
             }
         }
@@ -166,12 +182,28 @@ class AxialToggleButtonGroupBase extends AxialComponentBase
             toggle.addEventListener("toggleChanged", this.#boundToggleChangedHandler);
         }
 
-        
+        /*
+        console.log( this.contains( toggle ) );
         if( this.contains( toggle ) === false )
         {
             this.appendChild( toggle );
         }
+        */
         
+    }
+
+    /**
+     * 
+     * @param {AxialToggleButtonBase} toggle 
+     */
+    appendToggle( toggle )
+    {
+        this.addToggle(toggle);
+        //console.log( this.contains( toggle ) );
+        if( this.contains( toggle ) === false )
+        {
+            this.appendChild( toggle );
+        }
     }
 
     /**
@@ -190,8 +222,21 @@ class AxialToggleButtonGroupBase extends AxialComponentBase
         if( toggleIndex > -1 )
         {
             toggle.removeEventListener("toggleChanged", this.#boundToggleChangedHandler);
-            this.#toggles.splice( toggleIndex, 1);
+            this.#toggles.splice( toggleIndex, 1 );
         }
+    }
+
+    clearToggles()
+    {
+        for( const toggle of this.#toggles )
+        {
+            toggle.removeEventListener("toggleChanged", this.#boundToggleChangedHandler);
+            if( this.contains(toggle) === true )
+            {
+                toggle.remove();
+            }
+        }
+        this.#toggles.splice(0);
     }
 
     /**

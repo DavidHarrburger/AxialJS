@@ -74,12 +74,11 @@ class AxialOverlayBase extends AxialComponentBase
         AxialOverlayManager.OVERLAYS.add(this);
 
         const overlaysLayer = AxialOverlayManager.LAYER;
-        console.log("overlaysLayer = " + overlaysLayer);
+        //console.log("overlaysLayer = " + overlaysLayer);
         if( overlaysLayer && overlaysLayer.contains(this) === false )
         {
             overlaysLayer.appendChild(this) ;
         }
-        
     }
 
     /**
@@ -192,7 +191,6 @@ class AxialOverlayBase extends AxialComponentBase
         if( this.#isBuilt === true ) { return; }
 
         const tempTarget = this.getAttribute("axial-target");
-        console.log( tempTarget );
         if( tempTarget )
         {
             const element = document.getElementById(tempTarget);
@@ -273,6 +271,7 @@ class AxialOverlayBase extends AxialComponentBase
 
     #layoutOverlay()
     {
+        if( !this.#target ) { return; }
         if( this.#isShown === true ) { return; }
 
         const overlayBounds = this.getBoundingClientRect();

@@ -2,6 +2,7 @@
 
 import { LanguageUtils } from "../utils/LanguageUtils.js";
 import { AxialOverlayManager } from "../overlay/AxialOverlayManager.js";
+import { AxialDropdownManager } from "../dropdown/AxialDropdownManager.js";
 import { AxialOverlayBase } from "../overlay/AxialOverlayBase.js";
 import { AxialTooltipBase } from "../tooltip/AxialTooltipBase.js";
 
@@ -315,17 +316,7 @@ class AxialApplicationBase extends EventTarget
             displayMode: window.height >= window.innerWidth ? "p" : "l",
             dom: false,
             load: false,
-            dateStart:
-            {
-                y: statsDateStart.getFullYear(),
-                m: statsDateStart.getMonth(),
-                j: statsDateStart.getDate(),
-                d: statsDateStart.getDay(),
-                h: statsDateStart.getHours(),
-                t: statsDateStart.getMinutes(),
-                s: statsDateStart.getSeconds(),
-            },
-            tsStart: Date.now()
+            dateStart: new Date()
         }
 
         this.#boundApplicationVisibilityChangeHandler = this.#applicationVisibilityChangeHandler.bind(this);
@@ -346,8 +337,9 @@ class AxialApplicationBase extends EventTarget
         window.addEventListener("pageshow", this.#boundPageShowHandler);
         document.addEventListener("visibilitychange", this.#boundApplicationVisibilityChangeHandler);
 
-        // overlay
+        // overlay - dropdown
         document.addEventListener("click", AxialOverlayManager.documentOverlayClickHandler);
+        document.addEventListener("click", AxialDropdownManager.documentDropdownClickHandler);
     }
 
     get language() { return this.#language; }
@@ -486,17 +478,7 @@ class AxialApplicationBase extends EventTarget
             if( this.#useStats === true && this.#statsPath !== undefined )
             {
                 const statsDateEnd = new Date();
-                this.#statsObject.dateEnd =
-                {
-                    y: statsDateEnd.getFullYear(),
-                    m: statsDateEnd.getMonth(),
-                    j: statsDateEnd.getDate(),
-                    d: statsDateEnd.getDay(),
-                    h: statsDateEnd.getHours(),
-                    t: statsDateEnd.getMinutes(),
-                    s: statsDateEnd.getSeconds(),
-                }
-                this.#statsObject.tsEnd = Date.now();
+                this.#statsObject.dateEnd = new Date();
                 const response = await fetch( this.#statsPath, { method: "POST", keepalive: true, body: JSON.stringify(this.#statsObject), headers: { "Content-Type":"application/json" } } );
                 this.#statsSent = true;
             }
@@ -676,7 +658,6 @@ class AxialApplicationBase extends EventTarget
         if( this._onApplicationResize )
         {
             this._onApplicationResize();
-            
         }
     }
 

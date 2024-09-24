@@ -18,6 +18,9 @@ class AxialCalendar extends AxialComponentBase
     /** @type { Array.<String> } */
     #monthsNames = [ "Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre" ];
 
+    /** @type { Date } */
+    #date = undefined;
+    
     /// ui
     /** @type { HTMLElement } */
     #label;
@@ -31,28 +34,50 @@ class AxialCalendar extends AxialComponentBase
     /** @type { HTMLElement } */
     #days;
 
-    /** @type { HTMLElement } */
-    #dates;
+    /** @type { AxialCalendarGridBase } */
+    #grid;
+
+    /// events
+    /** @type { Function } */
+    #boundDateChangedHandler;
+
+    /** @type { Function } */
+    #boundPreviousClickHandler;
+
+    /** @type { Function } */
+    #boundNextClickHandler;
 
     constructor()
     {
         super();
         this.classList.add("axial_calendar");
         this.template = "axial-calendar-template";
-        /*
-        const currentYear = this.#initDate.getFullYear();
-        console.log("currentYear = " + currentYear);
+        this.#boundDateChangedHandler = this.#dateChangedHandler.bind(this);
+        this.#boundPreviousClickHandler = this.#previousClickHandler.bind(this);
+        this.#boundNextClickHandler = this.#nextClickHandler.bind(this);
+    }
 
+    get date() { return this.#date; }
+    set date( value )
+    {
+        if( value instanceof Date === false )
+        {
+            throw new TypeError("Date value expected");
+        }
+        this.#date = value;
+        this.#initDate = this.#date;
         const currentMonth = this.#initDate.getMonth();
-        console.log("currentMonth = " + currentMonth);
+        const currentYear = this.#initDate.getFullYear();
 
-        const firstDay = new Date( currentYear, currentMonth, 1);
+        if( this.#grid )
+        {
+            this.#grid.date = this.#date;
+        }
 
-        const lastDay = new Date( currentYear, currentMonth+2, 0);
-        console.log(lastDay.getDate());
-
-        console.log( this.#initDate.getDate() );
-        */
+        if( this.#label )
+        {
+            this.#label.innerHTML = this.#monthsNames[currentMonth] + " " + String(currentYear);
+        }
     }
 
     connectedCallback()
@@ -62,10 +87,10 @@ class AxialCalendar extends AxialComponentBase
         /// ui
         this.#label = this.shadowRoot.getElementById("label");
         this.#days = this.shadowRoot.getElementById("days");
-        //this.#dates = this.shadowRoot.getElementById("dates");
-
+        this.#grid = this.shadowRoot.getElementById("dates");
+        this.#previous = this.shadowRoot.getElementById("previous");
+        this.#next = this.shadowRoot.getElementById("next");
         this.#buildComponent();
-
     }
 
     #buildComponent()
@@ -74,13 +99,9 @@ class AxialCalendar extends AxialComponentBase
         const currentMonth = this.#initDate.getMonth();
         const currentMonthName = this.#monthsNames[currentMonth];
 
-        const firstDay = new Date(currentYear, currentMonth, 1);
-        const firstDayIndex = firstDay.getDay();
+        //const firstDay = new Date(currentYear, currentMonth, 1);
+        //const firstDayIndex = firstDay.getDay();
 
-        const lastDay = new Date(currentYear, currentMonth + 1, 0);
-        const lastDayNum = lastDay.getDate();
-
-        console.log("firstDayIndex = " + firstDayIndex);
 
         if( this.#label )
         {
@@ -106,36 +127,71 @@ class AxialCalendar extends AxialComponentBase
             }
         }
 
-        /*
-        if( this.#dates )
+        if( this.#grid )
         {
-            let rowIndex = 1;
-            //let columnIndex = 1;
-
-            for( let i = 1; i <= lastDayNum; i++ )
-            {
-                const date = new Date( currentYear, currentMonth, i);
-                let dayNum = date.getDay();
-                let columnIndex = dayNum - this.#firstDayOfTheWeek + 1;
-                if( dayNum < this.#firstDayOfTheWeek )
-                {
-                    columnIndex = columnIndex + 7;
-                }
-
-                console.log(dayNum, columnIndex, rowIndex);
-                const dateItem = document.createElement("div");
-                dateItem.classList.add("axial_calendar-date");
-                dateItem.innerHTML = String(i);
-                dateItem.style.gridColumn = columnIndex;
-                dateItem.style.gridRow = rowIndex;
-                this.#dates.appendChild( dateItem );
-
-
-                if( columnIndex == 7 ) { rowIndex += 1; }
-            }
+            this.#grid.addEventListener( "dateChanged", this.#boundDateChangedHandler );
         }
-        */
+
+        if( this.#previous ) { this.#previous.addEventListener("click", this.#boundPreviousClickHandler); }
+        if( this.#next )     { this.#next.addEventListener("click", this.#boundNextClickHandler); }
     }
+
+    /** @type { Function } */;
+    #dateChangedHandler( event )
+    {
+        //console.log("AxialCalendar dateChanged");
+        const newDate = event.detail.date;
+        this.#date = newDate;
+        const dateChangedEvent = new CustomEvent("dateChanged", { bubbles: false, detail: { date: newDate } } );
+        this.dispatchEvent( dateChangedEvent );
+
+    }
+
+    #previousClickHandler( event )
+    {
+        const currentMonth = this.#initDate.getMonth();
+        const currentYear = this.#initDate.getFullYear();
+        
+        const newMonth = (currentMonth - 1) == -1 ? 11 : (currentMonth - 1);
+        const newYear = newMonth == 11 ? currentYear - 1 : currentYear;
+
+        const newInitDate = new Date( newYear, newMonth );
+        this.#initDate = newInitDate;
+
+        if( this.#grid )
+        {
+            this.#grid.setNewDate( this.#initDate );
+        }
+
+        if( this.#label )
+        {
+            this.#label.innerHTML = this.#monthsNames[newMonth] + " " + String(newYear);
+        }
+    }
+
+    #nextClickHandler( event )
+    {
+        const currentMonth = this.#initDate.getMonth();
+        const currentYear = this.#initDate.getFullYear();
+        
+        const newMonth = (currentMonth + 1) == 12 ? 0 : (currentMonth + 1);
+        const newYear = newMonth == 0 ? currentYear + 1 : currentYear;
+
+        const newInitDate = new Date( newYear, newMonth );
+        this.#initDate = newInitDate;
+
+        if( this.#grid )
+        {
+            this.#grid.setNewDate( this.#initDate );
+        }
+
+        if( this.#label )
+        {
+            this.#label.innerHTML = this.#monthsNames[newMonth] + " " + String(newYear);
+        }
+    }
+
+    
 }
 window.customElements.define("axial-calendar", AxialCalendar);
 export { AxialCalendar }

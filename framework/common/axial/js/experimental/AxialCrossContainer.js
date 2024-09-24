@@ -109,7 +109,7 @@ class AxialCrossContainer extends AxialComponentBase
     {
         if( typeof value !== "boolean" )
         {
-            throw new TypeError("Boolean value expected");
+            throw new TypeError("String value expected");
         }
         if( value == this.#inverted ) { return; }
         if( this.#currentContainter != "center" ) { return; }

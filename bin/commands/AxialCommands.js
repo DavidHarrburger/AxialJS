@@ -15,7 +15,7 @@ class AxialCommands extends EventEmitter
     /**
      * @type { Set }
      */
-    #commands = new Set( [ "init", "newpage", "build", "config", "electron" ] );
+    #commands = new Set( [ "init", "newpage", "build", "config", "electron", "database" ] );
 
     #paramsInit =     new Set( [ "-front", "-server", "-electron" ] );
     #paramsNewPage =  new Set( [ "-name", "-template", "-path" ] );
@@ -95,6 +95,10 @@ class AxialCommands extends EventEmitter
 
                 case "electron":
                     this.#electron(params);
+                break;
+
+                case "database":
+                    this.#database(params);
                 break;
 
                 default:
@@ -225,6 +229,11 @@ class AxialCommands extends EventEmitter
         {
             console.log(err);
         }
+    }
+
+    async #database( params )
+    {
+
     }
 
     async #newpage( params )

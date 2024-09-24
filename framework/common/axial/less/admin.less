@@ -1,0 +1,1089 @@
+:root
+{
+    --adminBody___backgroundColor: #fff;
+
+    /* panel */
+    --adminPanel___width: 0px;
+    --adminPanel___display: none;
+    --adminPanel___backgroundColor: #fff;
+
+    --adminPanelHeader___height: 60px;
+
+    /* header */
+    --adminHeader___height: 60px;
+    --adminHeader___backgroundColor: #fff;
+
+    --adminTitle___color: #010203;
+    
+    /* main */
+    --adminMain___backgroundColor: #f8f9fb;
+}
+body
+{
+    background-color: var(--adminBody___backgroundColor);
+    color: #232323;
+}
+h1, h2, h3, h4, h5, h6 { color: #232323; margin-top: 0; margin-bottom: 20px; }
+
+.axial_admin_fill_theme { fill: var(--themeColor); }
+
+.axial_admin_main
+{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+
+    top:              var(--adminHeader___height);
+    left:             var(--adminPanel___width);
+    background-color: var(--adminMain___backgroundColor);
+
+    display: flex;
+    flex-direction: column;
+
+    /*padding: 40px;*/
+}
+
+.axial_admin_header
+{
+    position: absolute;
+    top: 0;
+    right: 0;
+    border-bottom: 1px solid #e1e6f0;
+
+    display: flex;
+    align-items: center;
+
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+
+    left:             var(--adminPanel___width);
+    height:           var(--adminHeader___height);
+    background-color: var(--adminHeader___backgroundColor);
+}
+
+.axial_admin_title
+{
+    font-weight: 800;
+    font-size: 28px;
+    color: var(--adminTitle___color);
+}
+
+.axial_admin_username
+{
+    margin-left: 20px;
+    margin-right: 20px;
+    font-weight: 500;
+    color: #232323;
+}
+
+
+.axial_admin_panel
+{
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    border-right: 1px solid #e1e6f0;
+
+    display:          var(--adminPanel___display);
+    width:            var(--adminPanel___width);
+    background-color: var(--adminPanel___backgroundColor);
+}
+
+.axial_admin_panel-header
+{
+    position: absolute;
+    width: 100%;
+    top: 0;
+
+    height: var(--adminPanelHeader___height);
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.axial_admin_panel-logo
+{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.axial_admin_panel-svg
+{
+    height: 40px;
+    width: auto;
+}
+.axial_admin_panel-scroller
+{
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    
+    top: var(--adminPanelHeader___height);
+}
+
+.axial_admin_panel-toggles
+{
+    width: 100%;
+    height: auto;
+    
+    padding-left: 20px;
+    padding-right: 20px;
+}
+/* CARDS */
+.axial_admin_card
+{
+    overflow: hidden;
+    border-radius: var(--component___borderRadius);
+    background-color: #fff;
+    box-shadow: 0 1px 1px 0 rgba(118, 135, 154, 0.24), 0 3px 8px 0 rgba(118, 135, 154, 0.08);
+    
+}
+.axial_admin_view_base
+{
+    padding: 40px;
+}
+.axial_admin_view_base-mini
+{
+    padding: 10px;
+}
+.axial_admin_toggle_bar
+{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+}
+/* FORM */
+.axial_admin_form_base
+{
+    width: 100%;
+    height: 100%;
+}
+.axial_admin_form_holder
+{
+    position: relative;
+    width: 100%;
+    height: 100%;
+
+}
+.axial_admin_form_content
+{
+    position: absolute;
+    top: 0;
+    bottom: 64px;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+.axial_admin_form_footer
+{
+    position: absolute;
+    width: 100%;
+    height: 64px;
+    bottom: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.axial_admin_form_infos
+{
+    font-size: 14px;
+    color: #4b5764;
+}
+.axial_admin_form_item
+{
+    display: flex;
+    flex-direction: column;
+}
+.axial_admin_form_label
+{
+    margin-right: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374049;
+}
+.axial_admin_form_comp
+{
+    height: 50px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+.axial_admin_form_row_add
+{
+    height: 50px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+
+}
+.axial_admin_form_separator
+{
+    width: 100%;
+    height: 1px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    background-color: #ccc;
+}
+.axial_admin_form_properties
+{
+    margin-top: 5px;
+    margin-bottom: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+
+/* COMPONENTS HELPER */
+
+/* POPUPS */
+.axial_admin_popup
+{
+    width: 600px;
+    height: 400px;
+}
+.axial_admin_popup-holder
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    /*border-radius: var(--container___borderRadius);*/
+    background-color: #fff;
+}
+.axial_admin_popup-header
+{
+    width: 100%;
+    height: 48px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+    padding-left: 10px;
+    padding-right: 10px;
+    flex-shrink: 0;
+}
+.axial_admin_popup-title
+{
+    font-size: 18px;
+    font-weight: 700;
+}
+.axial_admin_popup-content
+{
+    width: 100%;
+    height: 100%;
+    flex-grow: 1;
+    position: relative;
+    padding: 10px;
+}
+
+
+/* PARAMS SECTIONS */
+/* AxialAdminParamsView */
+.axial_admin_params_view-holder
+{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.axial_admin_params_view-bar
+{
+    width: 100%;
+    height: 54px;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 32px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.axial_admin_params_view-viewer
+{
+    width: 100%;
+    flex-grow: 1;
+}
+/* AxialAdminParamsInformationBar */
+.axial_admin_params_infobar
+{
+    display: flex;
+    flex-direction: column;
+}
+.axial_admin_params_infobar-p
+{
+    font-size: 14px;
+    color: #4b5764;
+}
+
+
+
+/* DATABASES SECTION */
+/* AxialAdminDatabaseView */
+.axial_admin_database_view-holder
+{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.axial_admin_database_view-bar
+{
+    width: 100%;
+    height: 54px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 32px;
+    padding-left: 10px;
+    padding-right: 10px;
+    flex-shrink: 0;
+}
+.axial_admin_database_view-content
+{
+    flex-grow: 1;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+.axial_admin_database_view-grid
+{
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+    gap: 20px 20px;
+    padding: 20px;
+}
+
+/* AxialAdminDatabaseItem */
+.axial_admin_database_item
+{
+    width: 100%;
+    height: 64px;
+    border-bottom: 1px solid #ccc;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+}
+.axial_admin_database_item-name
+{
+    color: #374049;
+    font-size: 16px;
+    font-weight: 500;
+    
+}
+.axial_admin_database_item-size
+{
+    color: #4b5764;
+    font-size: 13px;
+    font-style: italic;
+}
+
+/* MODELS SECTION */
+/* AxialAdminModelView */
+.axial_admin_model_view-holder
+{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.axial_admin_model_view-bar
+{
+    width: 100%;
+    height: 54px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 32px;
+    padding-left: 10px;
+    padding-right: 10px;
+    flex-shrink: 0;
+}
+.axial_admin_model_view-content
+{
+    flex-grow: 1;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+.axial_admin_model_view-grid
+{
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+    gap: 20px 20px;
+    padding: 20px;
+}
+
+/* AxialAdminModelItem */
+.axial_admin_model_item
+{
+    width: 100%;
+    height: 64px;
+    border-bottom: 1px solid #ccc;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+}
+.axial_admin_model_item-name
+{
+    color: #374049;
+    font-size: 16px;
+    font-weight: 500;
+}
+/* AxialAdminModelPopup */
+.axial_admin_model_popup
+{
+    width: 100%;
+    height: 100%;
+}
+/* AxialAdminModelFormProperty */
+.axial_admin_model_property
+{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+
+    height: 50px;
+    width: 100%;
+    
+}
+
+.axial_admin_model_property-name
+{
+    width: 200px;
+}
+.axial_admin_model_property-dropdown
+{
+    width: 200px;
+}
+.axial_admin_model_property-value
+{
+    width: 300px;
+}
+.axial_admin_model_property-select
+{
+    width: 300px;
+    display: none;
+}
+.axial_admin_model_property-file_selector
+{
+    width: 600px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+}
+.axial_admin_model_property-file_button
+{
+    width: 160px;
+}
+
+/* USERS */
+/* AxialAdminUserView */
+.axial_admin_user_view-holder
+{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.axial_admin_user_view-bar
+{
+    width: 100%;
+    height: 54px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 32px;
+    padding-left: 10px;
+    padding-right: 10px;
+    flex-shrink: 0;
+}
+.axial_admin_user_view-content
+{
+    flex-grow: 1;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+.axial_admin_user_view-grid
+{
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+    gap: 20px 20px;
+    padding: 20px;
+}
+/* AxialAdminUserItem */
+.axial_admin_user_item
+{
+    width: 100%;
+    height: 64px;
+    border-bottom: 1px solid #ccc;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+}
+.axial_admin_user_item-name
+{
+    color: #374049;
+    font-size: 16px;
+    font-weight: 500;
+    width: 120px;
+}
+.axial_admin_user_item-color
+{
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: #fff;
+    box-shadow: 0px 1px 1px #232323;
+}
+.axial_admin_user_item-role
+{
+    font-size: 15px;
+    font-weight: 400;
+    color: #4b5764;
+    text-transform: uppercase;
+    width: 100px;
+}
+.axial_admin_user_item-uuid
+{
+    font-size: 12px;
+    font-weight: 400;
+    font-style: italic;
+    color: #4b5764;
+}
+
+/* PRODUCTS SECTION */
+/* AxialAdminProductView */
+.axial_admin_product_view-holder
+{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.axial_admin_product_view-bar
+{
+    width: 100%;
+    height: 54px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 32px;
+    padding-left: 10px;
+    padding-right: 10px;
+    flex-shrink: 0;
+}
+.axial_admin_product_view-content
+{
+    flex-grow: 1;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+.axial_admin_product_view-grid
+{
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+    gap: 20px 20px;
+    padding: 20px;
+}
+/* AxialAdminProductItem */
+.axial_admin_product_item
+{
+    display: flex;
+}
+
+
+/* test dropdown */
+.dropdown_test
+{
+    width: 300px;
+}
+
+/* MEDIAS SECTION */
+/* AxialAdminMediasView */
+.axial_admin_medias_view-holder
+{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.axial_admin_medias_view-bar
+{
+    width: 100%;
+    height: 54px;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 32px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.axial_admin_medias_view-viewer
+{
+    width: 100%;
+    flex-grow: 1;
+}
+/* AxialAdminMediasUploader */
+.axial_admin_medias_uploader
+{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+/* AxialAdminMediaLibraryItem */
+.axial_admin_medias_library_item
+{
+    position: relative;
+    width: 100%;
+    height: 280px;
+}
+.axial_admin_medias_library_item-background
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(218, 218, 218, 0.23);
+    border-radius: var(--component___borderRadius);
+    box-shadow: 0 1px 1px 0 rgba(118, 135, 154, 0.24);
+}
+.axial_admin_medias_library_item-content
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+.axial_admin_medias_library_item-medias
+{
+    position: relative;
+    flex-grow: 1;
+    width: 100%;
+    height: auto;
+    padding: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.axial_admin_medias_library_item-holder
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+.axial_admin_medias_library_item-image
+{
+    display: none;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+.axial_admin_medias_library_item-video
+{
+    display: none;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+.axial_admin_medias_library_item-actions
+{
+    flex-shrink: 0;
+    width: 100%;
+    height: 40px;
+    border-top: 1px solid #ccc;
+    padding-left: 8px;
+    padding-right: 8px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+}
+.axial_admin_medias_library_item-infos
+{
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+.axial_admin_medias_library_item-name
+{
+    flex-grow: 1;
+    font-size: 13px;
+    font-weight: 400;
+    overflow: hidden;
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
+}
+
+.axial_admin_medias_library_item-open
+{
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.axial_admin_medias_library_item-download
+{
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+/* AxialAdminMediaLibrary */
+.axial_admin_medias_library
+{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+.axial_admin_medias_library-grid
+{
+    width: 100%;
+    height: 100%;
+    display: grid;
+    padding: 10px;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: auto;
+    gap: 20px;
+}
+
+/* AxialAdminMediasSelector */
+.axial_admin_medias_selector
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    visibility: hidden;
+    overflow: hidden;
+    background-color: #f8f9fb;
+
+    transition-property: transform;
+    transition-duration: 400ms;
+    transition-timing-function: ease;
+
+    transform: translateY(101%);
+}
+.axial_admin_medias_selector-header
+{
+    position: absolute;
+    width: 100%;
+    height: 48px;
+    background-color: #fff;
+    border-bottom: 1px solid #ccc;
+}
+.axial_admin_medias_selector-main
+{
+    position: absolute;
+    width: 100%;
+    top: 48px;
+    bottom: 0px;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+.axial_admin_medias_selector-bar
+{
+    width: 100%;
+    height: 52px;
+    flex-shrink: 0;
+}
+.axial_admin_medias_selector-content
+{
+    width: 100%;
+    flex-grow: 1;
+}
+.axial_admin_medias_selector-grid
+{
+    width: 100%;
+    height: 100%;
+    display: grid;
+    padding: 10px;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: auto;
+    gap: 20px;
+}
+/* AxialAdminMediaSelectorItem */
+.axial_admin_medias_selector_item
+{
+    position: relative;
+    width: 100%;
+    height: 280px;
+}
+.axial_admin_medias_selector_item-background
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(218, 218, 218, 0.23);
+    border-radius: var(--component___borderRadius);
+    box-shadow: 0 1px 1px 0 rgba(118, 135, 154, 0.24);
+}
+.axial_admin_medias_selector_item-content
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+.axial_admin_medias_selector_item-medias
+{
+    position: relative;
+    flex-grow: 1;
+    width: 100%;
+    height: auto;
+    padding: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.axial_admin_medias_selector_item-holder
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+.axial_admin_medias_selector_item-image
+{
+    display: none;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+.axial_admin_medias_selector_item-video
+{
+    display: none;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+.axial_admin_medias_selector_item-actions
+{
+    flex-shrink: 0;
+    width: 100%;
+    height: 40px;
+    border-top: 1px solid #ccc;
+    padding-left: 8px;
+    padding-right: 8px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+}
+.axial_admin_medias_selector_item-infos
+{
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+.axial_admin_medias_selector_item-name
+{
+    flex-grow: 1;
+    font-size: 13px;
+    font-weight: 400;
+    overflow: hidden;
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
+}
+/* MAIL SECTION */
+/* AxialAdminMailPopup */
+.axial_admin_mail_popup
+{
+    width: 100%;
+    height: 100%;
+}
+.axial_admin_mail_popup-content
+{
+    padding: 0;
+}
+/* AxialAdminMailViewer */
+.axial_admin_mail_viewer
+{
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-color: #f8f9fb;
+}
+.axial_admin_mail_viewer-holder
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    padding: 40px;
+}
+.axial_admin_mail_viewer-bar
+{
+    width: 100%;
+    height: 52px;
+    flex-shrink: 0;
+}
+.axial_admin_mail_viewer-content
+{
+    position: relative;
+    width: 100%;
+    flex-grow: 1;
+}
+.axial_admin_mail_viewer-header
+{
+    display: block;
+    width: 100%;
+    height: 60px;
+    border-bottom: 1px solid #ccc;
+}
+/* AxialAdminMailItem */
+.axial_admin_mail_item
+{
+    position: relative;
+    width: 100%;
+    height: 64px;
+    border-bottom: 1px solid #ccc;
+    display: block;
+    cursor: pointer;
+}
+.axial_admin_mail_item-background
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(218, 218, 218, 0.23);
+    opacity: 0;
+}
+.axial_admin_mail_item-content
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 14px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.axial_admin_mail_item-email
+{
+    font-weight: 600;
+}
+.axial_admin_mail_item-date
+{
+    font-size: 12px;
+    font-weight: 400;
+    font-style: italic;
+}
+/* AxialAdminMailList */
+.axial_admin_mail_list
+{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: block;
+    padding: 10px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+.axial_admin_mail_list-holder
+{
+    width: 100%;
+    height: auto;
+}
+/* AxialAdminMailView*/
+.axial_admin_mail_view-holder
+{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.axial_admin_mail_view-bar
+{
+    width: 100%;
+    height: 54px;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 32px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.axial_admin_mail_view-list
+{
+    width: 100%;
+    flex-grow: 1;
+}
+
+/* STAT SECTION */
+/* AxialAdminMailView*/
+.axial_admin_stat_view-holder
+{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.axial_admin_stat_view-bar
+{
+    width: 100%;
+    height: 54px;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 32px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.axial_admin_stat_view-grid
+{
+    width: 100%;
+    flex-grow: 1;
+}

@@ -1,0 +1,26 @@
+<!-- AxialAdminDatabaseCreateForm -->
+<template id="axial-admin-database-create-form-template">
+    <link rel="stylesheet" href="./styles.css">
+    <p class="axial_admin_form_infos">
+        Entrer le nom de la base ci-dessous.<br>
+        Le nom de la base doit contenir entre 8 et 32 caractères.<br>
+        Il ne peut contenir que des lettres, aucun caractère spécial ni d'espace, ni de nombre.
+    </p>
+    <form autocomplete="off">
+        
+        <div class="axial_admin_form_item">
+            <label for="dbname" class="axial_admin_form_label">Nom de la base :</label>
+            <div class="axial_admin_form_comp">
+                <input name="dbnameInput" id="dbname" type="text" required minlength="8" maxlength="32" autocomplete="off" pattern="[A-Za-z]+">
+            </div>
+        </div>
+
+        <div class="axial_admin_form_item">
+            <label class="axial_admin_form_label">Sauvegarder les modifications :</label>
+            <div class="axial_admin_form_comp">
+                <axial-service-button id="button" axial-text="Créer la base"></axial-service-button>
+            </div>
+        </div>
+        
+    </form>
+</template>

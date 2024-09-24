@@ -5,7 +5,6 @@
     width: 100%;
     height: 100%;
 }
-
 .axial_cross_container_element
 {
     position: absolute;
@@ -32,7 +31,6 @@
 {
     transform: translate(-100%,0%);
 }
-
 /* AxialRateStars */
 .axial_rate_stars
 {
@@ -61,14 +59,12 @@
 {
     fill: #fff;
 }
-
 /* AxialNavigationHelper*/
 .axial_navigation_helper
 {
     height: 100%;
     width: auto;
 }
-
 /* Axial3DViewer : to move in a specific css */
 .axial_3d_viewer
 {
@@ -95,7 +91,6 @@
     width: 100%;
     height: 100%;
 }
-
 /* AxialAccordionElement */
 .axial_accordion_element
 {
@@ -124,7 +119,6 @@
     height: auto;
     padding: 10px;
 }
-
 /* AxialFlipbookBase */
 .axial_flipbook_base
 {
@@ -135,7 +129,6 @@
     min-height: 120px;
     overflow: visible;
 }
-
 /* AxialFlipbookPageBase */
 .axial_flipbook_page_base
 {
@@ -147,7 +140,6 @@
     display: none;
     background-color: var(--greyLight);
 }
-
 /* AxialToggleCalendarDate */
 .axial_toggle_calendar_date
 {
@@ -169,7 +161,6 @@
     height: 34px;
     border-radius: 4px;
     overflow: hidden;
-
 }
 .axial_toggle_calendar_date-background
 {
@@ -180,7 +171,6 @@
 
     opacity: 0;
 }
-
 .axial_toggle_calendar_date-middleground
 {
     position: absolute;
@@ -190,14 +180,12 @@
 
     opacity: 0;
 }
-
 .axial_toggle_calendar_date-foreground
 {
     position: absolute;
     width: 100%;
     height: 100%;
 }
-
 .axial_toggle_calendar_date-num
 {
     position: absolute;
@@ -213,8 +201,6 @@
     font-size: 15px;
     color: #232323;
 }
-
-
 /* AxialCalendarGrid */
 .axial_calendar_grid_base
 {
@@ -228,8 +214,7 @@
 
     background-color: #fff;
 }
-
-/* AxialCalendar */
+/* AxialOverlayCalendar */
 .axial_overlay_calendar
 {
     position: absolute;
@@ -238,7 +223,6 @@
     border-radius: var(--container___borderRadius);
     overflow: hidden;
 }
-
 /* AxialCalendar */
 .axial_calendar
 {
@@ -255,7 +239,6 @@
     height: 100%;
     background-color: #fff;
 }
-
 .axial_calendar-content
 {
     position: absolute;
@@ -264,7 +247,6 @@
     padding: 10px;
     display: flex;
     flex-direction: column;
-
 }
 .axial_calendar-header
 {
@@ -273,6 +255,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
+    gap: 4px;
 }
 .axial_calendar-label
 {
@@ -282,17 +265,15 @@
     font-size: 16px;
     padding-left: 4px;
 }
-.axial_calendar-previous
+.axial_calendar-nav
 {
-    width: 40px;
-    height: 40px;
-    background-color: #eee;
-}
-.axial_calendar-next
-{
-    width: 40px;
-    height: 40px;
-    background-color: #eee;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
 }
 .axial_calendar-days
 {
@@ -328,4 +309,36 @@
     flex-direction: row;
     justify-content: center;
     align-items: center;
+}
+/* AxialInfinity */
+.axial_infinity
+{
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+.axial_infinity-holder
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    perspective: 200px;
+    transform-style: preserve-3d;
+}
+/* AxialInfinityItem */
+.axial_infinity_item
+{
+    position: absolute;
+    z-index: 100;
+}
+.axial_infinity_item-holder
+{
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.23);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 40px;
+    font-weight: 800;
 }

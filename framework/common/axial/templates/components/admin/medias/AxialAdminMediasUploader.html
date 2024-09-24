@@ -1,0 +1,30 @@
+<!-- AxialAdminMediasUploader -->
+<template id="axial-admin-medias-uploader-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div class="axial_admin_form_item">
+        <label class="axial_admin_form_label">Sélectionner une image au format .jpg, .png ou .webp :</label>
+        <div class="axial_admin_form_comp">
+            <input type="file" name="fileInput" id="fileInput" accept=".jpg,.png,.webp,.txt,.json,.webm,.mp4">
+        </div>
+    </div>
+
+    <div class="axial_admin_form_item">
+        <label class="axial_admin_form_label">
+            Par défaut le fichier téléchargé est privé.<br>
+            En cochant cette case le fichier sera accessible par tous les visiteurs.<br>
+            Par exemple pour un produit à vendre ene ligne, le fichier doit être public
+        </label>
+        <div class="axial_admin_form_comp">
+            <div>Privé</div>
+            <axial-toggle-switch id="switch"></axial-toggle-switch>
+            <div>Public</div>
+        </div>
+    </div>
+    
+    <div class="axial_admin_form_item">
+        <label class="axial_admin_form_label">Sauvegarder les modifications :</label>
+        <div class="axial_admin_form_comp">
+            <axial-service-button id="uploadButton" axial-text="Télécharger le fichier"></axial-service-button>
+        </div>
+    </div>
+</template>

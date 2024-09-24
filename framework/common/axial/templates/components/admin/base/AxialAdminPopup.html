@@ -1,0 +1,14 @@
+<!-- AxialAdminPopup -->
+<template id="axial-admin-popup-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div class="axial_admin_popup-holder">
+        <div class="axial_admin_popup-header">
+            <div id="title" class="axial_admin_popup-title"></div>
+            <div class="axial_spacer"></div>
+            <axial-button id="closer" axial-text="Fermer"></axial-button>
+        </div>
+        <div class="axial_admin_popup-content">
+            <slot id="contentSlot" name="axial-content"></slot>
+        </div>
+    </div>
+</template>

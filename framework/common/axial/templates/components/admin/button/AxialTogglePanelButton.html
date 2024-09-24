@@ -1,0 +1,15 @@
+<!-- AxialTogglePanelButton -->
+<template id="axial-toggle-panel-button-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="background" class="axial_toggle_panel_button-background"></div>
+    <div id="foreground" class="axial_toggle_panel_button-foreground"></div>
+    <div id="content" class="axial_toggle_panel_button-content">
+        <div id="icon" class="axial_toggle_panel_button-icon">
+            <slot id="iconSlot" name="axial-icon"></slot>
+        </div>
+        <div id="iconToggle" class="axial_toggle_button-icontoggle">
+            <slot id="iconToggleSlot" name="axial-icon-toggle"></slot>
+        </div>
+        <div id="label" class="axial_toggle_panel_button-label"></div>
+    </div>
+</template>

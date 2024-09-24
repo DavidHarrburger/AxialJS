@@ -1,7 +1,6 @@
 "use strict"
 
-import { AxialPopupBase } from "../popup/AxialPopupBase.js";
-import { AxialPopupManager } from "../popup/AxialPopupManager.js";
+
 import { AxialButtonBase } from "./AxialButtonBase.js";
 import { AxialToggleButtonGroupBase } from "./AxialToggleButtonGroupBase.js";
 
@@ -15,17 +14,10 @@ class AxialToggleButtonBase extends AxialButtonBase
 
     /** @type { AxialToggleButtonGroupBase } */
     #buttonGroup = undefined;
-
-    /** @type { AxialPopupBase } */
-    #popup = undefined;
-
-    /** @type { Functionn } */
-    #boundPopupHidingHandler;
     
     constructor()
     {
         super();
-        this.#boundPopupHidingHandler = this.#popupHidingHandler.bind(this);
         this.#boundToggleClickHandler = this.#toggleClickHandler.bind(this);
         this.addEventListener("click", this.#boundToggleClickHandler);
     }
@@ -63,32 +55,16 @@ class AxialToggleButtonBase extends AxialButtonBase
         this.#buttonGroup.addToggle(this);
     }
 
-    get popup() { return this.#popup; }
-    set popup( value )
-    {
-        if( value instanceof AxialPopupBase == false )
-        {
-            throw new TypeError("AxialPopupBase value expected");
-        }
-        if( value == this.#popup )
-        {
-            return;
-        }
-        if( this.#popup != undefined )
-        {
-            this.#popup.removeEventListener("popupHiding", this.#boundPopupHidingHandler);
-        }
-        this.#popup = value;
-        this.#popup.addEventListener("popupHiding", this.#boundPopupHidingHandler);
-    }
 
     #toggleClickHandler( event )
     {
         // experimental : check when popup is modal or not and what happen in a toggle button group
+        /*
         if( this.selected === false && AxialPopupManager.currentPopup != undefined && AxialPopupManager.currentPopup == this.#popup )
         {
             return;
         }
+        */
 
         // TODO IMPORTANT also return on double click tap when the popup is playing ;)
 
@@ -98,10 +74,12 @@ class AxialToggleButtonBase extends AxialButtonBase
         }
         this.#selected = !this.#selected;
 
+        /*
         if( this.#selected === true && this.#popup != undefined )
         {
             this.popup.show();
         }
+        */
 
         this._onToggleChanged();
 
@@ -121,7 +99,7 @@ class AxialToggleButtonBase extends AxialButtonBase
 
     /**
      * Manage styles and other stuff here
-     * @override
+     * @abstract
      */
     _onToggleChanged() {}
 

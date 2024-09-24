@@ -1,0 +1,14 @@
+<!-- AxialAdminModelPopup -->
+<template id="axial-admin-model-popup-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div class="axial_admin_popup-holder">
+        <div class="axial_admin_popup-header">
+            <div id="title" class="axial_admin_popup-title"></div>
+            <div class="axial_spacer"></div>
+            <axial-button id="closer" axial-text="Fermer"></axial-button>
+        </div>
+        <div class="axial_admin_popup-content">
+            <axial-admin-model-form id="modelForm" axial-get-path="../api/model/get?c=models" axial-post-path="../api/model/set"></axial-admin-model-form>
+        </div>
+    </div>
+</template>

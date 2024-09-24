@@ -418,7 +418,7 @@ class AxialViewerBase extends AxialComponentBase
 
     #adjustViews()
     {
-        console.log("ADJUSTING VIEWS");
+        //console.log("ADJUSTING VIEWS");
         const viewsLength = this.#views.length;
         if( viewsLength == 0 ) { return; }
 
@@ -477,7 +477,7 @@ class AxialViewerBase extends AxialComponentBase
         // but I prefer write get the holder on each move and later will add a percentage factor
         //console.log(event.detail);
 
-        console.log("manipulationChangedHandler + isManipulating = " + this.isManipulating);
+        //console.log("manipulationChangedHandler + isManipulating = " + this.isManipulating);
 
         const viewsLength = this.#views.length;
         if( viewsLength == 0 ) { return; }
@@ -520,7 +520,7 @@ class AxialViewerBase extends AxialComponentBase
         const viewsLength = this.#views.length;
         if( viewsLength == 0 ) { return; }
         //console.log(event.detail);
-        console.log("MANIPULATION FINISHED !!!!");
+        //console.log("MANIPULATION FINISHED !!!!");
         this.#animateAfterManipulation();
     }
 
@@ -531,13 +531,13 @@ class AxialViewerBase extends AxialComponentBase
     #manipulationCancelledHandler(event)
     {
         console.log(event.detail);
-        console.log("MANIPULATION CANCELLED !!!!");
+        //console.log("MANIPULATION CANCELLED !!!!");
     }
 
     #animateAfterManipulation()
     {
         this.manipulationEnable = false;
-        console.log("#animateAfterManipulation()");
+        //console.log("#animateAfterManipulation()");
         const viewsLength = this.#views.length;
         const currentWidth = this.offsetWidth;
 
@@ -597,5 +597,4 @@ class AxialViewerBase extends AxialComponentBase
 }
 
 window.customElements.define("axial-viewer-base", AxialViewerBase);
-
 export { AxialViewerBase }

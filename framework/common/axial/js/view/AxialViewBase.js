@@ -24,5 +24,4 @@ class AxialViewBase extends AxialComponentBase
 }
 
 window.customElements.define("axial-view-base", AxialViewBase);
-
 export { AxialViewBase }

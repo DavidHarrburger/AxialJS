@@ -4,11 +4,33 @@ import { AxialToggleButtonBase } from "./AxialToggleButtonBase.js";
 
 class AxialToggleSwitch extends AxialToggleButtonBase
 {
-    /** @type { HTMLElement } */
-    #circleElement;
+    /// vars
+    /** @type { String } */
+    #unselectedLeft = "0";
 
-    #unselectedLeft = "0px";
-    #selectedLeft = "15px";
+    /** @type { String } */
+    #selectedLeft = "16px";
+
+    /** @type { String } */
+    //#unselectedBorderWidth = "2px";
+
+    /** @type { String } */
+    //#selectedBorderWidth = "0";
+
+    /** @type { String } */
+    #unselectedScale = "scale(0)";
+
+    /** @type { String } */
+    #selectedScale = "scale(1.1)";
+
+    /// elements
+    /** @type { HTMLElement } */
+    #circle;
+
+    /** @type { HTMLElement } */
+    #inner;
+
+    
 
     constructor()
     {
@@ -20,23 +42,37 @@ class AxialToggleSwitch extends AxialToggleButtonBase
     connectedCallback()
     {
         super.connectedCallback();
-        
-        this.#circleElement = this.shadowRoot.getElementById("circleElement");
+        this.#circle = this.shadowRoot.getElementById("circle");
+        this.#inner = this.shadowRoot.getElementById("inner");
     }
 
     _onToggleChanged()
     {
         super._onToggleChanged();
         
-        if( this.#circleElement )
+        if( this.#circle )
         {
             if( this.selected === true )
             {
-                this.#circleElement.style.left = this.#selectedLeft;
+                this.#circle.style.left = this.#selectedLeft;
+                //this.#circle.style.borderWidth = this.#selectedBorderWidth;
             }
             else
             {
-                this.#circleElement.style.left = this.#unselectedLeft;
+                this.#circle.style.left = this.#unselectedLeft;
+                //this.#circle.style.borderWidth = this.#unselectedBorderWidth;
+            }
+        }
+
+        if( this.#inner )
+        {
+            if( this.selected === true )
+            {
+                this.#inner.style.transform = this.#selectedScale;
+            }
+            else
+            {
+                this.#inner.style.transform = this.#unselectedScale;
             }
         }
     }

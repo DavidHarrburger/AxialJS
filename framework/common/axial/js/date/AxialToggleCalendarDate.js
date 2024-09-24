@@ -61,7 +61,6 @@ class AxialToggleCalendarDate extends AxialToggleButtonBase
     get date() { return this.#date; }
     set date( value )
     {
-        console.log( value instanceof Date );
         if( value instanceof Date === false )
         {
             throw new TypeError("Date value expected");

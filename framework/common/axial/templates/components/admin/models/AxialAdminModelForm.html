@@ -1,0 +1,49 @@
+<!-- AxialAdminModelForm -->
+<template id="axial-admin-model-form-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div class="axial_admin_form_holder">
+        <form class="axial_admin_form_content" autocomplete="off">
+            
+            <div class="axial_admin_form_item">
+                <label for="name" class="axial_admin_form_label">Nom du modèle :</label>
+                <div class="axial_admin_form_comp">
+                    <input name="nameInput" id="name" type="text" required minlength="4" maxlength="32" autocomplete="off" pattern="[A-Za-z]+">
+                </div>
+            </div>
+
+            <div class="axial_admin_form_item">
+                <label for="collection" class="axial_admin_form_label">Collection</label>
+                <div class="axial_admin_form_comp">
+                    <!--<axial-dropdown-button id="dropdown" axial-text="Sélectionner une collection"></axial-dropdown-button>-->
+                    <axial-dropdown-list id="dropdown" style="width: 200px;"></axial-dropdown-list>
+                </div>
+            </div>
+
+            <div class="axial_admin_form_separator"></div>
+            
+            <div class="axial_admin_form_item">
+                <label class="axial_admin_form_label">Propriétés</label>
+                <div id="properties" class="axial_admin_form_properties">
+                    
+                </div>
+                <div class="axial_admin_form_row_add">
+                    <axial-button id="addButton" axial-text="Ajouter une propriété">
+                        <div slot="axial-icon" class="axial_button-icon_holder">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                                <path d="M64 80c-8.8 0-16 7.2-16 16V416c0 8.8 7.2 16 16 16H384c8.8 0 16-7.2 16-16V96c0-8.8-7.2-16-16-16H64zM0 96C0 60.7 28.7 32 64 32H384c35.3 0 64 28.7 64 64V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96zM200 344V280H136c-13.3 0-24-10.7-24-24s10.7-24 24-24h64V168c0-13.3 10.7-24 24-24s24 10.7 24 24v64h64c13.3 0 24 10.7 24 24s-10.7 24-24 24H248v64c0 13.3-10.7 24-24 24s-24-10.7-24-24z"/>
+                            </svg>
+                        </div>
+                    </axial-button>
+                </div>
+            </div>
+            
+        </form>
+        <div class="axial_admin_form_footer">
+            <div class="axial_spacer"></div>
+            <label class="axial_admin_form_label">Sauvegarder les modifications :</label>
+            <div class="axial_admin_form_comp">
+                <axial-service-button id="postButton" axial-text="Créer le modèle de données"></axial-service-button>
+            </div>
+        </div>
+    </div>
+</template>

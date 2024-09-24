@@ -1,0 +1,23 @@
+<!-- AxialAdminParamsView -->
+<template id="axial-admin-params-view-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div class="axial_admin_params_view-holder">
+        <div class="axial_admin_params_view-bar axial_admin_card">
+            <axial-toggle-button-group-base id="bar" class="axial_admin_toggle_bar">
+                <axial-admin-toggle-bar-button axial-text="Barre d'information"></axial-admin-toggle-bar-button>
+                <axial-admin-toggle-bar-button axial-text="Horaires"></axial-admin-toggle-bar-button>
+                <axial-admin-toggle-bar-button axial-text="Autre paramètre"></axial-admin-toggle-bar-button>
+            </axial-toggle-button-group-base>
+        </div>
+        
+        <div class="axial_admin_params_view-viewer axial_admin_card">
+            <axial-viewer-base id="viewer">
+                <axial-view-base class="axial_admin_view_base-mini">
+                    <axial-admin-params-infobar axial-get-path="../api/site/infobar/get" axial-post-path="../api/site/infobar/set"></axial-admin-params-infobar>
+                </axial-view-base>
+                <axial-view-base class="axial_admin_view_base-mini">Param 2</axial-view-base>
+                <axial-view-base class="axial_admin_view_base-mini">Param 3</axial-view-base>
+            </axial-viewer-base>
+        </div>
+    </div>
+</template>

@@ -191,7 +191,15 @@ class AxialMessageForm extends AxialComponentBase
 
         try
         {
-            const infos = { name: this.#name.value, surname: this.#surname.value, email: this.#email.value, message: this.#message.value };
+            const date = new Date();
+            const infos =
+            {
+                name: this.#name.value,
+                surname: this.#surname.value,
+                email: this.#email.value,
+                message: this.#message.value,
+                date: date
+            };
             const response = await fetch(this.#path, { method: "POST", body: JSON.stringify(infos), headers: { "Content-Type":"application/json" } } );
             const json = await response.json();
             

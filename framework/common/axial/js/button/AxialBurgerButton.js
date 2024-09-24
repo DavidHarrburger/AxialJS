@@ -1,6 +1,5 @@
 "use strict"
 
-import { AxialPopupManager } from "../popup/AxialPopupManager.js";
 import { AxialToggleButtonBase } from "./AxialToggleButtonBase.js";
 
 class AxialBurgerButton extends AxialToggleButtonBase
@@ -41,13 +40,6 @@ class AxialBurgerButton extends AxialToggleButtonBase
         this.#middle = this.shadowRoot.getElementById("middle");
         this.#bottom = this.shadowRoot.getElementById("bottom");
     }
-
-    /*
-    _finalizeComponent()
-    {
-        this.popup = AxialPopupManager.getPopupById("axialPopupBurger");
-    }
-    */
 
     _onToggleChanged()
     {

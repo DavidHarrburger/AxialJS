@@ -1,0 +1,25 @@
+<!-- AxialAdminMediasView -->
+<template id="axial-admin-medias-view-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div class="axial_admin_medias_view-holder">
+        <div class="axial_admin_medias_view-bar axial_admin_card">
+            <axial-toggle-button-group-base id="bar" class="axial_admin_toggle_bar">
+                <axial-admin-toggle-bar-button axial-text="Télécharger"></axial-admin-toggle-bar-button>
+                <axial-admin-toggle-bar-button axial-text="Bibliothèque"></axial-admin-toggle-bar-button>
+            </axial-toggle-button-group-base>
+        </div>
+        
+        <div class="axial_admin_medias_view-viewer axial_admin_card">
+            
+            <axial-viewer-base id="viewer">
+                <axial-view-base class="axial_admin_view_base-mini">
+                    <axial-admin-medias-uploader></axial-admin-medias-uploader>
+                </axial-view-base>
+                <axial-view-base class="axial_admin_view_base-mini">
+                    <axial-admin-medias-library id="library" axial-get-path="../api/medias/all"></axial-admin-medias-library>
+                </axial-view-base>
+            </axial-viewer-base>
+            
+        </div>
+    </div>
+</template>
