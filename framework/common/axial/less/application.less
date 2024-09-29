@@ -396,6 +396,15 @@ select
     padding-right:  var(--section___paddingH);
     padding-bottom: var(--section___paddingV);
 }
+.axial_section_temp
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-weight: 800;
+    font-size: 48px;
+}
 .axial_section_subtitle
 {
     font-size: 18px;
@@ -460,11 +469,37 @@ select
     flex-direction: var(--footer___sectionDirection);
     justify-content: space-between;
 
-    padding-top: 20px;
-    padding-bottom: 20px;
+    border-top: 1px solid var(--greyDark);
 
-    margin-top: 20px;
-    margin-bottom: 20px;
+    padding-top: 40px;
+    padding-bottom: 40px;
+
+}
+.axial_footer_legal
+{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+.axial_footer_legal_link
+{
+    font-size: 14px;
+    font-weight: 600;
+}
+.axial_footer_social
+{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+.axial_footer_social_link
+{
+    width: 32px;
+    height: 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 /* utils */
 .axial_spacer

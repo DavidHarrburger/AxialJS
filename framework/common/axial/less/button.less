@@ -3,7 +3,6 @@
 {
     cursor: pointer;
 }
-
 /* AxialButton */
 .axial_button
 {
@@ -14,11 +13,9 @@
     height: auto;
 
     border-radius: var(--component___borderRadius);    
-    box-shadow: var(--AxialButton___boxShadow);
 
     fill: #fff;
 }
-
 .axial_button-background
 {
     position: absolute;
@@ -32,11 +29,12 @@
     width: 100%;
     height: 100%;
 
-    background-color: rgba(255, 255, 255, 0);
+    background-color: rgba(255, 255, 255, 0.23);
+    opacity: 0;
 
-    transition-property: background-color;
-    transition-duration: 240ms;
-    transition-timing-function: linear;
+    transition-property: opacity;
+    transition-duration: 320ms;
+    transition-timing-function: ease;
 }
 .axial_button-content
 {
@@ -64,7 +62,7 @@
 {
     position: relative;
 }
-.axial_button_helper-icon_holder
+.axial_button-icon_holder
 {
     display: flex;
     flex-direction: column;
@@ -85,7 +83,6 @@
     height: auto;
 
     border-radius: var(--component___borderRadius);    
-    box-shadow: var(--AxialToggleButton___boxShadow);
 
     fill: #fff;
 }
@@ -134,6 +131,12 @@
 .axial_toggle_button-icon
 {
     position: relative;
+    display: block;
+}
+.axial_toggle_button-icontoggle
+{
+    position: relative;
+    display: none;
 }
 .axial_toggle_button_helper-icon_holder
 {
@@ -305,4 +308,462 @@
 .axial_burger_button-bottom
 {
     top: 33px;
+}
+/* PROBABLY MISS SOMETHING ABOVE */
+/* AxialTogglePasswordButton */
+.axial_toggle_password_button
+{
+    overflow: hidden;
+    position: absolute;
+    width: 40px;
+    height: 38px;
+    top: 2px;
+    right: 2px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    box-shadow: none;
+
+    fill: #fff;    
+}
+
+/* AxialTogglePanelButton */
+.axial_toggle_panel_button
+{
+    overflow: hidden;
+    position: relative;
+    margin-top: 8px;
+    margin-bottom: 8px;
+
+    width: auto;
+    height: auto;
+
+    border-radius: var(--component___borderRadius);    
+    box-shadow: none;
+
+    fill: #627183;
+}
+.axial_toggle_panel_button-background
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+}
+.axial_toggle_panel_button-foreground
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+
+    background-color: rgba(218, 218, 218, 0.23);
+    opacity: 0;
+
+    transition-property: opacity;
+    transition-duration: 320ms;
+    transition-timing-function: linear;
+}
+.axial_toggle_panel_button-content
+{
+    position: relative;
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+
+    padding-top: 9px;
+    padding-bottom: 9px;
+    padding-left: 14px;
+    padding-right: 14px;
+}
+.axial_toggle_panel_button-label
+{
+    width: auto;
+    color: #627183;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* AxialAdminToggleBarButton */
+.axial_admin_toggle_bar_button
+{
+    overflow: hidden;
+    position: relative;
+    margin-left: 4px;
+    margin-right: 4px;
+
+    width: auto;
+    height: auto;
+
+    border-radius: var(--component___borderRadius);    
+    box-shadow: none;
+
+    fill: #627183;
+}
+.axial_admin_toggle_bar_button-background
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+}
+.axial_admin_toggle_bar_button-foreground
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+
+    background-color: rgba(218, 218, 218, 0.23);
+    opacity: 0;
+
+    transition-property: opacity;
+    transition-duration: 320ms;
+    transition-timing-function: linear;
+}
+.axial_admin_toggle_bar_button-content
+{
+    position: relative;
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+
+    padding-top: 9px;
+    padding-bottom: 9px;
+    padding-left: 14px;
+    padding-right: 14px;
+}
+.axial_admin_toggle_bar_button-label
+{
+    width: auto;
+    color: #627183;
+    font-size: 14px;
+    font-weight: 500;
+}
+/* AxialDropdownButton */
+.axial_dropdown
+{
+    display: inline-block;
+    position: relative;
+}
+.axial_dropdown-holder
+{
+    position: absolute;
+    width: 100%;
+    height: 0;
+    top: calc( 100% + 4px );
+    overflow: hidden;
+    
+    transition-property: height;
+    transition-duration: 600ms;
+    transition-timing-function: ease;
+}
+.axial_dropdown-content
+{
+    position: absolute;
+    width: 100%;
+    height: auto;
+    bottom: 0;
+}
+/* AxialDropdownList */
+.axial_dropdown_list-group
+{
+    border-radius: var(--component___borderRadius);
+    border: 2px solid var(--themeColor);
+    background-color: var(--iceWhite);
+    width: 100%;
+    height: auto;
+    bottom: 0;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+/* AxialDropdownCalendar */
+.axial_dropdown_calendar
+{
+    width: 300px;
+}
+
+
+/* AxialDropdownButton */
+.axial_dropdown_button
+{
+    position: relative;
+    width: 240px;
+    min-width: 240px;
+}
+.axial_dropdown_button-button
+{
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    width: auto;
+    height: auto;
+    border-radius: var(--component___borderRadius);
+    fill: #fff;
+
+    transition-property: opacity;
+    transition-duration: 400ms;
+    transition-timing-function: ease;
+}
+.axial_dropdown_button-button_background
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: var(--AxialToggleButton___backgroundColor);
+}
+.axial_dropdown_button-button_foreground
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+
+    background-color: rgba(218, 218, 218, 0.23);
+    opacity: 0;
+
+    transition-property: opacity;
+    transition-duration: 320ms;
+    transition-timing-function: linear;
+}
+.axial_dropdown_button-button_content
+{
+    position: relative;
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    padding-top: 9px;
+    padding-bottom: 9px;
+    padding-left: 14px;
+    padding-right: 14px;
+}
+.axial_dropdown_button-button_label
+{
+    width: auto;
+    color: var(--AxialToggleButton___textColor);
+    font-weight: var(--AxialToggleButton___fontWeight);
+}
+.axial_dropdown_button-button_icon
+{
+    position: relative;
+    display: block;
+}
+.axial_dropdown_button-dropdown
+{
+    position: absolute;
+    width: 100%;
+    height: 0;
+    top: calc( 100% + 4px );
+    overflow: hidden;
+    
+    transition-property: height;
+    transition-duration: 600ms;
+    transition-timing-function: ease;
+
+}
+.axial_dropdown_button-dropdown_group
+{
+    position: absolute;
+    border-radius: var(--component___borderRadius);
+    border: 2px solid var(--themeColor);
+    background-color: var(--iceWhite);
+    width: 100%;
+    height: auto;
+    bottom: 0;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+/* AxialDropdownToggle */
+.axial_dropdown_toggle
+{
+    overflow: hidden;
+    position: relative;
+    width: auto;
+    height: auto;
+    border-radius: var(--component___borderRadius);    
+    fill: #627183;
+}
+.axial_dropdown_toggle-background
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+}
+.axial_dropdown_toggle-foreground
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+
+    background-color: rgba(218, 218, 218, 0.23);
+    opacity: 0;
+
+    transition-property: opacity;
+    transition-duration: 320ms;
+    transition-timing-function: linear;
+}
+.axial_dropdown_toggle-content
+{
+    position: relative;
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 12px;
+    padding-right: 12px;
+}
+.axial_dropdown_toggle-label
+{
+    width: auto;
+    color: #627183;
+    font-weight: 400;
+    font-size: 13px;
+}
+.axial_dropdown_toggle-icon
+{
+    position: relative;
+    width: 0;
+    height: 18px;
+    margin-right: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    transition-property: width, margin-right;
+    transition-duration: 320ms;
+    transition-timing-function: ease;
+}
+.axial_dropdown_toggle-check
+{
+    transform: scale(0);
+    width: 16px;
+    height: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    transition-property: transform;
+    transition-duration: 320ms;
+    transition-timing-function: ease;
+}
+
+
+/* AxialServiceButton */
+.axial_service_button
+{
+    overflow: hidden;
+    position: relative;
+
+    width: auto;
+    height: auto;
+
+    border-radius: var(--component___borderRadius);  
+    /*box-shadow: var(--AxialButton___boxShadow);*/
+
+    fill: #fff;
+}
+.axial_service_button-background
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: var(--themeColor);
+    border: 2px solid var(--themeColor);
+    border-radius: var(--component___borderRadius);
+}
+.axial_service_button-foreground
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+
+    background-color: rgba(218, 218, 218, 0.23);
+    opacity: 0;
+
+    transition-property: opacity;
+    transition-duration: 320ms;
+    transition-timing-function: ease;
+
+    border-radius: var(--component___borderRadius);
+}
+.axial_service_button-content
+{
+    position: relative;
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    padding-top: 9px;
+    padding-bottom: 9px;
+    padding-left: 14px;
+    padding-right: 14px;
+}
+.axial_service_button-label
+{
+    width: auto;
+    color: var(--AxialButton___textColor);
+    font-weight: var(--AxialButton___fontWeight);
+    font-size: 14px;
+}
+.axial_service_button-icon
+{
+    position: relative;
+    width: 0;
+    height: 22px;
+    margin-right: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+
+    transition-property: width, margin-right;
+    transition-duration: 400ms;
+    transition-timing-function: ease;
+}
+.axial_service_button-indicator
+{
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border-top: 3px solid #fff;
+    border-left: 3px solid #fff;
+    border-bottom: 3px solid #fff;
+    border-right: 3px solid transparent;
+}
+
+
+@keyframes axialServiceButtonIndicatorAnimation
+{
+    from { transform: rotate(0deg); }
+    to { transform: rotate(720deg); }
 }

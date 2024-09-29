@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+
+    <!-- ELECTRON -->
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'"> -->
+    <!-- <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'"> -->
+
+    <title>AXIAL</title>
+    
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+
+    <meta property="og:url"                 content="https://dndev.fr/" />
+    <meta property="og:type"                content="website" />
+    <meta property="og:title"               content="" />
+    <meta property="og:description"         content="" />
+    <meta property="og:image"               content="" />
+    <meta property="og:image:width"         content="" />
+    <meta property="og:image:height"        content="" />
+    
+    <link rel="icon" type="image/x-icon" href="./assets/favicon/favicon.ico">
+
+    <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body>
+
+    <!--$$$ COMPONENTS_ENTRY_POINT $$$-->
+    <!-- AxialNotifier -->
+    <template id="axial-notifier-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div id="holder" class="axial_notifier_holder">
+            <div id="content" class="axial_notifier_content"></div>
+        </div>
+    </template>
+    
+    <div id="axialBackgroundLayer" class="axial_layer_base axial_background_layer"></div>
+    
+    <div id="axialMainLayer" class="axial_main_layer">
+
+        <!--$$$ HEADER_ENTRY_POINT $$$-->
+        <header class="axial_header">
+            <div class="axial_header_background"></div>
+            <div class="axial_header_content">
+                <a class="axial_header_logo" href="../" target="_self">
+                    <img class="axial_header_logo_svg" alt="logo" src="./assets/logos/logo.svg">
+                </a>
+            </div>
+        </header>
+
+        <!--$$$ MAIN_ENTRY_POINT $$$-->
+        <main class="axial_main">
+
+            <!-- FIRST SECTION -->
+            <section class="axial_section">
+                <div class="axial_section_background"></div>
+                <div class="axial_section_content axial_section_padding">SECTION 1</div>
+            </section>
+
+            <!-- FIRST SECTION -->
+            <section class="axial_section">
+                <div class="axial_section_background"></div>
+                <div class="axial_section_content axial_section_padding">SECTION 2</div>
+            </section>
+
+            <!-- FIRST SECTION -->
+            <section class="axial_section">
+                <div class="axial_section_background"></div>
+                <div class="axial_section_content axial_section_padding">SECTION 3</div>
+            </section>
+
+            <!-- FIRST SECTION -->
+            <section class="axial_section">
+                <div class="axial_section_background"></div>
+                <div class="axial_section_content axial_section_padding">SECTION 4</div>
+            </section>
+
+            <!-- FIRST SECTION -->
+            <section class="axial_section">
+                <div class="axial_section_background"></div>
+                <div class="axial_section_content axial_section_padding">SECTION 5</div>
+            </section>
+
+            <!--$$$ FOOTER_ENTRY_POINT $$$-->
+            <footer class="axial_footer">
+                <div class="axial_footer_background"></div>
+                <div class="axial_footer_content">
+                    <div class="axial_footer_section"></div>
+                </div>
+            </footer>
+
+        </main>
+        
+    </div>
+
+    <div id="axialIntroLayer" class="axial_layer_base axial_intro_layer"></div>
+
+    <div id="axialPopupLayer" class="axial_layer_base axial_popup_layer">
+        <div id="axialPopupObfuscator" class="axial_popup_obfuscator"></div>
+    </div>
+    
+    <div id="axialNotificationLayer" class="axial_layer_base axial_notification_layer"></div>
+
+    <div id="axialOverlayLayer" class="axial_layer_base axial_overlay_layer"></div>
+
+    <div id="axialTooltipLayer" class="axial_layer_base axial_tooltip_layer"></div>
+
+    <div id="axialTransitionLayer" class="axial_layer_base axial_transition_layer"></div>
+    
+    <script src="./application.js" defer></script>
+    
+</body>
+</html>

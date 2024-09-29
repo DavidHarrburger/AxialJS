@@ -1,0 +1,37 @@
+{
+    "site": "https://sitename.com/",
+    "mode": "development",
+    "build_directory": "build",
+    "project_directory": "project",
+    "pages_directory": "pages",
+    "clean_on_build": true,
+    "server_localhost": "static",
+    "files_to_copy":[],
+    "directories_to_copy":
+    [
+        {
+            "source": "assets",
+            "dest": "assets"
+        },
+        {
+            "source": "fonts",
+            "dest": "fonts"
+        }
+    ],
+    "js_output_filename": "application.js",
+    "pages":
+    [
+        {
+            "name": "main",
+            "path": "",
+            "template": "",
+            "build": true,
+            "sitemap":
+            {
+                "use": true,
+                "priority": 1,
+                "changefreq": "weekly"
+            }
+        }
+    ]
+}

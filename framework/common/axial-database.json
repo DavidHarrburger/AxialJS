@@ -1,0 +1,38 @@
+{
+    "path": "YOUR_MONGO_DB_URL",
+    "dbname": "NAME_OF_THE_DB_TO CREATE",
+    "crypto_key": "",
+    "crypto_iv": "",
+    "collections":
+    [
+        { "name": "" }
+    ],
+    "models":
+    [
+        {
+            "name": "user",
+            "collection": "users",
+            "props":
+            {
+                "email":    { "type": "email",  "crypted": true },
+                "password": { "type": "string", "crypted": true },
+                "username": { "type": "string", "crypted": false },
+                "color":    { "type": "color",  "crypted": false },
+                "birth":    { "type": "date",   "crypted": false },
+                "role":     { "type": "list",   "crypted": false, "list": ["admin", "user", "client"] }
+            }
+        }
+    ],
+    "documents":
+    [
+        {
+            "model": "user",
+            "email": "MY_EMAIL",
+            "password": "MY_PASSWORD",
+            "username": "MY_USERNAME",
+            "birth": "2001-02-03",
+            "color": "#000",
+            "role": "admin"
+        }
+    ]
+}

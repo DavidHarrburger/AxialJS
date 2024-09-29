@@ -1,6 +1,6 @@
 "use strict"
 
-import { AxialButton } from "../button/AxialButton.js";
+import { AxialServiceButton } from "../button/AxialServiceButton.js";
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
 import { AxialTogglePasswordButton } from "../admin/button/AxialTogglePasswordButton.js";
 
@@ -26,7 +26,7 @@ class AxialLoginForm extends AxialComponentBase
     /** @type { HTMLInputElement } */
     #password;
 
-    /** @type { AxialButton } */
+    /** @type { AxialServiceButton } */
     #button;
 
     /** @type { Array<HTMLInputElement> } */
@@ -43,6 +43,7 @@ class AxialLoginForm extends AxialComponentBase
     /** @type { Function } */
     #boundButtonClickHandler;
 
+    /** @type { Function } */
     #boundPasswordButtonToggleChangedHandler
 
     constructor()
@@ -126,13 +127,11 @@ class AxialLoginForm extends AxialComponentBase
         const isValidForm = this.#checkFormValidity();
         if( isValidForm === true )
         {
-            this.#button.style.opacity = "1";
-            this.#button.style.pointerEvents = "auto";
+            this.#button.enabled = true;
         }
         else
         {
-            this.#button.style.opacity = "0.5";
-            this.#button.style.pointerEvents = "none";
+            this.#button.enabled = false;
         }
     }
 
@@ -150,7 +149,8 @@ class AxialLoginForm extends AxialComponentBase
 
     #buttonClickHandler( event )
     {
-        this.#button.removeEventListener("click", this.#boundButtonClickHandler);
+        this.#button.enabled = false;
+        this.#button.loading = true;
         this.#sendForm();
     }
 
@@ -163,9 +163,8 @@ class AxialLoginForm extends AxialComponentBase
             element.style.borderColor = this.#defaultColor;
         }
 
-        this.#button.style.opacity = "0.5";
-        this.#button.style.pointerEvents = "none";
-        this.#button.addEventListener("click", this.#boundButtonClickHandler);
+        this.#button.enabled = false;
+        this.#button.loading = false;
     }
 
     async #sendForm()

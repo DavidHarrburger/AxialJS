@@ -1,0 +1,109 @@
+{
+    "site": "https://sitename.com/",
+    "mode": "development",
+    "build_directory": "build",
+    "project_directory": "project",
+    "pages_directory": "pages",
+    "clean_on_build": true,
+    "server_localhost": "static",
+    "files_to_copy":[],
+    "directories_to_copy":
+    [
+        {
+            "source": "assets",
+            "dest": "assets"
+        },
+        {
+            "source": "fonts",
+            "dest": "fonts"
+        }
+    ],
+    "js_output_filename": "application.js",
+    "pages":
+    [
+        {
+            "name": "main",
+            "path": "",
+            "template": "",
+            "build": true,
+            "sitemap":
+            {
+                "use": true,
+                "priority": 1,
+                "changefreq": "weekly"
+            }
+        },
+        {
+            "name": "login",
+            "path": "login",
+            "template": "",
+            "build": true,
+            "sitemap":
+            {
+                "use": false,
+                "priority": 0,
+                "changefreq": "weekly"
+            }
+        },
+        {
+            "name": "admin",
+            "path": "admin",
+            "template": "",
+            "build": true,
+            "sitemap":
+            {
+                "use": false,
+                "priority": 0,
+                "changefreq": "weekly"
+            }
+        },
+        {
+            "name": "user",
+            "path": "user",
+            "template": "",
+            "build": true,
+            "sitemap":
+            {
+                "use": false,
+                "priority": 0,
+                "changefreq": "weekly"
+            }
+        },
+        {
+            "name": "client",
+            "path": "client",
+            "template": "",
+            "build": true,
+            "sitemap":
+            {
+                "use": false,
+                "priority": 0,
+                "changefreq": "weekly"
+            }
+        },
+        {
+            "name": "privacy",
+            "path": "politique-de-confidentialite",
+            "template": "",
+            "build": true,
+            "sitemap":
+            {
+                "use": true,
+                "priority": 0.1,
+                "changefreq": "monthly"
+            }
+        },
+        {
+            "name": "legal",
+            "path": "mentions-legales",
+            "template": "",
+            "build": true,
+            "sitemap":
+            {
+                "use": true,
+                "priority": 0.1,
+                "changefreq": "monthly"
+            }
+        }
+    ]
+}

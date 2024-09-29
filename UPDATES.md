@@ -2,12 +2,20 @@
 
 Find here what happened and when.
 
+## 2024 - 09 - 29
+FULLSTACK PRE UPDATE 2
+You can now start a project with the login logic and an admin dashboard.
+I'm currently finalizing the base of each screens.
+* Fix some missing styles
+* Update each kind of projects folders
+* Add a ```keys``` command, just run ```axial keys``` to create a ```keys.txt``` file that contains the keys you need in the ```axial-server/AxialServerConstants.js``` and in the ```axial-database.json``` to start the server and create and fill the database with the models and the admin user.
+* Add a ```axial database``` command to set up the database
+
 ## 2024 - 09 - 24
 FULLSTACK PRE UPDATE
 Axial is going fullstack with MongoDB. IMPORTANT : this is just a part of the update I'm developping and testing.
 The next update (planned in November) will adress the required fixes. Then I will write the documentation about that.
 You will be able soon to start a complete website with its admin counterpart to build SaaS, shops etc. in some minutes...
-
 
 ## 2024 - 05 - 17
 WEB COMPONENTS UPDATE
