@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
 
@@ -18,7 +18,6 @@ import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
 //import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
 
 import GUI from "lil-gui";
-
 
 class Axial3DViewer extends AxialComponentBase
 {
@@ -280,15 +279,10 @@ class Axial3DViewer extends AxialComponentBase
         this.#useComposer = value;
     }
 
-    connectedCallback()
+    _buildComponent()
     {
-        super.connectedCallback();
-        // get properties
-        this.#buildComponent();
-    }
+        super._buildComponent();
 
-    #buildComponent()
-    {
         this.#wi = this.clientWidth;
         this.#hi = this.clientHeight;
 

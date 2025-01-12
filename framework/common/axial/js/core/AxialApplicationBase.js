@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 import { LanguageUtils } from "../utils/LanguageUtils.js";
 import { AxialOverlayManager } from "../overlay/AxialOverlayManager.js";
@@ -233,6 +233,16 @@ class AxialApplicationBase extends EventTarget
     #boundScrollParallax;
 
     ///
+    /// PART : MOUSE PARALLAX
+    ///
+
+    /** @type { Boolean } */
+    #useMouseParallax = false;
+
+    /** @type { Function } */
+    #boundMouseParallaxHandler;
+
+    ///
     /// PART : TRANSITION LAYER
     ///
 
@@ -329,6 +339,9 @@ class AxialApplicationBase extends EventTarget
         // scroll and parallax
         this.#boundScrollHandler = this.#scrollHandler.bind(this);
         this.#boundScrollParallax = this.#scrollParallax.bind(this);
+
+        // mouse parallax
+        this.#boundMouseParallaxHandler = this.#mouseParallaxHandler.bind(this);
         
         //this.#boundParallaxMoveHandler = this.#parallaxMoveHandler.bind(this);
         
@@ -846,6 +859,51 @@ class AxialApplicationBase extends EventTarget
      * @param { Number } delta 
      */
     _onParallaxSectionChanged( section, outer, inner, elapsed, delta ) {}
+
+    ///
+    /// PART : MOUSE PARALLAX
+    ///
+
+    get useMouseParallax() { return this.#useMouseParallax; }
+    set useMouseParallax( value )
+    {
+        if( typeof value !== "boolean" )
+        {
+            throw new TypeError("Boolean value required");
+        }
+        if( this.#useMouseParallax === value ) { return; }
+        this.#useMouseParallax = value;
+
+        if( this.#applicationPageLoaded === true && this.#useMouseParallax === true )
+        {
+            document.addEventListener("pointermove", this.#boundMouseParallaxHandler);
+        }
+    }
+
+    /**
+     * 
+     * @param {PointerEvent} event 
+     */
+    #mouseParallaxHandler( event )
+    {
+        if( event.pointerType != "mouse" ) { return; }
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        const px = event.pageX;
+        const py = event.pageY;
+        const mx = ( px - w/2) / (w / 2);
+        const my = ( py - h/2) / (h / 2);
+
+        //console.log( event.pageX, event.pageY );
+
+        if( this._onMouseParallax )
+        {
+            this._onMouseParallax( event, px, py, mx, my );
+        }
+
+    }
+
+    _onMouseParallax( event, px, py, mx, my ) {}
 
     ///
     /// PART : TRANSITION LAYER

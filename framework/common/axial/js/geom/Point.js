@@ -63,6 +63,28 @@ class Point
     {
         return new Point( ((p1.#x + p2.#x) / 2) , ((p1.#y + p2.#y) / 2) );
     }
+
+    /**
+     * 
+     * @param { Point } p1 
+     * @param { Point } p2 
+     * @return { Number }
+     */
+    static angleRadians(p1, p2)
+    {
+        return Math.atan2( p2.#y - p1.#y, p2.#x - p1.#x, );
+    }
+
+    /**
+     * 
+     * @param { Point } p1 
+     * @param { Point } p2 
+     * @return { Number }
+     */
+    static angleDegrees(p1, p2)
+    {
+        return Math.atan2( p2.#y - p1.#y, p2.#x - p1.#x, ) * 180 / Math.PI;
+    }
 }
 
 export { Point }

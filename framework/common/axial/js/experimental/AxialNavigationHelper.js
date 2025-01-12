@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
 
@@ -15,11 +15,6 @@ class AxiaNavigationHelper extends AxialComponentBase
     {
         super();
         this.classList.add("axial_navigation_helper");
-    }
-
-    connectedCallback()
-    {
-        super.connectedCallback();
     }
 
     _updateItems()

@@ -58,6 +58,44 @@ class DateUtils
         const yesterday = new Date( today.getFullYear(), today.getMonth(), (today.getDate() - 1) );
         return yesterday;
     }
+
+    static duration( n )
+    {
+        let milli = 0;
+        let sec = 0;
+        let min = 0;
+        let hour = 0;
+        let nday = 0;
+
+        sec = Math.floor( n / 1000);
+        milli = n % 1000;
+
+        min = Math.floor( sec / 60);
+        sec = sec % 60;
+
+        hour = Math.floor( min / 60);
+        min = min % 60;
+
+        //let r = String(min) + "min " + String(sec) +"s " + String(milli) + "ms";
+        let r = String(milli) + "ms";
+
+        if( sec > 0 )
+        {
+            r = String(sec) +"s " + r;
+        }
+
+        if( min > 0 )
+        {
+            r = String(min) + "min " + r;
+        }
+
+        if( hour > 0 )
+        {
+            r = String(hour) + "h " + r;
+        }
+
+        return r;
+    }
 }
 
 export { DateUtils }

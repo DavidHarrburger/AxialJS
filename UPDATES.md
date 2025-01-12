@@ -2,6 +2,11 @@
 
 Find here what happened and when.
 
+## 2025 - 01 - 12
+FULLSTACK PRE UPDATE 3
+Clean up, enhancements, checks and tests
+* Major fix in ```core/AxialComponentBase.js``` about lifecycle : ```_finalizeComponent()``` has been removed. Now use ```_buildComponent()```
+
 ## 2024 - 09 - 29
 FULLSTACK PRE UPDATE 2
 You can now start a project with the login logic and an admin dashboard.

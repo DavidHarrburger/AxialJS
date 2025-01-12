@@ -1,10 +1,11 @@
-"use strict"
+"use strict";
 
 import { AxialServiceComponentBase } from "../core/AxialServiceComponentBase.js";
 import { DateUtils } from "../utils/DateUtils.js";
 
 class AxialInformationBar extends AxialServiceComponentBase
 {
+    /// elements
     /** @type { HTMLElement } */
     #holder;
 
@@ -17,6 +18,7 @@ class AxialInformationBar extends AxialServiceComponentBase
     /** @type { HTMLElement } */
     #headerElement;
 
+    /// events
     /** @type { Function } */
     #boundCloserClickHandler;
 
@@ -38,14 +40,10 @@ class AxialInformationBar extends AxialServiceComponentBase
         this.#headerElement.style.transitionTimingFunction = "ease";
     }
 
-    connectedCallback()
+    _buildComponent()
     {
-        super.connectedCallback();
-        this.#buildComponent();
-    }
-
-    #buildComponent()
-    {
+        super._buildComponent();
+        
         this.#holder = this.shadowRoot.getElementById("holder");
         this.#content = this.shadowRoot.getElementById("content");
         this.#closer = this.shadowRoot.getElementById("closer");

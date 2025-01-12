@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
 import { AxialPopupManager } from "./AxialPopupManager.js";
@@ -10,7 +10,7 @@ import { AxialPopupManager } from "./AxialPopupManager.js";
  */
 class AxialPopupBase extends AxialComponentBase
 {
-    /// VARS
+    /// vars
     /** @type { Set } */
     #POPUP_POSITIONS = new Set( [ "left", "right", "top", "bottom", "center" ] );
 
@@ -37,7 +37,7 @@ class AxialPopupBase extends AxialComponentBase
     /** @type { Boolean } */
     #isModal = true;
 
-    /// EVENTS
+    /// events
     #boundPopupPointerDownHandler;
 
     constructor()
@@ -159,12 +159,6 @@ class AxialPopupBase extends AxialComponentBase
      */
     #popupPointerDownHandler( event ) { event.stopImmediatePropagation(); }
 
-    connectedCallback()
-    {
-        super.connectedCallback();
-        this.#buildComponent();
-    }
-
     attributeChangedCallback(name, oldValue, newValue)
     {
         super.attributeChangedCallback(name, oldValue, newValue);
@@ -176,22 +170,17 @@ class AxialPopupBase extends AxialComponentBase
         
     }
 
+    _buildComponent()
+    {
+        super._buildComponent();
+        this.#layoutPopup();
+    }
+
     _resize()
     {
         this.#layoutPopup();
     }
 
-    _finalizeComponent()
-    {
-        super._finalizeComponent();
-        this.#buildComponent();
-    }
-
-    #buildComponent()
-    {
-        if( this.#isBuilt === true ) { return; }
-        this.#isBuilt = true;
-    }
 
     #layoutPopup()
     {

@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
 
@@ -76,11 +76,9 @@ class AxialCrossContainer extends AxialComponentBase
         this.#boundWheelTimeoutHandler = this.#wheelTimeoutHandler.bind(this);
     }
 
-    connectedCallback()
+    _buildComponent()
     {
-        super.connectedCallback();
-
-        console.log("cross container connected callback");
+        super._buildComponent();
         
         this.#center = this.shadowRoot.getElementById("center");
         this.#top = this.shadowRoot.getElementById("top");

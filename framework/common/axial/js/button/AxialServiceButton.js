@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 import { AxialButtonBase  } from "./AxialButtonBase.js";
 
@@ -13,6 +13,9 @@ class AxialServiceButton extends AxialButtonBase
 
     /** @type { HTMLElement} */
     #content;
+
+    /** @type { HTMLElement} */
+    #border;
 
     /** @type { HTMLElement } */
     #icon;
@@ -38,6 +41,24 @@ class AxialServiceButton extends AxialButtonBase
 
     /** @type { String } */
     #animation = "axialServiceButtonIndicatorAnimation 2s ease 0s infinite";
+
+    /** @type { Set<String> } */
+    #styles = new Set( [ "normal", "border" ] );
+
+    /** @type { String } */
+    #style = "normal";
+
+    /** @type { String } */ // computed
+    #themeColor = "";
+
+    /** @type { String } */ // computed
+    #textColor = "";
+
+    /** @type { String } */ // computed
+    #textSize = "";
+
+    /** @type { String } */ // computed
+    #textWeight = "";
 
     /// events
     /** @type { Function } */
@@ -66,7 +87,100 @@ class AxialServiceButton extends AxialButtonBase
 
     static get observedAttributes()
     {
-        return [ "axial-template", "axial-text" ];
+        return [ "axial-text", "axial-icon-position", "axial-theme", "axial-color", "axial-size", "axial-weight", "axial-style" ];
+    }
+
+    _buildComponent()
+    {
+        super._buildComponent();
+
+        this.#background = this.shadowRoot.getElementById("background");
+        this.#foreground = this.shadowRoot.getElementById("foreground");
+        this.#content = this.shadowRoot.getElementById("content");
+        this.#border = this.shadowRoot.getElementById("border");
+        this.#icon = this.shadowRoot.getElementById("icon");
+        this.#indicator = this.shadowRoot.getElementById("indicator");
+        this.#label = this.shadowRoot.getElementById("label");
+
+        if( this.#background )
+        {
+            if( this.#themeColor != "" )
+            {
+                this.#background.style.backgroundColor = this.#themeColor;
+            }
+            else
+            {
+                this.#themeColor = window.getComputedStyle( this.#background ).backgroundColor;
+            }
+        }
+        
+        if( this.#label )
+        {
+            this.#label.innerHTML = this.#text;
+            if( this.#textColor != "" )
+            {
+                this.#label.style.color = this.#textColor;
+            }
+            else
+            {
+                this.#textColor = window.getComputedStyle( this.#label ).color;
+            }
+
+            if( this.#textSize != "" )
+            {
+                this.#label.style.fontSize = this.#textSize;
+            }
+            else
+            {
+                this.#textSize = window.getComputedStyle( this.#label ).fontSize;
+            }
+
+            if( this.#textWeight != "" )
+            {
+                this.#label.style.fontWeight = this.#textWeight;
+            }
+            else
+            {
+                this.#textWeight = window.getComputedStyle( this.#label ).fontWeight;
+            }
+        }
+    }
+
+    attributeChangedCallback(name, oldValue, newValue)
+    {
+        super.attributeChangedCallback(name, oldValue, newValue);
+        if( name === "axial-text" )
+        {
+            this.#text = newValue;
+            if( this.#label )
+            {
+                this.#label.innerHTML = this.#text;
+            }
+        }
+
+        if( name === "axial-theme" )
+        {
+            this.#themeColor = newValue;
+            if( this.#background ) { this.#background.style.backgroundColor = this.#themeColor; }
+        }
+
+        if( name === "axial-color" )
+        {
+            this.#textColor = newValue;
+            if( this.#label ) { this.#label.style.color = this.#textColor; }
+        }
+
+        if( name === "axial-weight" )
+        {
+            this.#textWeight = newValue;
+            if( this.#label ) { this.#label.style.fontWeight = this.#textWeight; }
+        }
+
+        if( name === "axial-size" )
+        {
+            this.#textSize = newValue;
+            if( this.#label ) { this.#label.style.fontSize = this.#textSize; }
+        }
     }
 
     get text() { return this.#text; }
@@ -123,38 +237,6 @@ class AxialServiceButton extends AxialButtonBase
         }    
     }
 
-    connectedCallback()
-    {
-        super.connectedCallback();
-
-        this.#background = this.shadowRoot.getElementById("background");
-        this.#foreground = this.shadowRoot.getElementById("foreground");
-        this.#content = this.shadowRoot.getElementById("content");
-        this.#icon = this.shadowRoot.getElementById("icon");
-        this.#indicator = this.shadowRoot.getElementById("indicator");
-        
-        this.#label = this.shadowRoot.getElementById("label");
-        if( this.#label )
-        {
-            this.#label.innerHTML = this.#text;
-        }
-
-        //layout if text changed
-    }
-
-    attributeChangedCallback(name, oldValue, newValue)
-    {
-        super.attributeChangedCallback(name, oldValue, newValue);
-        if( name === "axial-text" )
-        {
-            this.#text = newValue;
-            if( this.#label )
-            {
-                this.#label.innerHTML = this.#text;
-            }
-        }
-    }
-
     ///
     /// EVENTS
     ///
@@ -189,7 +271,6 @@ class AxialServiceButton extends AxialButtonBase
      */
     #clickHandler( event )
     {
-        //console.log( event );
         if( this.#loading === true )
         {
             event.stopImmediatePropagation();

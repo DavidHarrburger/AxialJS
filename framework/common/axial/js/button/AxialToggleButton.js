@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 import { AxialToggleButtonBase  } from "./AxialToggleButtonBase.js";
 
@@ -13,6 +13,9 @@ class AxialToggleButton extends AxialToggleButtonBase
 
     /** @type { HTMLElement} */
     #content;
+
+    /** @type { HTMLElement} */
+    #border;
 
     /** @type { HTMLElement } */
     #icon;
@@ -34,7 +37,7 @@ class AxialToggleButton extends AxialToggleButtonBase
     #text = "";
 
     /** @type { Number } */
-    #iconSpace = 10;
+    #iconSpace = 16;
 
     /** @type { Boolean } */
     #hasIcon = false;
@@ -47,6 +50,30 @@ class AxialToggleButton extends AxialToggleButtonBase
 
     /** @type { Set<String> } */
     #iconPositions = new Set( [ "left", "right", "top", "bottom" ] );
+
+    /** @type { Set<String> } */
+    #styles = new Set( [ "normal", "border" ] );
+
+    /** @type { String } */
+    #style = "normal";
+
+    /** @type { Set<String> } */
+    #aligns = new Set( [ "flex-start", "center", "flex-end" ] );
+
+    /** @type { String } */
+    #align = "center";
+
+    /** @type { String } */ // computed
+    #themeColor = "";
+
+    /** @type { String } */ // computed
+    #textColor = "";
+
+    /** @type { String } */ // computed
+    #textSize = "";
+
+    /** @type { String } */ // computed
+    #textWeight = "";
 
     /// events
     /** @type { Function } */
@@ -70,7 +97,7 @@ class AxialToggleButton extends AxialToggleButtonBase
 
     static get observedAttributes()
     {
-        return [ "axial-template", "axial-text", "axial-icon-position" ];
+        return [ "axial-text", "axial-icon-position", "axial-color", "axial-theme", "axial-align", "axial-style" ];
     }
 
     get text() { return this.#text; }
@@ -88,20 +115,63 @@ class AxialToggleButton extends AxialToggleButtonBase
         }
     }
 
-    connectedCallback()
+    _buildComponent()
     {
-        super.connectedCallback();
+        super._buildComponent();
 
         this.#background = this.shadowRoot.getElementById("background");
         this.#foreground = this.shadowRoot.getElementById("foreground");
         this.#content = this.shadowRoot.getElementById("content");
+        this.#label = this.shadowRoot.getElementById("label");
         this.#icon = this.shadowRoot.getElementById("icon");
         this.#iconToggle = this.shadowRoot.getElementById("iconToggle");
         
-        this.#label = this.shadowRoot.getElementById("label");
+        if( this.#background )
+        {
+            if( this.#themeColor != "" )
+            {
+                this.#background.style.backgroundColor = this.#themeColor;
+            }
+            else
+            {
+                this.#themeColor = window.getComputedStyle( this.#background ).backgroundColor;
+            }
+        }
+
+        if( this.#content )
+        {
+            this.#content.style.justifyContent = this.#align;
+        }
+        
         if( this.#label )
         {
             this.#label.innerHTML = this.#text;
+            if( this.#themeColor != "" )
+            {
+                this.#label.style.color = this.#textColor;
+            }
+            else
+            {
+                this.#textColor = window.getComputedStyle( this.#label ).color;
+            }
+
+            if( this.#textSize != "" )
+            {
+                this.#label.style.fontSize = this.#textSize;
+            }
+            else
+            {
+                this.#textSize = window.getComputedStyle( this.#label ).fontSize;
+            }
+
+            if( this.#textWeight != "" )
+            {
+                this.#label.style.fontWeight = this.#textWeight;
+            }
+            else
+            {
+                this.#textWeight = window.getComputedStyle( this.#label ).fontWeight;
+            }
         }
         
         this.#iconSlot = this.shadowRoot.getElementById("iconSlot");
@@ -136,14 +206,37 @@ class AxialToggleButton extends AxialToggleButtonBase
             }
         }
 
-        
-        /*
-        if( this.isConnected === true )
+        if( name === "axial-align" )
         {
-            this.#layoutComponent();
+            if( this.#aligns.has( newValue ) && this.#align !== newValue )
+            {
+                this.#align = newValue;
+            }
         }
-        */
-        
+
+        if( name === "axial-theme" )
+        {
+            this.#themeColor = newValue;
+            if( this.#background ) { this.#background.style.backgroundColor = this.#themeColor; }
+        }
+
+        if( name === "axial-color" )
+        {
+            this.#textColor = newValue;
+            if( this.#label ) { this.#label.style.color = this.#textColor; }
+        }
+
+        if( name === "axial-weight" )
+        {
+            this.#textWeight = newValue;
+            if( this.#label ) { this.#label.style.fontWeight = this.#textWeight; }
+        }
+
+        if( name === "axial-size" )
+        {
+            this.#textSize = newValue;
+            if( this.#label ) { this.#label.style.fontSize = this.#textSize; }
+        }
     }
 
     ///
@@ -346,7 +439,6 @@ class AxialToggleButton extends AxialToggleButtonBase
                 this.#iconToggle.style.display = "block";
                 if( this.#icon && this.#hasIcon === true )
                 {
-                    //console.log(this.selected, "should hide icon")
                     this.#icon.style.display = "none";
                 }
             }

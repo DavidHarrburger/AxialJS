@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 import { DomUtils } from "../../utils/DomUtils.js";
 import { AxialPopupManager } from "../../popup/AxialPopupManager.js";
@@ -8,18 +8,13 @@ import { AxialAdminProductItem } from "./AxialAdminProductItem.js";
 import { AxialButton } from "../../button/AxialButton.js";
 import { AxialAdminModelPopup } from "../models/AxialAdminModelPopup.js";
 
-
 class AxialAdminProductView extends AxialAdminViewBase
 {
-    /// VARS
+    /// vars
     /** @type { String } */
-    //#userGetPath = "../api/model/get?c=users&m=user&u=65acf5edb5afb8ef6e2ec256";
     #userGetPath = "../api/model/get?c=products&m=product";
 
-    /** @type { Boolean } */
-    #isBuilt = false;
-
-    /// UI
+    /// elements
     /** @type { HTMLElement } */
     #grid;
 
@@ -29,7 +24,7 @@ class AxialAdminProductView extends AxialAdminViewBase
     /** @type { AxialAdminModelPopup } */
     #modelPopup;
 
-    /// EVENTS
+    /// events
     /** @type { Function } */
     #boundCreateButtonClickHandler;
 
@@ -44,21 +39,9 @@ class AxialAdminProductView extends AxialAdminViewBase
         this.#boundModelPopupHiddenHandler = this.#modelPopupHiddenHandler.bind(this);
     }
 
-    connectedCallback()
+    _buildComponent()
     {
-        super.connectedCallback();
-        this.#buildComponent();
-    }
-
-    _finalizeComponent()
-    {
-        this.#buildComponent();
-    }
-
-    #buildComponent()
-    {
-        if( this.#isBuilt === true ) { return; }
-        this.#isBuilt = true;
+        super._buildComponent();
 
         this.#grid = this.shadowRoot.getElementById("grid");
 
@@ -74,8 +57,6 @@ class AxialAdminProductView extends AxialAdminViewBase
 
     #createButtonClickHandler( event )
     {
-        console.log("create button user clicked");
-        
         if( this.#modelPopup )
         {
             this.#modelPopup.modelForm.mode = "from";
@@ -136,8 +117,6 @@ class AxialAdminProductView extends AxialAdminViewBase
 
     #updateView()
     {
-        console.log("update view products");
-        
         DomUtils.cleanElement( this.#grid );
         for( const model of this.data.content.collection )
         {

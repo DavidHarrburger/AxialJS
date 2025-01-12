@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
 import { AxialFlipbookPageBase} from "./AxialFlipbookPageBase.js";
@@ -72,14 +72,9 @@ class AxialFlipbookBase extends AxialComponentBase
         this.#boundPointerCancelHandler = this.#pointerCancelHandler.bind(this);
     }
 
-    connectedCallback()
+    _buildComponent()
     {
-        super.connectedCallback();
-    }
-
-    _finalizeComponent()
-    {
-        super._finalizeComponent();
+        super._buildComponent();
         this._layoutComponent();
     }
 

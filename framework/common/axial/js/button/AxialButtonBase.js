@@ -1,9 +1,10 @@
-"use strict"
+"use strict";
 
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
 
 class AxialButtonBase extends AxialComponentBase
 {
+    /// vars
     /** @type { Boolean } */
     #enabled = true;
 
@@ -13,9 +14,9 @@ class AxialButtonBase extends AxialComponentBase
         this.classList.add("axial_button_base");
     }
 
-    connectedCallback()
+    _buildComponent()
     {
-        super.connectedCallback();
+        super._buildComponent();
     }
 
     get enabled() { return this.#enabled; }

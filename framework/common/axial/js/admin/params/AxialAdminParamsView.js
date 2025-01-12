@@ -39,25 +39,11 @@ class AxialAdminParamsView extends AxialAdminViewBase
         }
     }
 
-    connectedCallback()
+    _buildComponent()
     {
-        super.connectedCallback();
-        this.#buildComponent();
-    }
-
-    /*
-    _finalizeComponent()
-    {
-        super._finalizeComponent();
-        this.#buildComponent();
-    }
-    */
-
-    #buildComponent()
-    {
-        this.#bar = this.shadowRoot.getElementById("bar");
+        super._buildComponent();
         
-
+        this.#bar = this.shadowRoot.getElementById("bar");
         this.#viewer = this.shadowRoot.getElementById("viewer");
     }
 

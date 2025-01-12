@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
 import { AxialInfinityItem } from "./AxialInfinityItem.js";
@@ -110,13 +110,7 @@ class AxialInfinity extends AxialComponentBase
 
     static get observedAttributes()
     {
-        return [ "axial-template", "axial-cell-width", "axial-cell-height", "axial-margin-x", "axial-margin-y" ];
-    }
-
-    connectedCallback()
-    {
-        super.connectedCallback();
-        this.#initComponent();
+        return [ "axial-cell-width", "axial-cell-height", "axial-margin-x", "axial-margin-y" ];
     }
 
     attributeChangedCallback(name, oldValue, newValue)
@@ -171,8 +165,10 @@ class AxialInfinity extends AxialComponentBase
         
     }
 
-    #initComponent()
+    _buildComponent()
     {
+        super._buildComponent();
+
         this.#holder = this.shadowRoot.getElementById("holder");
         this.#slot = this.shadowRoot.getElementById("slot");
         

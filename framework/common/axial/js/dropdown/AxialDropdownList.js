@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 import { AxialToggleButtonGroupBase } from "../button/AxialToggleButtonGroupBase.js";
 import { AxialDropdown } from "./AxialDropdown.js";

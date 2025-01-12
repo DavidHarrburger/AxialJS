@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 //import { AxialComponentBase } from "../core/AxialComponentBase.js";
 import { AxialToggleButtonGroupBase } from "../button/AxialToggleButtonGroupBase.js";
@@ -39,14 +39,10 @@ class AxialCalendarGridBase extends AxialToggleButtonGroupBase
         this.setNewDate( this.#date );
     }
 
-    connectedCallback()
+    _buildComponent()
     {
-        super.connectedCallback();
-        this.#buildComponent();
-    }
+        super._buildComponent();
 
-    #buildComponent()
-    {
         const currentYear = this.#initDate.getFullYear();
         const currentMonth = this.#initDate.getMonth();
 
@@ -95,7 +91,7 @@ class AxialCalendarGridBase extends AxialToggleButtonGroupBase
     {
         this.clearToggles();
         this.#initDate = date;
-        this.#buildComponent();
+        this._buildComponent();
     }
 
     /**

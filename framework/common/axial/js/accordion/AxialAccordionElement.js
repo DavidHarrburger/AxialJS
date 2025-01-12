@@ -1,9 +1,12 @@
-"use strict"
+"use strict";
 
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
 
 class AxialAccordionElement extends AxialComponentBase
 {
+    /// vars
+    /** @type { Boolean } */
+    #isOpened = false;
 
     /** @type { String } */
     #state = "closed";
@@ -11,11 +14,9 @@ class AxialAccordionElement extends AxialComponentBase
     /** @type { Set } */
     #states = new Set( [ "closed", "opened" ] );
 
+    /// elements
     /** @type { HTMLElement } */
     #content;
-
-    /** @type { Boolean } */
-    #isOpened = false;
 
     constructor()
     {

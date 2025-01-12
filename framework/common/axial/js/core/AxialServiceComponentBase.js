@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 import { AxialComponentBase } from "./AxialComponentBase.js";
 
@@ -48,6 +48,10 @@ class AxialServiceComponentBase extends AxialComponentBase
      */
     get postData() { return this.#postData; }
 
+    /**
+     * will be just removed in future versions
+     * @deprecated
+     */
     initialize()
     {
         this.#getData = undefined;
@@ -69,6 +73,7 @@ class AxialServiceComponentBase extends AxialComponentBase
      */
     async #loadGetData()
     {
+        if( this.#getPath === undefined || this.#getPath === null ) { return; }
         try
         {
             const path = this._prepareGetData();
@@ -98,6 +103,7 @@ class AxialServiceComponentBase extends AxialComponentBase
 
     async #loadPostData()
     {
+        if( this.#postPath === undefined || this.#postPath === null ) { return; }
         try
         {
             const infos = this._preparePostData();

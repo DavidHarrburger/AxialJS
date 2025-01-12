@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 /**
  * The main base class for all components.
@@ -113,6 +113,11 @@ class AxialComponentBase extends HTMLElement
     #template = "";
 
     /**
+     * @private
+     */
+    #componentBuilt = false;
+
+    /**
      * A private flag to enable / disable manipulation
      * @private
      * @type { Boolean }
@@ -131,7 +136,7 @@ class AxialComponentBase extends HTMLElement
     /**
      * @type { PointerEvent }
      */
-     #initialPointer = undefined;
+    #initialPointer = undefined;
 
     /**
      * @type { Array<PointerEvent> }
@@ -177,8 +182,6 @@ class AxialComponentBase extends HTMLElement
     constructor()
     {
         super();
-
-        //this.#shadow = this.attachShadow({ mode: "open"});
 
         this.#boundDomLoadedHandler = this.#domLoadedHandler.bind(this);
         window.addEventListener("DOMContentLoaded", this.#boundDomLoadedHandler);
@@ -252,13 +255,20 @@ class AxialComponentBase extends HTMLElement
     #domLoadedHandler( event )
     {
         window.removeEventListener("DOMContentLoaded", this.#boundDomLoadedHandler);
-        this._finalizeComponent();
+        this.#buildComponent();
+    }
+
+    #buildComponent()
+    {
+        if( this.#componentBuilt === true ) { return; }
+        this.#componentBuilt = true;
+        this._buildComponent();
     }
 
     /**
      * @override
      */
-    _finalizeComponent() {}
+    _buildComponent() {}
 
     /**
      * Web Components Lifecycle : [MDN_docs] Invoked when the custom element is first connected to the document's DOM.
@@ -267,12 +277,24 @@ class AxialComponentBase extends HTMLElement
      */
     connectedCallback()
     {
-        //console.log("AxialComponentBase.connectedCallback()");
-        
-        // buildShadow if template
         if( this.#template !== "" )
         {
             this.#buildShadow();
+        }
+
+        if( window.AXIAL !== undefined )
+        {
+            if( window.AXIAL.applicationDomLoaded === true )
+            {
+                this.#buildComponent();
+            }
+            else
+            {
+                // very special case where the component starts to be connected w/ domLoaded == false buuuut finished when the domLoaded == true
+                // so the buildComponent does not fire
+                // see this one for the hack : https://stackoverflow.com/questions/69381451/dom-events-domcontentloaded-in-a-web-component
+                setTimeout( this.#buildComponent.bind(this), 0 ); 
+            }
         }
     }
 

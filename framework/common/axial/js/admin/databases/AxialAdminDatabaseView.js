@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 import { DomUtils } from "../../utils/DomUtils.js";
 import { AxialPopupManager } from "../../popup/AxialPopupManager.js";
@@ -8,17 +8,13 @@ import { AxialAdminDatabaseItem } from "./AxialAdminDatabaseItem.js";
 import { AxialButton } from "../../button/AxialButton.js";
 import { AxialAdminDatabaseCreatePopup } from "./AxialAdminDatabaseCreatePopup.js";
 
-
 class AxialAdminDatabaseView extends AxialAdminViewBase
 {
-    /// VARS
+    /// vars
     /** @type { String } */
     #databaseGetAllPath = "../api/database/all";
 
-    /** @type { Boolean } */
-    #isBuilt = false;
-
-    /// UI
+    /// elements
     /** @type { HTMLElement } */
     #grid;
 
@@ -28,7 +24,7 @@ class AxialAdminDatabaseView extends AxialAdminViewBase
     /** @type { AxialAdminDatabaseCreatePopup } */
     #createPopup;
 
-    /// EVENTS
+    /// events
     /** @type { Function } */
     #boundCreateButtonClickHandler;
 
@@ -43,21 +39,9 @@ class AxialAdminDatabaseView extends AxialAdminViewBase
         this.#boundCreatePopupHiddenHandler = this.#createPopupHiddenHandler.bind(this);
     }
 
-    connectedCallback()
+    _buildComponent()
     {
-        super.connectedCallback();
-        this.#buildComponent();
-    }
-
-    _finalizeComponent()
-    {
-        this.#buildComponent();
-    }
-
-    #buildComponent()
-    {
-        if( this.#isBuilt === true ) { return; }
-        this.#isBuilt = true;
+        super._buildComponent();
 
         this.#grid = this.shadowRoot.getElementById("grid");
 

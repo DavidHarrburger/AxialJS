@@ -4,20 +4,22 @@ import { AxialToggleButtonBase } from "./AxialToggleButtonBase.js";
 
 class AxialToggleCheck extends AxialToggleButtonBase
 {
+    /// vars
+    /** @type { String } */
+    #label = "Label";
+
+    /** @type { String } */
+    #unselectedScale = "scale(0)";
+
+    /** @type { String } */
+    #selectedScale = "scale(1)";
+
+    /// elements
     /** @type { HTMLElement } */
     #signElement;
 
     /** @type { HTMLElement } */
     #labelElement;
-
-    /**
-     * @type { String }
-     */
-    #label = "Label";
-
-    #unselectedScale = "scale(0)";
-    #selectedScale = "scale(1)";
-
 
     constructor()
     {
@@ -31,10 +33,9 @@ class AxialToggleCheck extends AxialToggleButtonBase
         return ["axial-label"];
     }
 
-    connectedCallback()
+    _buildComponent()
     {
-        super.connectedCallback();
-        
+        super._buildComponent();
         this.#signElement = this.shadowRoot.getElementById("signElement");
         this.#labelElement = this.shadowRoot.getElementById("labelElement");
 

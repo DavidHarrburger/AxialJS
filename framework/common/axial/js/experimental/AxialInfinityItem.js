@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
 
@@ -89,12 +89,6 @@ class AxialInfinityItem extends AxialComponentBase
     {
         return [ "axial-template", "axial-width", "axial-height" ];
     }
-    
-    connectedCallback()
-    {
-        super.connectedCallback();
-        this.#buildComponent();
-    }
 
     attributeChangedCallback(name, oldValue, newValue)
     {
@@ -124,9 +118,10 @@ class AxialInfinityItem extends AxialComponentBase
         
     }
 
-    #buildComponent()
+    _buildComponent()
     {
-        //console.log(this.offsetParent);
+        super._buildComponent();
+        
         this.#holder = this.shadowRoot.getElementById("holder");
 
         const hw = this.#width;

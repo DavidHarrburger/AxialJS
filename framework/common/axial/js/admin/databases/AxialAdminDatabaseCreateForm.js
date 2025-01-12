@@ -4,13 +4,8 @@ import { AxialServiceButton } from "../../button/AxialServiceButton.js";
 import { AxialServiceComponentBase } from "../../core/AxialServiceComponentBase.js";
 import { InputUtils } from "../../utils/InputUtils.js";
 
-
 class AxialAdminDatabaseCreateForm extends AxialServiceComponentBase
 {
-    
-    /** @type { Boolean } */
-    #isBuilt = false;
-
     /** @type { HTMLInputElement } */
     #dbname;
 
@@ -42,20 +37,9 @@ class AxialAdminDatabaseCreateForm extends AxialServiceComponentBase
         this.#boundServiceErrorHandler = this.#serviceErrorHandler.bind(this);
     }
 
-    connectedCallback()
+    _buildComponent()
     {
-        super.connectedCallback();
-        this.#buildComponent();
-    }
-    _finalizeComponent()
-    {
-        this.#buildComponent();
-    }
-
-    #buildComponent()
-    {
-        if( this.#isBuilt === true ) { return; }
-        this.#isBuilt = true;
+        super._buildComponent();
 
         this.addEventListener("serviceSuccess", this.#boundServiceSuccessHandler);
         this.addEventListener("serviceError", this.#boundServiceErrorHandler);

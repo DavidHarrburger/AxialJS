@@ -397,6 +397,7 @@ class AxialCommands extends EventEmitter
             const db = client.db( databaseConfig.dbname );
 
             // IF DB EXISTS RETURN OR THROW
+            /*
             
             const users     = await db.createCollection( "users",    { capped: true, size: 10000000 } );
             const models    = await db.createCollection( "models",   { capped: true, size: 10000000 } );
@@ -407,11 +408,28 @@ class AxialCommands extends EventEmitter
             const mails     = await db.createCollection( "mails",    { capped: true, size: 100000000 } );
             const products  = await db.createCollection( "products", { capped: true, size: 100000000 } );
             const pages     = await db.createCollection( "pages",    { capped: true, size: 100000000 } );
+            */
+
+            let modelsCollection; // we need it ATM
+            const collections = databaseConfig.collections;
+            if( collections && Array.isArray(collections) )
+            {
+                for( const collectionObject of collections )
+                {
+                    const collectionName = collectionObject.name;
+                    const collectionOptions = collectionObject.options;
+                    
+                    const collection = await db.createCollection( collectionName, collectionOptions );
+
+                    if( collectionName === "models" ) { modelsCollection = collection; }
+
+                }
+            }
 
             const modelsToInsert = databaseConfig.models;
             const docsToInsert = databaseConfig.documents;
 
-            const modelsInserted = await models.insertMany( modelsToInsert );
+            const modelsInserted = await modelsCollection.insertMany( modelsToInsert );
 
             for( let doc of docsToInsert )
             {

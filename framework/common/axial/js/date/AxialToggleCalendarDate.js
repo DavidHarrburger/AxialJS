@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 import { AxialToggleButtonBase } from "../button/AxialToggleButtonBase.js";
 
@@ -41,9 +41,9 @@ class AxialToggleCalendarDate extends AxialToggleButtonBase
         this.addEventListener("pointerleave", this.#boundLeaveHandler);
     }
 
-    connectedCallback()
+    _buildComponent()
     {
-        super.connectedCallback();
+        super._buildComponent();
 
         this.#background = this.shadowRoot.getElementById("background");
         this.#middleground = this.shadowRoot.getElementById("middleground");

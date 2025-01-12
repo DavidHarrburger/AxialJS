@@ -117,8 +117,16 @@ class AxialViewerBase extends AxialComponentBase
         return ["axial-manipulation", "axial-transition"];
     }
 
-    _finalizeComponent()
+    _buildComponent()
     {
+        super._buildComponent();
+
+        const manipulationAttribute = this.getAttribute("axial-manipulation");
+        if( manipulationAttribute !== null )
+        {
+            this.manipulationEnable = true;
+        }
+
         const children = this.children;
         const childrenLength = children.length;
 
@@ -138,15 +146,6 @@ class AxialViewerBase extends AxialComponentBase
                 }
             }
             this.#adjustViews();
-        }
-    }
-
-    connectedCallback()
-    {
-        const manipulationAttribute = this.getAttribute("axial-manipulation");
-        if( manipulationAttribute !== null )
-        {
-            this.manipulationEnable = true;
         }
     }
 

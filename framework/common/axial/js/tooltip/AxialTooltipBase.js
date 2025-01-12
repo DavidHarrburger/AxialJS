@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
 import { AxialTooltipManager } from "./AxialTooltipManager.js";
@@ -10,9 +10,6 @@ class AxialTooltipBase extends AxialComponentBase
                                     "right-top", "right-center", "right-bottom",
                                     "top-left", "top-center", "top-right",
                                     "left-top", "left-center", "left-bottom" ] );
-
-    /** @type { Boolean } */
-    #isBuilt = false;
 
     /** @type { Boolean } */
     #isShown = false;
@@ -118,12 +115,6 @@ class AxialTooltipBase extends AxialComponentBase
         return [ "axial-target", "axial-position" ];
     }
 
-    connectedCallback()
-    {
-        super.connectedCallback();
-        this.#buildComponent();
-    }
-
     attributeChangedCallback(name, oldValue, newValue)
     {
         super.attributeChangedCallback(name, oldValue, newValue);
@@ -143,17 +134,9 @@ class AxialTooltipBase extends AxialComponentBase
         
     }
 
-    /*
-    _finalizeComponent()
+    _buildComponent()
     {
-        super._finalizeComponent();
-        this.#buildComponent();
-    }
-    */
-
-    #buildComponent()
-    {
-        if( this.#isBuilt === true ) { return; }
+        super._buildComponent();
 
         const tempTarget = this.getAttribute("axial-target");
         if( tempTarget )
@@ -163,7 +146,6 @@ class AxialTooltipBase extends AxialComponentBase
             {
                 this.#target = element;
                 this.#addTooltipHandlers();
-                this.#isBuilt = true;
             }
         }
 

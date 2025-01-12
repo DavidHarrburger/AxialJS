@@ -1,20 +1,23 @@
-"use strict"
-
+"use strict";
 
 import { AxialButtonBase } from "./AxialButtonBase.js";
 import { AxialToggleButtonGroupBase } from "./AxialToggleButtonGroupBase.js";
+import { AxialToggleButtonGroup } from "./AxialToggleButtonGroup.js";
 
 class AxialToggleButtonBase extends AxialButtonBase
 {
-    // events
-    #boundToggleClickHandler;
 
+    /// vars
     /** @type { Boolean } */
     #selected = false;
 
-    /** @type { AxialToggleButtonGroupBase } */
+    /** @type { AxialToggleButtonGroupBase | AxialToggleButtonGroup } */
     #buttonGroup = undefined;
     
+    /// events
+    /** @type { Function } */
+    #boundToggleClickHandler;
+
     constructor()
     {
         super();
@@ -22,9 +25,9 @@ class AxialToggleButtonBase extends AxialButtonBase
         this.addEventListener("click", this.#boundToggleClickHandler);
     }
 
-    connectedCallback()
+    _buildComponent()
     {
-        super.connectedCallback();
+        super._buildComponent();
     }
 
     get selected() { return this.#selected; }
@@ -42,8 +45,7 @@ class AxialToggleButtonBase extends AxialButtonBase
     get buttonGroup() { return this.#buttonGroup; }
     set buttonGroup( value )
     {
-        
-        if( value instanceof AxialToggleButtonGroupBase == false )
+        if( value instanceof AxialToggleButtonGroupBase == false && value instanceof AxialToggleButtonGroup == false )
         {
             throw new TypeError("AxialToggleButtonGroupBase value expected");
         }

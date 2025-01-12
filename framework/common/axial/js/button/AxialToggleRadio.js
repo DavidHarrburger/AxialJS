@@ -1,22 +1,28 @@
-"use strict"
+"use strict";
 
 import { AxialToggleButtonBase } from "./AxialToggleButtonBase.js";
 
 class AxialToggleRadio extends AxialToggleButtonBase
 {
-    /** @type { HTMLElement } */
-    #circleElement;
+    /// vars
+    /** @type { String } */
+    #text = "Label";
 
-    /** @type { HTMLElement } */
-    #labelElement;
-
-    /**
-     * @type { String }
-     */
-    #label = "Label";
-
+    /** @type { String } */
     #unselectedScale = "scale(0)";
+
+    /** @type { String } */
     #selectedScale = "scale(1)";
+    
+    /// elements
+    /** @type { HTMLElement } */
+    #border;
+
+    /** @type { HTMLElement } */
+    #circle;
+
+    /** @type { HTMLElement } */
+    #label;
 
     constructor()
     {
@@ -25,31 +31,35 @@ class AxialToggleRadio extends AxialToggleButtonBase
         this.template = "axial-toggle-radio-template";
     }
 
-    connectedCallback()
+    static get observedAttributes()
     {
-        super.connectedCallback();
-        
-        this.#circleElement = this.shadowRoot.getElementById("circleElement");
-        this.#labelElement = this.shadowRoot.getElementById("labelElement");
+        return [ "axial-text" ];
+    }
 
-        const tempLabel = this.getAttribute("axial-label");
-        if( tempLabel !== null )
+    _buildComponent()
+    {
+        this.#border = this.shadowRoot.getElementById("border");
+        this.#circle = this.shadowRoot.getElementById("circle");
+        this.#label = this.shadowRoot.getElementById("label");
+
+        if( this.#label )
         {
-            this.#label = tempLabel;
-            if( this.#labelElement )
+            if( this.#text != "Label" )
             {
-                this.#labelElement.innerHTML = tempLabel;
+                this.#label.innerHTML = this.#text;
             }
         }
     }
 
     attributeChangedCallback(name, oldValue, newValue)
     {
-        if( this.isConnected === false ) { return; }
-        if( name == "axial-label" && this.#labelElement )
+        if( name == "axial-text" )
         {
-            this.#label = newValue;
-            this.#labelElement.innerHTML = newValue;
+            this.#text = newValue;
+            if( this.#label )
+            {
+                this.#label.innerHTML = this.#text;
+            }
         }
     }
 
@@ -57,15 +67,15 @@ class AxialToggleRadio extends AxialToggleButtonBase
     {
         super._onToggleChanged();
         
-        if( this.#circleElement )
+        if( this.#circle )
         {
             if( this.selected === true )
             {
-                this.#circleElement.style.transform = this.#selectedScale;
+                this.#circle.style.transform = this.#selectedScale;
             }
             else
             {
-                this.#circleElement.style.transform = this.#unselectedScale;
+                this.#circle.style.transform = this.#unselectedScale;
             }
         }
     }

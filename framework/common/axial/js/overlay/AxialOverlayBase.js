@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
 import { AxialOverlayManager } from "./AxialOverlayManager.js";
@@ -15,9 +15,6 @@ class AxialOverlayBase extends AxialComponentBase
     #OVERLAY_SHOW_MODE = new Set( ["off", "over", "click"] );
 
     #OVERLAY_HIDE_MODE = new Set( ["off", "out", "click"] );
-
-    /** @type { Boolean } */
-    #isBuilt = false;
 
     /** @type { Boolean } */
     #isShown = false;
@@ -155,12 +152,6 @@ class AxialOverlayBase extends AxialComponentBase
         return [ "axial-target", "axial-position" ];
     }
 
-    connectedCallback()
-    {
-        super.connectedCallback();
-        this.#buildComponent();
-    }
-
     attributeChangedCallback(name, oldValue, newValue)
     {
         super.attributeChangedCallback(name, oldValue, newValue);
@@ -177,18 +168,11 @@ class AxialOverlayBase extends AxialComponentBase
         {
             this.position = newValue;
         }
-        
     }
 
-    _finalizeComponent()
+    _buildComponent()
     {
-        super._finalizeComponent();
-        this.#buildComponent();
-    }
-
-    #buildComponent()
-    {
-        if( this.#isBuilt === true ) { return; }
+        super._buildComponent();
 
         const tempTarget = this.getAttribute("axial-target");
         if( tempTarget )
@@ -198,7 +182,6 @@ class AxialOverlayBase extends AxialComponentBase
             {
                 this.#target = element;
                 this.#addOverlayHandlers();
-                this.#isBuilt = true;
             }
         }
 
@@ -247,7 +230,6 @@ class AxialOverlayBase extends AxialComponentBase
      */
     #overlayTargetClickHandler( event )
     {
-        console.log("overlay target clicked");
         event.stopPropagation();
 
         if( this.#showMode === "click" && this.#isShown === false )
@@ -376,7 +358,6 @@ class AxialOverlayBase extends AxialComponentBase
 
     show()
     {
-        console.log("overlay show call");
         if( this.#isShown === true ) { return; }
         this.#layoutOverlay();
         this.style.visibility = "visible";

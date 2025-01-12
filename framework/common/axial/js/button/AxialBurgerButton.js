@@ -1,9 +1,10 @@
-"use strict"
+"use strict";
 
 import { AxialToggleButtonBase } from "./AxialToggleButtonBase.js";
 
 class AxialBurgerButton extends AxialToggleButtonBase
 {
+    /// vars
     /** @type { Number } */
     #topPosition = 13;
 
@@ -16,6 +17,7 @@ class AxialBurgerButton extends AxialToggleButtonBase
     /** @type { Number } */
     #lineWidth = 26;
 
+    /// elements
     /** @type { HTMLElement } */
     #top;
 
@@ -32,9 +34,9 @@ class AxialBurgerButton extends AxialToggleButtonBase
         this.template = "axial-burger-button-template";
     }
 
-    connectedCallback()
+    _buildComponent()
     {
-        super.connectedCallback();
+        super._buildComponent();
 
         this.#top = this.shadowRoot.getElementById("top");
         this.#middle = this.shadowRoot.getElementById("middle");

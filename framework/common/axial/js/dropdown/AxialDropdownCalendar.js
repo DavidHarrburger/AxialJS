@@ -1,9 +1,8 @@
-"use strict"
+"use strict";
 
 import { AxialDropdown } from "./AxialDropdown.js";
 import { AxialCalendar } from "../date/AxialCalendar.js";
 import { DateUtils } from "../utils/DateUtils.js";
-
 
 class AxialDropdownCalendar extends AxialDropdown
 {
@@ -43,14 +42,10 @@ class AxialDropdownCalendar extends AxialDropdown
         }
     }
 
-    connectedCallback()
+    _buildComponent()
     {
-        super.connectedCallback();
-        this.#buildComponent();
-    }
-
-    #buildComponent()
-    {
+        super._buildComponent();
+        
         this.#calendar = this.shadowRoot.getElementById("calendar");
         if( this.#calendar )
         {

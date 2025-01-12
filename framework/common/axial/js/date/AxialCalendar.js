@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
 import { AxialCalendarGridBase } from "./AxialCalendarGridBase.js";
@@ -80,28 +80,19 @@ class AxialCalendar extends AxialComponentBase
         }
     }
 
-    connectedCallback()
+    _buildComponent()
     {
-        super.connectedCallback();
+        super._buildComponent();
 
-        /// ui
         this.#label = this.shadowRoot.getElementById("label");
         this.#days = this.shadowRoot.getElementById("days");
         this.#grid = this.shadowRoot.getElementById("dates");
         this.#previous = this.shadowRoot.getElementById("previous");
         this.#next = this.shadowRoot.getElementById("next");
-        this.#buildComponent();
-    }
 
-    #buildComponent()
-    {
         const currentYear = this.#initDate.getFullYear();
         const currentMonth = this.#initDate.getMonth();
         const currentMonthName = this.#monthsNames[currentMonth];
-
-        //const firstDay = new Date(currentYear, currentMonth, 1);
-        //const firstDayIndex = firstDay.getDay();
-
 
         if( this.#label )
         {

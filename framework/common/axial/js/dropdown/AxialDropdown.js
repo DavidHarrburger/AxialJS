@@ -1,3 +1,5 @@
+"use strict";
+
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
 import { AxialToggleButton } from "../button/AxialToggleButton.js";
 import { AxialDropdownManager } from "./AxialDropdownManager.js";
@@ -86,12 +88,6 @@ class AxialDropdown  extends AxialComponentBase
         return [ "axial-template", "axial-text" ];
     }
 
-    connectedCallback()
-    {
-        super.connectedCallback();
-        this.#buildComponent();
-    }
-
     attributeChangedCallback(name, oldValue, newValue)
     {
         super.attributeChangedCallback(name, oldValue, newValue);
@@ -105,8 +101,10 @@ class AxialDropdown  extends AxialComponentBase
         }
     }
 
-    #buildComponent()
+    _buildComponent()
     {
+        super._buildComponent();
+        
         this.#toggle = this.shadowRoot.getElementById("toggle");
         if( this.#toggle )
         {

@@ -5,7 +5,13 @@
     "crypto_iv": "",
     "collections":
     [
-        { "name": "" }
+        { "name": "users",    "options": { "capped": true, "size": 10000000 }  },
+        { "name": "models",   "options": { "capped": true, "size": 10000000 }  },
+        { "name": "params",   "options": { "capped": true, "size": 10000000 }  },
+        { "name": "stats",    "options": { "capped": true, "size": 100000000 } },
+        { "name": "mails",    "options": { "capped": true, "size": 100000000 } },
+        { "name": "products", "options": { "capped": true, "size": 100000000 } },
+        { "name": "pages",    "options": { "capped": true, "size": 100000000 } }
     ],
     "models":
     [

@@ -1,21 +1,24 @@
-"use strict"
+"use strict";
 
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
 
 class AxialNotifier extends AxialComponentBase
 {
+    /// elements
     /** @type { HTMLElement } */
     #holder;
 
     /** @type { HTMLElement } */
     #content;
 
+    /// vars
     /** @type { Number } */
     #timeoutId;
 
     /** @type { Number } */
     #timeoutDelay = 4000;
 
+    /// events
     /** @type { Function} */
     #boundTimeoutHandler;
 
@@ -27,9 +30,10 @@ class AxialNotifier extends AxialComponentBase
         this.#boundTimeoutHandler = this.#timeoutHandler.bind(this);
     }
 
-    connectedCallback()
+    _buildComponent()
     {
-        super.connectedCallback();
+        super._buildComponent();
+        
         this.#holder = this.shadowRoot.getElementById("holder");
         this.#content = this.shadowRoot.getElementById("content");
     }
