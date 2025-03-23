@@ -2,6 +2,9 @@
 
 Find here what happened and when.
 
+## 2025 - 02 - 25
+FULLSTACK PRE UPDATE 4
+
 ## 2025 - 01 - 12
 FULLSTACK PRE UPDATE 3
 Clean up, enhancements, checks and tests

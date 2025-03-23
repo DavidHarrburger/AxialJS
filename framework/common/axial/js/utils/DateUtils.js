@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 class DateUtils
 {
@@ -44,6 +44,33 @@ class DateUtils
         return formated;
     }
 
+    /**
+     * 
+     * @param { Date } d 
+     * @returns { String }
+     */
+    static formatWithTime( d )
+    {
+        if( d instanceof Date === false )
+        {
+            throw new TypeError("Date value expected");
+        }
+        const year = String( d.getFullYear() );
+
+        const month = String(d.getMonth() + 1);
+        const formatedMonth = month.length === 1 ? "0" + month : month;
+
+        const date = String( d.getDate() );
+        const formatedDate = date.length === 1 ? "0" + date : date;
+
+        const hours = d.getHours();
+        const minutes = d.getMinutes();
+        const seconds = d.getSeconds();
+
+        const formated = `${year}-${formatedMonth}-${formatedDate} ${hours}:${minutes}:${seconds}`;
+        return formated;
+    }
+
     static tomorrow()
     {
         // return new Date( new Date().getDate() + 1 );
@@ -57,6 +84,21 @@ class DateUtils
         const today = new Date();
         const yesterday = new Date( today.getFullYear(), today.getMonth(), (today.getDate() - 1) );
         return yesterday;
+    }
+
+    /**
+     * 
+     * @param { Date } fd - the first date
+     * @param { Date } sd - the second date 
+     */
+    static difference(fd, sd)
+    {
+        if( fd > sd )
+        {
+            throw new RangeError("param secondDate 'sd' should be sup param firstDate 'fd'");
+        }
+        const diff = sd.getTime() - fd.getTime();
+        return diff;
     }
 
     static duration( n )

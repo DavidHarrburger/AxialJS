@@ -218,225 +218,6 @@ const finalMiddleware = function( request, response, next )
 };
 
 ///
-/// IMPORTANT WEB APPLICATION START GET REQUEST
-///
-/*
-const apiApplicationStart = async function( request, response )
-{
-    try
-    {
-        const body = request.body;
-        const NEW_DATABASE_NAME = body.dbname;
-        // do control here on the name
-
-        const client = await MONGO_CLIENT.connect();
-        const db = client.db( NEW_DATABASE_NAME );
-
-        // create all collection we need
-        const users     = await db.createCollection( "users",    { capped: true, size: 10000000 } );
-        const models    = await db.createCollection( "models",   { capped: true, size: 10000000 } );
-        const params    = await db.createCollection( "params",   { capped: true, size: 10000000 } );
-        const shops     = await db.createCollection( "shops",    { capped: true, size: 2000000 } );
-
-        const stats     = await db.createCollection( "stats",    { capped: true, size: 100000000 } );
-        const mails     = await db.createCollection( "mails",    { capped: true, size: 100000000 } );
-        const products  = await db.createCollection( "products", { capped: true, size: 100000000 } );
-        const pages     = await db.createCollection( "pages",    { capped: true, size: 100000000 } );
-        
-        response.json( { status: "ok", message: "db created" });
-    }
-    catch(err)
-    {
-        console.log(err);
-        response.json("database create error");
-    }
-};
-*/
-
-///
-/// MAIL PART
-///
-const apiMailGetHandler = async function( request, response )
-{
-    try
-    {
-        const client = await MONGO_CLIENT.connect();
-        const db = client.db( DATABASE_NAME );
-        const collection = db.collection("mails");
-        const docs = await collection.find({}).toArray();
-        console.log(docs);
-        let mails = new Array();
-        for( const item of docs )
-        {
-            let mail = {};
-            for( const prop of Object.keys( item ) )
-            {
-                if( typeof item[prop] === "string" )
-                {
-                    mail[prop] = AxialCryptoUtils.decrypt( item[prop] );
-                }
-                else
-                {
-                    mail[prop] = item[prop];
-                }
-            }
-            mails.push( mail );
-        }
-        response.json( { status: "ok", mails: mails } );
-    }
-    catch(err)
-    {
-        console.log(err);
-        response.json( { status: "ko", error: err } );
-    }
-};
-const apiMailAllHandler = async function( request, response )
-{
-    try
-    {
-        const client = await MONGO_CLIENT.connect();
-        const db = client.db( DATABASE_NAME );
-        const collection = db.collection("mails");
-        const docs = await collection.find({}).toArray();
-        //console.log(docs);
-        let mails = new Array();
-        for( const item of docs )
-        {
-            let mail = {};
-            for( const prop of Object.keys( item ) )
-            {
-                if( typeof item[prop] === "string" )
-                {
-                    mail[prop] = AxialCryptoUtils.decrypt( item[prop] );
-                }
-                else
-                {
-                    mail[prop] = item[prop];
-                }
-            }
-            mails.push( mail );
-        }
-        response.json( { status: "ok", mails: mails } );
-    }
-    catch(err)
-    {
-        console.log(err);
-        response.json( { status: "ko", error: err } );
-    }
-};
-/**
- * 
- * @param { Express.Request } request 
- * @param { Express.Response } response 
- */
-const apiMailMessagePostHandler = async function( request, response )
-{
-    try
-    {
-        let body = request.body;
-        const infos = { name: body.name, surname: body.surname, email: body.email, message: body.message };
-
-        // check body
-        await AxialMongoUtils.registerInCollection( MONGO_CLIENT, "mails", body, true );
-
-        let htmlFrom = "<h2>Votre message à dndev.fr !</h2>";
-        htmlFrom += "<p>Merci d'avoir pris contact. Nous vous répondrons dans les plus brefs délais. Ci-dessous le message que vous avez envoyé :";
-        htmlFrom += "<p style='font-style: italic'>" + infos.message + "</p>";
-
-        const mailFrom = await EMAIL_TRANSPORTER.sendMail(
-        {
-            from: "<no-reply@dndev.fr>",
-            to: infos.email,
-            subject: "Votre message à dndev.fr",
-            html: htmlFrom
-        });
-
-        let htmlTo = "<h4>Nouveau message depuis dndev.fr</h4>";
-        htmlTo += "<p><span style='font-weight: bold'>" + infos.name + "</span> " + infos.email + " a envoyé un message</p>";
-        htmlTo += "<p style='font-style: italic'>" + infos.message + "</p>";
-        htmlTo += mailFrom.messageId;
-
-        const mailTo = await EMAIL_TRANSPORTER.sendMail(
-        {
-            from: "<" + infos.email + ">",
-            to: EMAIL_RECIPIENT,
-            subject: "Message from dndev.fr",
-            html: htmlTo
-        });
-
-        response.json( { status: "ok", mid: mailFrom.messageId } );
-    }
-    catch( err )
-    {
-        console.log(err);
-        response.json( { status: "ko", error: err } );
-    }
-};
-
-/**
- * 
- * @param { Express.Request } request 
- * @param { Express.Response } response 
- */
-const apiMailContactPostHandler = async function( request, response )
-{
-    try
-    {
-        const body = request.body;
-
-        const NAME = body.name;
-        const SURNAME = body.surname;
-        const EMAIL = body.email;
-        const TEL = body.tel;
-        const ADDRESS = body.address;
-        const ZIP = body.zip;
-        const CITY = body.city;
-        const MESSAGE = body.message;
-
-        let htmlFrom = "<h4>Votre message envoyé depuis dndev.fr</h4>";
-        htmlFrom += "<p>Merci d'avoir pris contact. Nous vous répondrons dans les plus brefs délais. Ci-dessous le message que vous nous avez envoyé :";
-        htmlFrom += "<p style='font-style: italic'>" + MESSAGE + "</p>";
-
-        const mailFrom = await EMAIL_TRANSPORTER.sendMail(
-        {
-            from: "<" + EMAIL_USER + ">",
-            to: EMAIL,
-            subject: "Votre message à D n' Dev",
-            html: htmlFrom
-        });
-
-        let htmlTo = "<h4>Nouveau message depuis dndev.fr</h4>";
-        htmlTo += "<p>Voici un nouveau message envoyé depuis dndev.fr !</p>";
-        htmlTo += "<div><span style='font-weight: bold'>PRENOM : </span>" + NAME + "</div>";
-        htmlTo += "<div><span style='font-weight: bold'>NOM : </span>" + SURNAME + "</div>";
-        htmlTo += "<div><span style='font-weight: bold'>EMAIL : </span>" + EMAIL + "</div>";
-        htmlTo += "<div><span style='font-weight: bold'>TEL : </span>" + TEL + "</div>";
-        htmlTo += "<div><span style='font-weight: bold'>ADRESSE : </span>" + ADDRESS + "</div>";
-        htmlTo += "<div><span style='font-weight: bold'>CODE POSTAL : </span>" + ZIP + "</div>";
-        htmlTo += "<div><span style='font-weight: bold'>VILLE : </span>" + CITY + "</div>";
-        htmlTo += "<div><span style='font-weight: bold'>MESSAGE : </span></div>";
-        htmlTo += "<p style='font-style: italic'>" + MESSAGE + "</p>";
-        htmlTo += mailFrom.messageId;
-
-        
-        const mailTo = await EMAIL_TRANSPORTER.sendMail(
-        {
-            from: "<" + EMAIL + ">",
-            to: EMAIL_RECIPIENT,
-            subject: "Nouveau message depuis dndev.fr",
-            html: htmlTo
-        });
-        
-        response.json( { status: "ok", mid: mailFrom.messageId } );
-    }
-    catch( err )
-    {
-        console.log(err);
-        response.json( { status: "ko", error: err } );
-    }
-};
-
-///
 /// STATS PART
 ///
 
@@ -1018,6 +799,141 @@ const apiModelSet = async function( request, response )
 };
 
 ///
+/// 2025
+///
+const apiDataGet = async function( request, response )
+{
+    console.log("API_DATA_GET");
+    try
+    {
+        let documents = new Array();
+        let collection = "";
+        let filters = {};
+        let model = "";
+
+        //const collectionName = request.query.c;
+        console.log(request.query);
+
+        const query = request.query;
+        for( const p of Object.keys(query) )
+        {
+            console.log(p, typeof query[p] );
+            const v = query[p];
+            switch( p )
+            {
+                case "c":
+                    if( typeof v === "string" )
+                    {
+                        collection = v;
+                    }
+                break;
+
+                case "m":
+                    if( typeof v === "string" )
+                    {
+                        model = v;
+                    }
+                break;
+
+                case "f":
+                    if( typeof v === "string" )
+                    {
+                        // assumes coma is here
+                        // check the number of comas
+                        // check if values are not empty
+                        // move to a util that Create the filter mays AxialMongo.createFilter or AxialMongo.parseFilter
+                        const nc = ( v.match( new RegExp(",", "g") ) || [] ).length;
+                        console.log("comas = ", nc);
+                        if( nc === 1 )
+                        {
+                            const fa = v.split(",");
+                            let filterKey = fa[0];
+                            let filterValue = fa[1];
+
+                            if( filterKey !== "" && filterValue !== "" )
+                            {
+                                if( filterKey === "_id" )
+                                {
+                                    filterValue = new ObjectId( String(filterValue) );
+                                }
+                                filters[filterKey] = filterValue;
+                                //filters[fa[0]] = fa[1];
+                            }
+                        }
+                    }
+                    else if( Array.isArray(v) === true )
+                    {
+                        console.log(v);
+                        for( const pkv of v )
+                        {
+                            const nc = ( pkv.match( new RegExp(",", "g") ) || [] ).length;
+                            if( nc === 1 )
+                            {
+                                const fa = pkv.split(",");
+                                let filterKey = fa[0];
+                                let filterValue = fa[1];
+
+                                if( filterKey !== "" && filterValue !== "" )
+                                {
+                                    // SUPER IMPORTNAT CHECK HERE BUT NOT CRASHING
+                                    if( filterKey === "_id" )
+                                    {
+                                        filterValue = new ObjectId( String(filterValue) );
+                                    }
+                                    filters[filterKey] = filterValue;
+                                    //filters[fa[0]] = fa[1];
+                                }
+                            }
+                        }
+                    }
+                break;
+
+                default:
+                break;
+            }
+        }
+
+        console.log("FILTERS");
+        console.log(filters);
+
+        if( collection !== "" )
+        {
+            documents = await MONGO.getData( collection, filters, model );
+        }
+        
+        const result = { status: "ok", content: documents };
+        response.json( result );
+    }
+    catch( err )
+    {
+        console.log(err);
+        response.json( BASIC_KO );
+    }
+};
+
+const apiDataSet = async function( request, response )
+{
+    console.log("API_DATA_SET");
+    try
+    {
+        const doc = request.body;
+        const col = doc.collection;
+        const model = doc.model;
+        //console.log( model )
+        const insertedOrReplaced = await MONGO.setData( col, doc, model );
+        //console.log(insertedOrReplaced);
+        
+        const result = { status: "ok", content: insertedOrReplaced };
+        response.json( result );
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( BASIC_KO );
+    }
+};
+
+///
 /// SERVER ROUTES
 ///
 
@@ -1034,11 +950,9 @@ AXIAL_SERVER_APPLICATION.use( cookieParser() );
 AXIAL_SERVER_APPLICATION.use( authMiddleware );
 //AXIAL_SERVER_APPLICATION.use( authRedirectMiddleware );
 
-// MAILS
-AXIAL_SERVER_APPLICATION.get( "/api/mail/get", apiMailGetHandler );
-AXIAL_SERVER_APPLICATION.get( "/api/mail/all", apiMailAllHandler );
-AXIAL_SERVER_APPLICATION.post( "/api/mail/message", apiMailMessagePostHandler );
-AXIAL_SERVER_APPLICATION.post( "/api/mail/contact", apiMailContactPostHandler );
+// 2025 PRIVATE API
+AXIAL_SERVER_APPLICATION.get( "/api/data/get", apiDataGet );
+AXIAL_SERVER_APPLICATION.post( "/api/data/set", apiDataSet );
 
 // STATS
 AXIAL_SERVER_APPLICATION.get( "/api/stats/get", apiStatsGetHandler );

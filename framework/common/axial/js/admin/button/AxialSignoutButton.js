@@ -40,7 +40,7 @@ class AxialSignoutButton extends AxialButton
     {
         try
         {
-            sessionStorage.clear();
+            localStorage.clear();
             const response = await fetch( this.#path, { method: "POST", credentials: "same-origin" } );
             const json = response.json();
 

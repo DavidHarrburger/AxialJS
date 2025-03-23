@@ -310,6 +310,93 @@
     justify-content: center;
     align-items: center;
 }
+/* AxialAgenda */
+.axial_agenda
+{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+.axial_agenda-background
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #ccc;
+}
+.axial_agenda-main
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+.axial_agenda-header
+{
+    width: 100%;
+    height: 40px;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1px;
+    background-color: #fff;
+}
+.axial_agenda-days
+{
+    width: 100%;
+    height: 60px;
+    display: grid;
+    grid-template-columns: 40px repeat(7, 1fr);
+    grid-template-rows: 60px;
+    gap: 0 1px;
+    border-bottom: 1px solid #ccc;
+    overflow-y: scroll;
+}
+.axial_agenda-hours
+{
+    grid-column: 1;
+    grid-row: 1 / span 24;
+    display: flex;
+    flex-direction: column;
+
+    background-color: #f00;
+}
+.axial_agenda-content
+{
+    position: absolute;
+    width: 100%;
+    top: 100px;
+    bottom: 0;
+    left: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+.axial_agenda-grid
+{
+    display: grid;
+    width: 100%;
+    height: auto;
+    grid-template-columns: 40px repeat(7, 1fr);
+    grid-template-rows: repeat(24, 60px);
+    gap: 1px 1px;
+}
+/* AxialAgendaDay */
+.axial_agenda_day
+{
+    background-color: #fff;
+}
+/* AxialAgendaHour */
+.axial_agenda_hour
+{
+    background-color: #fff;
+}
+/* AxialAgendaCell */
+.axial_agenda_cell
+{
+    background-color: #fff;
+}
 /* AxialInfinity */
 .axial_infinity
 {
@@ -339,6 +426,144 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    font-size: 40px;
+    font-weight: 800;
+}
+
+/* CHARTS */
+/* AxialChartElementBar */
+.axial_chart_element_bar
+{
+    position: relative;
+    width: 140px;
+    height: 100%;
+}
+.axial_chart_element_bar-holder
+{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.axial_chart_element_bar-bar
+{
+    min-width: 40px;
+    padding: 2px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    text-align: center;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 3px;
+    background-color: var(--themeColor);
+    color: #fff;
+    font-weight: 500;
+}
+
+.axial_chart_element_bar-label
+{
+    flex-shrink: 0;
+    width: 100%;
+    height: 30px;
+    padding-top: 4px;
+    padding-left: 2px;
+    padding-right: 2px;
+    font-size: 12px;
+    overflow: hidden;
+    display: block;
+    text-align: center;
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* AxialChart */
+.axial_chart
+{
+    position: relative;
+    padding: 10px;
+    /*
+    width: 200px;
+    height: 200px;
+    */
+    min-width: 320px;
+    min-height: 300px;
+    border-radius: var(--component___borderRadius);
+    background-color: #fff;
+    box-shadow: 0 1px 1px 0 rgba(118, 135, 154, 0.24), 0 3px 8px 0 rgba(118, 135, 154, 0.08);
+    display: flex;
+    flex-direction: column;
+}
+.axial_chart-container
+{
+    flex-grow: 1;
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+.axial_chart-holder
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.axial_chart-header
+{
+    width: 100%;
+    height: 32px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+.axial_chart-title
+{
+    font-weight: 400;
+    flex-grow: 1;
+    overflow: hidden;
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
+}
+.axial_chart-action
+{
+    flex-shrink: 0;
+    font-weight: 800;
+}
+.axial_chart-main
+{
+    position: relative;
+    width: 100%;
+    flex-grow: 1;
+}
+.axial_chart-area
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+.axial_chart-area_row
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+.axial_chart-area_column
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+/* AxialChartAverageTime */
+.axial_chart_average_time-area
+{
     font-size: 40px;
     font-weight: 800;
 }

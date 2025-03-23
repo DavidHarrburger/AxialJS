@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 class AxialUploadTask extends EventTarget
 {
@@ -11,9 +11,22 @@ class AxialUploadTask extends EventTarget
     /** @type { Boolean } */
     #public = false;
 
+    /** @type { Number } */
+    #maxFileSize = 2000000; // 2Mb
+
     constructor()
     {
         super();
+    }
+
+    get maxFileSize() { return this.#maxFileSize; }
+    set maxFileSize( value )
+    {
+        if( isNaN(value) === true )
+        {
+            throw new TypeError("Number value required");
+        }
+        this.#maxFileSize = Math.abs( Math.round( value ) );
     }
 
     get path() { return this.#path; }
@@ -62,6 +75,11 @@ class AxialUploadTask extends EventTarget
             throw new Error("Path required to upload !!!");
         }
 
+        if( this.#file && this.#file.size > this.#maxFileSize )
+        {
+            throw new Error(`File ${this.#file.name} exceeds the authorized ${this.#maxFileSize} maximum file size`);
+        }
+
         try
         {
             const formData = new FormData();
@@ -74,8 +92,9 @@ class AxialUploadTask extends EventTarget
                 "axial_filepublic": Number(this.#public)
             }
             const response = await fetch(this.#path, { method: "POST", body: formData, headers: headers } );
-            //console.log(response);
-            return response;
+            const jsonResponse = await response.json();
+            console.log(jsonResponse);
+            return jsonResponse;
         }
         catch(err)
         {

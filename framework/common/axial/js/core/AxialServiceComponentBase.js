@@ -16,14 +16,20 @@ class AxialServiceComponentBase extends AxialComponentBase
     /** @type { Object } */
     #postData = undefined;
 
+    /** @type { Object } */
+    #postObject = {};
+
+    /** @type { Boolean } */
+    #isFetching = false;
+
     constructor()
     {
         super();
     }
 
-    connectedCallback()
+    _buildComponent()
     {
-        super.connectedCallback();
+        super._buildComponent();
         this.#getPath = this.getAttribute("axial-get-path");
         this.#postPath = this.getAttribute("axial-post-path");
     }
@@ -48,14 +54,10 @@ class AxialServiceComponentBase extends AxialComponentBase
      */
     get postData() { return this.#postData; }
 
-    /**
-     * will be just removed in future versions
-     * @deprecated
-     */
-    initialize()
+    get postObject() { return this.#postObject; }
+    set postObject( value )
     {
-        this.#getData = undefined;
-        this.#postData = undefined;
+        this.#postObject = value;
     }
 
     /**
@@ -64,6 +66,7 @@ class AxialServiceComponentBase extends AxialComponentBase
      */
     async loadGetData()
     {
+        console.log("getdata");
         await this.#loadGetData();
     }
 
@@ -74,10 +77,12 @@ class AxialServiceComponentBase extends AxialComponentBase
     async #loadGetData()
     {
         if( this.#getPath === undefined || this.#getPath === null ) { return; }
+        if( this.#isFetching === true ) { return; }
+        this.#isFetching = true;
         try
         {
             const path = this._prepareGetData();
-            console.log( path );
+            console.log(path);
             const response = await fetch( path, { method: "GET", headers: { "Content-Type":"application/json" } } );
             const json = await response.json();
             this.#getData = json;
@@ -92,6 +97,7 @@ class AxialServiceComponentBase extends AxialComponentBase
         }
         finally
         {
+            this.#isFetching = false;
             this._onGetResponse();
         }
     }
@@ -104,6 +110,8 @@ class AxialServiceComponentBase extends AxialComponentBase
     async #loadPostData()
     {
         if( this.#postPath === undefined || this.#postPath === null ) { return; }
+        if( this.#isFetching === true ) { return; }
+        this.#isFetching = true;
         try
         {
             const infos = this._preparePostData();
@@ -122,6 +130,7 @@ class AxialServiceComponentBase extends AxialComponentBase
         }
         finally
         {
+            this.#isFetching = false;
             this._onPostResponse();
         }
     }
@@ -157,7 +166,7 @@ class AxialServiceComponentBase extends AxialComponentBase
      * @abstract
      * @returns { Object }
      */
-    _preparePostData() { return {}; }
+    _preparePostData() { return this.#postObject; }
 }
 
 window.customElements.define("axial-service-component-base", AxialServiceComponentBase);

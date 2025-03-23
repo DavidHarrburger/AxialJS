@@ -36,3 +36,56 @@
     transition-duration: 500ms;
     transition-timing-function: ease;
 }
+/* AxialConsentOverlay */
+.axial_consent_overlay
+{
+    width: 300px;
+    height: auto;
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid #fff;
+    background-color: rgba(0, 0, 0, 0.83);
+    backdrop-filter: blur(10px);
+}
+.axial_consent_overlay-holder
+{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.axial_consent_overlay-header
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+}
+.axial_consent_overlay-cookie
+{
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.axial_consent_overlay-title
+{
+    color: #fff;
+    font-weight: 600;
+    font-size: 18px;
+}
+.axial_consent_overlay-content
+{
+    color: #fff;
+}
+.axial_consent_overlay-actions
+{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 20px;
+}

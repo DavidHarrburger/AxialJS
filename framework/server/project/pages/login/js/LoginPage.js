@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 import { GlobalPage } from "../../../js/GlobalPage.js";
 import { AxialLoginForm } from "../../../../axial/js/form/AxialLoginForm.js";
@@ -72,7 +72,7 @@ class LoginPage extends GlobalPage
             
             const user = response.user;
             const username = user.username;
-            sessionStorage.setItem("axial_username", username );
+            localStorage.setItem("axial_username", username );
             const redirectUrl = new URL(user.page, window.location.origin);
             window.location.href = redirectUrl.href;
         }

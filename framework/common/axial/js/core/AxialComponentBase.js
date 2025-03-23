@@ -210,7 +210,7 @@ class AxialComponentBase extends HTMLElement
     /**
      * Returned an array of attributes we want to observe when the attributeChangedCallback is invoked.
      * @static
-     * @returns Array
+     * @returns { Array }
      */
     static get observedAttributes()
     {

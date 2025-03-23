@@ -50,7 +50,7 @@ class AdminPage extends GlobalPage
         this.#notifier = document.getElementById("notifier");
 
         this.#usernameElement = document.getElementById("usernameElement");
-        const username = sessionStorage.getItem("axial_username");
+        const username = localStorage.getItem("axial_username");
         if( username )
         {
             this.#usernameElement.innerHTML = username ;

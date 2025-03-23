@@ -38,11 +38,11 @@ export const API_PRIVATE_PATHES =
     { path: "/api/model/get" },
     { path: "/api/model/set" },
 
+    { path: "/api/model/get" },
+    { path: "/api/model/set" },
+
     { path: "/api/medias/get" },
     { path: "/api/medias/all" },
     { path: "/api/medias/public" },
-    { path: "/api/medias/upload" },
-
-    { path: "/api/mail/get" },
-    { path: "/api/mail/all" }
+    { path: "/api/medias/upload" }
 ];

@@ -5,3 +5,4 @@ ignore/
 axial-database.json
 keys.txt
 .env
+./axial-server/AxialServerConstants.js

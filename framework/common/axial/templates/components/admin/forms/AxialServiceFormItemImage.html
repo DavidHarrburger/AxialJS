@@ -1,0 +1,19 @@
+<!-- AxialServiceFormItemImage -->
+<template id="axial-service-form-item-image-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div class="axial_service_form_item-holder">
+        <div class="axial_service_form_item-header">
+            <div id="label" class="axial_service_form_item-label">Label</div>
+            <div id="action" class="axial_service_form_item-action">
+                <slot id="actionSlot" name="axial-action"></slot>
+            </div>
+        </div>
+        <div class="axial_service_form_item-info">
+            <slot id="infoSlot" name="axial-info"></slot>
+        </div>
+        <div id="content" class="axial_service_form_item-content">
+            <input type="file" id="fileInput" class="axial_service_form_item_image-file" accept="image/png, image/jpeg, image/jpg, image/webp"/>
+            <img id="image" class="axial_service_form_item_image-image">
+        </div>
+    </div>
+</template>

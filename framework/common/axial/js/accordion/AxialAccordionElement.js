@@ -37,9 +37,9 @@ class AxialAccordionElement extends AxialComponentBase
      */
     get isOpened() { return this.#isOpened; }
 
-    connectedCallback()
+    _buildComponent()
     {
-        super.connectedCallback();
+        super._buildComponent();
         this.#content = this.shadowRoot.getElementById("content");
         if( this.#state === "opened" )
         {
