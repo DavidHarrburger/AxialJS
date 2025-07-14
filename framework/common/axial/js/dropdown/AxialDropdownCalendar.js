@@ -51,6 +51,7 @@ class AxialDropdownCalendar extends AxialDropdown
         {
             this.#calendar.addEventListener( "dateChanged", this.#boundDateChangedHandler );
         }
+        
     }
 
 

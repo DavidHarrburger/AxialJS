@@ -18,7 +18,8 @@
     left: 0px;
     top: 0px;
 
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 /* AxialViewer */
 .axial_viewer
@@ -57,4 +58,92 @@
     width: 100%;
     height: 100%;
     overflow: hidden;
+}
+
+/* Indicator */
+.axial_viewer_indicator
+{
+    position: relative;
+    width: auto;
+    height: 100%;
+}
+.axial_viewer_indicator-holder
+{
+    position: relative;
+    width: auto;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 20px;
+}
+
+.axial_viewer_indicator-bar
+{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 3px;
+
+    background-color: var(--themeColor);
+
+    transition-property: left, width;
+    transition-duration: 500ms;
+    transition-timing-function: ease;
+
+}
+
+/* IndicatorStep */
+.axial_viewer_indicator_step
+{
+    position: relative;
+    width: auto;
+    height: 40px;
+    overflow: hidden;
+    border-radius: 4px;
+}
+.axial_viewer_indicator_step-holder
+{
+    position: relative;
+    width: auto;
+    height: 100%;
+    
+}
+.axial_viewer_indicator_step-content
+{
+    width: auto;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 6px;
+}
+
+.axial_viewer_indicator_step-badge
+{
+    width: 36px;
+    height: 36px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+
+    font-size: 21px;
+    font-weight: 800;
+    padding-bottom: 4px;
+
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: #ddd;
+}
+.axial_viewer_indicator_step-label
+{
+    font-weight: 800;
+    font-size: 18px;
+    text-transform: uppercase;
 }

@@ -20,9 +20,16 @@ class AxialSignoutButton extends AxialButton
         this.addEventListener("click", this.#boundClickHandler);
     }
 
+    /*
     connectedCallback()
     {
         super.connectedCallback();
+    }
+    */
+
+    _buildComponent()
+    {
+        super._buildComponent();
         this.#path = this.getAttribute("axial-path");
         this.#redirect = this.getAttribute("axial-redirect");
     }
@@ -40,7 +47,7 @@ class AxialSignoutButton extends AxialButton
     {
         try
         {
-            localStorage.clear();
+            localStorage.removeItem("axial_auth_uuid");
             const response = await fetch( this.#path, { method: "POST", credentials: "same-origin" } );
             const json = response.json();
 

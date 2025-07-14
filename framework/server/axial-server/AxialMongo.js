@@ -114,12 +114,7 @@ class AxialMongo extends EventEmitter
             // db
             const mongo = await this.#mongo.connect();
             const db = mongo.db( this.#dbName );
-
-            // get requested collection
-            const collection = db.collection( c );
-            result = await collection.find(f).toArray();
-            console.log("GET_DATA", result);
-
+            
             // model check
             let modelObject;
             if( m !== "" )
@@ -131,8 +126,24 @@ class AxialMongo extends EventEmitter
                     modelObject = modelArray[0];
                 }
             }
-            //console.log( modelObject );
+            // rewrite filter if model
+            if( modelObject && modelObject.props )
+            {
+                const modelProps = modelObject.props;
+                for( const pf of Object.keys(f) )
+                {
+                    const modelValue = modelProps[pf];
+                    if( modelValue && modelValue.crypted && modelValue.crypted === true )
+                    {
+                        f[pf] = AxialCryptoUtils.encrypt( f[pf] );
+                    }
+                }
+            }
 
+            // get requested collection
+            const collection = db.collection( c );
+            result = await collection.find(f).toArray();
+            
             // model exists, go for decrypt
             if( modelObject && modelObject.props )
             {
@@ -175,20 +186,39 @@ class AxialMongo extends EventEmitter
         finally
         {
             //await this.#mongo.close();
-            if( result === undefined ) { result = []; }
+            if( result === undefined )
+            {
+                result = null;
+            }
+            else if( Array.isArray(result) )
+            {
+                if( result.length === 0 )
+                { 
+                    result = null;
+                }
+                else if( result.length === 1 )
+                {
+                    result = result[0];
+                }
+            }
             console.log("final result", result);
             return result;
         }
     }
 
+    /**
+     * 
+     * @param { String } c The Collection name
+     * @param { Object } d The Document object
+     * @param { String } m The Model name
+     * @returns 
+     */
     async setData( c = "", d = {}, m = "" )
     {
-        console.log("AxialMongo.setData");
-        console.log(d);
+        //console.log("AxialMongo.setData");
         let result = {};
         const _id = d._id;
         
-        console.log("IMPORTANT HAS _id", _id);
         try
         {
             const mongo = await this.#mongo.connect();
@@ -208,9 +238,6 @@ class AxialMongo extends EventEmitter
                 actualDocument = await collection.findOne( { _id: new ObjectId( String(_id) ) } );
             }
 
-            console.log("IMPORTANT model found", tempModel);
-            console.log("IMPORTANT actualDocument", actualDocument);
-
             if( tempModel )
             {
                 const initial = d;
@@ -224,26 +251,21 @@ class AxialMongo extends EventEmitter
                 
                 if( props )
                 {
-                    console.log("MODEL FOUND && props found we compare the document sent with the model")
                     for( const p of Object.keys(props) )
                     {
                         let finalValue = undefined;
 
                         const modelProperty = props[p];
-                        console.log("1) nom de la prop du modèle", p);
-                        console.log("2) paramètre de la prop du modèle",modelProperty);
 
                         let value = initial[p];
                         if( value === undefined )
                         {
                             const tempObject = AxialMongo.getObjectByField( initial, "field", p );
-                            console.log( tempObject);
                             if( tempObject && tempObject.value )
                             {
                                 // cas spécial des array qd chaine requise // A REVOIR MAIS FIXE POUR LE MOMENT
                                 if( Array.isArray( tempObject.value ) === true )
                                 {
-                                    console.log("tempObject is an array")
                                     let parser = {};
                                     parser.array = tempObject.value;
                                     value = AxialMongo.getObjectByField( parser, "field", p ).value;
@@ -254,7 +276,6 @@ class AxialMongo extends EventEmitter
                                 }
                             }
                         }
-                        console.log( "3) la valeur correspondante a été trouvée", value );
                     
                         // cryptage si requis et si la valeyur est bien une chaine
                         if( value )
@@ -284,11 +305,16 @@ class AxialMongo extends EventEmitter
                             }
                             else
                             {
-                                finalValue = modelProperty.default || "";
+                                if( Object.hasOwn(modelProperty,"default") === true )
+                                {
+                                    finalValue = modelProperty.default;
+                                }
+                                else
+                                {
+                                    finalValue = "";
+                                }
                             }
                         }
-
-                        console.log( "4) PROP FINAL", finalValue );
 
                         if( finalValue !== undefined )
                         {
@@ -300,21 +326,23 @@ class AxialMongo extends EventEmitter
 
             // check what happen without models
 
-            console.log("5) DOC FINAL",d);
             if( d.uuid === undefined )
             {
                 d.uuid = crypto.randomUUID();
             }
+
+            if( d.creation_date === undefined )
+            {
+                d.creation_date = new Date();
+            }
             
             if( _id )
             {
-                console.log("check for update");
                 delete d._id; // there is probably a mongo flag for that
                 const replaced = await collection.updateOne({ _id: new ObjectId( String(_id) ) }, { $set: d } ); // use set / update instead of replace here important
                 // DO NOT DELETED ID
                 // PARSE THE NEW DOC AND COMPARE
                 // THEN UPDATE
-                console.log( replaced );
                 result = replaced;
             }
             else
@@ -332,6 +360,89 @@ class AxialMongo extends EventEmitter
         {
             //await this.#mongo.close();
             return result;
+        }
+    }
+
+    /**
+     * 
+     * @param { String } c 
+     * @param { Object } f 
+     * @param { Object } u 
+     */
+    async updateData( c = "", f = {}, u = {} )
+    {
+        //console.log("AxialMongo.updateData");
+        let result;
+        try
+        {
+            const mongo = await this.#mongo.connect();
+            const db = mongo.db( this.#dbName );
+            const collection = db.collection( c );
+            result = await collection.updateOne( f, u );
+        }
+        catch(err)
+        {
+            console.log(err);
+        }
+        finally
+        {
+            return result;
+        }
+    }
+
+    /**
+     * 
+     * @param { String } c 
+     * @param { String } uuid 
+     * @returns 
+     */
+    async delData( c = "", uuid = "" )
+    {
+        let result;
+        try
+        {
+            const mongo = await this.#mongo.connect();
+            const db = mongo.db( this.#dbName );
+            const collection = db.collection( c );
+            const deletion = collection.deleteOne( { uuid: uuid } );
+        }
+        catch(err)
+        {
+            console.log(err);
+            result = err;
+        }
+        finally
+        {
+            return result;
+        }
+    }
+
+    /**
+     * 
+     * @param { String } code 
+     * @param { String } checker 
+     * @returns { Object }
+     */
+    async setTimeCode( code, checker )
+    {
+        try
+        {
+            const mongo = await this.#mongo.connect();
+            const db = mongo.db( this.#dbName );
+            const collection = db.collection( "codes" );
+            const timedoc =
+            {
+                timeid: new Date(),
+                timecode: code,
+                timechecker: checker
+            };
+            const result = await collection.insertOne(timedoc);
+            return result;
+
+        }
+        catch(err)
+        {
+            console.log(err);
         }
     }
 }

@@ -9,6 +9,9 @@ class AxialToggleRadio extends AxialToggleButtonBase
     #text = "Label";
 
     /** @type { String } */
+    #value = "";
+
+    /** @type { String } */
     #unselectedScale = "scale(0)";
 
     /** @type { String } */
@@ -33,7 +36,7 @@ class AxialToggleRadio extends AxialToggleButtonBase
 
     static get observedAttributes()
     {
-        return [ "axial-text" ];
+        return [ "axial-text", "axial-value" ];
     }
 
     _buildComponent()
@@ -51,15 +54,25 @@ class AxialToggleRadio extends AxialToggleButtonBase
         }
     }
 
+    /**
+     * @readonly
+     */
+    get value() { return this.#value; }
+
     attributeChangedCallback(name, oldValue, newValue)
     {
-        if( name == "axial-text" )
+        if( name === "axial-text" )
         {
             this.#text = newValue;
             if( this.#label )
             {
                 this.#label.innerHTML = this.#text;
             }
+        }
+
+        if( name === "axial-value" )
+        {
+            this.#value = newValue;
         }
     }
 

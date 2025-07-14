@@ -1,5 +1,5 @@
-"use strict"
-// A MON AVIS A REMOVE
+"use strict";
+
 import { AxialToggleButton } from "../../button/AxialToggleButton.js";
 
 class AxialAdminToggleBarButton extends AxialToggleButton

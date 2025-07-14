@@ -402,7 +402,7 @@ class AxialViewerBase extends AxialComponentBase
             const viewerChangedEvent = new CustomEvent("viewerChanged", { detail: { oldView: this.#oldView, newView: this.#newView } } )
             this.dispatchEvent(viewerChangedEvent);
 
-            this.manipulationEnable = true;
+            //this.manipulationEnable = true;
 
             this.#adjustViews();
         }
@@ -411,7 +411,7 @@ class AxialViewerBase extends AxialComponentBase
     #animationCenterHandler( event )
     {
         this.#oldAnimation.removeEventListener("finish", this.#boundAnimationCenterHandler);
-        this.manipulationEnable = true;
+        //this.manipulationEnable = true;
         this.#adjustViews();
     }
 
@@ -535,7 +535,7 @@ class AxialViewerBase extends AxialComponentBase
 
     #animateAfterManipulation()
     {
-        this.manipulationEnable = false;
+        //this.manipulationEnable = false;
         //console.log("#animateAfterManipulation()");
         const viewsLength = this.#views.length;
         const currentWidth = this.offsetWidth;

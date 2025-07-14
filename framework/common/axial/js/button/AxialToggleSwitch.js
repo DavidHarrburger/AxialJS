@@ -17,6 +17,13 @@ class AxialToggleSwitch extends AxialToggleButtonBase
     /** @type { String } */
     #selectedScale = "scale(1.1)";
 
+    /// styles
+    /** @type { String } */
+    #themeColor = "";
+    
+    /** @type { String } */
+    #borderColor = "";
+
     /// elements
     /** @type { HTMLElement } */
     #circle;
@@ -31,10 +38,37 @@ class AxialToggleSwitch extends AxialToggleButtonBase
         this.template = "axial-toggle-switch-template";
     }
 
+    static get observedAttributes()
+    {
+        return [ "axial-theme", "axial-border" ];
+    }
+
+    attributeChangedCallback(name, oldValue, newValue)
+    {
+        super.attributeChangedCallback(name, oldValue, newValue);
+
+        if( name === "axial-theme" )
+        {
+            this.#themeColor = newValue;
+            if( this.#inner ) { this.#inner.style.backgroundColor = this.#themeColor; }
+        }
+
+        if( name === "axial-border" )
+        {
+            this.#borderColor = newValue;
+            if( this.#inner ) { this.#inner.style.color = this.#borderColor; }
+        }
+    }
+
     _buildComponent()
     {
         this.#circle = this.shadowRoot.getElementById("circle");
         this.#inner = this.shadowRoot.getElementById("inner");
+
+        if( this.#themeColor === "" )
+        {
+            this.#themeColor = window.getComputedStyle( this ).color;
+        }
     }
 
     _onToggleChanged()
@@ -51,6 +85,15 @@ class AxialToggleSwitch extends AxialToggleButtonBase
             {
                 this.#circle.style.left = this.#unselectedLeft;
             }
+        }
+
+        if( this.selected === true )
+        {
+            this.style.backgroundColor = this.#themeColor;
+        }
+        else
+        {
+            this.style.backgroundColor = "#fff";
         }
 
         if( this.#inner )

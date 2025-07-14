@@ -1,0 +1,33 @@
+<!-- ./admin/_views/AxialAdminCompanyView -->
+<template id="axial-admin-company-view-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div class="axial_admin_view-holder">
+        <div class="axial_admin_view-header">
+            <div id="title" class="axial_admin_view-title">Entreprise</div>
+        </div>
+        <div class="axial_admin_view-content">
+            <axial-service-form id="companyForm" axial-post-path="../api/data/set" axial-collection="misc" axial-model="company">
+                <axial-service-form-item-image slot="axial-items" axial-upload-path="../api/medias/upload" axial-field="image_main"></axial-service-form-item-image>
+                <axial-service-form-item-inputs slot="axial-items" axial-label="Entreprise" axial-field="company" axial-direction="row">
+                    <input type="text" slot="axial-content" name="company_name" placeholder="Nom de l'entreprise">
+                    <input type="text" slot="axial-content" name="company_code" placeholder="SIREN / SIRET">
+                </axial-service-form-item-inputs>
+                <axial-service-form-item-inputs slot="axial-items" axial-label="Contact" axial-field="contact" axial-direction="row">
+                    <input type="email" slot="axial-content" name="email" placeholder="Courriel" required>
+                    <input type="text" slot="axial-content" name="tel" placeholder="Téléphone" required>
+                </axial-service-form-item-inputs>
+                <axial-service-form-item-inputs slot="axial-items" axial-label="Adresse" axial-field="address" axial-direction="column">
+                    <div class="axial_service_form_item-column" slot="axial-content">
+                        <input type="text" name="address_line_1" placeholder="n° et rue">
+                        <input type="text" name="address_line_2" placeholder="Complément">
+                        <div class="axial_service_form_item-row">
+                            <input type="text" name="address_zip" placeholder="Code postal">
+                            <input type="text" name="address_city" placeholder="Ville">
+                        </div>
+                    </div>
+                </axial-service-form-item-inputs>
+            </axial-service-form>
+            <axial-week-planning style="display: none;"></axial-week-planning>
+        </div>
+    </div>
+</template>

@@ -231,6 +231,7 @@ class AxialPopupBase extends AxialComponentBase
 
     show()
     {
+        this.#layoutPopup();
         AxialPopupManager.showPopup( this );
     }
 

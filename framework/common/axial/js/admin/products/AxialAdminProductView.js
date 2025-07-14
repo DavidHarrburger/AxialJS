@@ -1,141 +1,77 @@
 "use strict";
 
-import { DomUtils } from "../../utils/DomUtils.js";
-import { AxialPopupManager } from "../../popup/AxialPopupManager.js";
-
 import { AxialAdminViewBase } from "../base/AxialAdminViewBase.js";
-import { AxialAdminProductItem } from "./AxialAdminProductItem.js";
+
 import { AxialButton } from "../../button/AxialButton.js";
-import { AxialAdminModelPopup } from "../models/AxialAdminModelPopup.js";
+
+import { AxialAdminListItemBase } from "../base/AxialAdminListItemBase.js";
+//import { AxialAdminUserListItem } from "./AxialAdminUserListItem.js";
+import { AxialAdminList } from "../base/AxialAdminList.js";
+import { AxialAdminProductPopup } from "./AxialAdminProductPopup.js";
+import { AxialPopupManager } from "../../popup/AxialPopupManager.js";
 
 class AxialAdminProductView extends AxialAdminViewBase
 {
-    /// vars
-    /** @type { String } */
-    #userGetPath = "../api/model/get?c=products&m=product";
-
     /// elements
-    /** @type { HTMLElement } */
-    #grid;
+    /** @type { AxialAdminList } */
+    #list;
 
     /** @type { AxialButton } */
-    #createButton;
+    #addButton;
 
-    /** @type { AxialAdminModelPopup } */
-    #modelPopup;
+    /** @type { AxialAdminProductPopup } */
+    #productPopup;
 
     /// events
     /** @type { Function } */
-    #boundCreateButtonClickHandler;
-
-    /** @type { Function } */
-    #boundModelPopupHiddenHandler;
+    #boundAddHandler;
 
     constructor()
     {
         super();
         this.template = "axial-admin-product-view-template";
-        this.#boundCreateButtonClickHandler = this.#createButtonClickHandler.bind(this);
-        this.#boundModelPopupHiddenHandler = this.#modelPopupHiddenHandler.bind(this);
+        this.#boundAddHandler = this.#addHandler.bind(this);
     }
 
     _buildComponent()
     {
         super._buildComponent();
-
-        this.#grid = this.shadowRoot.getElementById("grid");
-
-        this.#createButton = this.shadowRoot.getElementById("createButton");
-        if( this.#createButton )
+        this.#list = this.shadowRoot.getElementById("list");
+        if( this.#list )
         {
-            this.#createButton.addEventListener("click", this.#boundCreateButtonClickHandler);
+            //this.#list.itemClass = AxialAdminUserListItem;
         }
 
-        this.#modelPopup = AxialPopupManager.getPopupById("modelPopup");
-        
+        this.#addButton = this.shadowRoot.getElementById("addButton");
+        if( this.#addButton )
+        {
+            this.#addButton.addEventListener("click", this.#boundAddHandler);
+        }
+
+        this.#productPopup = AxialPopupManager.getPopupById("productPopup");
+        console.log(this.#productPopup);
     }
 
-    #createButtonClickHandler( event )
+    _onGetResponse()
     {
-        if( this.#modelPopup )
+        console.log("user view get respone");
+        /*
+        if( this.#list && this.getData.content)
         {
-            this.#modelPopup.modelForm.mode = "from";
-            this.#modelPopup.modelForm.modelName = "product";
-            this.#modelPopup.show();
+            this.#list.data = this.getData.content;
         }
-    }
-
-    _onViewEntered()
-    {
-        this.getAllProducts();
-        if( this.#modelPopup )
-        {
-            this.#modelPopup.addEventListener("popupHidden", this.#boundModelPopupHiddenHandler);
-        }
-    }
-
-    _onViewLeaving()
-    {
-        if( this.#modelPopup )
-        {
-            this.#modelPopup.removeEventListener("popupHidden", this.#boundModelPopupHiddenHandler);
-        }
-    }
-
-    async getAllProducts()
-    {
-        try
-        {
-            await this.#getAllProducts();
-        }
-        catch(err)
-        {
-            console.log(err);
-        }
-        finally
-        {
-            this.#updateView();
-        }
-    }
-
-    async #getAllProducts()
-    {
-        try
-        {
-            const response = await fetch( this.#userGetPath, { method: "GET", headers: { "Content-Type":"application/json" } } );
-            const json = await response.json();
-            if( json )
-            {
-                this.data = json;
-            }
-        }
-        catch(err)
-        {
-            console.log(err);
-        }
-    }
-
-    #updateView()
-    {
-        DomUtils.cleanElement( this.#grid );
-        for( const model of this.data.content.collection )
-        {
-            //console.log(model);
-            const productItem = new AxialAdminProductItem();
-            this.#grid.appendChild( productItem );
-            productItem.data = model;
-        }
+        */
     }
 
     /**
      * 
-     * @param { CustomEvent } event 
+     * @param { PointerEvent } event 
      */
-    #modelPopupHiddenHandler( event )
+    #addHandler( event )
     {
-        this.getAllProducts();
+        console.log("add button clicked")
+        if( this.#productPopup ) { this.#productPopup.show(); }
     }
-
 }
 window.customElements.define("axial-admin-product-view", AxialAdminProductView);
 export { AxialAdminProductView }

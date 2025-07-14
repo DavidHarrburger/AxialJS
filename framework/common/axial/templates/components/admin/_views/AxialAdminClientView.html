@@ -1,0 +1,23 @@
+<!-- ./admin/_views/AxialAdminClientView -->
+<template id="axial-admin-client-view-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div class="axial_admin_view-holder">
+        <div class="axial_admin_view-header">
+            <div id="title" class="axial_admin_view-title">Clients</div>
+            <div class="axial_spacer"></div>
+            <axial-button id="addClientButton" axial-text="Ajouter un client">
+                <i slot="axial-icon" class="fa-color fa-regular fa-square-plus"></i>
+            </axial-button>
+        </div>
+        <div class="axial_admin_view-content">
+            <axial-admin-list id="clientList">
+                <div slot="axial-header" class="axial_admin_client_list_item-user">Nom</div>
+                <div slot="axial-header" class="axial_admin_client_list_item-type">Type</div>
+                <div slot="axial-header" class="axial_admin_client_list_item-email">Courriel</div>
+                <div slot="axial-header" class="axial_admin_client_list_item-tel">Téléphone</div>
+                <div slot="axial-header" class="axial_spacer"></div>
+                <div slot="axial-header" class="axial_admin_list_item-actions"></div>
+            </axial-admin-list>
+        </div>
+    </div>
+</template>

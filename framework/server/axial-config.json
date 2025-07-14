@@ -35,13 +35,34 @@
         },
         {
             "name": "login",
-            "path": "login",
+            "path": "account/login",
             "template": "",
             "build": true,
-            "sitemap":
-            {
+            "sitemap": {
                 "use": false,
                 "priority": 0,
+                "changefreq": "weekly"
+            }
+        },
+        {
+            "build": true,
+            "name": "register",
+            "path": "account/register",
+            "template": "base",
+            "sitemap": {
+                "use": true,
+                "priority": 1,
+                "changefreq": "weekly"
+            }
+        },
+        {
+            "build": true,
+            "name": "verification",
+            "path": "account/verification",
+            "template": "base",
+            "sitemap": {
+                "use": true,
+                "priority": 1,
                 "changefreq": "weekly"
             }
         },
@@ -60,18 +81,6 @@
         {
             "name": "user",
             "path": "user",
-            "template": "",
-            "build": true,
-            "sitemap":
-            {
-                "use": false,
-                "priority": 0,
-                "changefreq": "weekly"
-            }
-        },
-        {
-            "name": "client",
-            "path": "client",
             "template": "",
             "build": true,
             "sitemap":

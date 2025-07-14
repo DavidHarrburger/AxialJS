@@ -6,6 +6,11 @@ import { AxialDropdownManager } from "../dropdown/AxialDropdownManager.js";
 import { AxialOverlayBase } from "../overlay/AxialOverlayBase.js";
 import { AxialTooltipBase } from "../tooltip/AxialTooltipBase.js";
 
+import { AxialNotifier } from "../application/AxialNotifier.js";
+import { AxialInformationBar } from "../application/AxialInformationBar.js";
+import { AxialConsentOverlay } from "../application/AxialConsentOverlay.js";
+import { AxialConsentManager } from "../application/AxialConsentManager.js";
+
 /**
  * The main base class for your application.
  * @class
@@ -279,6 +284,19 @@ class AxialApplicationBase extends EventTarget
      */
     #boundPageShowHandler;
 
+    ///
+    /// UI
+    ///
+
+    /** @type { AxialNotifier } */
+    #notifier;
+
+    /** @type { AxialInformationBar } */
+    #informationBar;
+
+    /** @type { AxialConsentOverlay } */
+    #consentOverlay;
+
     /**
      * Create the main AxialApplicationBase and make it a property of its window.
      * The Application is freezed to avoid interference with others scripts.
@@ -317,15 +335,18 @@ class AxialApplicationBase extends EventTarget
         this.#boundWindowResizeHandler = this.#windowResizeHandler.bind(this);
 
         // stats
-        const statsDateStart = new Date();
         this.#statsObject = 
         {
             url: window.location.href,
             title: document.title,
             referrer: document.referrer,
-            displayMode: window.height >= window.innerWidth ? "p" : "l",
+            hostname: window.location.hostname,
+            wiw: window.innerWidth,
+            wih: window.innerHeight,
             dom: false,
             load: false,
+            type: "page",
+            kind: "view",
             dateStart: new Date()
         }
 
@@ -344,6 +365,7 @@ class AxialApplicationBase extends EventTarget
         this.#boundMouseParallaxHandler = this.#mouseParallaxHandler.bind(this);
         
         //this.#boundParallaxMoveHandler = this.#parallaxMoveHandler.bind(this);
+
         
         window.addEventListener("DOMContentLoaded", this.#boundApplicationDomLoadedHandler);
         window.addEventListener("load", this.#boundApplicationPageLoadedHandler);
@@ -478,14 +500,28 @@ class AxialApplicationBase extends EventTarget
         {
             throw new TypeError("String value required");
         }
-        // control value here could be cool for https
-        this.#statsPath = value;
+
+        // assumes it's the absolute path or the right path
+        if( value.indexOf("http") === 0 || value.indexOf("../") === 0)
+        {
+            this.#statsPath = value;
+        }
+        else if( value.indexOf("./") === 0 )
+        {
+            const url = new URL( value, window.location.origin);
+            this.#statsPath = url.href;
+        }
+        else
+        {
+            throw new Error("Stats path not correct");
+        }
+        
     }
 
     async #sendStats()
     {
         if( this.#statsSent === true ) { return; }
-        if( this.#statsObject.url.indexOf("http://localhost") === 0 || this.#statsObject.url.indexOf("https://localhost") === 0 ) { return; }
+        //if( this.#statsObject.url.indexOf("http://localhost") === 0 || this.#statsObject.url.indexOf("https://localhost") === 0 ) { return; }
         try
         {
             if( this.#useStats === true && this.#statsPath !== undefined )
@@ -560,6 +596,17 @@ class AxialApplicationBase extends EventTarget
         this.#scrollParallaxHolder = document.getElementsByTagName("main")[0];
         this.#scrollParallaxSections = document.getElementsByTagName("section");
 
+        ///
+        /// UI
+        ///
+
+        // notifier
+        this.#notifier = document.getElementById("notifier");
+
+        // notifier
+        this.#informationBar = document.getElementById("informationBar");
+
+
         if( this.useScrollParallax === true )
         {
             this.#prepareParallax();
@@ -607,6 +654,9 @@ class AxialApplicationBase extends EventTarget
 
         // stats
         this.#statsObject.load = true;
+
+        // consent
+        AxialConsentManager.checkConsent();
 
         //  --> go to add parallax
         window.addEventListener("scroll", this.#boundScrollHandler);
@@ -995,6 +1045,43 @@ class AxialApplicationBase extends EventTarget
             {
                 window.location.href = this.#nextLocation;
             }
+        }
+    }
+
+    ///
+    /// UI
+    ///
+
+    /// CONSENT
+    /** 
+     * @type { AxialConsentOverlay }
+     * @readonly
+     */
+    get consentOverlay() { return this.#consentOverlay; }
+
+    /// INFORMATION BAR
+    /** 
+     * @type { AxialInformationBar }
+     * @readonly
+     */
+    get informationBar() { return this.#informationBar; }
+
+    /// NOTIFIER
+    /** 
+     * @type { AxialNotifier }
+     * @readonly
+     */
+    get notifier() { return this.#notifier; }
+
+    /**
+     * 
+     * @param { String } message 
+     */
+    notify( message )
+    {
+        if( this.#notifier )
+        {
+            this.#notifier.show( message );
         }
     }
 }

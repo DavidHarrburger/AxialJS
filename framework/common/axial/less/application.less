@@ -113,6 +113,11 @@ input[type="file"]::file-selector-button
     color:              var(--AxialButton___textColor);
     background-color:   var(--AxialButton___backgroundColor);
 }
+input[type="color"]
+{
+    padding: 0;
+    max-width: 300px;
+}
 textarea
 {
     display: block;
@@ -149,9 +154,18 @@ select
     font-size: var(--input___fontSize);
     font-weight: var(--input___fontWeight);
     border-radius: var(--component___borderRadius);
-    border: 2px solid var(--themeColor);
+    border: 2px solid var(--greyDark);
     background-color: var(--white);
 }
+.fa-color
+{
+    color: #fff;
+}
+// general
+.ax_bo { font-weight: 600; }
+.ax_it { font-style: italic; }
+.ax_le { text-align: left; }
+.ax_ri { text-align: right; }
 /* layers */
 .axial_layer_base
 {
@@ -530,20 +544,28 @@ select
     bottom: 0px;
     transform: translateY(100%);
     transition-property: transform;
-    transition-duration: 300ms;
+    transition-duration: 420ms;
     transition-timing-function: ease;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
 }
 .axial_notifier_content
 {
     width: 100%;
+    max-width: 600px;
     height: auto;
-    padding: 10px;
+    padding: 20px;
     min-height: 40px;
+    pointer-events: all;
     
     color: var(--greyDark);
-    background-color: var(--greyLight);
+    background-color: rgba(255, 253, 251, 0.23);
+    backdrop-filter: blur(10px);
+    background-blend-mode: overlay;
     border-radius: var(--component___borderRadius);
-    box-shadow: 0px 1px 3px var(--black);
+    box-shadow: 0px 1px 10px #919293;
 }
 /* AxialInformationBar */
 .axial_information_bar
@@ -564,7 +586,8 @@ select
     width: 100%;
     height: auto;
     bottom: 0;
-    background-color: #028ed4;
+    /*background-color: #028ed4;*/ /*love this blue*/
+    background-color: var(--themeColor);
 }
 
 .axial_information_bar-content
@@ -612,3 +635,157 @@ select
 {
     transform: rotate(90deg);
 }
+
+/* Editors */
+.axial_editor_base
+{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    outline: none;
+    padding-left: 10%;
+    padding-right: 10%;
+}
+
+/* CopilotWeekPlanning */
+.axial_week_planning
+{
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+.axial_week_planning-grid
+{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-rows: repeat(12, 60px);
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    text-align: left;
+    background-color: #fff;
+}
+.axial_week_planning-cell
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding-left: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    background-color: #dedede;
+}
+/* morning */
+.awp_input
+{
+    border: none;
+    border-radius: unset;
+    width: 100%;
+    height: 100%;
+}
+
+.awp_subtotal
+{
+    border: none;
+    border-radius: unset;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding-left: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    background-color: #b5e3fd;
+}
+.awp_total
+{
+    border: none;
+    border-radius: unset;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding-left: 10px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.axial_week_planning-morning       { grid-row: 1; grid-column: 2 / span 3; }
+.axial_week_planning-morning_start { grid-row: 2; grid-column: 2; }
+.axial_week_planning-morning_end   { grid-row: 2; grid-column: 3; }
+.axial_week_planning-morning_total { grid-row: 2; grid-column: 4; }
+
+.awp_morning_start-1                 { grid-row: 3; grid-column: 2; }
+.awp_morning_start-2                 { grid-row: 4; grid-column: 2; }
+.awp_morning_start-3                 { grid-row: 5; grid-column: 2; }
+.awp_morning_start-4                 { grid-row: 6; grid-column: 2; }
+.awp_morning_start-5                 { grid-row: 7; grid-column: 2; }
+.awp_morning_start-6                 { grid-row: 8; grid-column: 2; }
+.awp_morning_start-7                 { grid-row: 9; grid-column: 2; }
+
+.awp_morning_end-1                 { grid-row: 3; grid-column: 3; }
+.awp_morning_end-2                 { grid-row: 4; grid-column: 3; }
+.awp_morning_end-3                 { grid-row: 5; grid-column: 3; }
+.awp_morning_end-4                 { grid-row: 6; grid-column: 3; }
+.awp_morning_end-5                 { grid-row: 7; grid-column: 3; }
+.awp_morning_end-6                 { grid-row: 8; grid-column: 3; }
+.awp_morning_end-7                 { grid-row: 9; grid-column: 3; }
+
+.awp_morning_subtotal-1                 { grid-row: 3; grid-column: 4; }
+.awp_morning_subtotal-2                 { grid-row: 4; grid-column: 4; }
+.awp_morning_subtotal-3                 { grid-row: 5; grid-column: 4; }
+.awp_morning_subtotal-4                 { grid-row: 6; grid-column: 4; }
+.awp_morning_subtotal-5                 { grid-row: 7; grid-column: 4; }
+.awp_morning_subtotal-6                 { grid-row: 8; grid-column: 4; }
+.awp_morning_subtotal-7                 { grid-row: 9; grid-column: 4; }
+
+.awp_noon_start-1                 { grid-row: 3; grid-column: 5; }
+.awp_noon_start-2                 { grid-row: 4; grid-column: 5; }
+.awp_noon_start-3                 { grid-row: 5; grid-column: 5; }
+.awp_noon_start-4                 { grid-row: 6; grid-column: 5; }
+.awp_noon_start-5                 { grid-row: 7; grid-column: 5; }
+.awp_noon_start-6                 { grid-row: 8; grid-column: 5; }
+.awp_noon_start-7                 { grid-row: 9; grid-column: 5; }
+
+.awp_noon_end-1                 { grid-row: 3; grid-column: 6; }
+.awp_noon_end-2                 { grid-row: 4; grid-column: 6; }
+.awp_noon_end-3                 { grid-row: 5; grid-column: 6; }
+.awp_noon_end-4                 { grid-row: 6; grid-column: 6; }
+.awp_noon_end-5                 { grid-row: 7; grid-column: 6; }
+.awp_noon_end-6                 { grid-row: 8; grid-column: 6; }
+.awp_noon_end-7                 { grid-row: 9; grid-column: 6; }
+
+.awp_noon_subtotal-1                 { grid-row: 3; grid-column: 7; }
+.awp_noon_subtotal-2                 { grid-row: 4; grid-column: 7; }
+.awp_noon_subtotal-3                 { grid-row: 5; grid-column: 7; }
+.awp_noon_subtotal-4                 { grid-row: 6; grid-column: 7; }
+.awp_noon_subtotal-5                 { grid-row: 7; grid-column: 7; }
+.awp_noon_subtotal-6                 { grid-row: 8; grid-column: 7; }
+.awp_noon_subtotal-7                 { grid-row: 9; grid-column: 7; }
+
+/* totals */
+.awp_morning_total { grid-row: 10; grid-column: 4; background-color: #51bfff; }
+.awp_noon_total    { grid-row: 10; grid-column: 7; background-color: #51bfff; }
+.awp_week_total    { grid-row: 12; grid-column: 7; background-color: #00456d; color: #fff; }
+
+/* noon */
+.axial_week_planning-noon          { grid-row: 1; grid-column: 5 / span 3; }
+.axial_week_planning-noon_start    { grid-row: 2; grid-column: 5; }
+.axial_week_planning-noon_end      { grid-row: 2; grid-column: 6; }
+.axial_week_planning-noon_total    { grid-row: 2; grid-column: 7; }
+
+/* days */
+.axial_week_planning-day          { grid-row: 2; grid-column: 1; }
+.axial_week_planning-monday       { grid-row: 3; grid-column: 1; }
+.axial_week_planning-tuesday      { grid-row: 4; grid-column: 1; }
+.axial_week_planning-wednesday    { grid-row: 5; grid-column: 1; }
+.axial_week_planning-thursday     { grid-row: 6; grid-column: 1; }
+.axial_week_planning-friday       { grid-row: 7; grid-column: 1; }
+.axial_week_planning-saturday     { grid-row: 8; grid-column: 1; }
+.axial_week_planning-sunday       { grid-row: 9; grid-column: 1; }

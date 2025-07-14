@@ -115,6 +115,11 @@ class AxialComponentBase extends HTMLElement
     /**
      * @private
      */
+    #shadowBuilt = false;
+
+    /**
+     * @private
+     */
     #componentBuilt = false;
 
     /**
@@ -249,6 +254,7 @@ class AxialComponentBase extends HTMLElement
         {
             const templateContent = template.content;
             this.shadowRoot.appendChild(templateContent.cloneNode(true));
+            this.#shadowBuilt = true;
         }
     }
 
@@ -260,10 +266,21 @@ class AxialComponentBase extends HTMLElement
 
     #buildComponent()
     {
+        /// WAARNING SUPER SUTILE
+        if( this.#template !== "" && this.#shadowBuilt === false )
+        {
+            this.#buildShadow();
+        }
         if( this.#componentBuilt === true ) { return; }
         this.#componentBuilt = true;
         this._buildComponent();
     }
+
+    /**
+     * @type { Boolean }
+     * @readonly
+     */
+    get componentBuilt() { return this.#componentBuilt; }
 
     /**
      * @override

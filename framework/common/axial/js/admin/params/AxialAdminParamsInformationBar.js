@@ -20,6 +20,12 @@ class AxialAdminParamsInformationBar extends AxialServiceComponentBase
     /** @type { AxialDropdownCalendar } */
     #calendarEnd;
 
+    /** @type { HTMLInputElement } */
+    #textColor;
+
+    /** @type { HTMLInputElement } */
+    #themeColor;
+
     /** @type { AxialServiceButton } */
     #button;
 
@@ -47,24 +53,24 @@ class AxialAdminParamsInformationBar extends AxialServiceComponentBase
         this.#boundDateEndChangedHandler = this.#dateEndChangedHandler.bind(this)
     }
 
-    connectedCallback()
+    _buildComponent()
     {
-        super.connectedCallback();
-        this.#buildComponent();
-    }
+        super._buildComponent();
 
-    #buildComponent()
-    {
         this.#switch = this.shadowRoot.getElementById("switch");
         this.#message = this.shadowRoot.getElementById("message");
         this.#calendarStart = this.shadowRoot.getElementById("calendarStart");
         this.#calendarEnd = this.shadowRoot.getElementById("calendarEnd");
+        this.#textColor = this.shadowRoot.getElementById("textColor");
+        this.#themeColor = this.shadowRoot.getElementById("themeColor");
         this.#button = this.shadowRoot.getElementById("button");
 
         this.#switch.enabled = false;
         this.#message.setAttribute("disabled", "");
         this.#calendarStart.enabled = false;
         this.#calendarEnd.enabled = false;
+        this.#textColor.setAttribute("disabled", "");
+        this.#themeColor.setAttribute("disabled", "");
 
         this.#switch.addEventListener("toggleChanged", this.#boundSwitchToggleChangedHandler);
         this.#button.addEventListener("click", this.#boundButtonClickHandler);
@@ -77,35 +83,39 @@ class AxialAdminParamsInformationBar extends AxialServiceComponentBase
         try
         {
             console.log("INFOBAR");
-            console.log( DateUtils.tomorrow());
+            console.log( DateUtils.tomorrow() );
 
             this.#switch.enabled = true;
-            this.#switch.selected = this.getData.content.isRequired;
+            console.log( this.getData );
+            const props = this.getData.content;
             
-            this.#message.value = this.getData.content.information;
 
-            let tempDateStart = new Date(this.getData.content.dateStart);
-            let tempDateEnd = new Date(this.getData.content.dateEnd);
-            console.log( tempDateStart.getTime());
-            console.log( Date.now() );
-
-            if( tempDateStart.getTime() < Date.now() )
+            if( props !== null )
             {
-                tempDateStart = new Date();
-                tempDateEnd = DateUtils.tomorrow();
+                this.#switch.selected = props.active;
+                this.#message.value = props.message;
+                
+                let tempDateStart = new Date(props.date_start);
+                let tempDateEnd = new Date(props.date_end);
+
+                if( DateUtils.isValidDate(tempDateStart) === true && DateUtils.isValidDate(tempDateEnd) === true && DateUtils.isInPeriod( tempDateStart, tempDateEnd ) )
+                {
+                    this.#calendarStart.date = tempDateStart;
+                    this.#calendarEnd.date = tempDateEnd;
+                }
+
+                this.#textColor.value = props.text_color;
+                this.#themeColor.value = props.theme_color;
+
+                if( this.#switch.selected === true )
+                {
+                    this.#message.removeAttribute("disabled");
+                    this.#calendarStart.enabled = true;
+                    this.#calendarEnd.enabled = true;
+                    this.#textColor.removeAttribute("disabled");
+                    this.#themeColor.removeAttribute("disabled");
+                }
             }
-
-            this.#calendarStart.date = tempDateStart;
-            this.#calendarEnd.date = tempDateEnd;
-
-            if( this.#switch.selected === true )
-            {
-                this.#message.removeAttribute("disabled");
-                this.#calendarStart.enabled = true;
-                this.#calendarEnd.enabled = true;
-                this.#calendarEnd.enabled = true;
-            }
-
         }
         catch(err)
         {
@@ -123,21 +133,23 @@ class AxialAdminParamsInformationBar extends AxialServiceComponentBase
         {
             console.log(err);
         }
-        finally
-        {
-            console.log("Info bar updated ???");
-        }
-        
     }
 
     _preparePostData()
     {
-        const postObject = 
+        
+        let postObject = 
         {
-            isRequired: this.#switch.selected,
-            information: this.#message.value,
-            dateStart: this.#calendarStart.date,
-            dateEnd: this.#calendarEnd.date
+            active: this.#switch.selected,
+            message: this.#message.value,
+            date_start: this.#calendarStart.date,
+            date_end: this.#calendarEnd.date,
+            text_color: this.#textColor.value,
+            theme_color: this.#themeColor.value
+        }
+        if( this.getData.content && this.getData.content._id )
+        {
+            postObject._id = this.getData.content._id;
         }
         return postObject;
     }
@@ -171,15 +183,19 @@ class AxialAdminParamsInformationBar extends AxialServiceComponentBase
     {
         if( this.#switch.selected === true )
         {
-            this.#message.removeAttribute("disabled", "");
+            this.#message.removeAttribute("disabled");
             this.#calendarStart.enabled = true;
             this.#calendarEnd.enabled = true;
+            this.#textColor.removeAttribute("disabled");
+            this.#themeColor.removeAttribute("disabled");
         }
         else
         {
             this.#message.setAttribute("disabled", "");
             this.#calendarStart.enabled = false;
             this.#calendarEnd.enabled = false;
+            this.#textColor.setAttribute("disabled", "");
+            this.#themeColor.setAttribute("disabled", "");
         }
     }
 

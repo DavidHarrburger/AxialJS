@@ -1,6 +1,20 @@
 # AxialJS UPDATES
 
 Find here what happened and when.
+## 2025 - 07 - 14
+FULLSTACK PRE UPDATE 5
+
+This update introduces a lot of changes and enhancements; dozen of webcomponents, basic routes for authentication Mail 2FA, Scheduling, scope for pdf creation, scope for payement w/ Stripe.
+
+Database script also reworked to avoid stupid override.
+
+The deployement was tested in a local mode and works just in some minutes.
+
+Documentation is still missing a lot but nothing should afraid a dev.
+
+Please note I haven't deeply tested this update. For example and for legal reason, font-awesome integration will fail. Easy to fix by yourself. May have some missing code, classes not perfectly up to date as far as the less counterpart and the components html one.
+
+THE GOAL IS TO HAVE A FULLSTACK SAAS READY TO USE THE FIRST OF SEPTEMBER 2025.
 
 ## 2025 - 02 - 25
 FULLSTACK PRE UPDATE 4

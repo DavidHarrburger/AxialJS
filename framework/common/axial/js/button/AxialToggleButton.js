@@ -37,10 +37,13 @@ class AxialToggleButton extends AxialToggleButtonBase
     #text = "";
 
     /** @type { Number } */
-    #iconSpace = 16;
+    #iconSpace = 0;
 
     /** @type { Boolean } */
     #hasIcon = false;
+
+    /** @type { Boolean } */
+    #iconOnly = false;
 
     /** @type { Boolean } */
     #hasIconToggle = false;
@@ -61,7 +64,7 @@ class AxialToggleButton extends AxialToggleButtonBase
     #aligns = new Set( [ "flex-start", "center", "flex-end" ] );
 
     /** @type { String } */
-    #align = "center";
+    #align = "flex-start";
 
     /** @type { String } */ // computed
     #themeColor = "";
@@ -112,6 +115,15 @@ class AxialToggleButton extends AxialToggleButtonBase
         if( this.#label )
         {
             this.#label.innerHTML = this.#text;
+        }
+    }
+
+    get iconOnly() { return this.#iconOnly; }
+    set iconOnly( value )
+    {
+        if( typeof value !== "boolean" )
+        {
+            throw new TypeError("Boolean value required");
         }
     }
 
@@ -244,6 +256,51 @@ class AxialToggleButton extends AxialToggleButtonBase
     ///
 
     #layoutComponent()
+    {
+        // consider to move the layout of the content in a separated switch
+        //const slotElements = this.#iconSlot.assignedElements( { flatten: true } );
+        if( this.#hasIcon === false && this.#icon )
+        {
+            this.#icon.style.display = "none";
+            this.#iconToggle.style.display = "none";
+        }
+        else
+        {
+            if( this.#text === "" )
+            {
+                this.#label.style.display = "none";
+            }
+            else
+            {
+                switch( this.#iconPosition )
+                {
+                    case "left":
+                        this.#content.style.flexDirection = "row";
+                    break;
+    
+                    case "right":
+                        this.#content.style.flexDirection = "row-reverse";
+                    break;
+    
+                    case "top":
+                        this.#content.style.flexDirection = "column";
+                    break;
+    
+                    case "bottom":
+                        this.#content.style.flexDirection = "column-reverse";
+                    break;
+    
+                    // just in case
+                    default:
+                        this.#content.style.flexDirection = "row";
+                    break;
+                }              
+            }
+        }
+    }
+    
+
+    #layoutComponent2()
     {
         // consider to move the layout of the content in a separated switch
         //const slotElements = this.#iconSlot.assignedElements( { flatten: true } );

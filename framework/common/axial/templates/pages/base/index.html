@@ -27,8 +27,7 @@
 </head>
 
 <body>
-
-    <!--$$$ COMPONENTS_ENTRY_POINT $$$-->
+    <!-- ./buttons/AxialButton -->
     <template id="axial-button-template">
         <link rel="stylesheet" href="./styles.css">
         <div id="background" class="axial_button-background"></div>
@@ -40,10 +39,56 @@
             <div id="label" class="axial_button-label"></div>
         </div>
     </template>
+
+    <!-- ./application/AxialNotifier -->
+    <template id="axial-notifier-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div id="holder" class="axial_notifier_holder">
+            <div id="content" class="axial_notifier_content"></div>
+        </div>
+    </template>
+
+    <!-- ./application/AxialInformationBar -->
+    <template id="axial-information-bar-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div id="holder" class="axial_information_bar-holder">
+            <div id="content" class="axial_information_bar-content"></div>
+            <div id="closer" class="axial_information_bar-closer">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" class="axial_information_bar-svg">
+                    <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/>
+                </svg>
+            </div>
+        </div>
+    </template>
+
+    <!-- ./application/AxialConsentOverlay -->
+    <template id="axial-consent-overlay-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div class="axial_consent_overlay-holder">
+            <div class="axial_consent_overlay-header">
+                <div class="axial_consent_overlay-cookie">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="#fff" d="M257.5 27.6c-.8-5.4-4.9-9.8-10.3-10.6c-22.1-3.1-44.6 .9-64.4 11.4l-74 39.5C89.1 78.4 73.2 94.9 63.4 115L26.7 190.6c-9.8 20.1-13 42.9-9.1 64.9l14.5 82.8c3.9 22.1 14.6 42.3 30.7 57.9l60.3 58.4c16.1 15.6 36.6 25.6 58.7 28.7l83 11.7c22.1 3.1 44.6-.9 64.4-11.4l74-39.5c19.7-10.5 35.6-27 45.4-47.2l36.7-75.5c9.8-20.1 13-42.9 9.1-64.9c-.9-5.3-5.3-9.3-10.6-10.1c-51.5-8.2-92.8-47.1-104.5-97.4c-1.8-7.6-8-13.4-15.7-14.6c-54.6-8.7-97.7-52-106.2-106.8zM208 144a32 32 0 1 1 0 64 32 32 0 1 1 0-64zM144 336a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zm224-64a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/>
+                    </svg>
+                </div>
+                <div class="axial_consent_overlay-title">Votre consentement</div>
+            </div>
+            <div class="axial_consent_overlay-content">
+                En naviguant sur ce site pour accepter l'utilisation des cookies et API de stockage essentiels au bon foncitonnement de ce site et autorisés par la CNIL.
+                Vous pouvez accepter ou refuser l'utilisation des cookies non essentiels.
+            </div>
+            <div class="axial_consent_overlay-actions">
+                <axial-button id="decline" axial-text="Je refuse"></axial-button>
+                <axial-button id="accept" axial-text="J'accepte"></axial-button>
+            </div>
+        </div>
+    </template>
     
     <div id="axialBackgroundLayer" class="axial_layer_base axial_background_layer"></div>
     
     <div id="axialMainLayer" class="axial_main_layer">
+
+        <axial-information-bar id="informationBar"></axial-information-bar>
 
         <!--$$$ HEADER_ENTRY_POINT $$$-->
         <header class="axial_header">
@@ -67,25 +112,25 @@
                 <div class="axial_section_content axial_section_padding axial_section_temp">SECTION 1</div>
             </section>
 
-            <!-- FIRST SECTION -->
+            <!-- SECOND SECTION -->
             <section class="axial_section">
                 <div class="axial_section_background"></div>
                 <div class="axial_section_content axial_section_padding axial_section_temp">SECTION 2</div>
             </section>
 
-            <!-- FIRST SECTION -->
+            <!-- THIRD SECTION -->
             <section class="axial_section">
                 <div class="axial_section_background"></div>
                 <div class="axial_section_content axial_section_padding axial_section_temp">SECTION 3</div>
             </section>
 
-            <!-- FIRST SECTION -->
+            <!-- FOURTH SECTION -->
             <section class="axial_section">
                 <div class="axial_section_background"></div>
                 <div class="axial_section_content axial_section_padding axial_section_temp">SECTION 4</div>
             </section>
 
-            <!-- FIRST SECTION -->
+            <!-- FIFTH SECTION -->
             <section class="axial_section">
                 <div class="axial_section_background"></div>
                 <div class="axial_section_content axial_section_padding axial_section_temp">SECTION 5</div>
@@ -121,17 +166,16 @@
     </div>
 
     <div id="axialIntroLayer" class="axial_layer_base axial_intro_layer"></div>
-
     <div id="axialPopupLayer" class="axial_layer_base axial_popup_layer">
         <div id="axialPopupObfuscator" class="axial_popup_obfuscator"></div>
     </div>
-    
-    <div id="axialNotificationLayer" class="axial_layer_base axial_notification_layer"></div>
-
-    <div id="axialOverlayLayer" class="axial_layer_base axial_overlay_layer"></div>
-
+    <div id="axialNotificationLayer" class="axial_layer_base axial_notification_layer">
+        <axial-notifier id="notifier"></axial-notifier>
+    </div>
+    <div id="axialOverlayLayer" class="axial_layer_base axial_overlay_layer">
+        <axial-consent-overlay id="axialConsentOverlay"></axial-consent-overlay>
+    </div>
     <div id="axialTooltipLayer" class="axial_layer_base axial_tooltip_layer"></div>
-
     <div id="axialTransitionLayer" class="axial_layer_base axial_transition_layer"></div>
     
     <script src="./application.js" defer></script>

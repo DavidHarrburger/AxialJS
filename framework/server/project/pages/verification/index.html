@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <title>AXIAL</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="">
+
+    <meta property="og:url"                 content="https://dndev.fr/" />
+    <meta property="og:type"                content="website" />
+    <meta property="og:title"               content="" />
+    <meta property="og:description"         content="" />
+    <meta property="og:image"               content="" />
+    <meta property="og:image:width"         content="" />
+    <meta property="og:image:height"        content="" />
+    
+    <link rel="icon" type="image/x-icon" href="./assets/favicon/favicon.ico">
+
+    <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body>
+    <!-- AxialServiceButton -->
+    <template id="axial-service-button-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div id="background" class="axial_service_button-background"></div>
+        <div id="foreground" class="axial_service_button-foreground"></div>
+        <div id="content" class="axial_service_button-content">
+            <div id="icon" class="axial_service_button-icon">
+                <div id="indicator" class="axial_service_button-indicator"></div>
+            </div>
+            <div id="label" class="axial_service_button-label"></div>
+        </div>
+    </template>
+    <!-- AxialAuthVerifyer -->
+    <template id="axial-auth-verifyer-template">
+        <link rel="stylesheet" href="./styles.css">
+        <form id="form" class="axial_auth_verifyer-form" autocomplete="off">
+            <div class="axial_auth_verifyer-baseline">An email has been sent to this address:<br><span class="axial_auth_verifyer-email" id="email">email to check</span></div>
+            
+            <div class="axial_auth_verifyer-inputs" id="holder">
+                <input class="axial_auth_verifyer-numinput" type="text" pattern="[0-9]" id="num_1" value="" required minlength="1" maxlength="1" autocomplete="off">
+                <input class="axial_auth_verifyer-numinput" type="text" pattern="[0-9]" id="num_2" value="" required minlength="1" maxlength="1" autocomplete="off">
+                <input class="axial_auth_verifyer-numinput" type="text" pattern="[0-9]" id="num_3" value="" required minlength="1" maxlength="1" autocomplete="off">
+                <input class="axial_auth_verifyer-numinput" type="text" pattern="[0-9]" id="num_4" value="" required minlength="1" maxlength="1" autocomplete="off">
+                <input class="axial_auth_verifyer-numinput" type="text" pattern="[0-9]" id="num_5" value="" required minlength="1" maxlength="1" autocomplete="off">
+                <input class="axial_auth_verifyer-numinput" type="text" pattern="[0-9]" id="num_6" value="" required minlength="1" maxlength="1" autocomplete="off">
+            </div>
+            <div class="axial_auth_verifyer-message" id="message"></div>
+            <div class="axial_auth_verifyer-divider"></div>
+            <axial-service-button id="button" axial-text="Renvoyer un code"></axial-service-button>
+        </form>
+    </template>
+    
+    
+    <div id="axialBackgroundLayer" class="axial_layer_base axial_background_layer"></div>
+    
+    <div id="axialMainLayer" class="axial_main_layer">
+
+        <main class="axial_main">
+            <section class="axial_section">
+                <div class="axial_section_background"></div>
+                <div class="axial_section_content">
+                    <div class="axial_verification_content">
+                        <div class="axial_verification_holder">
+                            <axial-auth-verifyer id="verifyer"></axial-auth-verifyer>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+    </div>
+
+    <div id="axialIntroLayer" class="axial_layer_base axial_intro_layer"></div>
+
+    <div id="axialPopupLayer" class="axial_layer_base axial_popup_layer">
+        <div id="axialPopupObfuscator" class="axial_popup_obfuscator"></div>
+    </div>
+    
+    <div id="axialNotificationLayer" class="axial_layer_base axial_notification_layer"></div>
+
+    <div id="axialOverlayLayer" class="axial_layer_base axial_overlay_layer"></div>
+
+    <div id="axialTooltipLayer" class="axial_layer_base axial_tooltip_layer"></div>
+
+    <div id="axialTransitionLayer" class="axial_layer_base axial_transition_layer"></div>
+    
+    <script src="./application.js" defer></script>
+    
+</body>
+</html>

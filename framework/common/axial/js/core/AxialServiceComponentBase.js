@@ -76,6 +76,7 @@ class AxialServiceComponentBase extends AxialComponentBase
      */
     async #loadGetData()
     {
+        //console.log(this.#getPath);
         if( this.#getPath === undefined || this.#getPath === null ) { return; }
         if( this.#isFetching === true ) { return; }
         this.#isFetching = true;
@@ -119,7 +120,7 @@ class AxialServiceComponentBase extends AxialComponentBase
             const json = await response.json();
             this.#postData = json;
                 
-            const serviceEvent = new CustomEvent( "serviceSuccess", { detail: { data: this.#postData, method: "post" } } );
+            const serviceEvent = new CustomEvent( "serviceSuccess", { bubbles: true, detail: { data: this.#postData, method: "post" } } );
             this.dispatchEvent( serviceEvent );
         }
         catch(err)

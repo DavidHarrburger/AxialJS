@@ -61,8 +61,6 @@ class AxialViewer extends AxialComponentBase
             }
         }
     }
-
-
 }
 
 window.customElements.define("axial-viewer", AxialViewer);

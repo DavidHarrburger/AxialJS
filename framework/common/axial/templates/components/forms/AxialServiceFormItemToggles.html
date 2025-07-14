@@ -1,0 +1,21 @@
+<!-- ./forms/AxialServiceFormItemToggles -->
+<template id="axial-service-form-item-toggles-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="holder" class="axial_service_form_item-holder">
+        <div class="axial_service_form_item-header">
+            <div id="label" class="axial_service_form_item-label">Label</div>
+            <div id="action" class="axial_service_form_item-action">
+                <slot id="actionSlot" name="axial-action"></slot>
+            </div>
+        </div>
+        <div id="info" class="axial_service_form_item-info">
+            <slot id="infoSlot" name="axial-info"></slot>
+        </div>
+        <div id="content" class="axial_service_form_item-content">
+            <slot id="contentSlot" name="axial-content"></slot>
+            <axial-toggle-button-group id="toggles" class="axial_service_form_item-toggles">
+                <slot id="togglesSlot" slot="axial-toggles" name="axial-group"></slot>
+            </axial-toggle-button-group>
+        </div>
+    </div>
+</template>

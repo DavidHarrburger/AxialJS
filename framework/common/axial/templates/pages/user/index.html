@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <title>User</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="">
+    <link rel="icon" type="image/x-icon" href="../assets/favicon/favicon.ico">
+    <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body>
+    <!-- ./application/AxialNotifier -->
+    <template id="axial-notifier-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div id="holder" class="axial_notifier_holder">
+            <div id="content" class="axial_notifier_content"></div>
+        </div>
+    </template>
+    <!-- ./application/AxialConsentOverlay -->
+    <template id="axial-consent-overlay-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div class="axial_consent_overlay-holder">
+            <div class="axial_consent_overlay-header">
+                <div class="axial_consent_overlay-cookie">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="#fff" d="M257.5 27.6c-.8-5.4-4.9-9.8-10.3-10.6c-22.1-3.1-44.6 .9-64.4 11.4l-74 39.5C89.1 78.4 73.2 94.9 63.4 115L26.7 190.6c-9.8 20.1-13 42.9-9.1 64.9l14.5 82.8c3.9 22.1 14.6 42.3 30.7 57.9l60.3 58.4c16.1 15.6 36.6 25.6 58.7 28.7l83 11.7c22.1 3.1 44.6-.9 64.4-11.4l74-39.5c19.7-10.5 35.6-27 45.4-47.2l36.7-75.5c9.8-20.1 13-42.9 9.1-64.9c-.9-5.3-5.3-9.3-10.6-10.1c-51.5-8.2-92.8-47.1-104.5-97.4c-1.8-7.6-8-13.4-15.7-14.6c-54.6-8.7-97.7-52-106.2-106.8zM208 144a32 32 0 1 1 0 64 32 32 0 1 1 0-64zM144 336a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zm224-64a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/>
+                    </svg>
+                </div>
+                <div class="axial_consent_overlay-title">Votre consentement</div>
+            </div>
+            <div class="axial_consent_overlay-content">
+                En naviguant sur ce site pour accepter l'utilisation des cookies et API de stockage essentiels au bon foncitonnement de ce site et autorisés par la CNIL.
+                Vous pouvez accepter ou refuser l'utilisation des cookies non essentiels.
+            </div>
+            <div class="axial_consent_overlay-actions">
+                <axial-button id="decline" axial-text="Je refuse"></axial-button>
+                <axial-button id="accept" axial-text="J'accepte"></axial-button>
+            </div>
+        </div>
+    </template>
+    <!-- ./buttons/AxialBurgerButton -->
+    <template id="axial-burger-button-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div id="background" class="axial_burger_button-background"></div>
+        <div id="lines" class="axial_burger_button-lines">
+            <div id="top" class="axial_burger_button-line axial_burger_button-top"></div>
+            <div id="middle" class="axial_burger_button-line axial_burger_button-middle"></div>
+            <div id="bottom" class="axial_burger_button-line axial_burger_button-bottom"></div>
+        </div>
+    </template>
+    <!-- ./buttons/AxialButton -->
+    <template id="axial-button-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div id="background" class="axial_button-background"></div>
+        <div id="foreground" class="axial_button-foreground"></div>
+        <div id="content" class="axial_button-content">
+            <div id="icon" class="axial_button-icon">
+                <slot id="iconSlot" name="axial-icon"></slot>
+            </div>
+            <div id="label" class="axial_button-label"></div>
+        </div>
+    </template>
+    <!-- ./buttons/AxialToggleRadio -->
+    <template id="axial-toggle-radio-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div id="border" class="axial_toggle_radio-border">
+            <div id="circle" class="axial_toggle_radio-circle"></div>
+        </div>
+        <div id="label" class="axial_toggle_radio-label">Label</div>
+    </template>
+    <!-- ./buttons/AxialToggleButton -->
+    <template id="axial-toggle-button-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div id="background" class="axial_toggle_button-background"></div>
+        <div id="foreground" class="axial_toggle_button-foreground"></div>
+        <div id="content" class="axial_toggle_button-content">
+            <div id="icon" class="axial_toggle_button-icon">
+                <slot id="iconSlot" name="axial-icon"></slot>
+            </div>
+            <div id="iconToggle" class="axial_toggle_button-icontoggle">
+                <slot id="iconToggleSlot" name="axial-icon-toggle"></slot>
+            </div>
+            <div id="label" class="axial_toggle_button-label"></div>
+        </div>
+    </template>
+    <!-- ./buttons/AxialToggleSwitch -->
+    <template id="axial-toggle-switch-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div id="circle" class="axial_toggle_switch-circle">
+            <div id="inner" class="axial_toggle_switch-inner"></div>
+        </div>
+    </template>
+    <!-- ./buttons/AxialServiceButton -->
+    <template id="axial-service-button-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div id="background" class="axial_service_button-background"></div>
+        <div id="foreground" class="axial_service_button-foreground"></div>
+        <div id="content" class="axial_service_button-content">
+            <div id="icon" class="axial_service_button-icon">
+                <div id="indicator" class="axial_service_button-indicator"></div>
+            </div>
+            <div id="label" class="axial_service_button-label"></div>
+        </div>
+    </template>
+    <!-- ./buttons/AxialToggleButtonGroup -->
+    <template id="axial-toggle-button-group-template">
+        <link rel="stylesheet" href="./styles.css">
+        <slot id="slot" name="axial-toggles"></slot>
+    </template>
+
+
+    <!-- ./admin/button/AxialTogglePanelButton -->
+    <template id="axial-toggle-panel-button-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div id="background" class="axial_toggle_panel_button-background"></div>
+        <div id="foreground" class="axial_toggle_panel_button-foreground"></div>
+        <div id="content" class="axial_toggle_panel_button-content">
+            <div id="icon" class="axial_toggle_panel_button-icon">
+                <slot id="iconSlot" name="axial-icon"></slot>
+            </div>
+            <div id="iconToggle" class="axial_toggle_button-icontoggle">
+                <slot id="iconToggleSlot" name="axial-icon-toggle"></slot>
+            </div>
+            <div id="label" class="axial_toggle_panel_button-label"></div>
+        </div>
+    </template>
+    
+
+    <!-- FORMS -->
+    <!-- ./forms/AxialServiceFormItem -->
+    <template id="axial-service-form-item-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div class="axial_service_form_item-holder">
+            <div class="axial_service_form_item-header">
+                <div id="label" class="axial_service_form_item-label">Label</div>
+                <div id="action" class="axial_service_form_item-action">
+                    <slot id="actionSlot" name="axial-action"></slot>
+                </div>
+            </div>
+            <div id="info" class="axial_service_form_item-info">
+                <slot id="infoSlot" name="axial-info"></slot>
+            </div>
+            <div id="content" class="axial_service_form_item-content">
+                <slot id="contentSlot" name="axial-content"></slot>
+            </div>
+        </div>
+    </template>
+    <!-- ./forms/AxialServiceFormItemToggles -->
+    <template id="axial-service-form-item-toggles-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div id="holder" class="axial_service_form_item-holder">
+            <div class="axial_service_form_item-header">
+                <div id="label" class="axial_service_form_item-label">Label</div>
+                <div id="action" class="axial_service_form_item-action">
+                    <slot id="actionSlot" name="axial-action"></slot>
+                </div>
+            </div>
+            <div id="info" class="axial_service_form_item-info">
+                <slot id="infoSlot" name="axial-info"></slot>
+            </div>
+            <div id="content" class="axial_service_form_item-content">
+                <slot id="contentSlot" name="axial-content"></slot>
+                <axial-toggle-button-group id="toggles" class="axial_service_form_item-toggles">
+                    <slot id="togglesSlot" slot="axial-toggles" name="axial-group"></slot>
+                </axial-toggle-button-group>
+            </div>
+        </div>
+    </template>
+    <!-- ./forms/AxialServiceFormItemImage -->
+    <template id="axial-service-form-item-image-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div class="axial_service_form_item-holder">
+            <div class="axial_service_form_item-header">
+                <div id="label" class="axial_service_form_item-label">Label</div>
+                <div id="action" class="axial_service_form_item-action">
+                    <slot id="actionSlot" name="axial-action"></slot>
+                </div>
+            </div>
+            <div id="info" class="axial_service_form_item-info">
+                <slot id="infoSlot" name="axial-info"></slot>
+            </div>
+            <div id="content" class="axial_service_form_item-content">
+                <div id="placeholder" class="axial_service_form_item_image-placeholder">
+                    <img id="image" class="axial_service_form_item_image-image">
+                </div>
+                <input type="file" id="fileInput" class="axial_service_form_item_image-file" accept="image/png, image/jpeg, image/jpg, image/webp"/>
+            </div>
+        </div>
+    </template>
+    <!-- ./forms/AxialServiceFormItemInternalProductPrice -->
+    <template id="axial-service-form-item-internal-product-price-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div class="axial_service_form_item-holder">
+            <div class="axial_service_form_item-header">
+                <div id="label" class="axial_service_form_item-label">Label</div>
+                <div id="action" class="axial_service_form_item-action">
+                    <slot id="actionSlot" name="axial-action"></slot>
+                </div>
+            </div>
+            <div id="info" class="axial_service_form_item-info">
+                <slot id="infoSlot" name="axial-info"></slot>
+            </div>
+            <div id="content" class="axial_service_form_item-content">
+                <div class="axial_service_form_item-group">
+                    <div>Prix d'achat :</div>
+                    <div class="axial_service_form_item-grouprow">
+                        <input id="costInput" type="number" value="0.00" min="0" step="0.01">
+                    </div>
+                </div>
+                
+                <div class="axial_service_form_item-group">
+                    <div>Stock :</div>
+                    <div class="axial_service_form_item-grouprow">
+                        <input id="stockInput" type="number" value="0" min="0" step="1">
+                    </div>
+                </div>
+
+                <div class="axial_service_form_item-group">
+                    <div>Coeff :</div>
+                    <div class="axial_service_form_item-grouprow">
+                        <input id="coefInput" type="number" value="1.20" min="1.00" step="0.01">
+                    </div>
+                    
+                </div>
+                <div class="axial_service_form_item-group">
+                    <div>TVA :</div>
+                    <div class="axial_service_form_item-grouprow">
+                        <select id="taxSelect" name="taxSelect">
+                            <option value="5.5">5.5 %</option>
+                            <option value="10">10%</option>
+                            <option value="20">20%</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="axial_spacer"></div>
+                
+                <div class="axial_service_form_item-group">
+                    <div class="ax_ri">Total HT</div>
+                    <div class="axial_service_form_item-grouprow">
+                        <div class="axial_service_form_item-grouphtml" id="subtotalNoTax">0.00€</div>
+                    </div>    
+                </div>
+                <div class="axial_service_form_item-group">
+                    <div class="ax_ri">Total TVA</div>
+                    <div class="axial_service_form_item-grouprow">
+                        <div class="axial_service_form_item-grouphtml" id="taxValue">0.00€</div>
+                    </div>
+                </div>
+                <div class="axial_service_form_item-group">
+                    <div class="ax_ri">Total TTC</div>
+                    <div class="axial_service_form_item-grouprow">
+                        <div class="axial_service_form_item-grouphtml" id="subtotalWithTax">0.00€</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+    <!-- ./forms/AxialServiceForm -->
+    <template id="axial-service-form-template">
+        <link rel="stylesheet" href="./styles.css">
+        <form class="axial_service_form-holder">
+            <slot id="slot" name="axial-items"></slot>
+            <axial-service-button id="postButton" axial-text="Enregistrer"></axial-service-button>
+        </form>
+    </template>
+    <!-- END FORM -->
+
+    <!-- DATES -->
+    <!-- ./date/AxialWeekPlanning -->
+    <template id="axial-week-planning-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div id="grid" class="axial_week_planning-grid">
+            <div class="axial_week_planning-cell axial_week_planning-morning">Matin</div>
+            <div class="axial_week_planning-cell axial_week_planning-morning_start">Début</div>
+            <div class="axial_week_planning-cell axial_week_planning-morning_end">Fin</div>
+            <div class="axial_week_planning-cell axial_week_planning-morning_total">Total</div>
+            <div id="totalMorning" class="awp_total awp_morning_total">20:00</div>
+
+            <div class="axial_week_planning-cell axial_week_planning-noon">Après-midi</div>
+            <div class="axial_week_planning-cell axial_week_planning-noon_start">Début</div>
+            <div class="axial_week_planning-cell axial_week_planning-noon_end">Fin</div>
+            <div class="axial_week_planning-cell axial_week_planning-noon_total">Total</div>
+            <div id="totalNoon" class="awp_total awp_noon_total">15:00</div>
+
+            <div id="totalWeek" class="awp_total awp_week_total">35:00</div>
+
+            <div class="axial_week_planning-cell axial_week_planning-day">Jour</div>
+            <div class="axial_week_planning-cell axial_week_planning-monday">Lundi</div>
+            <div class="axial_week_planning-cell axial_week_planning-tuesday">Mardi</div>
+            <div class="axial_week_planning-cell axial_week_planning-wednesday">Mercredi</div>
+            <div class="axial_week_planning-cell axial_week_planning-thursday">Jeudi</div>
+            <div class="axial_week_planning-cell axial_week_planning-friday">Vendredi</div>
+            <div class="axial_week_planning-cell axial_week_planning-saturday">Samedi</div>
+            <div class="axial_week_planning-cell axial_week_planning-sunday">Dimanche</div>
+
+            <input type="time" value="08:00" class="awp_input awp_morning_start-1"> <input type="time" value="12:00" class="awp_input awp_morning_end-1"> <div class="awp_subtotal awp_morning_subtotal-1">04:00</div>
+            <input type="time" value="08:00" class="awp_input awp_morning_start-2"> <input type="time" value="12:00" class="awp_input awp_morning_end-2"> <div class="awp_subtotal awp_morning_subtotal-2">04:00</div>
+            <input type="time" value="08:00" class="awp_input awp_morning_start-3"> <input type="time" value="12:00" class="awp_input awp_morning_end-3"> <div class="awp_subtotal awp_morning_subtotal-3">04:00</div>
+            <input type="time" value="08:00" class="awp_input awp_morning_start-4"> <input type="time" value="12:00" class="awp_input awp_morning_end-4"> <div class="awp_subtotal awp_morning_subtotal-4">04:00</div>
+            <input type="time" value="08:00" class="awp_input awp_morning_start-5"> <input type="time" value="12:00" class="awp_input awp_morning_end-5"> <div class="awp_subtotal awp_morning_subtotal-5">04:00</div>
+            <input type="time" value="00:00" class="awp_input awp_morning_start-6"> <input type="time" value="00:00" class="awp_input awp_morning_end-6"> <div class="awp_subtotal awp_morning_subtotal-6">00:00</div>
+            <input type="time" value="00:00" class="awp_input awp_morning_start-7"> <input type="time" value="00:00" class="awp_input awp_morning_end-7"> <div class="awp_subtotal awp_morning_subtotal-7">00:00</div>
+
+            <input type="time" value="14:00" class="awp_input awp_noon_start-1"> <input type="time" value="17:00" class="awp_input awp_noon_end-1"> <div class="awp_subtotal awp_noon_subtotal-1">03:00</div>
+            <input type="time" value="14:00" class="awp_input awp_noon_start-2"> <input type="time" value="17:00" class="awp_input awp_noon_end-2"> <div class="awp_subtotal awp_noon_subtotal-2">03:00</div>
+            <input type="time" value="14:00" class="awp_input awp_noon_start-3"> <input type="time" value="17:00" class="awp_input awp_noon_end-3"> <div class="awp_subtotal awp_noon_subtotal-3">03:00</div>
+            <input type="time" value="14:00" class="awp_input awp_noon_start-4"> <input type="time" value="17:00" class="awp_input awp_noon_end-4"> <div class="awp_subtotal awp_noon_subtotal-4">03:00</div>
+            <input type="time" value="14:00" class="awp_input awp_noon_start-5"> <input type="time" value="17:00" class="awp_input awp_noon_end-5"> <div class="awp_subtotal awp_noon_subtotal-5">03:00</div>
+            <input type="time" value="00:00" class="awp_input awp_noon_start-6"> <input type="time" value="00:00" class="awp_input awp_noon_end-6"> <div class="awp_subtotal awp_noon_subtotal-6">00:00</div>
+            <input type="time" value="00:00" class="awp_input awp_noon_start-7"> <input type="time" value="00:00" class="awp_input awp_noon_end-7"> <div class="awp_subtotal awp_noon_subtotal-7">00:00</div>
+        </div>
+    </template>
+    <!-- END DATES -->
+
+    <!-- LIST ITEMS-->
+    <!-- ./admin/_items/AxialAdminEmployeeListItem -->
+    <template id="axial-admin-employee-list-item-template">
+        <link rel="stylesheet" href="./styles.css">
+        <style></style>
+        <div class="axial_admin_list_item-background"></div>
+        <div class="axial_admin_list_item-content">
+            <div class="axial_admin_employee_list_item-user">
+                <div id="photo" class="axial_admin_employee_list_item-photo"></div>
+                <div id="name" class="axial_admin_employee_list_item-name">Name</div>
+            </div>
+            <div id="email" class="axial_admin_employee_list_item-email">email</div>
+            <div id="tel" class="axial_admin_employee_list_item-tel">00 00 00 00 00</div>
+            <div slot="axial-header" class="axial_spacer"></div>
+            <div id="actions" class="axial_admin_list_item-actions"></div>
+        </div>
+    </template>
+
+    <!-- ./admin/_items/AxialAdminClientListItem -->
+    <template id="axial-admin-client-list-item-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div class="axial_admin_list_item-background"></div>
+        <div class="axial_admin_list_item-content">
+            <div class="axial_admin_client_list_item-user">
+                <img id="photo" class="axial_admin_client_list_item-photo">
+                <div id="name" class="axial_admin_client_list_item-name">Name</div>
+            </div>
+            <div id="clientType" class="axial_admin_client_list_item-type">type</div>
+            <div id="email" class="axial_admin_client_list_item-email">email</div>
+            <div id="tel" class="axial_admin_client_list_item-tel">00 00 00 00 00</div>
+            <div slot="axial-header" class="axial_spacer"></div>
+            <div id="actions" class="axial_admin_list_item-actions"></div>
+        </div>
+    </template>
+
+    <!-- ./admin/_items/AxialAdminInternalProductListItem -->
+    <template id="axial-admin-internal-product-list-item-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div class="axial_admin_list_item-background"></div>
+        <div class="axial_admin_list_item-content">
+            <div class="axial_admin_internal_product_list_item-product">
+                <img id="photo" class="axial_admin_internal_product_list_item-photo">
+                <div id="name" class="axial_admin_internal_product_list_item-name"></div>
+            </div>
+            <div id="cost" class="axial_admin_internal_product_list_item-cost"></div>
+            <div id="coef" class="axial_admin_internal_product_list_item-coef"></div>
+            <div id="tax" class="axial_admin_internal_product_list_item-tax"></div>
+            <div slot="axial-header" class="axial_spacer"></div>
+            <div id="actions" class="axial_admin_list_item-actions"></div>
+        </div>
+    </template>
+    
+    <!-- ./admin/base/AxialAdminList.js -->
+    <template id="axial-admin-list-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div class="axial_admin_list-holder">
+            <div id="header" class="axial_admin_list-header">
+                <slot id="headerSlot" name="axial-header"></slot>
+            </div>
+            <div id="content" class="axial_admin_list-content">
+            </div>
+        </div>
+    </template>
+    <!-- ./admin/base/AxialAdminPopup -->
+    <template id="axial-admin-popup-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div class="axial_admin_popup-holder">
+            <div class="axial_admin_popup-header">
+                <div id="title" class="axial_admin_popup-title"></div>
+                <div class="axial_spacer"></div>
+                <axial-button id="closer" axial-text="Fermer"></axial-button>
+            </div>
+            <div class="axial_admin_popup-content">
+                <slot id="contentSlot" name="axial-content"></slot>
+            </div>
+        </div>
+    </template>
+
+    <!-- ./admin/_popups/AxialAdminEmployeePopup -->
+    <template id="axial-admin-employee-popup-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div class="axial_admin_popup-holder">
+            <div class="axial_admin_popup-header">
+                <div id="title" class="axial_admin_popup-title"></div>
+                <div class="axial_spacer"></div>
+                <axial-button id="closer" axial-text="Fermer"></axial-button>
+            </div>
+            <div class="axial_admin_popup-content">
+                <slot id="contentSlot" name="axial-content"></slot>
+                <axial-service-form id="employeeForm" axial-post-path="../api/data/set" axial-collection="misc" axial-model="employee">
+                    <axial-service-form-item-image slot="axial-items" axial-upload-path="../api/medias/upload" axial-field="image_main"></axial-service-form-item-image>
+                    <axial-service-form-item-inputs slot="axial-items" axial-label="Prénom et nom" axial-field="name" axial-direction="row">
+                        <input type="text" slot="axial-content" name="first_name" placeholder="Prénom">
+                        <input type="text" slot="axial-content" name="last_name" placeholder="Nom">
+                    </axial-service-form-item-inputs>
+                    <axial-service-form-item-inputs slot="axial-items" axial-label="Contact" axial-field="contact" axial-direction="row">
+                        <input type="email" slot="axial-content" name="email" placeholder="Courriel" required>
+                        <input type="text" slot="axial-content" name="tel" placeholder="Téléphone" required>
+                    </axial-service-form-item-inputs>
+                    <axial-service-form-item-inputs slot="axial-items" axial-label="Adresse" axial-field="address" axial-direction="column">
+                        <div class="axial_service_form_item-column" slot="axial-content">
+                            <input type="text" name="address_line_1" placeholder="n° et rue">
+                            <input type="text" name="address_line_2" placeholder="Complément">
+                            <div class="axial_service_form_item-row">
+                                <input type="text" name="address_zip" placeholder="Code postal">
+                                <input type="text" name="address_city" placeholder="Ville">
+                            </div>
+                        </div>
+                    </axial-service-form-item-inputs>
+                </axial-service-form>
+            </div>
+        </div>
+    </template>
+    <!-- ./admin/_popups/AxialAdminClientPopup -->
+    <template id="axial-admin-client-popup-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div class="axial_admin_popup-holder">
+            <div class="axial_admin_popup-header">
+                <div id="title" class="axial_admin_popup-title"></div>
+                <div class="axial_spacer"></div>
+                <axial-button id="closer" axial-text="Fermer"></axial-button>
+            </div>
+            <div class="axial_admin_popup-content">
+                <slot id="contentSlot" name="axial-content"></slot>
+                <axial-service-form id="clientForm" axial-post-path="../api/data/set" axial-collection="misc" axial-model="client">
+                    <axial-service-form-item-image slot="axial-items" axial-upload-path="../api/medias/upload" axial-field="image_main"></axial-service-form-item-image>
+                    <axial-service-form-item-toggles slot="axial-items" axial-label="Type de client" axial-field="client_type" axial-direction="row">
+                        <axial-toggle-radio axial-text="Particulier" axial-value="particulier" slot="axial-group"></axial-toggle-radio>
+                        <axial-toggle-radio axial-text="Entreprise" axial-value="entreprise" slot="axial-group"></axial-toggle-radio>
+                        <axial-toggle-radio axial-text="Association" axial-value="association" slot="axial-group"></axial-toggle-radio>
+                    </axial-service-form-item-toggles>
+                    <axial-service-form-item-inputs slot="axial-items" axial-label="Identité de l'entreprise" axial-field="company_desc" axial-direction="row">
+                        <input type="text" slot="axial-content" name="client_company_name" placeholder="Nom de l'entreprise / association">
+                        <input type="text" slot="axial-content" name="client_company_code" placeholder="SIRET / SIREN / CODE">
+                    </axial-service-form-item-inputs>
+                    <axial-service-form-item-inputs slot="axial-items" axial-label="Identité du contact ou du particulier" axial-field="name" axial-direction="row">
+                        <input type="text" slot="axial-content" name="first_name" placeholder="Prénom">
+                        <input type="text" slot="axial-content" name="last_name" placeholder="Nom">
+                    </axial-service-form-item-inputs>
+                    <axial-service-form-item-inputs slot="axial-items" axial-label="Contact" axial-field="contact" axial-direction="row">
+                        <input type="email" slot="axial-content" name="email" placeholder="Courriel" required>
+                        <input type="text" slot="axial-content" name="tel" placeholder="Téléphone" required>
+                    </axial-service-form-item-inputs>
+                    <axial-service-form-item-inputs slot="axial-items" axial-label="Adresse" axial-field="address" axial-direction="column">
+                        <div class="axial_service_form_item-column" slot="axial-content">
+                            <input type="text" name="address_line_1" placeholder="n° et rue">
+                            <input type="text" name="address_line_2" placeholder="Complément">
+                            <div class="axial_service_form_item-row">
+                                <input type="text" name="address_zip" placeholder="Code postal">
+                                <input type="text" name="address_city" placeholder="Ville">
+                            </div>
+                        </div>
+                    </axial-service-form-item-inputs>
+                </axial-service-form>
+            </div>
+        </div>
+    </template>
+    <!-- ./admin/_popups/AxialAdminInternalProductPopup -->
+    <template id="axial-admin-internal-product-popup-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div class="axial_admin_popup-holder">
+            <div class="axial_admin_popup-header">
+                <div id="title" class="axial_admin_popup-title"></div>
+                <div class="axial_spacer"></div>
+                <axial-button id="closer" axial-text="Fermer"></axial-button>
+            </div>
+            <div class="axial_admin_popup-content">
+                <slot id="contentSlot" name="axial-content"></slot>
+                <axial-service-form id="internalProductForm" axial-post-path="../api/data/set" axial-collection="products" axial-model="product_internal">
+                    <axial-service-form-item-image slot="axial-items" axial-upload-path="../api/medias/upload" axial-field="image_main"></axial-service-form-item-image>
+                    <axial-service-form-item-inputs slot="axial-items" axial-label="Produit" axial-field="product_props" axial-direction="row">
+                        <input type="text" slot="axial-content" name="product_name" placeholder="Nom du produit" required>
+                        <input type="text" slot="axial-content" name="product_ref" placeholder="Référence interne">
+                    </axial-service-form-item-inputs>
+                    <axial-service-form-item-internal-product-price slot="axial-items" axial-label="Informations sur le prix" axial-direction="row"></axial-service-form-item-internal-product-price>
+                </axial-service-form>
+            </div>
+        </div>
+    </template>
+    <!-- END POPUPS -->
+
+    <!-- ./admin/_views/AxialAdminHomeUserView -->
+    <template id="axial-admin-home-user-view-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div class="axial_admin_view-holder">
+            <div class="axial_admin_view-header">
+                <div id="title" class="axial_admin_view-title">Accueil</div>
+            </div>
+            <div class="axial_admin_view-content axial_admin_view-content-transparent">
+            </div>
+        </div>
+    </template>
+
+    <!-- ./admin/_views/AxialAdminProfileView -->
+    <template id="axial-admin-profile-view-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div class="axial_admin_view-holder">
+            <div class="axial_admin_view-header">
+                <div id="title" class="axial_admin_view-title">Profil</div>
+            </div>
+            <div class="axial_admin_view-content">
+                <axial-service-form id="profileForm" axial-post-path="../api/data/set" axial-collection="users" axial-model="user">
+                    <axial-service-form-item-image slot="axial-items" axial-upload-path="../api/medias/upload" axial-field="image_main"></axial-service-form-item-image>
+                    <axial-service-form-item-inputs slot="axial-items" axial-label="Prénom et nom" axial-field="name" axial-direction="row">
+                        <input type="text" slot="axial-content" name="first_name" placeholder="Prénom">
+                        <input type="text" slot="axial-content" name="last_name" placeholder="Nom">
+                    </axial-service-form-item-inputs>
+                    <axial-service-form-item-inputs slot="axial-items" axial-label="Contact" axial-field="contact" axial-direction="row">
+                        <input type="email" slot="axial-content" name="email" placeholder="Courriel" required>
+                        <input type="text" slot="axial-content" name="tel" placeholder="Téléphone" required>
+                    </axial-service-form-item-inputs>
+                    <axial-service-form-item-inputs slot="axial-items" axial-label="Adresse" axial-field="address" axial-direction="column">
+                        <div class="axial_service_form_item-column" slot="axial-content">
+                            <input type="text" name="address_line_1" placeholder="n° et rue">
+                            <input type="text" name="address_line_2" placeholder="Complément">
+                            <div class="axial_service_form_item-row">
+                                <input type="text" name="address_zip" placeholder="Code postal">
+                                <input type="text" name="address_city" placeholder="Ville">
+                            </div>
+                        </div>
+                    </axial-service-form-item-inputs>
+                </axial-service-form>
+            </div>
+        </div>
+    </template>
+
+    <!-- ./admin/_views/AxialAdminCompanyView -->
+    <template id="axial-admin-company-view-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div class="axial_admin_view-holder">
+            <div class="axial_admin_view-header">
+                <div id="title" class="axial_admin_view-title">Entreprise</div>
+            </div>
+            <div class="axial_admin_view-content">
+                <axial-service-form id="companyForm" axial-post-path="../api/data/set" axial-collection="misc" axial-model="company">
+                    <axial-service-form-item-image slot="axial-items" axial-upload-path="../api/medias/upload" axial-field="image_main"></axial-service-form-item-image>
+                    <axial-service-form-item-inputs slot="axial-items" axial-label="Entreprise" axial-field="company" axial-direction="row">
+                        <input type="text" slot="axial-content" name="company_name" placeholder="Nom de l'entreprise">
+                        <input type="text" slot="axial-content" name="company_code" placeholder="SIREN / SIRET">
+                    </axial-service-form-item-inputs>
+                    <axial-service-form-item-inputs slot="axial-items" axial-label="Contact" axial-field="contact" axial-direction="row">
+                        <input type="email" slot="axial-content" name="email" placeholder="Courriel" required>
+                        <input type="text" slot="axial-content" name="tel" placeholder="Téléphone" required>
+                    </axial-service-form-item-inputs>
+                    <axial-service-form-item-inputs slot="axial-items" axial-label="Adresse" axial-field="address" axial-direction="column">
+                        <div class="axial_service_form_item-column" slot="axial-content">
+                            <input type="text" name="address_line_1" placeholder="n° et rue">
+                            <input type="text" name="address_line_2" placeholder="Complément">
+                            <div class="axial_service_form_item-row">
+                                <input type="text" name="address_zip" placeholder="Code postal">
+                                <input type="text" name="address_city" placeholder="Ville">
+                            </div>
+                        </div>
+                    </axial-service-form-item-inputs>
+                </axial-service-form>
+                <axial-week-planning style="display: none;"></axial-week-planning>
+            </div>
+        </div>
+    </template>
+
+    <!-- ./admin/_views/AxialAdminEmployeeView -->
+    <template id="axial-admin-employee-view-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div class="axial_admin_view-holder">
+            <div class="axial_admin_view-header">
+                <div id="title" class="axial_admin_view-title">Employés</div>
+                <div class="axial_spacer"></div>
+                <axial-button id="addEmployeeButton" axial-text="Ajouter un employé">
+                    <i slot="axial-icon" class="fa-color fa-regular fa-square-plus"></i>
+                </axial-button>
+            </div>
+            <div class="axial_admin_view-content">
+                <axial-admin-list id="employeeList">
+                    <div slot="axial-header" class="axial_admin_employee_list_item-user">Nom</div>
+                    <div slot="axial-header" class="axial_admin_employee_list_item-email">Courriel</div>
+                    <div slot="axial-header" class="axial_admin_employee_list_item-tel">Téléphone</div>
+                    <div slot="axial-header" class="axial_spacer"></div>
+                    <div slot="axial-header" class="axial_admin_list_item-actions"></div>
+                </axial-admin-list>
+            </div>
+        </div>
+    </template>
+
+    <!-- ./admin/_views/AxialAdminClientView -->
+    <template id="axial-admin-client-view-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div class="axial_admin_view-holder">
+            <div class="axial_admin_view-header">
+                <div id="title" class="axial_admin_view-title">Clients</div>
+                <div class="axial_spacer"></div>
+                <axial-button id="addClientButton" axial-text="Ajouter un client">
+                    <i slot="axial-icon" class="fa-color fa-regular fa-square-plus"></i>
+                </axial-button>
+            </div>
+            <div class="axial_admin_view-content">
+                <axial-admin-list id="clientList">
+                    <div slot="axial-header" class="axial_admin_client_list_item-user">Nom</div>
+                    <div slot="axial-header" class="axial_admin_client_list_item-type">Type</div>
+                    <div slot="axial-header" class="axial_admin_client_list_item-email">Courriel</div>
+                    <div slot="axial-header" class="axial_admin_client_list_item-tel">Téléphone</div>
+                    <div slot="axial-header" class="axial_spacer"></div>
+                    <div slot="axial-header" class="axial_admin_list_item-actions"></div>
+                </axial-admin-list>
+            </div>
+        </div>
+    </template>
+
+    <!-- ./admin/_views/AxialAdminInternalProductView -->
+    <template id="axial-admin-internal-product-view-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div class="axial_admin_view-holder">
+            <div class="axial_admin_view-header">
+                <div id="title" class="axial_admin_view-title">Produits / Services / Main d'oeuvre</div>
+                <div class="axial_spacer"></div>
+                <axial-button id="addProductButton" axial-text="Ajouter">
+                    <i slot="axial-icon" class="fa-color fa-regular fa-square-plus"></i>
+                </axial-button>
+            </div>
+            <div class="axial_admin_view-content">
+                <axial-admin-list id="productList">
+                    <div slot="axial-header" class="axial_admin_internal_product_list_item-product">Nom</div>
+                    <div slot="axial-header" class="axial_admin_internal_product_list_item-cost">P. Achat</div>
+                    <div slot="axial-header" class="axial_admin_internal_product_list_item-coef">Coef</div>
+                    <div slot="axial-header" class="axial_admin_internal_product_list_item-tax">TVA</div>
+                    <div slot="axial-header" class="axial_spacer"></div>
+                    <div slot="axial-header" class="axial_admin_list_item-actions"></div>
+                </axial-admin-list>
+            </div>
+        </div>
+    </template>
+    <!-- END TEMPLATE-->
+    
+    <div id="axialBackgroundLayer" class="axial_layer_base axial_background_layer"></div>
+    
+    <div id="axialMainLayer" class="axial_main_layer">
+
+        <!-- MAIN -->
+        <main class="axial_admin_main">
+            
+            <axial-viewer-base id="mainViewer">
+                <axial-admin-view-base>Accueil</axial-admin-view-base>
+                <axial-admin-profile-view axial-get-path="../api/data/get/?c=users&m=user"></axial-admin-profile-view>
+                <axial-admin-company-view axial-get-path="../api/data/get/?c=misc&m=company"></axial-admin-company-view>
+                <axial-admin-employee-view axial-get-path="../api/data/get/?c=misc&m=employee"></axial-admin-employee-view>
+                <axial-admin-client-view axial-get-path="../api/data/get/?c=misc&m=client"></axial-admin-client-view>
+                <axial-admin-internal-product-view axial-get-path="../api/data/get/?c=products&m=product_internal"></axial-admin-internal-product-view>
+                <axial-admin-view-base>Projets</axial-admin-view-base>
+                <axial-admin-view-base>Planning</axial-admin-view-base>
+                <axial-admin-view-base>Fichiers</axial-admin-view-base>
+            </axial-viewer-base>
+            
+        </main>
+
+        <!-- HEADER -->
+        <header class="axial_admin_header">
+            <div class="axial_admin_title">Dashboard</div>
+            <div class="axial_spacer"></div>
+            <div id="authBox" class="axial_admin_authbox">
+                <div id="authName" class="axial_admin_authbox-name"></div>
+                <img id="authPhoto" class="axial_admin_authbox-photo" alt="User Photo" width="40" height="40">
+            </div>
+            <axial-burger-button id="burgerButton" class="axial_admin_burger"></axial-burger-button>
+        </header>
+
+        <!-- PANEL -->
+        <div class="axial_admin_panel" id="panel">
+            <div class="axial_admin_panel-header">
+                <div class="axial_admin_panel-logo">
+                    <a class="axial_header_logo" href="../" target="_self">
+                        <img class="axial_header_logo_svg" alt="logo" src="../assets/logos/logo.svg">
+                    </a>
+                </div>
+            </div>
+            <div class="axial_admin_panel-scroller">
+
+                <axial-toggle-button-group-base id="panelToggles" class="axial_admin_panel-toggles">
+
+                    <axial-toggle-panel-button axial-text="Accueil">
+                        <div slot="axial-icon" class="axial_toggle_button_helper-icon_holder">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+                                <path d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"/>
+                            </svg>
+                        </div>
+                    </axial-toggle-panel-button>
+
+                    <axial-toggle-panel-button axial-text="Profil">
+                        <div slot="axial-icon" class="axial_toggle_button_helper-icon_holder">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                <path d="M406.5 399.6C387.4 352.9 341.5 320 288 320l-64 0c-53.5 0-99.4 32.9-118.5 79.6C69.9 362.2 48 311.7 48 256C48 141.1 141.1 48 256 48s208 93.1 208 208c0 55.7-21.9 106.2-57.5 143.6zm-40.1 32.7C334.4 452.4 296.6 464 256 464s-78.4-11.6-110.5-31.7c7.3-36.7 39.7-64.3 78.5-64.3l64 0c38.8 0 71.2 27.6 78.5 64.3zM256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-272a40 40 0 1 1 0-80 40 40 0 1 1 0 80zm-88-40a88 88 0 1 0 176 0 88 88 0 1 0 -176 0z"/>
+                            </svg>
+                        </div>
+                    </axial-toggle-panel-button>
+
+                    <axial-toggle-panel-button axial-text="Entreprise">
+                        <div slot="axial-icon" class="axial_toggle_button_helper-icon_holder">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                                <path d="M64 48c-8.8 0-16 7.2-16 16l0 384c0 8.8 7.2 16 16 16l80 0 0-64c0-26.5 21.5-48 48-48s48 21.5 48 48l0 64 80 0c8.8 0 16-7.2 16-16l0-384c0-8.8-7.2-16-16-16L64 48zM0 64C0 28.7 28.7 0 64 0L320 0c35.3 0 64 28.7 64 64l0 384c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm88 40c0-8.8 7.2-16 16-16l48 0c8.8 0 16 7.2 16 16l0 48c0 8.8-7.2 16-16 16l-48 0c-8.8 0-16-7.2-16-16l0-48zM232 88l48 0c8.8 0 16 7.2 16 16l0 48c0 8.8-7.2 16-16 16l-48 0c-8.8 0-16-7.2-16-16l0-48c0-8.8 7.2-16 16-16zM88 232c0-8.8 7.2-16 16-16l48 0c8.8 0 16 7.2 16 16l0 48c0 8.8-7.2 16-16 16l-48 0c-8.8 0-16-7.2-16-16l0-48zm144-16l48 0c8.8 0 16 7.2 16 16l0 48c0 8.8-7.2 16-16 16l-48 0c-8.8 0-16-7.2-16-16l0-48c0-8.8 7.2-16 16-16z"/>
+                            </svg>
+                        </div>
+                    </axial-toggle-panel-button>
+
+                    <axial-toggle-panel-button axial-text="Employés">
+                        <div slot="axial-icon" class="axial_toggle_button_helper-icon_holder">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+                                <path d="M144 0a80 80 0 1 1 0 160A80 80 0 1 1 144 0zM512 0a80 80 0 1 1 0 160A80 80 0 1 1 512 0zM0 298.7C0 239.8 47.8 192 106.7 192h42.7c15.9 0 31 3.5 44.6 9.7c-1.3 7.2-1.9 14.7-1.9 22.3c0 38.2 16.8 72.5 43.3 96c-.2 0-.4 0-.7 0H21.3C9.6 320 0 310.4 0 298.7zM405.3 320c-.2 0-.4 0-.7 0c26.6-23.5 43.3-57.8 43.3-96c0-7.6-.7-15-1.9-22.3c13.6-6.3 28.7-9.7 44.6-9.7h42.7C592.2 192 640 239.8 640 298.7c0 11.8-9.6 21.3-21.3 21.3H405.3zM224 224a96 96 0 1 1 192 0 96 96 0 1 1 -192 0zM128 485.3C128 411.7 187.7 352 261.3 352H378.7C452.3 352 512 411.7 512 485.3c0 14.7-11.9 26.7-26.7 26.7H154.7c-14.7 0-26.7-11.9-26.7-26.7z"/>
+                            </svg>
+                        </div>
+                    </axial-toggle-panel-button>
+
+                    <axial-toggle-panel-button axial-text="Clients">
+                        <div slot="axial-icon" class="axial_toggle_button_helper-icon_holder">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+                                <path d="M512 80c8.8 0 16 7.2 16 16l0 320c0 8.8-7.2 16-16 16L64 432c-8.8 0-16-7.2-16-16L48 96c0-8.8 7.2-16 16-16l448 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l448 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zM208 256a64 64 0 1 0 0-128 64 64 0 1 0 0 128zm-32 32c-44.2 0-80 35.8-80 80c0 8.8 7.2 16 16 16l192 0c8.8 0 16-7.2 16-16c0-44.2-35.8-80-80-80l-64 0zM376 144c-13.3 0-24 10.7-24 24s10.7 24 24 24l80 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-80 0zm0 96c-13.3 0-24 10.7-24 24s10.7 24 24 24l80 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-80 0z"/>
+                            </svg>
+                        </div>
+                    </axial-toggle-panel-button>
+
+                    <axial-toggle-panel-button axial-text="Produits">
+                        <div slot="axial-icon" class="axial_toggle_button_helper-icon_holder">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                <path d="M234.5 5.7c13.9-5 29.1-5 43.1 0l192 68.6C495 83.4 512 107.5 512 134.6l0 242.9c0 27-17 51.2-42.5 60.3l-192 68.6c-13.9 5-29.1 5-43.1 0l-192-68.6C17 428.6 0 404.5 0 377.4L0 134.6c0-27 17-51.2 42.5-60.3l192-68.6zM256 66L82.3 128 256 190l173.7-62L256 66zm32 368.6l160-57.1 0-188L288 246.6l0 188z"/>
+                            </svg>
+                        </div>
+                    </axial-toggle-panel-button>
+
+                    <axial-toggle-panel-button axial-text="Projets">
+                        <div slot="axial-icon" class="axial_toggle_button_helper-icon_holder">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                                <path d="M448 80l0 48c0 44.2-100.3 80-224 80S0 172.2 0 128L0 80C0 35.8 100.3 0 224 0S448 35.8 448 80zM393.2 214.7c20.8-7.4 39.9-16.9 54.8-28.6L448 288c0 44.2-100.3 80-224 80S0 332.2 0 288L0 186.1c14.9 11.8 34 21.2 54.8 28.6C99.7 230.7 159.5 240 224 240s124.3-9.3 169.2-25.3zM0 346.1c14.9 11.8 34 21.2 54.8 28.6C99.7 390.7 159.5 400 224 400s124.3-9.3 169.2-25.3c20.8-7.4 39.9-16.9 54.8-28.6l0 85.9c0 44.2-100.3 80-224 80S0 476.2 0 432l0-85.9z"/>
+                            </svg>
+                        </div>
+                    </axial-toggle-panel-button>
+
+                    <axial-toggle-panel-button axial-text="Planning">
+                        <div slot="axial-icon" class="axial_toggle_button_helper-icon_holder">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                                <path d="M152 24c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 40L64 64C28.7 64 0 92.7 0 128l0 16 0 48L0 448c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-256 0-48 0-16c0-35.3-28.7-64-64-64l-40 0 0-40c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 40L152 64l0-40zM48 192l352 0 0 256c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256zm176 40c-13.3 0-24 10.7-24 24l0 48-48 0c-13.3 0-24 10.7-24 24s10.7 24 24 24l48 0 0 48c0 13.3 10.7 24 24 24s24-10.7 24-24l0-48 48 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-48 0 0-48c0-13.3-10.7-24-24-24z"/>
+                            </svg>
+                        </div>
+                    </axial-toggle-panel-button>
+
+                    <axial-toggle-panel-button axial-text="Fichiers">
+                        <div slot="axial-icon" class="axial_toggle_button_helper-icon_holder">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+                                <path d="M384 480l48 0c11.4 0 21.9-6 27.6-15.9l112-192c5.8-9.9 5.8-22.1 .1-32.1S555.5 224 544 224l-400 0c-11.4 0-21.9 6-27.6 15.9L48 357.1 48 96c0-8.8 7.2-16 16-16l117.5 0c4.2 0 8.3 1.7 11.3 4.7l26.5 26.5c21 21 49.5 32.8 79.2 32.8L416 144c8.8 0 16 7.2 16 16l0 32 48 0 0-32c0-35.3-28.7-64-64-64L298.5 96c-17 0-33.3-6.7-45.3-18.7L226.7 50.7c-12-12-28.3-18.7-45.3-18.7L64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l23.7 0L384 480z"/>
+                            </svg>
+                        </div>
+                    </axial-toggle-panel-button>
+
+                </axial-toggle-button-group-base>
+                <div class="axial_spacer"></div>
+                <axial-signout-button id="signoutButton" axial-text="Deconnexion" axial-path="../api/auth/signout" axial-redirect="../">
+                    <div slot="axial-icon" class="axial_button-icon_holder">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                            <path d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 192 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l210.7 0-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l128-128zM160 96c17.7 0 32-14.3 32-32s-14.3-32-32-32L96 32C43 32 0 75 0 128L0 384c0 53 43 96 96 96l64 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-64 0c-17.7 0-32-14.3-32-32l0-256c0-17.7 14.3-32 32-32l64 0z"/>
+                        </svg>
+                    </div>
+                </axial-signout-button>
+
+            </div>
+        </div>
+        
+    </div>
+
+    <div id="axialIntroLayer" class="axial_layer_base axial_intro_layer"></div>
+
+    <div id="axialPopupLayer" class="axial_layer_base axial_popup_layer">
+        <div id="axialPopupObfuscator" class="axial_popup_obfuscator"></div>
+        <axial-admin-employee-popup id="employeePopup"></axial-admin-employee-popup>
+        <axial-admin-client-popup id="clientPopup"></axial-admin-client-popup>
+        <axial-admin-internal-product-popup id="internalProductPopup"></axial-admin-internal-product-popup>
+    </div>
+    
+    <div id="axialMediasLayer" class="axial_layer_base axial_medias_layer">
+        <!--<axial-admin-medias-selector id="selector" axial-get-path="../api/medias/public"></axial-admin-medias-selector>-->
+    </div>
+    
+    <div id="axialNotificationLayer" class="axial_layer_base axial_notification_layer">
+        <axial-notifier id="notifier"></axial-notifier>
+    </div>
+
+    <div id="axialOverlayLayer" class="axial_layer_base axial_overlay_layer"></div>
+
+    <div id="axialTooltipLayer" class="axial_layer_base axial_tooltip_layer"></div>
+
+    <div id="axialTransitionLayer" class="axial_layer_base axial_transition_layer"></div>
+
+    
+    <script src="./application.js" defer></script>
+    
+</body>
+</html>

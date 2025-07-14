@@ -108,6 +108,7 @@ class AxialOverlayBase extends AxialComponentBase
             this.#removeOverlayHandlers();
         }
         this.#target = value;
+        this.#layoutOverlay();
         this.#addOverlayHandlers();
     }
 

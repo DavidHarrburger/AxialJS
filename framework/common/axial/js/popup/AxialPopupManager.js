@@ -5,6 +5,7 @@ import { AxialPopupBase } from "./AxialPopupBase.js";
 class AxialPopupManager
 {
     static #POPUPS = new Set();
+    /** @readonly */
     static get POPUPS() { return AxialPopupManager.#POPUPS; }
 
     static get LAYER() { return document.getElementById("axialPopupLayer"); }

@@ -21,18 +21,34 @@ import
     UPLOADS_FOLDER,
 
     AUTH_LOGIN_PATH,
+    AUTH_VERIFICATION_PATH,
+    AUTH_REGISTER_PATH,
+    AUTH_REDIRECT_PATH,
     AUTH_PATHES,
 
-    API_PRIVATE_PATHES
+    API_PRIVATE_PATHES,
+
+    SUBSCRIPTION_REQUIRED,
+    SUBSCRIPTION_FREE_DAY,
+    SUBSCRIPTION_PAYMENT_PATH,
+
+    STRIPE_PRIVATE_KEY,
+    STRIPE_USE
 }
 from "./axial-server/AxialServerConstants.js";
-import { AxialMongoUtils } from "./axial-server/AxialMongoUtils.js";
 import { AxialCryptoUtils } from "./axial-server/AxialCryptoUtils.js";
+import { AxialServerUtils } from "./axial-server/AxialServerUtils.js";
+import { AxialMongo } from "./axial-server/AxialMongo.js";
+import { AxialMailer } from "./axial-server/AxialMailer.js";
+import { AxialScheduler } from "./axial-server/AxialScheduler.js";
+import { AxialSchedulerTask } from "./axial-server/schedule/AxialSchedulerTask.js";
+import { AxialSchedulerOperations } from "./axial-server/schedule/AxialSchedulerOperations.js";
+import { AxialPdfMaker } from "./axial-server/pdf/AxialPdfMaker.js";
 
 import express from "express";
-import path from "node:path";
+import path, { dirname } from "node:path";
 import crypto from "node:crypto";
-import { Buffer } from "node:buffer";
+//import { Buffer } from "node:buffer"; // to check
 import fs from "node:fs";
 import fsp from "node:fs/promises";
 import { fileURLToPath } from "node:url";
@@ -40,8 +56,11 @@ import { fileURLToPath } from "node:url";
 import nodemailer from "nodemailer";
 import cookieParser from "cookie-parser";
 import jwt from "jsonwebtoken";
+import cors from "cors";
 import multer from "multer";
+import Stripe from "stripe";
 import { MongoClient, ObjectId, ServerApiVersion } from "mongodb";
+
 
 const FILENAME = fileURLToPath( import.meta.url );
 const DIRNAME = path.dirname(FILENAME);
@@ -62,16 +81,27 @@ const EMAIL_TRANSPORTER = nodemailer.createTransport(
         pass: EMAIL_PASS
     }
 });
+const AXIAL_MAILER = new AxialMailer( EMAIL_TRANSPORTER );
 
-const MONGO_CLIENT = new MongoClient( DATABASE_URL,
-{
-    serverApi:
-    {
-        version: ServerApiVersion.v1,
-        strict: true,
-        deprecationErrors: true,
-    }
-});
+const AXIAL_MONGO = new AxialMongo( DATABASE_URL, DATABASE_NAME );
+
+const STRIPE = STRIPE_PRIVATE_KEY !== "" ? new Stripe(STRIPE_PRIVATE_KEY) : undefined;
+
+
+
+
+AxialSchedulerOperations.mongo = AXIAL_MONGO;
+AxialSchedulerOperations.mailer = AXIAL_MAILER;
+
+// defines the tasks
+const testTaskAsync = new AxialSchedulerTask();
+testTaskAsync.isRecurring = true;
+testTaskAsync.operation = AxialSchedulerOperations.sendAnalyticsReport;
+
+
+const AXIAL_SCHEDULER = new AxialScheduler();
+AXIAL_SCHEDULER.addTask( testTaskAsync );
+AXIAL_SCHEDULER.start();
 
 ///
 /// AXIAL MIDDLEWARES
@@ -87,6 +117,13 @@ const startMiddleware = function ( request, response, next )
 {
     response.append("x-content-type-options", "nosniff");
     response.append("cache-control", "no-cache");
+    response.append("X-Frame-Options", "SAMEORIGIN");
+    response.append("Cross-Origin-Opener-Policy", "same-origin");
+    response.append("Strict-Transport-Security", "max-age=604800; includeSubDomains;");
+    if( request.hostname !== "localhost" )
+    {
+        response.append("Content-Security-Policy", "default-src 'self'");    
+    }
     next();
 };
 
@@ -100,10 +137,12 @@ const authMiddleware = async function( request, response, next )
 {
     // First check if auth path is authorized
     const requestedPath = request.path;
-    //console.log(requestedPath);
+    const isAPI = requestedPath.indexOf("/api/") === 0;
     let authRequired = false;
-    let isAPI = requestedPath.indexOf("/api/") === 0;
-    //console.log("isAPI = " + isAPI);
+    let verificationRequired = false;
+    let pathToCheck;
+
+    let isSpecialPath = false;
 
     if( isAPI === false )
     {
@@ -112,8 +151,20 @@ const authMiddleware = async function( request, response, next )
             if( requestedPath === authPath.path || requestedPath === ( authPath.path + "/" ) )
             {
                 authRequired = true;
+                pathToCheck = authPath;
+                if( authPath.path !== AUTH_VERIFICATION_PATH )
+                {
+                    verificationRequired = true;
+                }
                 break;
             }
+        }
+        if( requestedPath === AUTH_LOGIN_PATH ||
+            requestedPath === AUTH_LOGIN_PATH + "/" || 
+            requestedPath === AUTH_REGISTER_PATH || 
+            requestedPath === AUTH_REGISTER_PATH + "/" )
+        {
+            isSpecialPath = true;
         }
     }
     else
@@ -123,29 +174,37 @@ const authMiddleware = async function( request, response, next )
             if( requestedPath === apiPath.path || requestedPath === ( apiPath.path + "/" ) )
             {
                 authRequired = true;
+                verificationRequired = apiPath.verification;
+                pathToCheck = apiPath;
                 break;
             }
         }
     }
     
-
-    //console.log( "authRequired = " + authRequired );
-
-    if( authRequired === false )
+    
+    if( authRequired === false && isSpecialPath === false )
     {
         next();
         return;
     }
-
+    
+    /// AUTH REQUIRED TRUE HERE
     // check now if user is already connected
     const token = request.cookies.axial_auth_jwt;
-    //console.log( "token = " + token );
+
     if( token === undefined )
     {
         // token does not exist, the user is not connected so we redirect the user to ask connexion
         if( isAPI === false )
         {
-            response.redirect( AUTH_LOGIN_PATH ); // TODO integrate the page asked for to do the good routing
+            if( isSpecialPath === true )
+            {
+                next();
+            }
+            else
+            {
+                response.redirect( AUTH_LOGIN_PATH ); // TODO integrate the page asked for to do the good routing
+            }
             return;
         }
         else
@@ -159,17 +218,84 @@ const authMiddleware = async function( request, response, next )
     try
     {
         const verifiedToken = jwt.verify(token, JWT_SECRET_KEY); // if invalid catch
-        const client = await MONGO_CLIENT.connect();
-        //console.log("test crash");
-        const db = client.db(DATABASE_NAME);
-        const users = db.collection("users");
-        const user = await users.findOne( { uuid: verifiedToken.uuid } );
-
+        const user = await AXIAL_MONGO.getData("users", { uuid: verifiedToken.uuid } );
+        
         if( user !== null )
         {
-            // cool the token is ok and the user exists, he can go to the page
             response.locals.user = user;
-            next();
+            
+            // cool the token is ok and the user exists, we now go the redirect middleware
+            if( user.verified === false )
+            {
+                if( isAPI === false )
+                {
+                    if( verificationRequired === false && isSpecialPath === false )
+                    {
+                        next();
+                    }
+                    else
+                    {
+                        response.redirect(AUTH_VERIFICATION_PATH);
+                    }
+                }
+                else
+                {
+                    if( verificationRequired === false )
+                    {
+                        next();
+                    }
+                    else
+                    {
+                        response.json( { status: "ko", message: "unauthorized api access" } );
+                    }
+                }
+            }
+            else
+            {
+                // user verified always true here
+                // if user has to pay go
+                const role = user.role;
+                if( role === "user" && SUBSCRIPTION_REQUIRED === true && requestedPath !== SUBSCRIPTION_PAYMENT_PATH )
+                {
+                    response.redirect(SUBSCRIPTION_PAYMENT_PATH);
+                    return;
+                }
+                
+                if( isSpecialPath === true || requestedPath === AUTH_VERIFICATION_PATH  || requestedPath === AUTH_VERIFICATION_PATH + "/" )
+                {
+                    for( const authPath of AUTH_PATHES )
+                    {
+                        if( role === authPath.permission )
+                        {
+                            response.redirect(authPath.path);
+                            break;
+                        }
+                    }
+                }
+                else if( pathToCheck !== undefined )
+                {
+                    if( isAPI === false )
+                    {
+                        if( pathToCheck.permission !== role )
+                        {
+                            response.redirect("/");
+                        }
+                        else
+                        {
+                            next();
+                        }
+                    }
+                    else
+                    {
+                        // check api role here
+                        next();
+                    }
+                }
+                else
+                {
+                    next();
+                }
+            }
         }
         else
         {
@@ -183,15 +309,12 @@ const authMiddleware = async function( request, response, next )
                 response.json( { status: "ko", message:"API access error" } );
             }
         }
+        
     }
     catch( err )
     {
         console.log(err);
         response.json( { status: "ko", error: err.message } );
-    }
-    finally
-    {
-        //await MONGO_CLIENT.close();
     }
 };
 
@@ -221,12 +344,32 @@ const finalMiddleware = function( request, response, next )
 /// STATS PART
 ///
 
+/**
+ * POST
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
 const apiStatsAddHandler = async function( request, response )
 {
     try
     {
         const body = request.body;
-        await AxialMongoUtils.registerInCollection( MONGO_CLIENT, "stats", body );
+        const user = response.locals.user;
+
+        let statDoc = body;
+        body.ip = request.ip;
+        body.ips = request.ips;
+        if( user && user.uuid )
+        {
+            body.user = user.uuid
+        }
+        else
+        {
+            body.user = "";
+        }
+
+        const result = await AXIAL_MONGO.setData("stats", statDoc);
+        
         response.json( BASIC_OK );
     }
     catch(err)
@@ -236,14 +379,16 @@ const apiStatsAddHandler = async function( request, response )
     }
 };
 
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
 const apiStatsGetHandler = async function( request, response )
 {
     try
     {
-        const client = await MONGO_CLIENT.connect();
-        const db = client.db( DATABASE_NAME );
-        const collection = db.collection("stats");
-        const docs = await collection.find({}).toArray();
+        const docs = await AXIAL_MONGO.getData("stats");
         response.json( { status: "ok", stats: docs } );
     }
     catch(err)
@@ -253,80 +398,16 @@ const apiStatsGetHandler = async function( request, response )
     }
 };
 
-///
-/// CRYPTO PART
-///
-
-/**
- * 
- * @param { Express.Request } request 
- * @param { Express.Response } response 
- */
-const apiCryptoUuidHandler = function( request, response )
-{
-    try
-    {
-        const uuid = crypto.randomUUID();
-        response.json( { status: "ok", uuid: uuid } );
-    }
-    catch( err )
-    {
-        console.log(err);
-        response.json( { status: "ko", error: err } );
-    }
-};
-
-/**
- * 
- * @param { Express.Request } request 
- * @param { Express.Response } response 
- */
-const apiCryptoKeyHandler = function( request, response )
-{
-    try
-    {
-        const n = Number(request.query.n);
-        const key = AxialCryptoUtils.generateKey(n);
-        response.json( { status: "ok", key: key } );
-    }
-    catch( err )
-    {
-        console.log(err);
-        response.json( { status: "ko", error: err } );
-    }
-};
-
-/**
- * 
- * @param { Express.Request } request 
- * @param { Express.Response } response 
- */
-const apiCryptoEncryptHandler = function( request, response )
-{
-    try
-    {
-        const s = request.query.s;
-        if( s == undefined || s == "" )
-        {
-            response.json( { status: "ko", error: "no string provided" } );
-        }
-        else
-        {
-            const encrypted = AxialCryptoUtils.encrypt(s);
-            response.json( { status: "ok", encrypted: encrypted } );
-        }
-    }
-    catch( err )
-    {
-        console.log(err);
-        response.json( { status: "ko", error: err } );
-    }
-};
 
 ///
 /// LOGIN PART
 ///
 
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
 const apiAuthSigninHandler = async function( request, response )
 {
     try
@@ -335,12 +416,8 @@ const apiAuthSigninHandler = async function( request, response )
 
         const email = body.email;
         const password = body.password;
-
-        const client = await MONGO_CLIENT.connect();
-        const db = client.db( DATABASE_NAME );
-        const users = db.collection("users");
         const encryptedEmail = AxialCryptoUtils.encrypt( email );
-        const user = await users.findOne( { email: encryptedEmail } );
+        const user = await AXIAL_MONGO.getData( "users", {email: encryptedEmail} );
         
         if( user === null )
         {
@@ -357,7 +434,7 @@ const apiAuthSigninHandler = async function( request, response )
             }
             else
             {
-                //console.log("it's okkkkkk");
+                const verifiedUser = await AXIAL_MONGO.updateData("users", { uuid: user.uuid }, { $set: { verified: false } } );
                 const payload = 
                 {
                     username: user.username,
@@ -365,17 +442,10 @@ const apiAuthSigninHandler = async function( request, response )
                 };
                 const token = jwt.sign( JSON.stringify(payload), JWT_SECRET_KEY );
 
+                // here page to redirect
+
                 response.cookie( "axial_auth_jwt", token, { httpOnly: true } );
-                let userPage = "/";
-                for( const authPath of AUTH_PATHES )
-                {
-                    if( authPath.permission === user.role )
-                    {
-                        userPage = authPath.path;
-                    }
-                }
-                const responseUser = { username: user.username, page: userPage };
-                response.json( { status: "ok", message: "connected", user: responseUser } );
+                response.json( { status: "ok" } );
             }
         }
     }
@@ -383,19 +453,126 @@ const apiAuthSigninHandler = async function( request, response )
     {
         response.json( { status: "ko", error: err.message } );
     }
-    finally
+};
+
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiAuthCodeSendHandler = async function( request, response )
+{
+    try
     {
-        //await MONGO_CLIENT.close();
+        // check if user exists
+        // check if timecode exist if yes replace
+        const user = response.locals.user;
+        const tempCode = AxialServerUtils.getVerificationCode();
+        const decryptedEmail = AxialCryptoUtils.decrypt( user.email );
+        const timeResult = await AXIAL_MONGO.setTimeCode( tempCode, user.email );
+
+        await AXIAL_MAILER.sendMail( "Your verification code", decryptedEmail, "sendcode", { code: tempCode } );
+
+        response.json( { email: decryptedEmail } )
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( { status: "ko", error: err } );
     }
 };
 
-
-const apiAuthSignupHandler = function( request, response )
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiAuthCodeVerifyHandler = async function( request, response )
 {
-    response.json( BASIC_OK );
+    try
+    {
+        const user = response.locals.user;
+        const code = request.body.code;
+        const timeFilter = { timecode: code, timechecker: user.email };
+        const timeResult = await AXIAL_MONGO.getData("codes", timeFilter);
+        if( Array.isArray(timeResult) && timeResult.length === 0 )
+        {
+            response.json(BASIC_KO);
+        }
+        else
+        {
+            const userUpdated = await AXIAL_MONGO.updateData("users", {email: user.email}, {$set: {verified: true}});
+            const currentUser = await AXIAL_MONGO.getData( "users", {uuid: user.uuid} );
+            let redirection = "";
+            if( SUBSCRIPTION_REQUIRED === true && currentUser.role === "user" )
+            {
+                redirection = SUBSCRIPTION_PAYMENT_PATH;
+            }
+            else
+            {
+                redirection = "/" + user.role + "/";
+            }
+            const jsonResponse = { status: "ok", uuid: user.uuid, path: redirection };
+            response.json(jsonResponse);
+        }
+        
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( { status: "ko", error: err } );
+    }
 };
 
-// post
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiAuthSignupHandler = async function( request, response )
+{
+    // check username
+    const body = request.body;
+    const email = body.email;
+    const pass = body.password;
+    try
+    {
+        const encryptedEmail = AxialCryptoUtils.encrypt( email );
+        const possibleUsers = await AXIAL_MONGO.getData("users", { model: "user", email: encryptedEmail } );
+        if( possibleUsers === null )
+        {
+            const newUserResult = await AXIAL_MONGO.setData("users", body, "user");
+            const newUser = await AXIAL_MONGO.getData("users", { model: "user", email: encryptedEmail } );
+
+            const payload = 
+            {
+                username: newUser.username,
+                uuid: newUser.uuid,
+            };
+            const token = jwt.sign( JSON.stringify(payload), JWT_SECRET_KEY );
+
+            response.cookie( "axial_auth_jwt", token, { httpOnly: true } );
+            response.json(BASIC_OK);
+        }
+        else
+        {
+            // user alreafy exists
+            response.json(BASIC_KO);
+        }
+        
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( { status: "ko", error: err } );
+    }
+};
+
+/**
+ * POST
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
 const apiAuthSignoutHandler = function( request, response )
 {
     try
@@ -406,6 +583,7 @@ const apiAuthSignoutHandler = function( request, response )
     catch(err)
     {
         console.log(err);
+        response.json( { status: "ko", error: err } );
     }
 };
 
@@ -420,7 +598,6 @@ const apiAuthSignoutHandler = function( request, response )
  */
 const apiMediasGetHandler = async function( request, response )
 {
-    console.log("[API] apiMediasGet");
     try
     {
         const localUser = response.locals.user;
@@ -455,11 +632,9 @@ const apiMediasGetHandler = async function( request, response )
  */
 const apiMediasAllHandler = async function( request, response )
 {
-    console.log("[API] apiMediasAll");
     try
     {
         const localUser = response.locals.user;
-        console.log(localUser.uuid);
         const localUserMediasPath = path.join( DIRNAME, UPLOADS_FOLDER, localUser.uuid );
         const dirExists = fs.existsSync(localUserMediasPath);
         if( dirExists === false )
@@ -484,7 +659,6 @@ const apiMediasAllHandler = async function( request, response )
  */
 const apiMediasPublicHandler = async function( request, response )
 {
-    console.log("[API] apiMediasPublic");
     try
     {
         
@@ -493,7 +667,6 @@ const apiMediasPublicHandler = async function( request, response )
         if( dirExists === true )
         {
             const publicMedias = await fsp.readdir(publicMediasPath);
-            console.log(publicMedias);
             response.json( { status: "ok", medias: publicMedias } );
         }
         else
@@ -524,19 +697,17 @@ const apiMediasUploadHandler = async function( request, response )
         const fileName = upFile.originalname;
         const fileData = upFile.buffer;
 
-        console.log(upFile);
-        const filePublic = Boolean( Number( request.get("axial_filepublic") ) );
-        console.log( typeof filePublic );
-        console.log( filePublic );
+        //const filePublic = Boolean( Number( request.get("axial_filepublic") ) );
         
+        /// ALWAYS PUBLIC AT THE MOMENT
         
         const finalFileName = String( Date.now() ) + "_____" + fileName;
 
         // check if directory exists and if it is accessible
-        const mediasPath = path.join( DIRNAME, UPLOADS_FOLDER );
+        const mediasPath = path.join( DIRNAME, MEDIAS_FOLDER );
         const userMediasPath = path.join(mediasPath, user.uuid);
         const access = fs.existsSync(mediasPath);
-
+        
         if( access === false )
         {
             // not exist, we create it
@@ -551,18 +722,13 @@ const apiMediasUploadHandler = async function( request, response )
             {
                 const userMediasFolder = await fsp.mkdir(userMediasPath);
             }
-
         }
+        
         const filePath = path.join( userMediasPath, finalFileName );
         const uploadedFile = await fsp.writeFile( filePath, fileData, {encoding: "base64"} );
-        if( filePublic === true )
-        {
-            const publicPath = path.join( DIRNAME, MEDIAS_FOLDER, finalFileName);
-            const publicUploadedFile = await fsp.writeFile( publicPath, fileData, {encoding: "base64"} );
-        }
+        const relativeFilePath = `./${MEDIAS_FOLDER}/${user.uuid}/${finalFileName}`;
         
-        response.json( { status: "ok", message: `${fileName} successfully uploaded` } );
-        
+        response.json( { status: "ok", message: `${fileName} successfully uploaded`, path: relativeFilePath } );
     }
     catch(err)
     {
@@ -571,239 +737,13 @@ const apiMediasUploadHandler = async function( request, response )
     }
 };
 
-///
-/// SITE PARAMS PART
-///
 
-/**
- * 
- * @param { Express.Request } request 
- * @param { Express.Response } response 
- */
-const apiSiteGetInfobarHandler = async function( request, response )
-{
-    try
-    {
-        const client = await MONGO_CLIENT.connect();
-        const db = client.db( DATABASE_NAME );
-        const collection = db.collection("params");
-        const param = await collection.findOne( { name: "infobar" } );
-        response.json( { status: "ok", content: param } );
-    }
-    catch(err)
-    {
-        console.log(err);
-        response.json( BASIC_KO );
-    }
-};
-
-const apiSiteSetInfobarHandler = async function( request, response )
-{
-    try
-    {
-        const document = request.body;
-        console.log(document);
-        // check document and replcae wrong values w/ defaults
-        const client = await MONGO_CLIENT.connect();
-        const db = client.db( DATABASE_NAME );
-        const collection = db.collection("params");
-        const result = await collection.updateOne
-        (
-            { name: "infobar" },
-            {
-                $set:
-                {
-                    isRequired: document.isRequired,
-                    information: document.information,
-                    dateStart: new Date(document.dateStart),
-                    dateEnd: new Date(document.dateEnd)
-                },
-                $currentDate: { lastModified: true }
-            }
-        );
-        response.json( { status: "ok", content: result } );
-    }
-    catch( err )
-    {
-        console.log(err);
-        response.json( BASIC_KO );
-    }
-};
-
-///
-/// MODEL PART
-///
-
-/**
- * 
- * @param { Express.Request } request 
- * @param { Express.Response } response 
- */
-const apiModelGet = async function( request, response )
-{
-    console.log("[API] apiModelGet");
-    try
-    {
-        //console.log(request.query);
-        const localUser = response.locals.user;
-        //console.log(localUser);
-
-        //let queryValid = false; // IMPORTANT check the query and return if invalid
-
-        const q = request.query;
-        console.log(q);
-        const c = q.c;
-        const m = q.m;
-        const u = q.u;
-        
-        const client = await MONGO_CLIENT.connect();
-        const db = client.db(DATABASE_NAME);
-
-        const allCollections = await db.collections( { nameOnly: true } );
-        let collectionNames = new Array();
-        for( const col of allCollections )
-        {
-            if( col.collectionName != "models" )
-            {
-                collectionNames.push(col.collectionName);
-            }
-        }
-
-        // find the required model in the models collection
-        const modelsCollection = db.collection("models");
-        let model = {};
-        if( m != undefined )
-        {
-            model = await modelsCollection.findOne( { name: m } );//.toArray();
-            if( m == "user" )
-            {
-                console.log("check role");
-                //console.log("model user found");
-                const userRole = localUser.role;
-                //console.log("userRole = " + userRole);
-                const roleIndex = ROLES.indexOf(userRole) + 1;
-                //console.log("roleIndex = " + roleIndex);
-                const rolesUpdated = ROLES.slice(roleIndex);
-                //console.log(rolesUpdated);
-                //console.log(model.props.role.list);
-                model.props.role.list = rolesUpdated;
-                //console.log(model.props.role.list);
-            }
-        }
-        //console.log( "MODEL" );
-        //console.log( model );
-        
-
-        // get all models from the required collection
-        const currentCollection = db.collection( c );
-        const collection = await currentCollection.find( {} ).toArray();
-        for( const model of collection )
-        {
-            if( model.name == "user" )
-            {
-                const userRole = localUser.role;
-                const roleIndex = ROLES.indexOf(userRole) + 1;
-                const rolesUpdated = ROLES.slice(roleIndex);
-                model.props.role.list = rolesUpdated;
-            }
-        }
-
-        // get the current item
-        let item = {};
-        if( u != undefined )
-        {
-            item = await currentCollection.findOne({ _id: new ObjectId( String(u) ) } );
-            //console.log( "ITEM" );
-            //console.log(item);
-    
-            for( const p of Object.keys(item) )
-            {
-                console.log(item[p]);
-                console.log( model.props[p] );
-                const prop = model.props[p];
-                if( prop != undefined && prop.type && prop.type === "string" && prop.crypted && prop.crypted === true )
-                {
-                    item[p] = AxialCryptoUtils.decrypt( item[p] );
-                }
-            }
-        }
-        //console.log(item)
-        //console.log("role checker");
-        //console.log(model.props.role.list);
-        response.json( { status: "ok", content: { all: collectionNames, model: model, collection: collection, item: item } });
-    }
-    catch(err)
-    {
-        console.log(err);
-        response.json("model get error");
-    }
-};
-
-const apiModelSet = async function( request, response )
-{
-    //response.json( { status: "ok model" });
-    
-    try
-    {
-        const document = request.body;
-        console.log(document);
-
-        const mode = document.mode;
-        const collectionName = document.collection;
-        
-        const client = await MONGO_CLIENT.connect();
-        const db = client.db(DATABASE_NAME);
-        const collection = db.collection(collectionName);
-
-        let object = document.object;
-        let result = {};
-
-        if( mode === "new" )
-        {
-            const modelExist = await collection.findOne( { name: document.name } );
-            if( modelExist == null )
-            {
-                result = await collection.insertOne( object );
-            }
-        }
-        else if( mode === "from" )
-        {
-            // 1) find the model
-            console.log("1) find the model : name = " + object.model );
-            const modelsCollection = db.collection("models");
-            const modelReference = await modelsCollection.findOne( { name: object.model } );
-            console.log("modelsReference found")
-            console.log(modelReference);
-
-            for( const prop of Object.keys( modelReference.props ) )
-            {
-                const crypted = modelReference.props[prop].crypted;
-                if( crypted === true )
-                {
-                    object[prop] = AxialCryptoUtils.encrypt(object[prop]);
-                }
-            }
-
-            object.uuid = crypto.randomUUID();
-            result = await collection.insertOne( object );
-
-        }
-        response.json( { status: "ok", content: { result: result } });
-    }
-    catch(err)
-    {
-        console.log(err);
-        response.json("model error");
-    }
-    
-};
 
 ///
 /// 2025
 ///
 const apiDataGet = async function( request, response )
 {
-    console.log("API_DATA_GET");
     try
     {
         let documents = new Array();
@@ -812,12 +752,10 @@ const apiDataGet = async function( request, response )
         let model = "";
 
         //const collectionName = request.query.c;
-        console.log(request.query);
 
         const query = request.query;
         for( const p of Object.keys(query) )
         {
-            console.log(p, typeof query[p] );
             const v = query[p];
             switch( p )
             {
@@ -843,7 +781,6 @@ const apiDataGet = async function( request, response )
                         // check if values are not empty
                         // move to a util that Create the filter mays AxialMongo.createFilter or AxialMongo.parseFilter
                         const nc = ( v.match( new RegExp(",", "g") ) || [] ).length;
-                        console.log("comas = ", nc);
                         if( nc === 1 )
                         {
                             const fa = v.split(",");
@@ -863,7 +800,6 @@ const apiDataGet = async function( request, response )
                     }
                     else if( Array.isArray(v) === true )
                     {
-                        console.log(v);
                         for( const pkv of v )
                         {
                             const nc = ( pkv.match( new RegExp(",", "g") ) || [] ).length;
@@ -893,12 +829,18 @@ const apiDataGet = async function( request, response )
             }
         }
 
-        console.log("FILTERS");
-        console.log(filters);
-
         if( collection !== "" )
         {
-            documents = await MONGO.getData( collection, filters, model );
+            documents = await AXIAL_MONGO.getData( collection, filters, model );
+        }
+
+        if( documents === null )
+        {
+            documents = [];
+        }
+        else if( Array.isArray(documents) === false )
+        {
+            documents = [documents];
         }
         
         const result = { status: "ok", content: documents };
@@ -913,15 +855,12 @@ const apiDataGet = async function( request, response )
 
 const apiDataSet = async function( request, response )
 {
-    console.log("API_DATA_SET");
     try
     {
         const doc = request.body;
         const col = doc.collection;
         const model = doc.model;
-        //console.log( model )
-        const insertedOrReplaced = await MONGO.setData( col, doc, model );
-        //console.log(insertedOrReplaced);
+        const insertedOrReplaced = await AXIAL_MONGO.setData( col, doc, model );
         
         const result = { status: "ok", content: insertedOrReplaced };
         response.json( result );
@@ -932,6 +871,205 @@ const apiDataSet = async function( request, response )
         response.json( BASIC_KO );
     }
 };
+
+const apiDataDel = async function( request, response )
+{
+    console.log("API_DATA_DEL");
+    try
+    {
+        const doc = request.body;
+        const collection = doc.collection;
+        const uuid = doc.uuid;
+        const deletion = await MONGO.delData(collection, uuid);
+        const result = { status: "ok", content: deletion };
+        response.json( result );
+    }
+    catch( err )
+    {
+        console.log(err);
+        response.json( BASIC_KO );
+    }
+};
+
+///
+/// PARAMS
+///
+
+const apiParamsInfobarGet = async function( request, response )
+{
+    console.log("API_PARAMS_INFOBAR_GET");
+    try
+    {
+        const param = await AXIAL_MONGO.getData("params", {model: "info_bar"}, "info_bar");
+        console.log("param info bar", param);
+        const result = { status: "ok", content: param };
+        response.json(result);
+    }
+    catch(err)
+    {
+        console.log(err);
+    }
+}
+
+const apiParamsInfobarSet = async function( request, response )
+{
+    try
+    {
+        const doc = request.body;
+        console.log( doc )
+        const infobarUpdated = await AXIAL_MONGO.setData("params", doc, "info_bar");
+        response.json(BASIC_OK);
+    }
+    catch(err)
+    {
+        console.log(err);
+    }
+}
+
+
+///
+/// STRIPE TEST
+///
+
+const apiProductsSet = async function( request, response )
+{
+    try
+    {
+        let body = request.body;
+        let stripeProduct;
+        if( STRIPE_USE === true )
+        {
+            let stripeProductObject = {};
+            stripeProductObject.active = true;
+            if( body.items && Array.isArray( body.items) )
+            {
+                for( const item of body.items )
+                {
+                    if( item.field && item.value )
+                    {
+                        // super nullissime
+                        let realValue;
+                        if( Array.isArray( item.value ) )
+                        {
+                            realValue = item.value[0].value;
+                        }
+                        else
+                        {
+                            realValue = item.value;
+                        }
+
+                        switch( item.field )
+                        {
+                            case "name":
+                                stripeProductObject.name = realValue;
+                            break;
+
+                            case "description":
+                                stripeProductObject.description = realValue;
+                            break;
+
+                            case "image_main":
+                                stripeProductObject.images = [ realValue ];
+                            break;
+
+                            default:
+                            break;
+                        }
+                    }
+                }
+            }
+            const tempStripeProduct = await STRIPE.products.create(stripeProductObject);
+        }
+        response.json( BASIC_OK );
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( BASIC_KO );
+    }
+};
+
+
+// under dev
+const apiPricesSet = async function( request, response )
+{
+    try
+    {
+        let body = request.body;
+        let stripeProduct;
+        if( STRIPE_USE === true )
+        {
+            let stripeProductObject = {};
+            stripeProductObject.active = true;
+            if( body.items && Array.isArray( body.items) )
+            {
+                for( const item of body.items )
+                {
+                    if( item.field && item.value )
+                    {
+                        // super nullissime
+                        let realValue;
+                        if( Array.isArray( item.value ) )
+                        {
+                            realValue = item.value[0].value;
+                        }
+                        else
+                        {
+                            realValue = item.value;
+                        }
+
+                        switch( item.field )
+                        {
+                            case "name":
+                                stripeProductObject.name = realValue;
+                            break;
+
+                            case "description":
+                                stripeProductObject.description = realValue;
+                            break;
+
+                            case "image_main":
+                                stripeProductObject.images = [ realValue ];
+                            break;
+
+                            default:
+                            break;
+                        }
+                    }
+                }
+            }
+            const tempStripeProduct = await STRIPE.products.create(stripeProductObject);
+        }
+        response.json( BASIC_OK );
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( BASIC_KO );
+    }
+};
+
+// under dev
+const apiPayClientAdd = async function( request, response )
+{
+    try
+    {
+        const testStripeClient = await STRIPE.customers.create({email: "test@test.fr"});
+        response.json( BASIC_KO );
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( BASIC_KO );
+    }
+};
+
+///
+/// PDF TEST
+///
+
+//const pdfMaker = new AxialPdfMaker();
+//pdfMaker.create();
 
 ///
 /// SERVER ROUTES
@@ -953,24 +1091,22 @@ AXIAL_SERVER_APPLICATION.use( authMiddleware );
 // 2025 PRIVATE API
 AXIAL_SERVER_APPLICATION.get( "/api/data/get", apiDataGet );
 AXIAL_SERVER_APPLICATION.post( "/api/data/set", apiDataSet );
+AXIAL_SERVER_APPLICATION.post( "/api/data/del", apiDataDel);
 
 // STATS
 AXIAL_SERVER_APPLICATION.get( "/api/stats/get", apiStatsGetHandler );
 AXIAL_SERVER_APPLICATION.post( "/api/stats/add", apiStatsAddHandler );
 
-// CRYPTO
-AXIAL_SERVER_APPLICATION.get( "/api/crypto/uuid", apiCryptoUuidHandler );
-AXIAL_SERVER_APPLICATION.get( "/api/crypto/key", apiCryptoKeyHandler );
-AXIAL_SERVER_APPLICATION.get( "/api/crypto/encrypt", apiCryptoEncryptHandler );
+// PARAMS
+AXIAL_SERVER_APPLICATION.get( "/api/params/infobar/get", apiParamsInfobarGet );
+AXIAL_SERVER_APPLICATION.post( "/api/params/infobar/set", apiParamsInfobarSet );
 
 // AUTH
 AXIAL_SERVER_APPLICATION.post( "/api/auth/signin", apiAuthSigninHandler);
-// AXIAL_SERVER_APPLICATION.post( "/api/auth/signup", apiAuthSignupHandler);
+AXIAL_SERVER_APPLICATION.post( "/api/auth/signup", apiAuthSignupHandler);
 AXIAL_SERVER_APPLICATION.post( "/api/auth/signout", apiAuthSignoutHandler);
-
-// PARAMS (WEBSITE) -> I probably go also with some server params
-AXIAL_SERVER_APPLICATION.get( "/api/site/infobar/get", apiSiteGetInfobarHandler );
-AXIAL_SERVER_APPLICATION.post( "/api/site/infobar/set", apiSiteSetInfobarHandler );
+AXIAL_SERVER_APPLICATION.post( "/api/auth/code/send", apiAuthCodeSendHandler);
+AXIAL_SERVER_APPLICATION.post( "/api/auth/code/verify", apiAuthCodeVerifyHandler);
 
 // MEDIAS
 AXIAL_SERVER_APPLICATION.get( "/api/medias/get", apiMediasGetHandler );
@@ -978,11 +1114,15 @@ AXIAL_SERVER_APPLICATION.get( "/api/medias/all", apiMediasAllHandler );
 AXIAL_SERVER_APPLICATION.get( "/api/medias/public", apiMediasPublicHandler );
 AXIAL_SERVER_APPLICATION.post( "/api/medias/upload", multerUploader.single("axial_file"), apiMediasUploadHandler );
 
-// DATABASE : NO API
+// PRODUCTS
+AXIAL_SERVER_APPLICATION.post( "/api/products/set", apiProductsSet );
 
-// MODELS
-AXIAL_SERVER_APPLICATION.get( "/api/model/get", apiModelGet );
-AXIAL_SERVER_APPLICATION.post( "/api/model/set", apiModelSet );
+// PRICES
+//AXIAL_SERVER_APPLICATION.post( "/api/prices/set", apiPricesSet );
+
+// PAYMENTS
+//AXIAL_SERVER_APPLICATION.get("/api/pay/client/add", apiPayClientAdd);
+
 
 AXIAL_SERVER_APPLICATION.use( "/", express.static( path.join( DIRNAME, "static" )) );
 // NO DEV FOLDER

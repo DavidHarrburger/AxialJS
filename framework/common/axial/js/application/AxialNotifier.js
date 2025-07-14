@@ -50,7 +50,6 @@ class AxialNotifier extends AxialComponentBase
         {
             this.#content.innerHTML = message;
         }
-        //this.#holder.style.visibility = "visible";
         this.#holder.style.transform = "translateY(0%)";
         if( this.#timeoutId )
         {

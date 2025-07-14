@@ -30,9 +30,9 @@ class AxialAdminPopup extends AxialPopupBase
         return [ "axial-position", "axial-animation", "axial-function", "axial-duration", "axial-title" ];
     }
 
-    connectedCallback()
+    _buildComponent()
     {
-        super.connectedCallback();
+        super._buildComponent();
         
         this.#titleElement = this.shadowRoot.getElementById("title");
         if( this.#titleElement )

@@ -1,0 +1,19 @@
+<!-- ./auth/AxialAuthVerifyer -->
+<template id="axial-auth-verifyer-template">
+    <link rel="stylesheet" href="./styles.css">
+    <form id="form" class="axial_auth_verifyer-form" autocomplete="off">
+        <div class="axial_auth_verifyer-baseline">An email has been sent to this address:<br><span class="axial_auth_verifyer-email" id="email">email to check</span></div>
+        
+        <div class="axial_auth_verifyer-inputs" id="holder">
+            <input class="axial_auth_verifyer-numinput" type="text" pattern="[0-9]" id="num_1" value="" required minlength="1" maxlength="1" autocomplete="off">
+            <input class="axial_auth_verifyer-numinput" type="text" pattern="[0-9]" id="num_2" value="" required minlength="1" maxlength="1" autocomplete="off">
+            <input class="axial_auth_verifyer-numinput" type="text" pattern="[0-9]" id="num_3" value="" required minlength="1" maxlength="1" autocomplete="off">
+            <input class="axial_auth_verifyer-numinput" type="text" pattern="[0-9]" id="num_4" value="" required minlength="1" maxlength="1" autocomplete="off">
+            <input class="axial_auth_verifyer-numinput" type="text" pattern="[0-9]" id="num_5" value="" required minlength="1" maxlength="1" autocomplete="off">
+            <input class="axial_auth_verifyer-numinput" type="text" pattern="[0-9]" id="num_6" value="" required minlength="1" maxlength="1" autocomplete="off">
+        </div>
+        <div class="axial_auth_verifyer-message" id="message"></div>
+        <div class="axial_auth_verifyer-divider"></div>
+        <axial-service-button id="button" axial-text="Renvoyer un code"></axial-service-button>
+    </form>
+</template>

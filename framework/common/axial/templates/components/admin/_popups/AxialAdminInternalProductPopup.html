@@ -1,0 +1,22 @@
+<!-- ./admin/_popups/AxialAdminInternalProductPopup -->
+<template id="axial-admin-internal-product-popup-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div class="axial_admin_popup-holder">
+        <div class="axial_admin_popup-header">
+            <div id="title" class="axial_admin_popup-title"></div>
+            <div class="axial_spacer"></div>
+            <axial-button id="closer" axial-text="Fermer"></axial-button>
+        </div>
+        <div class="axial_admin_popup-content">
+            <slot id="contentSlot" name="axial-content"></slot>
+            <axial-service-form id="internalProductForm" axial-post-path="../api/data/set" axial-collection="products" axial-model="product_internal">
+                <axial-service-form-item-image slot="axial-items" axial-upload-path="../api/medias/upload" axial-field="image_main"></axial-service-form-item-image>
+                <axial-service-form-item-inputs slot="axial-items" axial-label="Produit" axial-field="product_props" axial-direction="row">
+                    <input type="text" slot="axial-content" name="product_name" placeholder="Nom du produit" required>
+                    <input type="text" slot="axial-content" name="product_ref" placeholder="Référence interne">
+                </axial-service-form-item-inputs>
+                <axial-service-form-item-internal-product-price slot="axial-items" axial-label="Informations sur le prix" axial-direction="row"></axial-service-form-item-internal-product-price>
+            </axial-service-form>
+        </div>
+    </div>
+</template>

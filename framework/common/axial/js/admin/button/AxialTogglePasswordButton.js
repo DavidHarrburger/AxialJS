@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 import { AxialToggleButton } from "../../button/AxialToggleButton.js";
 

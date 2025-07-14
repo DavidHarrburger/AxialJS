@@ -43,6 +43,12 @@ class AxialChartBase extends AxialServiceComponentBase
         this.dispatchEvent(chartDataChangedEvent);
     }
 
+    /**
+     * @readonly
+     * @type { Boolean }
+     */
+    get chartDrawn() { return this.#chartDrawn; }
+
     _buildComponent()
     {
         super._buildComponent();
@@ -62,6 +68,7 @@ class AxialChartBase extends AxialServiceComponentBase
 
     #clearChart()
     {
+        this.#chartDrawn = false;
         if( this._clearChart )
         {
             this._clearChart();

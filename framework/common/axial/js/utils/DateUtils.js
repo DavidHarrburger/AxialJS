@@ -3,6 +3,15 @@
 class DateUtils
 {
 
+    /** @type { Number } */
+    static #firstDayOfTheWeek = 1;
+
+    /** @type { Array.<String> } */
+    static #DAY_NAMES = [ "Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi" ];
+
+    /** @type { Array.<String> } */
+    static #MONTH_NAMES = [ "Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre" ];
+
     /**
      * Check if the current day i.e. new Date is between a Date Start and a Date End, assuming Date Start < Date End
      * @static
@@ -20,6 +29,16 @@ class DateUtils
         let isInPeriod = false;
         if( d >= ds && d <= de ) { isInPeriod = true; }
         return isInPeriod;
+    }
+
+    /**
+     * Date validation checker
+     * @param { Date } date 
+     * @returns { Boolean }
+     */
+    static isValidDate( date )
+    {
+        return !isNaN(date);
     }
 
     /**
@@ -71,6 +90,11 @@ class DateUtils
         return formated;
     }
 
+    static formatString( d )
+    {
+        
+    }
+
     static tomorrow()
     {
         // return new Date( new Date().getDate() + 1 );
@@ -86,6 +110,31 @@ class DateUtils
         return yesterday;
     }
 
+    static nextDay( d = new Date() )
+    {
+        return new Date( d.getFullYear(), d.getMonth(), (d.getDate() + 1) ) ;
+    }
+
+    static previousDay( d = new Date() )
+    {
+        return new Date( d.getFullYear(), d.getMonth(), (d.getDate() - 1) ) ;
+    }
+
+    static formatHour( hour )
+    {
+        if( isNaN(hour) === true )
+        {
+            throw new TypeError("Number value between 0 and 24 included required");
+        }
+        if( hour < 0 || hour > 24 )
+        {
+            throw new TypeError("Number value between 0 and 24 included required");
+        }
+
+        const f = Math.floor(hour);
+        return String(f).length === 1 ? "0"+f+":00" : f+":00";
+    }
+
     /**
      * 
      * @param { Date } fd - the first date
@@ -99,44 +148,6 @@ class DateUtils
         }
         const diff = sd.getTime() - fd.getTime();
         return diff;
-    }
-
-    static duration( n )
-    {
-        let milli = 0;
-        let sec = 0;
-        let min = 0;
-        let hour = 0;
-        let nday = 0;
-
-        sec = Math.floor( n / 1000);
-        milli = n % 1000;
-
-        min = Math.floor( sec / 60);
-        sec = sec % 60;
-
-        hour = Math.floor( min / 60);
-        min = min % 60;
-
-        //let r = String(min) + "min " + String(sec) +"s " + String(milli) + "ms";
-        let r = String(milli) + "ms";
-
-        if( sec > 0 )
-        {
-            r = String(sec) +"s " + r;
-        }
-
-        if( min > 0 )
-        {
-            r = String(min) + "min " + r;
-        }
-
-        if( hour > 0 )
-        {
-            r = String(hour) + "h " + r;
-        }
-
-        return r;
     }
 }
 

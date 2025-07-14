@@ -1,9 +1,18 @@
 :root
 {
     --adminBody___backgroundColor: #fff;
+    --adminBody___borderColor: #d1d2d4;
+
+    --adminContent___paddingLeft: 20px;
+    --adminContent___paddingRight: 20px;
+
+    --adminContent___paddingTop: 20px;
+    --adminContent___paddingBottom: 20px;
 
     /* panel */
-    --adminPanel___width: 320px;
+    --adminPanel___width: 100%;/*320px*/
+    --adminPanel___transform: translateX(-100%);
+    --adminPanel___transitionDuration: 500ms;
     --adminPanel___display: block;
     --adminPanel___backgroundColor: #fff;
 
@@ -16,17 +25,29 @@
     --adminTitle___color: #010203;
     
     /* main */
+    --adminMain___left: 0;
     --adminMain___backgroundColor: #f8f9fb;
+
+    /* views */
+    --adminView___headerHeight: 80px;
 }
 body
 {
     background-color: var(--adminBody___backgroundColor);
     color: #232323;
+    width: 100%;
+    height: 100svh;
+    min-height: 100svh;
 }
 h1, h2, h3, h4, h5, h6 { color: #232323; margin-top: 0; margin-bottom: 20px; }
 
 .axial_admin_fill_theme { fill: var(--themeColor); }
-
+.axial_main_layer-admin
+{
+    width: 100%;
+    height: 100svh;
+    min-height: 100svh;
+}
 .axial_admin_main
 {
     position: absolute;
@@ -34,7 +55,7 @@ h1, h2, h3, h4, h5, h6 { color: #232323; margin-top: 0; margin-bottom: 20px; }
     right: 0;
 
     top:              var(--adminHeader___height);
-    left:             var(--adminPanel___width);
+    left:             var(--adminMain___left);
     background-color: var(--adminMain___backgroundColor);
 
     display: flex;
@@ -45,19 +66,23 @@ h1, h2, h3, h4, h5, h6 { color: #232323; margin-top: 0; margin-bottom: 20px; }
     position: absolute;
     top: 0;
     right: 0;
-    border-bottom: 1px solid #e1e6f0;
+    border-bottom: 1px solid var(--adminBody___borderColor);
 
     display: flex;
     align-items: center;
 
-    padding-left: 20px;
-    padding-right: 20px;
+    padding-left:  var(--adminContent___paddingLeft);
+    padding-right: var(--adminContent___paddingRight);
     padding-top: 10px;
     padding-bottom: 10px;
 
-    left:             var(--adminPanel___width);
+    left:             var(--adminMain___left);
     height:           var(--adminHeader___height);
     background-color: var(--adminHeader___backgroundColor);
+}
+.axial_admin_burger
+{
+    display: block;
 }
 .axial_admin_title
 {
@@ -72,17 +97,50 @@ h1, h2, h3, h4, h5, h6 { color: #232323; margin-top: 0; margin-bottom: 20px; }
     font-weight: 500;
     color: #232323;
 }
+.axial_admin_authbox
+{
+    width: auto;
+    height: 100px;
+    padding-left: 10px;
+    padding-right: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+}
+.axial_admin_authbox-name
+{
+    font-size: 18px;
+    font-weight: 500;
+}
+.axial_admin_authbox-photo
+{
+    display: block;
+    width: 40px;
+    height: 40px;
+    border: 2px solid var(--themeColor);
+    overflow: hidden;
+    border-radius: 50%;
+    object-fit: cover;
+}
 .axial_admin_panel
 {
     position: absolute;
     left: 0;
     top: 0;
     bottom: 0;
-    border-right: 1px solid #e1e6f0;
+    border-right: 1px solid var(--adminBody___borderColor);
 
     display:          var(--adminPanel___display);
     width:            var(--adminPanel___width);
     background-color: var(--adminPanel___backgroundColor);
+
+    transform: var(--adminPanel___transform);
+
+    transition-property: transform;
+    transition-duration: var(--adminPanel___transitionDuration);
+    transition-timing-function: ease;
 }
 .axial_admin_panel-header
 {
@@ -91,8 +149,8 @@ h1, h2, h3, h4, h5, h6 { color: #232323; margin-top: 0; margin-bottom: 20px; }
     top: 0;
 
     height: var(--adminPanelHeader___height);
-    padding-left: 20px;
-    padding-right: 20px;
+    padding-left:  var(--adminContent___paddingLeft);
+    padding-right: var(--adminContent___paddingRight);
     padding-top: 10px;
     padding-bottom: 10px;
 }
@@ -116,17 +174,19 @@ h1, h2, h3, h4, h5, h6 { color: #232323; margin-top: 0; margin-bottom: 20px; }
     width: 100%;
     bottom: 0;
     padding-top: 30px;
-    padding-bottom: 30px;
+    padding-bottom: 20px;
+    padding-left:  var(--adminContent___paddingLeft);
+    padding-right: var(--adminContent___paddingRight);
     
     top: var(--adminPanelHeader___height);
+
+    display: flex;
+    flex-direction: column;
 }
 .axial_admin_panel-toggles
 {
     width: 100%;
     height: auto;
-    
-    padding-left: 20px;
-    padding-right: 20px;
 }
 /* CARDS */
 .axial_admin_card
@@ -137,7 +197,362 @@ h1, h2, h3, h4, h5, h6 { color: #232323; margin-top: 0; margin-bottom: 20px; }
     box-shadow: 0 1px 1px 0 rgba(118, 135, 154, 0.24), 0 3px 8px 0 rgba(118, 135, 154, 0.08);
     
 }
+/* ADMIN VIEW NEW */
+.axial_admin_view-holder
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+.axial_admin_view-header
+{
+    position: absolute;
+    width: 100%;
+    height: var(--adminView___headerHeight);
+    background-color: #fff;
+    border-bottom: 1px solid var(--adminBody___borderColor);
+
+    padding-left:  var(--adminContent___paddingLeft);
+    padding-right: var(--adminContent___paddingRight);
+
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 20px;
+}
+.axial_admin_view-title
+{
+    font-size: 21px;
+    font-weight: 800;
+}
+.axial_admin_view-content
+{
+    position: absolute;
+    width: 100%;
+    top: var(--adminView___headerHeight);
+    bottom: 0;
+
+    padding-left: var(--adminContent___paddingLeft);
+    padding-right: var(--adminContent___paddingRight);
+
+    padding-top:  var(--adminContent___paddingTop);
+    padding-bottom: var(--adminContent___paddingBottom);
+
+    background-color: #fff;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+.axial_admin_view-content-transparent
+{
+    background-color: transparent;
+}
+.axial_admin_view-stats_grid
+{
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: 20px;
+}
+.axial_admin_view-stats_traffic
+{
+    position: relative;
+    /*background-color: #4b5764;*/
+    grid-row: 1 / span 3;
+    grid-column: 1 / span 12;
+}
+/* LIST */
+.axial_admin_list
+{
+    position: relative;
+    width: 100%;
+    height: auto;
+}
+.axial_admin_list-holder
+{
+    position: relative;
+    width: 100%;
+    height: auto;
+    
+}
+.axial_admin_list-header
+{
+    position: relative;
+    width: 100%;
+    height: 40px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+}
+
+.axial_admin_list-content
+{
+    position: relative;
+    width: 100%;
+    height: auto;
+}
+
+/* LIST ITEMS */
+/* globals */
+.axial_admin_list_item
+{
+    position: relative;
+    width: 100%;
+    height: 80px;
+}
+.axial_admin_list_item-background
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-bottom: 1px solid var(--adminBody___borderColor);
+}
+.axial_admin_list_item-content
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+}
+.axial_admin_list_item-actions
+{
+    width: 200px;
+    height: 100%;
+    /*background-color: #232323;*/
+}
+/* AxialAdminEmployeeListItem */
+.axial_admin_employee_list_item-user
+{
+    width: 300px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+}
+.axial_admin_employee_list_item-photo
+{
+    display: block;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: #d1d2d4;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+.axial_admin_employee_list_item-name
+{
+    flex-grow: 1;
+    font-size: 14px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.axial_admin_employee_list_item-email
+{
+    font-size: 14px;
+    width: 240px;
+    font-weight: 400;
+}
+.axial_admin_employee_list_item-tel
+{
+    font-size: 14px;
+    width: 140px;
+    font-weight: 400;
+}
+/* AxialAdminClientListItem */
+.axial_admin_client_list_item-user
+{
+    flex-grow: 1;
+    width: 300px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+}
+.axial_admin_client_list_item-photo
+{
+    display: block;
+    height: 40px;
+    width: 142px;
+    object-fit: contain;
+}
+.axial_admin_client_list_item-name
+{
+    flex-grow: 1;
+    font-size: 14px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
+}
+.axial_admin_client_list_item-type
+{
+    font-size: 14px;
+    width: 80px;
+    font-weight: 400;
+}
+.axial_admin_client_list_item-email
+{
+    font-size: 14px;
+    width: 240px;
+    font-weight: 400;
+}
+.axial_admin_client_list_item-tel
+{
+    font-size: 14px;
+    width: 140px;
+    font-weight: 400;
+}
+/* AxialAdminProductListItem */
+.axial_admin_internal_product_list_item-product
+{
+    flex-grow: 1;
+    width: 300px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+}
+.axial_admin_internal_product_list_item-photo
+{
+    display: block;
+    height: 40px;
+    width: 40px;
+    object-fit: contain;
+}
+.axial_admin_internal_product_list_item-name
+{
+    flex-grow: 1;
+    font-size: 14px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
+}
+.axial_admin_internal_product_list_item-cost
+{
+    font-size: 14px;
+    width: 80px;
+    font-weight: 400;
+}
+.axial_admin_internal_product_list_item-coef
+{
+    font-size: 14px;
+    width: 80px;
+    font-weight: 400;
+}
+.axial_admin_internal_product_list_item-tax
+{
+    font-size: 14px;
+    width: 80px;
+    font-weight: 400;
+}
+/* AxialAdminUserListItem */
+.axial_admin_user_list_item
+{
+    position: relative;
+    width: 100%;
+    height: 64px;
+}
+.axial_admin_user_list_item-background
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-bottom: 1px solid var(--adminBody___borderColor);
+}
+.axial_admin_user_list_item-content
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+}
+.axial_admin_user_list_item-name
+{
+    width: 240px;
+    font-weight: 600;
+}
+.axial_admin_user_list_item-email
+{
+    width: 240px;
+    font-weight: 400;
+}
+.axial_admin_user_list_item-role
+{
+    width: 80px;
+    font-weight: 400;
+}
+.axial_admin_user_list_item-account
+{
+    width: 120px;
+    font-weight: 400;
+}
+.axial_admin_user_list_item-newsletter
+{
+    width: 120px;
+    font-weight: 400;
+}
+.axial_admin_user_list_item-creation
+{
+    width: 120px;
+    font-weight: 400;
+}
+
+/* AxialAdminUserListItem */
+.axial_admin_mail_list_item-subject
+{
+    width: 320px;
+}
+.axial_admin_mail_list_item-state
+{
+    width: 100px;
+}
+.axial_admin_mail_list_item-creation
+{
+    width: 100px;
+}
+.axial_admin_mail_list_item-date
+{
+    width: 100px;
+}
+.axial_admin_mail_list_item-template
+{
+    width: 100px;
+}
+
 /* VIEWS */
+/*
 .axial_admin_view_base
 {
     padding: 40px;
@@ -169,26 +584,9 @@ h1, h2, h3, h4, h5, h6 { color: #232323; margin-top: 0; margin-bottom: 20px; }
     display: flex;
     flex-direction: column;
 }
-.axial_admin_view-header
-{
-    position: relative;
-    height: 48px;
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    padding-left: 20px;
-    padding-right: 20px;
-    gap: 20px;
-}
-.axial_admin_view-content
-{
-    position: relative;
-    flex-grow: 1;
-    width: 100%;
-    overflow-x: hidden;
-    overflow-y: auto;
-}
+*/
+
+
 /* ITEMS */
 .axial_admin_item_base
 {
@@ -210,89 +608,8 @@ h1, h2, h3, h4, h5, h6 { color: #232323; margin-top: 0; margin-bottom: 20px; }
     padding-right: 20px;
     gap: 20px;
 }
-/* SERVICE FORM 2025 */
-/* AxialServiceFormItem */
-.axial_service_form_item
-{
-    position: relative;
-    width: 100%;
-    height: auto;
-    background-color: #fff;
-    border-radius: 10px;
-    border: 2px solid #fff;
-}
-.axial_service_form_item-holder
-{
-    width: 100%;
-    height: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 10px;
-}
-.axial_service_form_item-header
-{
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-}
-.axial_service_form_item-label
-{
-    font-weight: 600;
-    flex-grow: 1;
-}
-.axial_service_form_item-action
-{
-    flex-shrink: 1;
-}
-.axial_service_form_item-info
-{
-    font-size: 16px;
-}
-.axial_service_form_item-content
-{
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-.axial_service_form_item-column
-{
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-.axial_service_form_item-row
-{
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-}
-.axial_service_form_item_image-file
-{
-    height: 42px;
-    width: 156px;
-    display: flex;
-    flex-direction: row;
-    overflow: hidden;
-}
-/* AxialServiceForm */
-.axial_service_form
-{
-    position: relative;
-    width: 100%;
-    height: auto;
-}
-.axial_service_form-holder
-{
-    position: relative;
-    width: 100%;
-    height: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
-/**/
+
+/* KEEP */
 .axial_admin_toggle_bar
 {
     display: flex;
@@ -301,6 +618,8 @@ h1, h2, h3, h4, h5, h6 { color: #232323; margin-top: 0; margin-bottom: 20px; }
     justify-content: flex-start;
 }
 /* FORM */
+
+
 .axial_admin_form_base
 {
     width: 100%;
@@ -382,35 +701,34 @@ h1, h2, h3, h4, h5, h6 { color: #232323; margin-top: 0; margin-bottom: 20px; }
     flex-direction: column;
     gap: 5px;
 }
+/* end olf form but still used */
+
+
 /* COMPONENTS HELPER */
 
 /* POPUPS */
 .axial_admin_popup
 {
-    width: 600px;
-    height: 400px;
+    width: 100%;
+    height: 100%;
 }
 .axial_admin_popup-holder
 {
     position: absolute;
     width: 100%;
     height: 100%;
-    display: flex;
-    flex-direction: column;
-    /*border-radius: var(--container___borderRadius);*/
     background-color: #fff;
 }
 .axial_admin_popup-header
 {
     width: 100%;
-    height: 48px;
+    height: 60px;
     display: flex;
     flex-direction: row;
     align-items: center;
     border-bottom: 1px solid #ccc;
-    padding-left: 10px;
-    padding-right: 10px;
-    flex-shrink: 0;
+    padding-left: 20px;
+    padding-right: 20px;
 }
 .axial_admin_popup-title
 {
@@ -419,891 +737,40 @@ h1, h2, h3, h4, h5, h6 { color: #232323; margin-top: 0; margin-bottom: 20px; }
 }
 .axial_admin_popup-content
 {
-    width: 100%;
-    height: 100%;
-    flex-grow: 1;
-    position: relative;
-    padding: 10px;
-}
-
-
-/* PARAMS SECTIONS */
-/* AxialAdminParamsView */
-.axial_admin_params_view-holder
-{
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-.axial_admin_params_view-bar
-{
-    width: 100%;
-    height: 54px;
-    display: flex;
-    flex-direction: row;
-    margin-bottom: 32px;
-    padding-left: 10px;
-    padding-right: 10px;
-}
-.axial_admin_params_view-viewer
-{
-    width: 100%;
-    flex-grow: 1;
-}
-/* AxialAdminParamsInformationBar */
-.axial_admin_params_infobar
-{
-    display: flex;
-    flex-direction: column;
-}
-.axial_admin_params_infobar-p
-{
-    font-size: 14px;
-    color: #4b5764;
-}
-
-
-
-/* DATABASES SECTION */
-/* AxialAdminDatabaseView */
-.axial_admin_database_view-holder
-{
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-.axial_admin_database_view-bar
-{
-    width: 100%;
-    height: 54px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-bottom: 32px;
-    padding-left: 10px;
-    padding-right: 10px;
-    flex-shrink: 0;
-}
-.axial_admin_database_view-content
-{
-    flex-grow: 1;
-    width: 100%;
-    overflow-x: hidden;
-    overflow-y: auto;
-}
-.axial_admin_database_view-grid
-{
-    width: 100%;
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-auto-rows: auto;
-    gap: 20px 20px;
-    padding: 20px;
-}
-
-/* AxialAdminDatabaseItem */
-.axial_admin_database_item
-{
-    width: 100%;
-    height: 64px;
-    border-bottom: 1px solid #ccc;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-
-}
-.axial_admin_database_item-name
-{
-    color: #374049;
-    font-size: 16px;
-    font-weight: 500;
-    
-}
-.axial_admin_database_item-size
-{
-    color: #4b5764;
-    font-size: 13px;
-    font-style: italic;
-}
-
-/* MODELS SECTION */
-/* AxialAdminModelView */
-.axial_admin_model_view-holder
-{
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-.axial_admin_model_view-bar
-{
-    width: 100%;
-    height: 54px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-bottom: 32px;
-    padding-left: 10px;
-    padding-right: 10px;
-    flex-shrink: 0;
-}
-.axial_admin_model_view-content
-{
-    flex-grow: 1;
-    width: 100%;
-    overflow-x: hidden;
-    overflow-y: auto;
-}
-.axial_admin_model_view-grid
-{
-    width: 100%;
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-auto-rows: auto;
-    gap: 20px 20px;
-    padding: 20px;
-}
-
-/* AxialAdminModelItem */
-.axial_admin_model_item
-{
-    width: 100%;
-    height: 64px;
-    border-bottom: 1px solid #ccc;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-
-}
-.axial_admin_model_item-name
-{
-    color: #374049;
-    font-size: 16px;
-    font-weight: 500;
-}
-/* AxialAdminModelPopup */
-.axial_admin_model_popup
-{
-    width: 100%;
-    height: 100%;
-}
-/* AxialAdminModelFormProperty */
-.axial_admin_model_property
-{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 10px;
-
-    height: 50px;
-    width: 100%;
-    
-}
-
-.axial_admin_model_property-name
-{
-    width: 200px;
-}
-.axial_admin_model_property-dropdown
-{
-    width: 200px;
-}
-.axial_admin_model_property-value
-{
-    width: 300px;
-}
-.axial_admin_model_property-select
-{
-    width: 300px;
-    display: none;
-}
-.axial_admin_model_property-file_selector
-{
-    width: 600px;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 10px;
-}
-.axial_admin_model_property-file_button
-{
-    width: 160px;
-}
-
-/* USERS */
-/* AxialAdminUserView */
-.axial_admin_user_view-holder
-{
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-.axial_admin_user_view-bar
-{
-    width: 100%;
-    height: 54px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-bottom: 32px;
-    padding-left: 10px;
-    padding-right: 10px;
-    flex-shrink: 0;
-}
-.axial_admin_user_view-content
-{
-    flex-grow: 1;
-    width: 100%;
-    overflow-x: hidden;
-    overflow-y: auto;
-}
-.axial_admin_user_view-grid
-{
-    width: 100%;
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-auto-rows: auto;
-    gap: 20px 20px;
-    padding: 20px;
-}
-/* AxialAdminUserItem */
-.axial_admin_user_item
-{
-    width: 100%;
-    height: 64px;
-    border-bottom: 1px solid #ccc;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    gap: 14px;
-}
-.axial_admin_user_item-name
-{
-    color: #374049;
-    font-size: 16px;
-    font-weight: 500;
-    width: 120px;
-}
-.axial_admin_user_item-color
-{
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background-color: #fff;
-    box-shadow: 0px 1px 1px #232323;
-}
-.axial_admin_user_item-role
-{
-    font-size: 15px;
-    font-weight: 400;
-    color: #4b5764;
-    text-transform: uppercase;
-    width: 100px;
-}
-.axial_admin_user_item-uuid
-{
-    font-size: 12px;
-    font-weight: 400;
-    font-style: italic;
-    color: #4b5764;
-}
-
-/* PRODUCTS SECTION */
-/* AxialAdminProductView */
-.axial_admin_product_view-holder
-{
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-.axial_admin_product_view-bar
-{
-    width: 100%;
-    height: 54px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-bottom: 32px;
-    padding-left: 10px;
-    padding-right: 10px;
-    flex-shrink: 0;
-}
-.axial_admin_product_view-content
-{
-    flex-grow: 1;
-    width: 100%;
-    overflow-x: hidden;
-    overflow-y: auto;
-}
-.axial_admin_product_view-grid
-{
-    width: 100%;
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-auto-rows: auto;
-    gap: 20px 20px;
-    padding: 20px;
-}
-/* AxialAdminProductItem */
-.axial_admin_product_item
-{
-    display: flex;
-}
-
-
-/* test dropdown */
-.dropdown_test
-{
-    width: 300px;
-}
-
-/* MEDIAS SECTION */
-/* AxialAdminMediasView */
-.axial_admin_medias_view-holder
-{
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-.axial_admin_medias_view-bar
-{
-    width: 100%;
-    height: 54px;
-    display: flex;
-    flex-direction: row;
-    margin-bottom: 32px;
-    padding-left: 10px;
-    padding-right: 10px;
-}
-.axial_admin_medias_view-viewer
-{
-    width: 100%;
-    flex-grow: 1;
-}
-/* AxialAdminMediasUploader */
-.axial_admin_medias_uploader
-{
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-/* AxialAdminMediaLibraryItem */
-.axial_admin_medias_library_item
-{
-    position: relative;
-    width: 100%;
-    height: 280px;
-}
-.axial_admin_medias_library_item-background
-{
     position: absolute;
     width: 100%;
-    height: 100%;
-    background-color: rgba(218, 218, 218, 0.23);
-    border-radius: var(--component___borderRadius);
-    box-shadow: 0 1px 1px 0 rgba(118, 135, 154, 0.24);
+    top: 60px;
+    bottom: 0;
+    padding: 20px;
+    background-color: var(--adminMain___backgroundColor);
+    overflow-x: hidden;
+    overflow-y: auto;
 }
-.axial_admin_medias_library_item-content
-{
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-}
-.axial_admin_medias_library_item-medias
+/* popup utils for slot */
+.axial_admin_popup-slot
 {
     position: relative;
-    flex-grow: 1;
     width: 100%;
     height: auto;
-    padding: 8px;
-    border-radius: 4px;
-    overflow: hidden;
 }
-.axial_admin_medias_library_item-holder
-{
-    position: absolute;
-    width: 100%;
-    height: 100%;
-}
-.axial_admin_medias_library_item-image
-{
-    display: none;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-.axial_admin_medias_library_item-video
-{
-    display: none;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-.axial_admin_medias_library_item-actions
-{
-    flex-shrink: 0;
-    width: 100%;
-    height: 40px;
-    border-top: 1px solid #ccc;
-    padding-left: 8px;
-    padding-right: 8px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 12px;
-}
-.axial_admin_medias_library_item-infos
-{
-    flex-shrink: 0;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-}
-.axial_admin_medias_library_item-name
-{
-    flex-grow: 1;
-    font-size: 13px;
-    font-weight: 400;
-    overflow: hidden;
-    text-wrap: nowrap;
-    text-overflow: ellipsis;
-}
-
-.axial_admin_medias_library_item-open
-{
-    flex-shrink: 0;
-    width: 16px;
-    height: 16px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-.axial_admin_medias_library_item-download
-{
-    flex-shrink: 0;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-/* AxialAdminMediaLibrary */
-.axial_admin_medias_library
+.axial_admin_popup-column
 {
     position: relative;
     width: 100%;
     height: 100%;
-    overflow-x: hidden;
-    overflow-y: auto;
-}
-.axial_admin_medias_library-grid
-{
-    width: 100%;
-    height: 100%;
-    display: grid;
-    padding: 10px;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: auto;
+    display: flex;
+    flex-direction: column;
     gap: 20px;
 }
-
-/* AxialAdminMediasSelector */
-.axial_admin_medias_selector
+.axial_admin_popup-bar
 {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    visibility: hidden;
-    overflow: hidden;
-    background-color: #f8f9fb;
-
-    transition-property: transform;
-    transition-duration: 400ms;
-    transition-timing-function: ease;
-
-    transform: translateY(101%);
-}
-.axial_admin_medias_selector-header
-{
-    position: absolute;
-    width: 100%;
-    height: 48px;
-    background-color: #fff;
-    border-bottom: 1px solid #ccc;
-}
-.axial_admin_medias_selector-main
-{
-    position: absolute;
-    width: 100%;
-    top: 48px;
-    bottom: 0px;
-    padding: 40px;
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-}
-.axial_admin_medias_selector-bar
-{
-    width: 100%;
-    height: 52px;
-    flex-shrink: 0;
-}
-.axial_admin_medias_selector-content
-{
-    width: 100%;
-    flex-grow: 1;
-}
-.axial_admin_medias_selector-grid
-{
-    width: 100%;
-    height: 100%;
-    display: grid;
-    padding: 10px;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: auto;
-    gap: 20px;
-}
-/* AxialAdminMediaSelectorItem */
-.axial_admin_medias_selector_item
-{
-    position: relative;
-    width: 100%;
-    height: 280px;
-}
-.axial_admin_medias_selector_item-background
-{
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(218, 218, 218, 0.23);
-    border-radius: var(--component___borderRadius);
-    box-shadow: 0 1px 1px 0 rgba(118, 135, 154, 0.24);
-}
-.axial_admin_medias_selector_item-content
-{
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-}
-.axial_admin_medias_selector_item-medias
-{
-    position: relative;
-    flex-grow: 1;
-    width: 100%;
-    height: auto;
-    padding: 8px;
-    border-radius: 4px;
-    overflow: hidden;
-}
-.axial_admin_medias_selector_item-holder
-{
-    position: absolute;
-    width: 100%;
-    height: 100%;
-}
-.axial_admin_medias_selector_item-image
-{
-    display: none;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-.axial_admin_medias_selector_item-video
-{
-    display: none;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-.axial_admin_medias_selector_item-actions
-{
-    flex-shrink: 0;
-    width: 100%;
-    height: 40px;
-    border-top: 1px solid #ccc;
-    padding-left: 8px;
-    padding-right: 8px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 12px;
-}
-.axial_admin_medias_selector_item-infos
-{
-    flex-shrink: 0;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-}
-.axial_admin_medias_selector_item-name
-{
-    flex-grow: 1;
-    font-size: 13px;
-    font-weight: 400;
-    overflow: hidden;
-    text-wrap: nowrap;
-    text-overflow: ellipsis;
-}
-/* MAIL SECTION */
-/* AxialAdminMailPopup */
-.axial_admin_mail_popup
-{
-    width: 100%;
-    height: 100%;
-}
-.axial_admin_mail_popup-content
-{
-    padding: 0;
-}
-/* AxialAdminMailViewer */
-.axial_admin_mail_viewer
-{
-    position: relative;
-    display: block;
-    width: 100%;
-    height: 100%;
-    background-color: #f8f9fb;
-}
-.axial_admin_mail_viewer-holder
-{
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-    padding: 40px;
-}
-.axial_admin_mail_viewer-bar
-{
-    width: 100%;
-    height: 52px;
-    flex-shrink: 0;
-}
-.axial_admin_mail_viewer-content
-{
-    position: relative;
-    width: 100%;
-    flex-grow: 1;
-}
-.axial_admin_mail_viewer-header
-{
-    display: block;
     width: 100%;
     height: 60px;
-    border-bottom: 1px solid #ccc;
 }
-/* AxialAdminMailItem */
-.axial_admin_mail_item
+.axial_admin_popup-viewer
 {
     position: relative;
-    width: 100%;
-    height: 64px;
-    border-bottom: 1px solid #ccc;
-    display: block;
-    cursor: pointer;
-}
-.axial_admin_mail_item-background
-{
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(218, 218, 218, 0.23);
-    opacity: 0;
-}
-.axial_admin_mail_item-content
-{
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 14px;
-    padding-left: 10px;
-    padding-right: 10px;
-}
-.axial_admin_mail_item-email
-{
-    font-weight: 600;
-}
-.axial_admin_mail_item-date
-{
-    font-size: 12px;
-    font-weight: 400;
-    font-style: italic;
-}
-/* AxialAdminMailList */
-.axial_admin_mail_list
-{
-    position: relative;
-    width: 100%;
-    height: 100%;
-    display: block;
-    padding: 10px;
-    overflow-x: hidden;
-    overflow-y: auto;
-}
-.axial_admin_mail_list-holder
-{
-    width: 100%;
-    height: auto;
-}
-/* AxialAdminMailView*/
-.axial_admin_mail_view-holder
-{
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-.axial_admin_mail_view-bar
-{
-    width: 100%;
-    height: 54px;
-    display: flex;
-    flex-direction: row;
-    margin-bottom: 32px;
-    padding-left: 10px;
-    padding-right: 10px;
-}
-.axial_admin_mail_view-list
-{
     width: 100%;
     flex-grow: 1;
 }
 
-/* STAT SECTION */
-/* AxialAdminStatView*/
-.axial_admin_stat_view-holder
-{
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-.axial_admin_stat_view-bar
-{
-    width: 100%;
-    height: 54px;
-    display: flex;
-    flex-direction: row;
-    margin-bottom: 32px;
-    padding-left: 10px;
-    padding-right: 10px;
-}
-.axial_admin_stat_view-grid
-{
-    width: 100%;
-    flex-grow: 1;
-    
-}
-/* AxialAdminStatGrid */
-.axial_admin_stat_grid
-{
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
-}
-.axial_admin_stat_grid-row
-{
-    display: flex;
-    flex-direction: row;
-    gap: 40px;
-}
-.axial_admin_stat_grid-line
-{
-    display: flex;
-    flex-direction: row;
-    flex-grow: 1;
-}
-.axial_admin_stat_grid_item-row
-{
-    flex-grow: 1;
-}
-.axial_admin_stat_grid_item-line
-{
-    width: 100%;
-    height: 100%;
-}
-
-/* MODELS SECTION */
-/* AxialAdminModelView */
-.axial_admin_sms_view-holder
-{
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-.axial_admin_sms_view-bar
-{
-    width: 100%;
-    height: 54px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-bottom: 32px;
-    padding-left: 10px;
-    padding-right: 10px;
-    flex-shrink: 0;
-}
-.axial_admin_sms_view-content
-{
-    flex-grow: 1;
-    width: 100%;
-    overflow-x: hidden;
-    overflow-y: auto;
-    padding: 20px;
-}
-.axial_admin_sms_view-column
-{
-    width: 400px;
-    display: flex;
-    flex-direction: column;
-}
-.axial_admin_sms_view-sender
-{
-    margin-bottom: 20px;
-}
-.axial_admin_sms_view-tel
-{
-    margin-bottom: 20px;
-}
-.axial_admin_sms_view-message
-{
-    margin-bottom: 4px;
-}
-.axial_admin_sms_view-infos
-{
-    margin-bottom: 20px;
-}

@@ -1,158 +1,338 @@
-/* form utils */
-.axial_form_utils_grid
+/* 2025 auth package */
+/* AxialAuthRegister */
+.axial_auth_register
 {
-    display: flex;
-    flex-direction: column;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: 1;
-    gap: 0px 20px;
-}
-
-.axial_form_utils_column-1
-{
-    grid-column: 1;
-    grid-row: 1;
-    display: flex;
-    flex-direction: column;
-}
-.axial_form_utils_column-2
-{
-    grid-column: 2;
-    grid-row: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-/* AxialLoginForm */
-.axial_login_form
-{
-    display: block;
-    min-width: 280px;
-    width: auto;
+    width: 300px;
     height: auto;
-    padding: 0px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
 }
-.axial_login_form-form
+.axial_auth_register-form
+{
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.axial_auth_register-formitem
 {
     width: 100%;
-    height: auto;
-    display: flex;
-    flex-direction: column;
 }
-.axial_login_form-holder
+.axial_auth_register-input
 {
+    margin-top: 6px;
+}
+.axial_auth_register-passholder
+{
+    margin-top: 6px;
     position: relative;
     width: 100%;
     height: 42px;
 }
-.axial_login_form-input
-{
-    margin-top: 6px;
-    margin-bottom: 14px;
-}
-.axial_login_form-password
+.axial_auth_register-password
 {
     position: absolute;
     width: 100%;
     height: 100%;
     padding-right: 50px;
 }
-/* AxialRegistrationForm */
-.axial_registration_form
+.axial_auth_register-control
 {
     display: block;
-    min-width: 280px;
-    width: auto;
-    height: auto;
-    padding: 0px;
 }
-.axial_registration_form-form
+.axial_auth_register-infotitle
+{
+    font-weight: 500;
+}
+.axial_auth_register-info
+{
+    padding-left: 10px;
+}
+.axial_auth_register-message
+{
+    text-align: center;
+}
+.axial_auth_register-divider
+{
+    width: 100%;
+    height: 2px;
+    background-color: #efefef;
+}
+.axial_auth_register-login
+{
+    margin-top: 14px;
+    text-align: center;
+}
+.axial_auth_register-link
+{
+    font-weight: 600;
+    text-decoration: underline;
+}
+.axial_auth_register-link:visited
+{
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+/* AxialAuthLogin */
+.axial_auth_login
+{
+    width: 300px;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.axial_auth_login-form
+{
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.axial_auth_login-formitem
+{
+    width: 100%;
+}
+.axial_auth_login-input
+{
+    margin-top: 6px;
+}
+.axial_auth_login-passholder
+{
+    margin-top: 6px;
+    position: relative;
+    width: 100%;
+    height: 42px;
+}
+.axial_auth_login-password
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    padding-right: 50px;
+}
+
+.axial_auth_login-message
+{
+    text-align: center;
+}
+.axial_auth_login-divider
+{
+    width: 100%;
+    height: 2px;
+    background-color: #efefef;
+}
+.axial_auth_login-register
+{
+    margin-top: 14px;
+    text-align: center;
+}
+.axial_auth_login-link
+{
+    font-weight: 600;
+    text-decoration: underline;
+}
+.axial_auth_login-link:visited
+{
+    font-weight: 600;
+    text-decoration: underline;
+}
+/* AxialAuthVerifyer */
+.axial_auth_verifyer
+{
+    width: 300px;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.axial_auth_verifyer-form
+{
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.axial_auth_verifyer-baseline
+{
+    font-weight: 400;
+    text-align: center;
+}
+.axial_auth_verifyer-email
+{
+    font-weight: 600;
+    text-align: center;
+}
+.axial_auth_verifyer-inputs
+{
+    width: 100%;
+    
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+.axial_auth_verifyer-numinput
+{
+    width: 40px;
+    height: 48px;
+    text-align: center;
+}
+.axial_auth_verifyer-message
+{
+    text-align: center;
+}
+.axial_auth_verifyer-divider
+{
+    width: 100%;
+    height: 2px;
+    background-color: #efefef;
+}
+
+/* SERVICE FORM 2025 */
+/* AxialServiceFormItem */
+.axial_service_form_item
+{
+    position: relative;
+    width: 100%;
+    height: auto;
+    /*
+    background-color: #fff;
+    border-radius: 10px;
+    border: 2px solid #fff;
+    */
+}
+.axial_service_form_item-holder
 {
     width: 100%;
     height: auto;
     display: flex;
     flex-direction: column;
+    gap: 4px;
+    /*padding: 10px;*/
 }
-.axial_registration_form-input
+.axial_service_form_item-header
 {
-    margin-top: 6px;
-    margin-bottom: 14px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
 }
-.axial_registration_form-button
+.axial_service_form_item-label
 {
-    opacity: 0.5;
-    pointer-events: none;
-
-    transition-property: opacity;
-    transition-duration: 250ms;
-    transition-timing-function: ease;
+    font-weight: 600;
+    flex-grow: 1;
 }
-
-/* AxialMessageForm */
-.axial_message_form
+.axial_service_form_item-action
 {
+    flex-shrink: 1;
+}
+.axial_service_form_item-info
+{
+    font-size: 16px;
+}
+.axial_service_form_item-content
+{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.axial_service_form_item-column
+{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.axial_service_form_item-row
+{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+.axial_service_form_item_image-file
+{
+    height: 42px;
+    width: 138px;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+}
+.axial_service_form_item_image-placeholder
+{
+    position: relative;
     display: block;
-    min-width: 280px;
-    width: auto;
-    height: auto;
-    padding: 0px;
+    width: 240px;
+    height: 240px;
+    border: 2px solid var(--greyDark);
+    background-color: var(--whiteLight);
+    border-radius: 6px;
+    overflow: hidden;
 }
-.axial_message_form-form
+.axial_service_form_item_image-image
 {
+    display: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+.axial_service_form_item_inputs-textarea
+{
+    height: 90px;
+    min-height: unset;
+}
+.axial_service_form_item-toggles
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 14px;
+}
+.axial_service_form_item-group
+{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.axial_service_form_item-group
+{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.axial_service_form_item-grouprow
+{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+.axial_service_form_item-grouphtml
+{
+    width: 100px;
+    height: 42px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    font-size: 17px;
+    font-weight: 500;
+    text-align: right;
+}
+
+/* AxialServiceForm */
+.axial_service_form
+{
+    position: relative;
+    width: 100%;
+    height: auto;
+}
+.axial_service_form-holder
+{
+    position: relative;
     width: 100%;
     height: auto;
     display: flex;
     flex-direction: column;
-}
-.axial_message_form-input
-{
-    margin-top: 6px;
-    margin-bottom: 14px;
-}
-.axial_message_form-toggle
-{
-    margin-bottom: 14px;
-}
-.axial_message_form-button
-{
-    opacity: 0.5;
-    pointer-events: none;
-
-    transition-property: opacity;
-    transition-duration: 250ms;
-    transition-timing-function: ease;
-}
-
-/* AxialContactForm */
-.axial_contact_form
-{
-    display: block;
-    min-width: 280px;
-    width: auto;
-    height: auto;
-}
-.axial_contact_form-form
-{
-    width: 100%;
-    height: auto;
-    display: flex;
-    flex-direction: column;
-}
-.axial_contact_form-input
-{
-    margin-top: 6px;
-    margin-bottom: 14px;
-}
-.axial_contact_form-toggle
-{
-    margin-bottom: 14px;
-}
-.axial_contact_form-button
-{
-    opacity: 0.5;
-    pointer-events: none;
-
-    transition-property: opacity;
-    transition-duration: 250ms;
-    transition-timing-function: ease;
+    gap: 10px;
 }

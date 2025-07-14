@@ -1,44 +1,288 @@
 {
     "path": "YOUR_MONGO_DB_URL",
-    "dbname": "NAME_OF_THE_DB_TO CREATE",
+    "dbname": "NAME_OF_THE_DB_TO_CREATE",
     "crypto_key": "",
     "crypto_iv": "",
     "collections":
     [
-        { "name": "users",    "options": { "capped": true, "size": 10000000 }  },
-        { "name": "models",   "options": { "capped": true, "size": 10000000 }  },
-        { "name": "params",   "options": { "capped": true, "size": 10000000 }  },
-        { "name": "stats",    "options": { "capped": true, "size": 100000000 } },
-        { "name": "mails",    "options": { "capped": true, "size": 100000000 } },
-        { "name": "products", "options": { "capped": true, "size": 100000000 } },
-        { "name": "pages",    "options": { "capped": true, "size": 100000000 } }
+        { "name": "codes",     "options": { "capped": false, "expireAfterSeconds": 120, "timeseries": { "timeField": "timeid" } }  },
+        { "name": "models",    "options": { "capped": true, "size": 10000000 }  },
+        { "name": "users",     "options": { "capped": true, "size": 10000000 }  },
+        { "name": "misc",      "options": { "capped": true, "size": 10000000 }  },
+        { "name": "products",  "options": { "capped": true, "size": 10000000 }  },
+        { "name": "prices",    "options": { "capped": true, "size": 10000000 }  },
+        { "name": "stats",     "options": { "capped": true, "size": 10000000 }  },
+        { "name": "mails",     "options": { "capped": true, "size": 10000000 }  },
+        { "name": "params",    "options": { "capped": true, "size": 10000000 }  }
     ],
     "models":
     [
+        {
+            "name": "info_bar",
+            "collection": "params",
+            "props":
+            {
+                "model":        { "type": "string",  "crypted": false, "default": "info_bar" },
+                "active":       { "type": "boolean", "crypted": false, "default": false },
+                "date_start":   { "type": "date",  "crypted": false },
+                "date_end":     { "type": "date",  "crypted": false },
+                "message":      { "type": "string",  "crypted": false, "default": "" },
+                "text_color":   { "type": "string",  "crypted": false, "default": "#ffffff" },
+                "theme_color":  { "type": "string",  "crypted": false, "message": "#000000" }
+            }
+        },
+        {
+            "name": "user_base",
+            "collection": "users",
+            "props":
+            {
+                "model":    { "type": "string",  "crypted": false, "default": "user_base" },
+                "password": { "type": "string",  "crypted": true, "restricted": true }
+            }
+        },
+        {
+            "name": "admin",
+            "collection": "users",
+            "props":
+            {
+                "model":                { "type": "string",  "crypted": false, "default": "admin" },
+                "email":                { "type": "string",  "crypted": true, "restricted": false },
+                "password":             { "type": "string",  "crypted": true, "restricted": true },
+                "username":             { "type": "string",  "crypted": false },
+
+                "image_main":           { "type": "string",  "crypted": false, "default": "" },
+
+                "role":                 { "type": "string",  "crypted": false, "default": "admin" },
+                "connected":            { "type": "boolean", "crypted": false, "default": false },
+                "verified":             { "type": "boolean", "crypted": false, "default": false },
+                "last" :                { "type": "date", "crypted": false },
+
+                "first_name":           { "type": "string",  "crypted": true, "default": "" },
+                "last_name":            { "type": "string",  "crypted": true, "default": "" },
+                "tel":                  { "type": "string",  "crypted": true, "default": "" },
+
+                "address_line_1":       { "type": "string",  "crypted": true, "default": "" },
+                "address_line_2":       { "type": "string",  "crypted": true, "default": "" },
+                "address_zip":          { "type": "string",  "crypted": true, "default": "" },
+                "address_city":         { "type": "string",  "crypted": true, "default": "" },
+                "address_country":      { "type": "string",  "crypted": true, "default": "" }
+            }
+        },
         {
             "name": "user",
             "collection": "users",
             "props":
             {
-                "email":    { "type": "email",  "crypted": true },
-                "password": { "type": "string", "crypted": true },
-                "username": { "type": "string", "crypted": false },
-                "color":    { "type": "color",  "crypted": false },
-                "birth":    { "type": "date",   "crypted": false },
-                "role":     { "type": "list",   "crypted": false, "list": ["admin", "user", "client"] }
+                "model":                { "type": "string",  "crypted": false, "default": "user" },
+                "email":                { "type": "string",  "crypted": true, "restricted": false },
+                "password":             { "type": "string",  "crypted": true, "restricted": true },
+                "username":             { "type": "string",  "crypted": false },
+
+                "image_main":           { "type": "string",  "crypted": false, "default": "" },
+
+                "role":                 { "type": "string",  "crypted": false, "default": "user" },
+                "connected":            { "type": "boolean", "crypted": false, "default": false },
+                "verified":             { "type": "boolean", "crypted": false, "default": false },
+                "last" :                { "type": "date", "crypted": false },
+
+                "newsletter":           { "type": "boolean", "crypted": false, "default": false },
+                "account":              { "type": "string",  "crypted": false, "default": "free" },
+
+                "first_name":           { "type": "string",  "crypted": true, "default": "" },
+                "last_name":            { "type": "string",  "crypted": true, "default": "" },
+                "tel":                  { "type": "string",  "crypted": true, "default": "" },
+
+                "address_line_1":       { "type": "string",  "crypted": true, "default": "" },
+                "address_line_2":       { "type": "string",  "crypted": true, "default": "" },
+                "address_zip":          { "type": "string",  "crypted": true, "default": "" },
+                "address_city":         { "type": "string",  "crypted": true, "default": "" },
+                "address_country":      { "type": "string",  "crypted": true, "default": "" },
+
+                "bill_address_line_1":  { "type": "string",  "crypted": true, "default": "" },
+                "bill_address_line_2":  { "type": "string",  "crypted": true, "default": "" },
+                "bill_address_zip":     { "type": "string",  "crypted": true, "default": "" },
+                "bill_address_city":    { "type": "string",  "crypted": true, "default": "" },
+                "bill_address_country": { "type": "string",  "crypted": true, "default": "" },
+
+                "ship_address_line_1":  { "type": "string",  "crypted": true, "default": "" },
+                "ship_address_line_2":  { "type": "string",  "crypted": true, "default": "" },
+                "ship_address_zip":     { "type": "string",  "crypted": true, "default": "" },
+                "ship_address_city":    { "type": "string",  "crypted": true, "default": "" },
+                "ship_address_country": { "type": "string",  "crypted": true, "default": "" }
+            }
+        },
+        {
+            "name": "client",
+            "collection": "misc",
+            "props":
+            {
+                "model":                { "type": "string",  "crypted": false, "default": "client" },
+                "user_uuid":            { "type": "string",  "crypted": false, "default": "" },
+
+                "image_main":           { "type": "string",  "crypted": false, "default": "" },
+
+                "client_type":          { "type": "string",  "crypted": false, "default": "" },
+
+                "client_company_name":  { "type": "string",  "crypted": false, "default": "" },
+                "client_company_code":  { "type": "string",  "crypted": false, "default": "" },
+
+                "email":                { "type": "string",  "crypted": true, "restricted": false },
+                "tel":                  { "type": "string",  "crypted": true, "default": "" },
+                
+                "first_name":           { "type": "string",  "crypted": true, "default": "" },
+                "last_name":            { "type": "string",  "crypted": true, "default": "" },
+
+                "newsletter":           { "type": "boolean", "crypted": false, "default": false },
+
+                "address_line_1":       { "type": "string",  "crypted": true, "default": "" },
+                "address_line_2":       { "type": "string",  "crypted": true, "default": "" },
+                "address_zip":          { "type": "string",  "crypted": true, "default": "" },
+                "address_city":         { "type": "string",  "crypted": true, "default": "" },
+                "address_country":      { "type": "string",  "crypted": true, "default": "" }
+            }
+        },
+        {
+            "name": "employee",
+            "collection": "misc",
+            "props":
+            {
+                "model":                { "type": "string",  "crypted": false, "default": "employee" },
+                "user_uuid":            { "type": "string",  "crypted": false, "default": "" },
+
+                "image_main":           { "type": "string",  "crypted": false, "default": "" },
+                "first_name":           { "type": "string",  "crypted": true, "default": "" },
+                "last_name":            { "type": "string",  "crypted": true, "default": "" },
+                "email":                { "type": "string",  "crypted": true, "restricted": false },
+                "tel":                  { "type": "string",  "crypted": true, "default": "" },
+
+                "address_line_1":       { "type": "string",  "crypted": true, "default": "" },
+                "address_line_2":       { "type": "string",  "crypted": true, "default": "" },
+                "address_zip":          { "type": "string",  "crypted": true, "default": "" },
+                "address_city":         { "type": "string",  "crypted": true, "default": "" },
+                "address_country":      { "type": "string",  "crypted": true, "default": "" }
+            }
+        },
+        {
+            "name": "company",
+            "collection": "misc",
+            "props":
+            {
+                "model":                { "type": "string",  "crypted": false, "default": "company" },
+                "user_uuid":            { "type": "string",  "crypted": false, "default": "" },
+
+                "company_name":         { "type": "string",  "crypted": true, "default": "" },
+                "company_code":         { "type": "string",  "crypted": true, "default": "" },
+                "email":                { "type": "string",  "crypted": true, "restricted": false },
+                "tel":                  { "type": "string",  "crypted": true, "default": "" },
+
+                "image_main":           { "type": "string",  "crypted": false, "default": "" },
+
+                "address_line_1":       { "type": "string",  "crypted": true, "default": "" },
+                "address_line_2":       { "type": "string",  "crypted": true, "default": "" },
+                "address_zip":          { "type": "string",  "crypted": true, "default": "" },
+                "address_city":         { "type": "string",  "crypted": true, "default": "" },
+                "address_country":      { "type": "string",  "crypted": true, "default": "" }
+            }
+        },
+        {
+            "name": "product_internal",
+            "collection": "products",
+            "props":
+            {
+                "model":             { "type": "string",  "crypted": false, "default": "product_internal" },
+                "user_uuid":         { "type": "string",  "crypted": false, "default": "" },
+                
+                "image_main":        { "type": "string",  "crypted": false, "default": "" },
+
+                "product_name":      { "type": "string",  "crypted": false, "default": "" },
+                "product_ref":       { "type": "string",  "crypted": false, "default": "" },
+                "active":            { "type": "boolean", "crypted": false, "default": true },
+                "type":              { "type": "string",  "crypted": false, "default": "" },
+
+                "cost":              { "type": "number",  "crypted": false, "default": 0 },
+                "stock":             { "type": "number",  "crypted": false, "default": 0 },
+                "coef":              { "type": "number",  "crypted": false, "default": 1 },
+                "tax":               { "type": "number",  "crypted": false, "default": 20 }
+                
+            }
+        },
+        {
+            "name": "product",
+            "collection": "products",
+            "props":
+            {
+                "model":             { "type": "string",  "crypted": false, "default": "product" },
+                "name":              { "type": "string",  "crypted": false, "default": "" },
+                "description":       { "type": "string",  "crypted": false, "default": "" },
+                "active":            { "type": "boolean", "crypted": false, "default": true },
+                "type":              { "type": "string",  "crypted": false, "default": "" },
+                "image_main":        { "type": "string",  "crypted": false, "default": "" },
+                
+                "price_uuid":        { "type": "string",  "crypted": false, "default": "" },
+
+                "stripe_product_id": { "type": "string",  "crypted": false, "default": "" },
+                "stripe_price_id":   { "type": "string",  "crypted": false, "default": "" }
+                
+            }
+        },
+        {
+            "name": "price",
+            "collection": "prices",
+            "props":
+            {
+                "model":              { "type": "string",  "crypted": false, "default": "price" },
+                "name":               { "type": "string",  "crypted": false, "default": "" },
+                "active":             { "type": "boolean", "crypted": false, "default": true },
+                "amount":             { "type": "number",  "crypted": false, "default": 1 },
+                "concurrency":        { "type": "string",  "crypted": false, "default": "eur" },
+                "type":               { "type": "string",  "crypted": false, "default": "recurring" },
+
+                "recurring_interval": { "type": "string",  "crypted": false, "default": "month" },
+                "recurring_count":    { "type": "number",  "crypted": false, "default": 12 },
+
+                
+                "product_uuid":       { "type": "string",  "crypted": false, "default": "" },
+
+                "stripe_product_id":  { "type": "string",  "crypted": false, "default": "" },
+                "stripe_price_id":    { "type": "string",  "crypted": false, "default": "" }
+                
+            }
+        },
+        {
+            "name": "mail_news_basic",
+            "collection": "mails",
+            "props":
+            {
+                "model":              { "type": "string",  "crypted": false, "default": "mail_news_basic" },
+                "active":             { "type": "boolean", "crypted": false, "default": true },
+                "subject":            { "type": "string",  "crypted": false, "default": "recurring" },
+                "state":              { "type": "string",  "crypted": false, "default": "draft", "list": ["draft", "ready", "sent"] },
+                "date_sent":          { "type": "string",  "crypted": false, "default": "" },
+                "template_name":      { "type": "string",  "crypted": false, "default": "" },
+                "html_content":       { "type": "string",  "crypted": false, "default": "" }
+                
             }
         }
     ],
     "documents":
     [
         {
+            "model": "admin",
+            "email": "david@dndev.fr",
+            "password": "DnDev_238343##",
+            "username": "DavidAdmin",
+            "role": "admin",
+            "connected": false,
+            "verified": false
+        },
+        {
             "model": "user",
-            "email": "MY_EMAIL",
-            "password": "MY_PASSWORD",
-            "username": "MY_USERNAME",
-            "birth": "2001-02-03",
-            "color": "#000",
-            "role": "admin"
+            "email": "daven.andreas@gmail.com",
+            "password": "DaVeN_238343##",
+            "username": "DavenUser",
+            "role": "user",
+            "connected": false,
+            "verified": false
         }
     ]
 }

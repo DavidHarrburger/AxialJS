@@ -222,6 +222,7 @@
     height: 340px;
     border-radius: var(--container___borderRadius);
     overflow: hidden;
+    border: 2px solid var(--themeColor);
 }
 /* AxialCalendar */
 .axial_calendar
@@ -323,7 +324,7 @@
     position: absolute;
     width: 100%;
     height: 100%;
-    background-color: #ccc;
+    /*background-color: #ccc;*/
 }
 .axial_agenda-main
 {
@@ -334,14 +335,36 @@
 .axial_agenda-header
 {
     width: 100%;
-    height: 40px;
+    height: 90px;
     top: 0;
     left: 0;
+    padding-left: 40px;
+    padding-right: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     display: flex;
     flex-direction: row;
-    align-items: center;
-    gap: 1px;
+    align-items: flex-start;
+    gap: 4px;
     background-color: #fff;
+}
+.axial_agenda_header-label
+{
+    flex-grow: 1;
+    color: #000;
+    font-weight: 800;
+    font-size: 26px;
+}
+.axial_agenda_header-nav
+{
+    margin-top: 6px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
 }
 .axial_agenda-days
 {
@@ -350,24 +373,32 @@
     display: grid;
     grid-template-columns: 40px repeat(7, 1fr);
     grid-template-rows: 60px;
-    gap: 0 1px;
+    gap: 0 0;
     border-bottom: 1px solid #ccc;
     overflow-y: scroll;
 }
+.axial_agenda-days::-webkit-scrollbar{ visibility: hidden; }
 .axial_agenda-hours
 {
     grid-column: 1;
     grid-row: 1 / span 24;
     display: flex;
     flex-direction: column;
-
-    background-color: #f00;
+    justify-content: center;
+}
+.axial_agenda-times
+{
+    grid-column: 1;
+    grid-row: 1 / span 24;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 .axial_agenda-content
 {
     position: absolute;
     width: 100%;
-    top: 100px;
+    top: 150px;
     bottom: 0;
     left: 0;
     overflow-x: hidden;
@@ -380,22 +411,98 @@
     height: auto;
     grid-template-columns: 40px repeat(7, 1fr);
     grid-template-rows: repeat(24, 60px);
-    gap: 1px 1px;
+    gap: 0 0;
 }
 /* AxialAgendaDay */
 .axial_agenda_day
 {
+    position: relative;
+    height: 60px;
     background-color: #fff;
+    border-left: 1px solid #ccc;
+}
+.axial_agenda_day-background
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+.axial_agenda_day-content
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+.axial_agenda_day-dayname
+{
+    font-size: 14px;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+.axial_agenda_day-datenum
+{
+    font-size: 24px;
+    font-weight: 800;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 /* AxialAgendaHour */
 .axial_agenda_hour
 {
+    position: relative;
+    height: 60px;
+    background-color: #fff;
+    border-bottom: 1px solid #fff;
+}
+.axial_agenda_hour-background
+{
+    position: absolute;
+}
+
+/* AxialAgendaTime */
+.axial_agenda_time
+{
+    position: relative;
+    width: 100%;
+    height: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+}
+.axial_agenda_time-label
+{
+    font-size: 11px;
+    font-weight: 600;
     background-color: #fff;
 }
 /* AxialAgendaCell */
 .axial_agenda_cell
 {
+    position: relative;
+    height: 60px;
     background-color: #fff;
+    border-bottom: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+}
+.axial_agenda_cell-background
+{
+    position: absolute;
+}
+.axial_agenda_cell-over
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    /*background-color: rgba(3, 150, 218, 0.46);*/
+
 }
 /* AxialInfinity */
 .axial_infinity
@@ -484,16 +591,8 @@
 .axial_chart
 {
     position: relative;
-    padding: 10px;
-    /*
-    width: 200px;
-    height: 200px;
-    */
     min-width: 320px;
     min-height: 300px;
-    border-radius: var(--component___borderRadius);
-    background-color: #fff;
-    box-shadow: 0 1px 1px 0 rgba(118, 135, 154, 0.24), 0 3px 8px 0 rgba(118, 135, 154, 0.08);
     display: flex;
     flex-direction: column;
 }
@@ -511,21 +610,23 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 20px;
 }
 .axial_chart-header
 {
     width: 100%;
-    height: 32px;
+    height: 40px;
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
     flex-wrap: nowrap;
+    border-bottom: 1px solid var(--adminBody___borderColor);
 }
 .axial_chart-title
 {
-    font-weight: 400;
+    font-size: 18px;
+    font-weight: 600;
     flex-grow: 1;
     overflow: hidden;
     text-wrap: nowrap;
@@ -541,12 +642,52 @@
     position: relative;
     width: 100%;
     flex-grow: 1;
+    border-bottom: 1px solid var(--adminBody___borderColor);
 }
 .axial_chart-area
 {
     position: absolute;
     width: 100%;
     height: 100%;
+}
+.axial_chart-axis_area
+{
+    position: absolute;
+    left: var(--charts___axisSize);
+    right: 0;
+    top: 0;
+    bottom: var(--charts___axisSize);
+}
+.axial_chart-axis_y
+{
+    position: absolute;
+    left: 0;
+    width: var(--charts___axisSize);
+    height: 100%;
+    background-color: #f8f9fb;
+}
+.axial_chart-axis_x
+{
+    position: absolute;
+    left: var(--charts___axisSize);
+    right: 0;
+    height: var(--charts___axisSize);
+    bottom: 0;
+    background-color: #f8f9fb;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: 100%;
+}
+.axial_chart-step_x
+{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding-top: 2px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
 }
 .axial_chart-area_row
 {
@@ -566,4 +707,68 @@
 {
     font-size: 40px;
     font-weight: 800;
+}
+
+/* AxialChartTraffic */
+.axial_chart_traffic-point
+{
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    overflow: hidden;
+    border-radius: 50%;
+    background-color: var(--themeColor);
+    border: 2px solid #fff;
+    transform: translate(-50%, 50%);
+}
+.axial_chart_traffic-line
+{
+    position: absolute;
+    height: 2px;
+    background-color: var(--themeColor);
+    transform-origin: left center;
+    transform: translateY(1px);
+}
+.axial_chart_traffic-num
+{
+    position: absolute;
+    height: 24px;
+    width: auto;
+    color: #232323;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    padding-left: 6px;
+    padding-right: 6px;
+    border-radius: 2px;
+    background-color: #f8f9fb;
+    transform: translate(-50%, -14px);
+}
+
+.axial_chart_traffic-yline
+{
+    position: absolute;
+    height: 1px;
+    width: 100%;
+    background-color: #ccc;
+}
+
+.axial_chart_traffic-ynum
+{
+    position: absolute;
+    height: 24px;
+    width: 32px;
+    color: #f8f9fb;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    padding-left: 6px;
+    padding-right: 6px;
+    border-radius: 2px;
+    background-color: #232323;
+    transform: translate(0, -12px);
 }

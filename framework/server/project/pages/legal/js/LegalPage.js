@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 import { GlobalPage } from "../../../js/GlobalPage.js";
 

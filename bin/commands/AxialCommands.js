@@ -13,13 +13,18 @@ import { api as electronForge } from "@electron-forge/core";
 
 class AxialCommands extends EventEmitter
 {
+    /**
+     * @type { String }
+     */
+    #VERSION = "1.0.0";
+
     /** @type { String } */
     #CRYPTO_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
     /**
      * @type { Set }
      */
-    #commands = new Set( [ "init", "newpage", "build", "config", "electron", "database", "sitemap", "keys" ] );
+    #commands = new Set( [ "init", "newpage", "build", "config", "electron", "database", "sitemap", "keys", "version" ] );
 
     #paramsInit =     new Set( [ "-front", "-server", "-electron" ] );
     #paramsNewPage =  new Set( [ "-name", "-template", "-path" ] );
@@ -130,13 +135,20 @@ class AxialCommands extends EventEmitter
                     this.#keys();
                 break;
 
+                case "version":
+                    this.#version();
+                break;
+
                 default:
                     console.log("INVALID ARGUMENT");
                 break;
             }
-
-            
         }
+    }
+
+    #version()
+    {
+        console.log( this.#VERSION );
     }
 
     async #getAxialConfiguration()
@@ -379,7 +391,7 @@ class AxialCommands extends EventEmitter
             }
             */
             const databaseConfig = await fse.readJSON(databaseConfigPath);
-            console.log(databaseConfig);
+            //console.log(databaseConfig);
             
             MONGO_CLIENT = new MongoClient( databaseConfig.path,
             {
@@ -394,79 +406,176 @@ class AxialCommands extends EventEmitter
             const client = await MONGO_CLIENT.connect();
             console.log("mongo client ok");
             
-            const db = client.db( databaseConfig.dbname );
-
-            // IF DB EXISTS RETURN OR THROW
-            /*
-            
-            const users     = await db.createCollection( "users",    { capped: true, size: 10000000 } );
-            const models    = await db.createCollection( "models",   { capped: true, size: 10000000 } );
-            const params    = await db.createCollection( "params",   { capped: true, size: 10000000 } );
-            const shops     = await db.createCollection( "shops",    { capped: true, size: 2000000 } );
-
-            const stats     = await db.createCollection( "stats",    { capped: true, size: 100000000 } );
-            const mails     = await db.createCollection( "mails",    { capped: true, size: 100000000 } );
-            const products  = await db.createCollection( "products", { capped: true, size: 100000000 } );
-            const pages     = await db.createCollection( "pages",    { capped: true, size: 100000000 } );
-            */
-
-            let modelsCollection; // we need it ATM
-            const collections = databaseConfig.collections;
-            if( collections && Array.isArray(collections) )
+            const db = client.db();
+            const admin = db.admin();
+            const dbs = await admin.listDatabases();
+            let dbExists = false;
+            for( const dbprops of dbs.databases )
             {
-                for( const collectionObject of collections )
+                if( dbprops.name === databaseConfig.dbname )
                 {
-                    const collectionName = collectionObject.name;
-                    const collectionOptions = collectionObject.options;
-                    
-                    const collection = await db.createCollection( collectionName, collectionOptions );
-
-                    if( collectionName === "models" ) { modelsCollection = collection; }
-
+                    dbExists = true;
+                    break;
                 }
             }
-
-            const modelsToInsert = databaseConfig.models;
-            const docsToInsert = databaseConfig.documents;
-
-            const modelsInserted = await modelsCollection.insertMany( modelsToInsert );
-
-            for( let doc of docsToInsert )
+            console.log(dbExists);
+            if( dbExists === false )
             {
-                const docModelName = doc.model;
-                let docModel;
-                for( const tempModel of modelsToInsert )
+                const newDb = client.db(databaseConfig.dbname);
+                // we create
+                let modelsCollection; 
+                const collections = databaseConfig.collections;
+                if( collections && Array.isArray(collections) )
                 {
-                    if( tempModel.name == docModelName )
+                    for( const collectionObject of collections )
                     {
-                        docModel = tempModel;
-                        break;
+                        const collectionName = collectionObject.name;
+                        const collectionOptions = collectionObject.options;
+                        
+                        const collection = await newDb.createCollection( collectionName, collectionOptions );
+
+                        if( collectionName === "models" ) { modelsCollection = collection; }
+
                     }
                 }
 
-                for( const p of Object.keys(doc) )
+                const modelsToInsert = databaseConfig.models;
+                const docsToInsert = databaseConfig.documents;
+
+                const modelsInserted = await modelsCollection.insertMany( modelsToInsert );
+
+                for( let doc of docsToInsert )
                 {
-                    console.log(p);
-                    const modelProp = docModel.props[p];
-                    if( modelProp !== undefined && modelProp.crypted && modelProp.crypted === true )
+                    const docModelName = doc.model;
+                    let docModel;
+                    for( const tempModel of modelsToInsert )
                     {
-                        console.log("crypted property found");
-                        let propToEncrypt = doc[p];
-                        console.log(propToEncrypt);
-                        const cipher = crypto.createCipheriv( "aes-256-cbc", Buffer.from(databaseConfig.crypto_key), Buffer.from(databaseConfig.crypto_iv) );
-                        let encrypted = cipher.update(propToEncrypt, "utf-8", "hex");
-                        encrypted += cipher.final("hex");
-                        console.log(encrypted);
-                        doc[p] = encrypted;
+                        if( tempModel.name == docModelName )
+                        {
+                            docModel = tempModel;
+                            break;
+                        }
+                    }
+
+                    // encrypt
+                    for( const p of Object.keys(doc) )
+                    {
+                        //console.log(p);
+                        const modelProp = docModel.props[p];
+                        if( modelProp !== undefined && modelProp.crypted && modelProp.crypted === true )
+                        {
+                            //console.log("crypted property found");
+                            let propToEncrypt = doc[p];
+                            //console.log(propToEncrypt);
+                            const cipher = crypto.createCipheriv( "aes-256-cbc", Buffer.from(databaseConfig.crypto_key), Buffer.from(databaseConfig.crypto_iv) );
+                            let encrypted = cipher.update(propToEncrypt, "utf-8", "hex");
+                            encrypted += cipher.final("hex");
+                            //console.log(encrypted);
+                            doc[p] = encrypted;
+                        }
+                    }
+
+                    // check for missin props and them
+                    if( docModel )
+                    {
+                        const modelProperties = docModel.props;
+                        for( const prop of Object.keys(modelProperties) )
+                        {
+                            console.log(prop, Object.hasOwn(doc,prop));
+                            const propExists = Object.hasOwn(doc,prop);
+                            if( propExists === false )
+                            {
+                                const propertyModel = modelProperties[prop];
+                                let propertyDefault = propertyModel.default;
+                                if( propertyDefault === undefined )
+                                {
+                                    // switch() here
+                                    if( propertyModel.type && propertyModel.type === "date" )
+                                    {
+                                        propertyDefault = new Date();
+                                    }
+                                    else
+                                    {
+                                        propertyDefault = ""
+                                    }
+                                }
+                                doc[prop] = propertyDefault;
+                            }
+                        }
+                    }
+
+
+                    // default properties for every docs -> TODO : add to a config file
+                    doc.uuid = crypto.randomUUID();
+                    doc.creation_date = new Date();
+
+                    const collectionName = docModel.collection;
+                    const collection = newDb.collection(collectionName);
+                    const result = await collection.insertOne( doc );
+                }
+            }
+            else if( dbExists === true )
+            {
+                const currentDb = client.db( databaseConfig.dbname );
+                const currentCollections = await currentDb.listCollections( {}, {nameOnly:true}).toArray();
+                console.log( currentCollections );
+
+                // create collection if does not exist
+                const localCollections = databaseConfig.collections;
+                for( const lc of localCollections )
+                {
+                    const lcName = lc.name;
+                    let collectionExists = false;
+                    for( const cc of currentCollections )
+                    {
+                        const ccName = cc.name;
+                        if( lcName === ccName )
+                        {
+                            collectionExists = true;
+                            break;
+                        }
+                    }
+                    console.log(`Collection ${lcName} exists = ${collectionExists}`);
+                    if( collectionExists === false )
+                    {
+                        const newCollection = await currentDb.createCollection( lcName, lc.options );
                     }
                 }
 
-                doc.uuid = crypto.randomUUID();
-                console.log(doc);
-                const collectionName = docModel.collection;
-                const collection = db.collection(collectionName);
-                const result = await collection.insertOne( doc );
-                console.log( result );
+                // add model if does not exist and update its props if exists
+                const currentModels = currentDb.collection("models");
+                const currentModelsArray = await currentModels.find({}).toArray();
+
+                const localModelsArray = databaseConfig.models;
+                for( const localModel of localModelsArray )
+                {
+                    const localModelName = localModel.name;
+                    let modelExists = false;
+                    
+                    for( const currentModel of currentModelsArray )
+                    {
+                        const currentModelName = currentModel.name;
+                        if( localModelName === currentModelName )
+                        {
+                            modelExists = true;
+                            break;
+                        }
+                    }
+
+                    console.log(`Model ${localModelName} exists = ${modelExists}`);
+                    if( modelExists === false )
+                    {
+                        const newModel = await currentModels.insertOne( localModel );
+                    }
+                    else
+                    {
+                        const updatedModel = await currentModels.findOneAndUpdate( { name: localModelName }, { $set: {props: localModel.props } } );
+                    }
+                }
+            }
+            else
+            {
+                console.log("SOMETHING IS SUPER WRONG");
             }
         }
         catch(err)

@@ -39,7 +39,7 @@ class AxialToggleButtonGroup extends AxialComponentBase
     {
         super._buildComponent();
         this.#slot = this.shadowRoot.getElementById("slot");
-        const slotElements = this.#slot.assignedElements();
+        const slotElements = this.#slot.assignedElements({flatten: true});
         for( const se of slotElements )
         {
             if( se instanceof AxialToggleButtonBase )

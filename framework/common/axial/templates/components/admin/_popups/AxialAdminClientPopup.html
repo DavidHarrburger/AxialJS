@@ -1,0 +1,44 @@
+<!-- AxialAdminClientPopup -->
+<template id="axial-admin-client-popup-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div class="axial_admin_popup-holder">
+        <div class="axial_admin_popup-header">
+            <div id="title" class="axial_admin_popup-title"></div>
+            <div class="axial_spacer"></div>
+            <axial-button id="closer" axial-text="Fermer"></axial-button>
+        </div>
+        <div class="axial_admin_popup-content">
+            <slot id="contentSlot" name="axial-content"></slot>
+            <axial-service-form id="clientForm" axial-post-path="../api/data/set" axial-collection="misc" axial-model="client">
+                <axial-service-form-item-image slot="axial-items" axial-upload-path="../api/medias/upload" axial-field="image_main"></axial-service-form-item-image>
+                <axial-service-form-item-toggles slot="axial-items" axial-label="Type de client" axial-field="client_type" axial-direction="row">
+                    <axial-toggle-radio axial-text="Particulier" axial-value="particulier" slot="axial-group"></axial-toggle-radio>
+                    <axial-toggle-radio axial-text="Entreprise" axial-value="entreprise" slot="axial-group"></axial-toggle-radio>
+                    <axial-toggle-radio axial-text="Association" axial-value="association" slot="axial-group"></axial-toggle-radio>
+                </axial-service-form-item-toggles>
+                <axial-service-form-item-inputs slot="axial-items" axial-label="Identité de l'entreprise" axial-field="company_desc" axial-direction="row">
+                    <input type="text" slot="axial-content" name="client_company_name" placeholder="Nom de l'entreprise / association">
+                    <input type="text" slot="axial-content" name="client_company_code" placeholder="SIRET / SIREN / CODE">
+                </axial-service-form-item-inputs>
+                <axial-service-form-item-inputs slot="axial-items" axial-label="Identité du contact ou du particulier" axial-field="name" axial-direction="row">
+                    <input type="text" slot="axial-content" name="first_name" placeholder="Prénom">
+                    <input type="text" slot="axial-content" name="last_name" placeholder="Nom">
+                </axial-service-form-item-inputs>
+                <axial-service-form-item-inputs slot="axial-items" axial-label="Contact" axial-field="contact" axial-direction="row">
+                    <input type="email" slot="axial-content" name="email" placeholder="Courriel" required>
+                    <input type="text" slot="axial-content" name="tel" placeholder="Téléphone" required>
+                </axial-service-form-item-inputs>
+                <axial-service-form-item-inputs slot="axial-items" axial-label="Adresse" axial-field="address" axial-direction="column">
+                    <div class="axial_service_form_item-column" slot="axial-content">
+                        <input type="text" name="address_line_1" placeholder="n° et rue">
+                        <input type="text" name="address_line_2" placeholder="Complément">
+                        <div class="axial_service_form_item-row">
+                            <input type="text" name="address_zip" placeholder="Code postal">
+                            <input type="text" name="address_city" placeholder="Ville">
+                        </div>
+                    </div>
+                </axial-service-form-item-inputs>
+            </axial-service-form>
+        </div>
+    </div>
+</template>

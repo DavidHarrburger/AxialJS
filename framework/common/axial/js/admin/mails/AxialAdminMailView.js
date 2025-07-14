@@ -1,13 +1,16 @@
-"use strict"
+"use strict";
 
 import { AxialAdminViewBase } from "../base/AxialAdminViewBase.js";
-import { AxialAdminMailList } from "./AxialAdminMailList.js";
+import { AxialButton } from "../../button/AxialButton.js";
+
+import { AxialAdminListItemBase } from "../base/AxialAdminListItemBase.js";
+//import { AxialAdminUserListItem } from "./AxialAdminUserListItem.js";
+import { AxialAdminList } from "../base/AxialAdminList.js";
 
 class AxialAdminMailView extends AxialAdminViewBase
 {
-
-    /** @type { AxialAdminMailList } */
-    #mailList;
+    /** @type { AxialAdminList } */
+    #list;
 
     constructor()
     {
@@ -15,23 +18,24 @@ class AxialAdminMailView extends AxialAdminViewBase
         this.template = "axial-admin-mail-view-template";
     }
 
-    _onViewEntered()
+    _buildComponent()
     {
-        if( this.#mailList ) { this.#mailList.getAllMails(); }
+        super._buildComponent();
+        this.#list = this.shadowRoot.getElementById("list");
+        if( this.#list )
+        {
+            //this.#list.itemClass = AxialAdminUserListItem;
+        }
     }
 
-    connectedCallback()
+    _onGetResponse()
     {
-        super.connectedCallback();
-        this.#buildComponent();
+        console.log("user view get respone");
+        if( this.#list && this.getData.content)
+        {
+            this.#list.data = this.getData.content;
+        }
     }
-
-    #buildComponent()
-    {
-        this.#mailList = this.shadowRoot.getElementById("mailList");
-    }
-
-
 }
 window.customElements.define("axial-admin-mail-view", AxialAdminMailView);
 export { AxialAdminMailView }

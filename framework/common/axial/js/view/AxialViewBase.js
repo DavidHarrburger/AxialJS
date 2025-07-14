@@ -1,13 +1,18 @@
 "use strict";
 
-import { AxialComponentBase } from "../core/AxialComponentBase.js";
+import { AxialServiceComponentBase } from "../core/AxialServiceComponentBase.js";
 
-class AxialViewBase extends AxialComponentBase
+class AxialViewBase extends AxialServiceComponentBase
 {
     constructor()
     {
         super();
         this.classList.add("axial_view_base");
+    }
+
+    static get observedAttributes()
+    {
+        return [ "axial-name" ];
     }
 
     /** @override */
