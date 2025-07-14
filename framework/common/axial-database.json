@@ -268,18 +268,18 @@
     [
         {
             "model": "admin",
-            "email": "david@dndev.fr",
-            "password": "DnDev_238343##",
-            "username": "DavidAdmin",
+            "email": "the_admin_email",
+            "password": "the_admin_password",
+            "username": "the_admin_username",
             "role": "admin",
             "connected": false,
             "verified": false
         },
         {
             "model": "user",
-            "email": "daven.andreas@gmail.com",
-            "password": "DaVeN_238343##",
-            "username": "DavenUser",
+            "email": "the_user_email",
+            "password": "the_user_password",
+            "username": "the_user_username",
             "role": "user",
             "connected": false,
             "verified": false
