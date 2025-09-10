@@ -13,7 +13,9 @@
         { "name": "prices",    "options": { "capped": true, "size": 10000000 }  },
         { "name": "stats",     "options": { "capped": true, "size": 10000000 }  },
         { "name": "mails",     "options": { "capped": true, "size": 10000000 }  },
-        { "name": "params",    "options": { "capped": true, "size": 10000000 }  }
+        { "name": "params",    "options": { "capped": true, "size": 10000000 }  },
+        { "name": "events",    "options": { "capped": true, "size": 10000000 }  },
+        { "name": "projects",   "options": { "capped": true, "size": 10000000 } }
     ],
     "models":
     [
@@ -32,12 +34,27 @@
             }
         },
         {
+            "name": "weektime",
+            "collection": "params",
+            "props":
+            {
+                "model":         { "type": "string",  "crypted": false, "default": "weektime" },
+                "active":        { "type": "boolean", "crypted": false, "default": false },
+                "message":       { "type": "string",  "crypted": false, "default": "" },
+                "mode":          { "type": "string",  "crypted": false, "default": "" },
+                "planning_half": { "type": "array",  "crypted": false, "default": [] },
+                "planning_full": { "type": "array",  "crypted": false, "default": [] }
+            }
+        },
+        {
             "name": "user_base",
             "collection": "users",
             "props":
             {
                 "model":    { "type": "string",  "crypted": false, "default": "user_base" },
-                "password": { "type": "string",  "crypted": true, "restricted": true }
+                "password": { "type": "string",  "crypted": true, "restricted": true },
+                "first_name":           { "type": "string",  "crypted": true, "default": "" },
+                "last_name":            { "type": "string",  "crypted": true, "default": "" }
             }
         },
         {
@@ -48,14 +65,14 @@
                 "model":                { "type": "string",  "crypted": false, "default": "admin" },
                 "email":                { "type": "string",  "crypted": true, "restricted": false },
                 "password":             { "type": "string",  "crypted": true, "restricted": true },
-                "username":             { "type": "string",  "crypted": false },
+                "username":             { "type": "string",  "crypted": false, "default": "" },
 
                 "image_main":           { "type": "string",  "crypted": false, "default": "" },
 
                 "role":                 { "type": "string",  "crypted": false, "default": "admin" },
                 "connected":            { "type": "boolean", "crypted": false, "default": false },
                 "verified":             { "type": "boolean", "crypted": false, "default": false },
-                "last" :                { "type": "date", "crypted": false },
+                "last" :                { "type": "date", "crypted": false, "default": "" },
 
                 "first_name":           { "type": "string",  "crypted": true, "default": "" },
                 "last_name":            { "type": "string",  "crypted": true, "default": "" },
@@ -65,7 +82,9 @@
                 "address_line_2":       { "type": "string",  "crypted": true, "default": "" },
                 "address_zip":          { "type": "string",  "crypted": true, "default": "" },
                 "address_city":         { "type": "string",  "crypted": true, "default": "" },
-                "address_country":      { "type": "string",  "crypted": true, "default": "" }
+                "address_country":      { "type": "string",  "crypted": true, "default": "" },
+
+                "weektime": { "type": "array",  "crypted": false, "default": [] }
             }
         },
         {
@@ -76,14 +95,14 @@
                 "model":                { "type": "string",  "crypted": false, "default": "user" },
                 "email":                { "type": "string",  "crypted": true, "restricted": false },
                 "password":             { "type": "string",  "crypted": true, "restricted": true },
-                "username":             { "type": "string",  "crypted": false },
+                "username":             { "type": "string",  "crypted": false, "default": "" },
 
                 "image_main":           { "type": "string",  "crypted": false, "default": "" },
 
                 "role":                 { "type": "string",  "crypted": false, "default": "user" },
                 "connected":            { "type": "boolean", "crypted": false, "default": false },
                 "verified":             { "type": "boolean", "crypted": false, "default": false },
-                "last" :                { "type": "date", "crypted": false },
+                "last" :                { "type": "date", "crypted": false, "default": "" },
 
                 "newsletter":           { "type": "boolean", "crypted": false, "default": false },
                 "account":              { "type": "string",  "crypted": false, "default": "free" },
@@ -108,7 +127,15 @@
                 "ship_address_line_2":  { "type": "string",  "crypted": true, "default": "" },
                 "ship_address_zip":     { "type": "string",  "crypted": true, "default": "" },
                 "ship_address_city":    { "type": "string",  "crypted": true, "default": "" },
-                "ship_address_country": { "type": "string",  "crypted": true, "default": "" }
+                "ship_address_country": { "type": "string",  "crypted": true, "default": "" },
+
+                "weektime": { "type": "array",  "crypted": false, "default": [] },
+
+                "stripe_customer_id":             { "type": "string",  "crypted": false, "default": "" },
+                "stripe_subscription_id":         { "type": "string",  "crypted": false, "default": "" },
+                "stripe_subscription_status":     { "type": "string",  "crypted": false, "default": "" },
+                "stripe_subscription_price_id":   { "type": "string",  "crypted": false, "default": "" },
+                "stripe_subscription_product_id": { "type": "string",  "crypted": false, "default": "" }
             }
         },
         {
@@ -207,44 +234,83 @@
             }
         },
         {
+            "name": "event",
+            "collection": "events",
+            "props":
+            {
+                "model":           { "type": "string",  "crypted": false, "default": "event" },
+                "user_uuid":       { "type": "string",  "crypted": false, "default": "" },
+
+                "published":       { "type": "boolean", "crypted": false, "default": false },
+                
+                "image_main":      { "type": "string",  "crypted": false, "default": "" },
+
+                "event_name":      { "type": "string",  "crypted": false, "default": "" },
+                "date_start":      { "type": "date", "crypted": false },
+                "date_end":        { "type": "date", "crypted": false },
+                "time_start":      { "type": "string", "crypted": false },
+                "time_end":        { "type": "string", "crypted": false },
+
+                "address_line_1":       { "type": "string",  "crypted": false, "default": "" },
+                "address_line_2":       { "type": "string",  "crypted": false, "default": "" },
+                "address_zip":          { "type": "string",  "crypted": false, "default": "" },
+                "address_city":         { "type": "string",  "crypted": false, "default": "" },
+                "address_country":      { "type": "string",  "crypted": false, "default": "" },
+
+                "capacity":        { "type": "number",  "crypted": false, "default": 0 }
+
+            }
+        },
+        {
+            "name": "project",
+            "collection": "projects",
+            "props":
+            {
+                "model":           { "type": "string",  "crypted": false, "default": "event" },
+                "user_uuid":       { "type": "string",  "crypted": false, "default": "" },
+                "state":           { "type": "string",  "crypted": false, "default": "creation", "list":["creation", "estimation", "validation", "planification", "realisation", "finalisation"] },
+
+                "published":       { "type": "boolean", "crypted": false, "default": false },
+                
+                "image_main":      { "type": "string",  "crypted": false, "default": "" },
+
+                "event_name":      { "type": "string",  "crypted": false, "default": "" },
+                "date_start":      { "type": "date", "crypted": false },
+                "date_end":        { "type": "date", "crypted": false },
+                "time_start":      { "type": "string", "crypted": false },
+                "time_end":        { "type": "string", "crypted": false },
+
+                "address_line_1":       { "type": "string",  "crypted": false, "default": "" },
+                "address_line_2":       { "type": "string",  "crypted": false, "default": "" },
+                "address_zip":          { "type": "string",  "crypted": false, "default": "" },
+                "address_city":         { "type": "string",  "crypted": false, "default": "" },
+                "address_country":      { "type": "string",  "crypted": false, "default": "" },
+
+                "capacity":        { "type": "number",  "crypted": false, "default": 0 }
+
+            }
+        },
+        {
             "name": "product",
             "collection": "products",
             "props":
             {
                 "model":             { "type": "string",  "crypted": false, "default": "product" },
-                "name":              { "type": "string",  "crypted": false, "default": "" },
+                "user_uuid":         { "type": "string",  "crypted": false, "default": "" },
+
+                "product_name":      { "type": "string",  "crypted": false, "default": "" },
+                "product_ref":       { "type": "string",  "crypted": false, "default": "" },
                 "description":       { "type": "string",  "crypted": false, "default": "" },
-                "active":            { "type": "boolean", "crypted": false, "default": true },
-                "type":              { "type": "string",  "crypted": false, "default": "" },
+                "active":            { "type": "boolean", "crypted": false, "default": false },
+                "type":              { "type": "string",  "crypted": false, "default": "", "list": ["physical", "digital", "ticket", "subscription"] },
                 "image_main":        { "type": "string",  "crypted": false, "default": "" },
                 
-                "price_uuid":        { "type": "string",  "crypted": false, "default": "" },
+                "price":             { "type": "number",  "crypted": false, "default": 1 },
+                "is_recurring":      { "type": "boolean", "crypted": false, "default": false },
+                "recurrence":        { "type": "string",  "crypted": false, "default": "", "list": ["day", "week", "month", "year" ] },
 
                 "stripe_product_id": { "type": "string",  "crypted": false, "default": "" },
                 "stripe_price_id":   { "type": "string",  "crypted": false, "default": "" }
-                
-            }
-        },
-        {
-            "name": "price",
-            "collection": "prices",
-            "props":
-            {
-                "model":              { "type": "string",  "crypted": false, "default": "price" },
-                "name":               { "type": "string",  "crypted": false, "default": "" },
-                "active":             { "type": "boolean", "crypted": false, "default": true },
-                "amount":             { "type": "number",  "crypted": false, "default": 1 },
-                "concurrency":        { "type": "string",  "crypted": false, "default": "eur" },
-                "type":               { "type": "string",  "crypted": false, "default": "recurring" },
-
-                "recurring_interval": { "type": "string",  "crypted": false, "default": "month" },
-                "recurring_count":    { "type": "number",  "crypted": false, "default": 12 },
-
-                
-                "product_uuid":       { "type": "string",  "crypted": false, "default": "" },
-
-                "stripe_product_id":  { "type": "string",  "crypted": false, "default": "" },
-                "stripe_price_id":    { "type": "string",  "crypted": false, "default": "" }
                 
             }
         },

@@ -2,9 +2,7 @@
 
 import { AxialAdminViewBase } from "../base/AxialAdminViewBase.js";
 import { AxialButton } from "../../button/AxialButton.js";
-
-import { AxialAdminListItemBase } from "../base/AxialAdminListItemBase.js";
-//import { AxialAdminUserListItem } from "./AxialAdminUserListItem.js";
+import { AxialAdminMailListItem } from "./AxialAdminMailListItem.js";
 import { AxialAdminList } from "../base/AxialAdminList.js";
 
 class AxialAdminMailView extends AxialAdminViewBase
@@ -24,7 +22,7 @@ class AxialAdminMailView extends AxialAdminViewBase
         this.#list = this.shadowRoot.getElementById("list");
         if( this.#list )
         {
-            //this.#list.itemClass = AxialAdminUserListItem;
+            //this.#list.itemClass = AxialAdminMailListItem;
         }
     }
 

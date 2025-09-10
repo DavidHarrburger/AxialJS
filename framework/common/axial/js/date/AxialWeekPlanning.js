@@ -139,28 +139,135 @@ class AxialWeekPlanning extends AxialComponentBase
         this.#totalMorning.innerHTML = resultMorning;
         this.#totalNoon.innerHTML = resultNoon;
         this.#totalWeek.innerHTML = resultWeek;
-
-        const test = this.getAsArray();
     }
 
     getAsArray()
     {
-        let a = new Array();
+        let a = new Array( [], [], [], [], [], [], [] );
         for( const input of this.#inputs )
         {
             const css = input.classList.value.split(" ")[1];
-            console.log(css);
-            const arrayIndex = Number( css.split("-")[1] );
-            let valueIndex = -1;
-
+            const cssArray = css.split("-");
             
+            const arrayIndex = Number( cssArray[1] ) - 1;
+            let valueIndex = -1;
+            switch( cssArray[0] )
+            {
+                case "awp_morning_start":
+                    valueIndex = 0;
+                break;
+
+                case "awp_morning_end":
+                    valueIndex = 1;
+                break;
+
+                case "awp_noon_start":
+                    valueIndex = 2;
+                break;
+
+                case "awp_noon_end":
+                    valueIndex = 3;
+                break;
+
+                default:
+                break;
+            }
+            
+            a[arrayIndex][valueIndex] = input.value;
         }
+        console.log(a);
         return a;
     }
 
     setFromArray( a )
     {
         console.log(a);
+        for( const input of this.#inputs )
+        {
+            const css = input.classList.value.split(" ")[1];
+            const cssArray = css.split("-");
+            
+            const arrayIndex = Number( cssArray[1] ) - 1;
+            let valueIndex = -1;
+            switch( cssArray[0] )
+            {
+                case "awp_morning_start":
+                    valueIndex = 0;
+                break;
+
+                case "awp_morning_end":
+                    valueIndex = 1;
+                break;
+
+                case "awp_noon_start":
+                    valueIndex = 2;
+                break;
+
+                case "awp_noon_end":
+                    valueIndex = 3;
+                break;
+
+                default:
+                break;
+            }
+            
+            input.value = a[arrayIndex][valueIndex];
+        }
+        this.#updateInputs();
+    }
+
+    #updateInputs()
+    {
+        for( let i = 0; i < 7; i++ )
+        {
+            const index = String( i + 1 );
+
+            // morning
+            const mStartCss = "awp_morning_start-" + index;
+            const mEndCss = "awp_morning_end-" + index;
+            const mSubtotalCss = "awp_morning_subtotal-" + index;
+
+            const mstart = this.#grid.getElementsByClassName(mStartCss)[0];
+            const mend = this.#grid.getElementsByClassName(mEndCss)[0];
+            const msubtotal = this.#grid.getElementsByClassName(mSubtotalCss)[0];
+
+            const mtimeStart = mstart.value.split(":");
+            const mtimeEnd = mend.value.split(":");
+
+            const mdateStart = new Date(0, 0, 0, Number( mtimeStart[0] ), Number( mtimeStart[1] ), 0 );
+            const mdateEnd = new Date(0, 0, 0, Number( mtimeEnd[0] ), Number( mtimeEnd[1] ), 0 );
+
+            const mdelta = mdateEnd.getTime() - mdateStart.getTime();
+            const mhours = Math.floor( mdelta / 1000 / 60 / 60 );
+            const mminutes = (mdelta - (mhours * 1000 * 60 * 60) ) / 1000 / 60;
+
+            const mresult = (String(mhours).length === 1 ? "0" + mhours : mhours) + ":" + (String(mminutes).length === 1 ? "0" + mminutes : mminutes);
+            msubtotal.innerHTML = mresult;
+
+            // noon
+            const nStartCss = "awp_noon_start-" + index;
+            const nEndCss = "awp_noon_end-" + index;
+            const nSubtotalCss = "awp_noon_subtotal-" + index;
+
+            const nstart = this.#grid.getElementsByClassName(nStartCss)[0];
+            const nend = this.#grid.getElementsByClassName(nEndCss)[0];
+            const nsubtotal = this.#grid.getElementsByClassName(nSubtotalCss)[0];
+
+            const ntimeStart = nstart.value.split(":");
+            const ntimeEnd = nend.value.split(":");
+
+            const ndateStart = new Date(0, 0, 0, Number( ntimeStart[0] ), Number( ntimeStart[1] ), 0 );
+            const ndateEnd = new Date(0, 0, 0, Number( ntimeEnd[0] ), Number( ntimeEnd[1] ), 0 );
+
+            const ndelta = ndateEnd.getTime() - ndateStart.getTime();
+            const nhours = Math.floor( ndelta / 1000 / 60 / 60 );
+            const nminutes = (ndelta - (nhours * 1000 * 60 * 60) ) / 1000 / 60;
+
+            const nresult = (String(nhours).length === 1 ? "0" + nhours : nhours) + ":" + (String(nminutes).length === 1 ? "0" + nminutes : nminutes);
+            nsubtotal.innerHTML = nresult;
+        }
+
+        this.#calculateTotal();
     }
 
 }

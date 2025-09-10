@@ -7,12 +7,16 @@ import { AxialViewBase } from "../../view/AxialViewBase.js";
 import { AxialAdminViewBase } from "./AxialAdminViewBase.js";
 import { AxialViewerBase } from "../../view/AxialViewerBase.js";
 import { AxialToggleButtonGroupBase } from "../../button/AxialToggleButtonGroupBase.js";
-//import { AxialNotifier } from "../../application/AxialNotifier.js";
 
 import { AxialTogglePanelButton } from "../button/AxialTogglePanelButton.js";
 import { AxialSignoutButton } from "../button/AxialSignoutButton.js"; // change to auth manager / auth box
 import { AxialPopupManager } from "../../popup/AxialPopupManager.js";
 import { AxialPopupBase } from "../../popup/AxialPopupBase.js";
+
+import { PathUtils } from "../../utils/PathUtils.js";
+
+// REVIEW ALL IMPORTS TO HAVE EVERYTHING AT THE BEGINNING 
+// WE SHOULD ONLY IMPORT COMPONENTS RELATIVE TO THE CURRENT ADMIN PAGE
 
 class AxialAdminApplicationBase extends AxialApplicationBase
 {
@@ -21,7 +25,7 @@ class AxialAdminApplicationBase extends AxialApplicationBase
     #userUuid;
 
     /** @type { String } */
-    #userPath = "../api/data/get/?c=users&m=user_base";
+    #userPath = "./api/data/get/?c=users&m=user_base";
 
     /** @type { Object } */
     #userObject;
@@ -38,9 +42,6 @@ class AxialAdminApplicationBase extends AxialApplicationBase
 
     /** @type { AxialViewerBase } */
     #mainViewer;
-
-    /** @type { AxialNotifier } */
-    #notifier;
 
     /** @type { HTMLElement } */
     #authName;
@@ -65,12 +66,13 @@ class AxialAdminApplicationBase extends AxialApplicationBase
     {
         super();
 
+        this.#userPath = PathUtils.getPathFromRelative(this.#userPath);
+
         this.#boundMainViewerChangedHandler = this.#mainViewerChangedHandler.bind(this);
         this.#boundPanelTogglesIndexChangedHandler = this.#panelTogglesIndexChangedHandler.bind(this);
         this.#boundBurgerHandler = this.#burgerHandler.bind(this);
-        this.#boundPopupHiddenHandler = this.#popupHiddenHandler.bind(this)
+        this.#boundPopupHiddenHandler = this.#popupHiddenHandler.bind(this);
     }
-
 
     /**
      * @readonly
@@ -103,7 +105,6 @@ class AxialAdminApplicationBase extends AxialApplicationBase
         catch(err)
         {
             console.log(err);
-            
         }
         finally
         {
@@ -120,8 +121,12 @@ class AxialAdminApplicationBase extends AxialApplicationBase
         // panel
         this.#panel = document.getElementById("panel");
         this.#panelToggles = document.getElementById("panelToggles");
-        this.#panelToggles.forceSelection = true;
-        this.#panelToggles.selectedIndex = 0;
+        if( this.#panelToggles )
+        {
+            this.#panelToggles.forceSelection = true;
+            this.#panelToggles.selectedIndex = 0;
+        }
+        
 
         // viewer
         this.#mainViewer = document.getElementById("mainViewer");
@@ -132,17 +137,27 @@ class AxialAdminApplicationBase extends AxialApplicationBase
         // authbox
         this.#authName = document.getElementById("authName");
         this.#authPhoto = document.getElementById("authPhoto");
-        
     }
 
     _onApplicationPageLoaded( event )
     {
         super._onApplicationPageLoaded( event );
 
-        this.#mainViewer.addEventListener("viewerChanged", this.#boundMainViewerChangedHandler);
-        this.#panelToggles.addEventListener("indexChanged", this.#boundPanelTogglesIndexChangedHandler);
-        this.#burgerButton.addEventListener("toggleChanged", this.#boundBurgerHandler);
+        if( this.#mainViewer )
+        {
+            this.#mainViewer.addEventListener("viewerChanged", this.#boundMainViewerChangedHandler);
+        }
 
+        if( this.#panelToggles )
+        {
+            this.#panelToggles.addEventListener("indexChanged", this.#boundPanelTogglesIndexChangedHandler);
+        }
+
+        if( this.#burgerButton )
+        {
+            this.#burgerButton.addEventListener("toggleChanged", this.#boundBurgerHandler);
+        }
+        
         this.useApplicationResize = true;
 
         const allPopups = AxialPopupManager.POPUPS;
@@ -185,17 +200,20 @@ class AxialAdminApplicationBase extends AxialApplicationBase
     {
         if( this.#userObject )
         {
-            document.title = this.#userObject.username;
-            if( this.#authName ) { this.#authName.innerHTML = this.#userObject.username; }
-            if( this.#authPhoto && this.#userObject.image_main && this.#userObject.image_main !== "" )
+            document.title = this.#userObject.first_name;
+            if( this.#authName ) { this.#authName.innerHTML = this.#userObject.first_name; }
+            if( this.#authPhoto )
             {
-                const imageUrl = new URL( this.#userObject.image_main, window.location.origin);
-                this.#authPhoto.src = imageUrl.href;
-                this.#authPhoto.style.display = "block";
-            }
-            else
-            {
-                this.#authPhoto.style.display = "none";
+                if( this.#userObject.image_main && this.#userObject.image_main !== "" )
+                {
+                    const imageUrl = new URL( this.#userObject.image_main, window.location.origin);
+                    this.#authPhoto.src = imageUrl.href;
+                    this.#authPhoto.style.display = "block";
+                }
+                else
+                {
+                    this.#authPhoto.style.display = "none";
+                }
             }
         }
     }
@@ -238,7 +256,6 @@ class AxialAdminApplicationBase extends AxialApplicationBase
     #popupHiddenHandler( event )
     {
         const popup = event.currentTarget;
-        console.log( popup );
         this._onApplicationPopupHidden( popup );
     }
 
@@ -267,20 +284,6 @@ class AxialAdminApplicationBase extends AxialApplicationBase
         }
     }
 
-
-    /**
-     * 
-     * @param { String } message 
-     */
-    /*
-    notify( message )
-    {
-        if( this.#notifier )
-        {
-            this.#notifier.show( message );
-        }
-    }
-    */
 }
 
 export { AxialAdminApplicationBase }

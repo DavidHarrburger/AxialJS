@@ -1,10 +1,21 @@
-<!-- AxialAdminUserView -->
+<!-- ./admin/users/AxialAdminUserView -->
 <template id="axial-admin-user-view-template">
     <link rel="stylesheet" href="./styles.css">
     <div class="axial_admin_view-holder">
         <div class="axial_admin_view-header">
-            
+            <div id="title" class="axial_admin_view-title">Utilisateurs</div>
+            <div class="axial_spacer"></div>
         </div>
-        <div class="axial_admin_view-content"></div>
+        <div class="axial_admin_view-content">
+            <axial-admin-list id="list">
+                <div slot="axial-header" class="axial_admin_user_list_item-name">Name</div>
+                <div slot="axial-header" class="axial_admin_user_list_item-email">Email</div>
+                <div slot="axial-header" class="axial_admin_user_list_item-role">Role</div>
+                <div slot="axial-header" class="axial_admin_user_list_item-account">Account</div>
+                <div slot="axial-header" class="axial_admin_user_list_item-status">Status</div>
+                <div slot="axial-header" class="axial_admin_user_list_item-newsletter">Newsletter</div>
+                <div slot="axial-header" class="axial_admin_user_list_item-creation">Création</div>
+            </axial-admin-list>
+        </div>
     </div>
 </template>

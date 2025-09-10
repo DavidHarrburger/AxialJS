@@ -45,7 +45,13 @@ class AxialServiceFormItemWeekPlanning extends AxialServiceFormItem
         this.dispatchEvent( formItemEvent );
     }
     
-
+    _fillItem( object )
+    {
+        if( object && object[this.field] && Array.isArray(object[this.field]) )
+        {
+            this.#weekPlanning.setFromArray( object[this.field] );
+        }
+    }
 }
 window.customElements.define("axial-service-form-item-week-planning", AxialServiceFormItemWeekPlanning);
 export { AxialServiceFormItemWeekPlanning }

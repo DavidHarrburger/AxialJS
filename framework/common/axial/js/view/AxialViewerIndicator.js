@@ -10,11 +10,20 @@ class AxialViewerIndicator extends AxialComponentBase
     /** @type { String } */
     #viewerId;
 
-    /** @type { Array } */
+    /** @type { Array<AxialViewerIndicatorStep } */
     #steps = new Array();
 
     /** @type { Number } */
     #index = 0;
+
+    /** @type { Number } */
+    #stepGap = 40;
+
+    /** @type { Number } */
+    #badgeSize = 60;
+
+    /** @type { Number } */
+    #lineSize = 2;
 
     /// elements
     /** @type { AxialViewerBase } */
@@ -25,6 +34,9 @@ class AxialViewerIndicator extends AxialComponentBase
 
     /** @type { HTMLElement } */
     #bar;
+
+    /** @type { HTMLElement } */
+    #progress;
 
     /// events
     /** @type { Function } */
@@ -39,9 +51,21 @@ class AxialViewerIndicator extends AxialComponentBase
         this.#boundViewerChangedHandler = this.#viewerChangedHandler.bind(this);
     }
 
-    static get observedAttributes()
+    get viewer() { return this.#viewer; }
+    set viewer( value )
     {
-        return [ "axial-viewer-id" ];
+        if( value instanceof AxialViewerBase === false )
+        {
+            throw new TypeError("AxialViewerBase value required");
+        }
+        if( this.#viewer === value ) { return; }
+        if( this.#viewer !== undefined )
+        {
+            this.#viewer.removeEventListener("viewerChanging", this.#boundViewerChangedHandler);
+        }
+        this.#viewer = value;
+        this.#viewer.addEventListener("viewerChanging", this.#boundViewerChangedHandler);
+        this.#buildIndicator();
     }
 
     get index() { return this.#index; }
@@ -58,22 +82,9 @@ class AxialViewerIndicator extends AxialComponentBase
         }
 
         this.#index = value;
-        this.updateIndicator();
+        this.#updateIndicator();
     }
 
-    attributeChangedCallback(name, oldValue, newValue)
-    {
-        super.attributeChangedCallback(name, oldValue, newValue);
-        if( name === "axial-viewer-id" )
-        {
-            const tempViewer = document.getElementById(newValue);
-            if( tempViewer && tempViewer instanceof AxialViewerBase === true )
-            {
-                this.#viewerId = newValue;
-                this.#viewer = tempViewer;
-            }
-        }
-    }
 
     _buildComponent()
     {
@@ -81,28 +92,33 @@ class AxialViewerIndicator extends AxialComponentBase
         
         this.#holder = this.shadowRoot.getElementById("holder");
         this.#bar = this.shadowRoot.getElementById("bar");
+        this.#progress = this.shadowRoot.getElementById("progress");
+    }
 
-        if( this.#viewer )
+    #buildIndicator()
+    {
+        const views = this.#viewer.allViews;
+        const vl = views.length;
+        for( let i = 0; i < vl; i++ )
         {
-            this.#viewer.addEventListener("viewerChanged", this.#boundViewerChangedHandler);
-            const views = this.#viewer.allViews;
-            const vl = views.length;
-            for( let i = 0; i < vl; i++ )
+            const view = views[i];
+            let viewName = view.getAttribute("axial-name");
+            if( viewName === null || viewName === "" || viewName === undefined )
             {
-                const view = views[i];
-                let viewName = view.getAttribute("axial-name");
-                if( viewName === null || viewName === "" || viewName === undefined )
-                {
-                    viewName = "Item";
-                }
-                const step = new AxialViewerIndicatorStep();
-                step.num = (i+1);
-                step.text = viewName;
-
-                this.#addStep(step);
+                viewName = "Item";
             }
-            this.updateIndicator();
+            const step = new AxialViewerIndicatorStep();
+            step.num = (i+1);
+            step.text = viewName;
+
+            this.#addStep(step);
         }
+        const barHeight = (( this.#badgeSize + this.#stepGap ) * (vl-1));
+        if( this.#bar )
+        {
+            this.#bar.style.height = barHeight + "px";
+        }
+        this.#updateIndicator();
     }
 
     #viewerChangedHandler( event )
@@ -124,15 +140,33 @@ class AxialViewerIndicator extends AxialComponentBase
         }
     }
 
-    updateIndicator()
+    #updateIndicator()
     {
-        const currentStep = this.#steps[this.#index];
-        const left = currentStep.offsetLeft;
-        const width = currentStep.offsetWidth;
-
-        this.#bar.style.left = `${left}px`;
-        this.#bar.style.width = `${width}px`;
-
+        
+        const sl = this.#steps.length;
+        for( let i = 0; i < sl; i++ )
+        {
+            const currentStep = this.#steps[i];
+            if( i < this.#index )
+            {
+                currentStep.switchToState("completed");
+            }
+            else if( i === this.#index )
+            {
+                currentStep.switchToState("active");
+            }
+            else
+            {
+                currentStep.switchToState("init");
+            }
+        }
+        
+        //currentStep.
+        const progressHeight = (100 / sl) * this.#index;
+        if( this.#progress )
+        {
+            this.#progress.style.height = `${progressHeight}%`;
+        }
     }
 }
 

@@ -2,6 +2,7 @@
 
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
 import { AxialCalendarGridBase } from "./AxialCalendarGridBase.js";
+import { DateUtils } from "../utils/DateUtils.js";
 
 class AxialCalendar extends AxialComponentBase
 {
@@ -20,6 +21,15 @@ class AxialCalendar extends AxialComponentBase
 
     /** @type { Date } */
     #date = undefined;
+
+    /** @type { Boolean } */
+    #allowPast = true;
+
+    /** @type { Date } */
+    #min;
+
+    /** @type { Date } */
+    #max;
     
     /// ui
     /** @type { HTMLElement } */
@@ -80,6 +90,42 @@ class AxialCalendar extends AxialComponentBase
         }
     }
 
+    get allowPast() { return this.#allowPast; }
+    set allowPast( value )
+    {
+        if( typeof value !== "boolean")
+        {
+            throw new TypeError("Boolean value expected");
+        }
+        if( value === this.#allowPast ) { return; }
+        this.#allowPast = value;
+        this.#grid.allowPast = value;
+    }
+
+    get min() { return this.#min; }
+    set min( value )
+    {
+        if( DateUtils.isValidDate(value) === false )
+        {
+            throw new TypeError("Date value expected"); 
+        }
+        if( value === this.#min ) { return; }
+        this.#min = value;
+        this.#grid.min = value;
+    }
+
+    get max() { return this.#max; }
+    set max( value )
+    {
+        if( DateUtils.isValidDate(value) === false )
+        {
+            throw new TypeError("Date value expected"); 
+        }
+        if( value === this.#max ) { return; }
+        this.#max = value;
+        this.#grid.max = value;
+    }
+
     _buildComponent()
     {
         super._buildComponent();
@@ -130,12 +176,10 @@ class AxialCalendar extends AxialComponentBase
     /** @type { Function } */;
     #dateChangedHandler( event )
     {
-        //console.log("AxialCalendar dateChanged");
         const newDate = event.detail.date;
         this.#date = newDate;
         const dateChangedEvent = new CustomEvent("dateChanged", { bubbles: false, detail: { date: newDate } } );
         this.dispatchEvent( dateChangedEvent );
-
     }
 
     #previousClickHandler( event )

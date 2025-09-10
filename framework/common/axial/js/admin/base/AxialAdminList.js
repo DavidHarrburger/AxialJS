@@ -22,6 +22,9 @@ class AxialAdminList extends AxialComponentBase
     /** @type { HTMLElement } */
     #content;
 
+    /** @type { String } */
+    #dateFilter = "creation_date";
+
     constructor()
     {
         super();
@@ -75,6 +78,7 @@ class AxialAdminList extends AxialComponentBase
         {
             console.log("data in list");
             console.log(this.data);
+            this.data.sort( this.#dateSorter );
             if( this.#content && this.#itemClass )
             {
                 DomUtils.cleanElement( this.#content );
@@ -88,7 +92,29 @@ class AxialAdminList extends AxialComponentBase
         }
     }
 
+    #dateSorter( a, b )
+    {
+        let r = 0;
+        if( a.creation_date && b.creation_date )
+        {
+            const ad = new Date(a.creation_date);
+            const bd = new Date(b.creation_date);
 
+            if( ad < bd )
+            {
+                r = 1;
+            }
+            else if( ad > bd )
+            {
+                r = -1;
+            }
+            else
+            {
+                r = 0;
+            }
+        }
+        return r;
+    }
 }
 
 window.customElements.define("axial-admin-list", AxialAdminList);

@@ -113,11 +113,24 @@ input[type="file"]::file-selector-button
     color:              var(--AxialButton___textColor);
     background-color:   var(--AxialButton___backgroundColor);
 }
+
 input[type="color"]
 {
-    padding: 0;
-    max-width: 300px;
+  -webkit-appearance: none;
+  appearance: none;
+  padding: 0; 
+  max-width: 120px;
 }
+input[type="color"]::-webkit-color-swatch-wrapper
+{
+  padding: 0;
+}
+input[type="color"]::-webkit-color-swatch
+{
+  border: none;
+}
+
+
 textarea
 {
     display: block;
@@ -192,12 +205,12 @@ select
     min-height: 100vh;
     overflow: hidden;
 }
-.axial_intro_layer        { z-index: 20; }
-.axial_popup_layer        { z-index: 30; }
-.axial_medias_layer       { z-index: 40; }
-.axial_notification_layer { z-index: 50; }
-.axial_overlay_layer      { z-index: 60; }
-.axial_tooltip_layer      { z-index: 70; }
+.axial_intro_layer        { z-index: 200; }
+.axial_popup_layer        { z-index: 300; }
+.axial_medias_layer       { z-index: 400; }
+.axial_notification_layer { z-index: 500; }
+.axial_overlay_layer      { z-index: 600; }
+.axial_tooltip_layer      { z-index: 700; }
 .axial_transition_layer
 {
     z-index: 999999999;
@@ -660,7 +673,7 @@ select
     width: 100%;
     height: 100%;
     display: grid;
-    grid-template-rows: repeat(12, 60px);
+    grid-template-rows: repeat(11, 48px);
     grid-template-columns: repeat(7, 1fr);
     gap: 1px;
     text-align: left;
@@ -772,7 +785,7 @@ select
 /* totals */
 .awp_morning_total { grid-row: 10; grid-column: 4; background-color: #51bfff; }
 .awp_noon_total    { grid-row: 10; grid-column: 7; background-color: #51bfff; }
-.awp_week_total    { grid-row: 12; grid-column: 7; background-color: #00456d; color: #fff; }
+.awp_week_total    { grid-row: 11; grid-column: 7; background-color: #00456d; color: #fff; }
 
 /* noon */
 .axial_week_planning-noon          { grid-row: 1; grid-column: 5 / span 3; }
@@ -789,3 +802,31 @@ select
 .axial_week_planning-friday       { grid-row: 7; grid-column: 1; }
 .axial_week_planning-saturday     { grid-row: 8; grid-column: 1; }
 .axial_week_planning-sunday       { grid-row: 9; grid-column: 1; }
+
+/* AxialSubscriptionCard */
+
+.axial_subscription_card
+{
+    position: relative;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    border-radius: 20px;
+    border: 4px solid #232323;
+
+}
+.axial_subscription_card-title
+{
+    font-weight: 600;
+}
+.axial_subscription_card-image
+{
+    width: 400px;
+    height: 400px;
+    border-radius: 12px;
+    overflow: hidden;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}

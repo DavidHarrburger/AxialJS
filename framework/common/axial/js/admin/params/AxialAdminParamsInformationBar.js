@@ -4,6 +4,7 @@ import { AxialServiceComponentBase } from "../../core/AxialServiceComponentBase.
 import { AxialToggleSwitch } from "../../button/AxialToggleSwitch.js";
 import { AxialServiceButton } from "../../button/AxialServiceButton.js";
 import { AxialDropdownCalendar } from "../../dropdown/AxialDropdownCalendar.js";
+import { AxialCalendarButton } from "../../date/AxialCalendarButton.js";
 import { DateUtils } from "../../utils/DateUtils.js";
 
 class AxialAdminParamsInformationBar extends AxialServiceComponentBase
@@ -15,9 +16,15 @@ class AxialAdminParamsInformationBar extends AxialServiceComponentBase
     #message;
 
     /** @type { AxialDropdownCalendar } */
-    #calendarStart;
+    //#calendarStart;
 
     /** @type { AxialDropdownCalendar } */
+    //#calendarEnd;
+
+    /** @type { AxialCalendarButton } */
+    #calendarStart;
+
+    /** @type { AxialCalendarButton } */
     #calendarEnd;
 
     /** @type { HTMLInputElement } */
@@ -98,11 +105,16 @@ class AxialAdminParamsInformationBar extends AxialServiceComponentBase
                 let tempDateStart = new Date(props.date_start);
                 let tempDateEnd = new Date(props.date_end);
 
-                if( DateUtils.isValidDate(tempDateStart) === true && DateUtils.isValidDate(tempDateEnd) === true && DateUtils.isInPeriod( tempDateStart, tempDateEnd ) )
+                //this.#calendarStart.date = tempDateStart;
+                //this.#calendarEnd.date = tempDateEnd;
+
+                
+                if( DateUtils.isValidDate(tempDateStart) === true && DateUtils.isValidDate(tempDateEnd) === true && DateUtils.isInPeriod( tempDateStart, tempDateEnd ) === true )
                 {
                     this.#calendarStart.date = tempDateStart;
                     this.#calendarEnd.date = tempDateEnd;
                 }
+                
 
                 this.#textColor.value = props.text_color;
                 this.#themeColor.value = props.theme_color;

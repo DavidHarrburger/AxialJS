@@ -536,10 +536,7 @@ class AxialComponentBase extends HTMLElement
      * Called when the component current state changes successfully.
      * @public
      */
-    _onStateChanged()
-    {
-        console.log("AxialComponentBase._onStateChanged()");
-    }
+    _onStateChanged() {}
 
     /**
      * Add a new state to the states registry of the component.

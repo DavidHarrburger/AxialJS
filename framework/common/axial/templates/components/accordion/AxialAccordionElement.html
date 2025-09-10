@@ -1,7 +1,8 @@
-<!-- AxialAccordionElement -->
+<!-- ./accordion/AxialAccordionElement -->
 <template id="axial-accordion-element-template">
     <link rel="stylesheet" href="./styles.css">
-    <div id="content" class="axial_accordion_element-content">
-        <slot id="contentSlot" name="axial-content"></slot>
-    </div>
+    <axial-accordion-toggle id="toggle"></axial-accordion-toggle>
+    <axial-accordion-container id="container">
+        <slot id="slot" slot="axial-content" name="axial-content"></slot>
+    </axial-accordion-container>
 </template>

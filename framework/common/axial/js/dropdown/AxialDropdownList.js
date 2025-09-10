@@ -61,14 +61,10 @@ class AxialDropdownList extends AxialDropdown
         }
     }
 
-    connectedCallback()
+    _buildComponent()
     {
-        super.connectedCallback();
-        this.#buildComponent();
-    }
+        super._buildComponent();
 
-    #buildComponent()
-    {
         this.#group = this.shadowRoot.getElementById("group");
         this.#group.forceSelection = true;
         this.#group.addEventListener("indexChanged", this.#boundIndexChangedHandler);

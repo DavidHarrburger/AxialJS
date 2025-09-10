@@ -1,0 +1,68 @@
+<!-- ./forms/AxialServiceFormItemInternalProductPrice -->
+<template id="axial-service-form-item-internal-product-price-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div class="axial_service_form_item-holder">
+        <div class="axial_service_form_item-header">
+            <div id="label" class="axial_service_form_item-label">Label</div>
+            <div id="action" class="axial_service_form_item-action">
+                <slot id="actionSlot" name="axial-action"></slot>
+            </div>
+        </div>
+        <div id="info" class="axial_service_form_item-info">
+            <slot id="infoSlot" name="axial-info"></slot>
+        </div>
+        <div id="content" class="axial_service_form_item-content">
+            <div class="axial_service_form_item-group">
+                <div>Prix d'achat :</div>
+                <div class="axial_service_form_item-grouprow">
+                    <input id="costInput" type="number" value="0.00" min="0" step="0.01">
+                </div>
+            </div>
+            
+            <div class="axial_service_form_item-group">
+                <div>Stock :</div>
+                <div class="axial_service_form_item-grouprow">
+                    <input id="stockInput" type="number" value="0" min="0" step="1">
+                </div>
+            </div>
+
+            <div class="axial_service_form_item-group">
+                <div>Coeff :</div>
+                <div class="axial_service_form_item-grouprow">
+                    <input id="coefInput" type="number" value="1.20" min="1.00" step="0.01">
+                </div>
+                
+            </div>
+            <div class="axial_service_form_item-group">
+                <div>TVA :</div>
+                <div class="axial_service_form_item-grouprow">
+                    <select id="taxSelect" name="taxSelect">
+                        <option value="5.5">5.5 %</option>
+                        <option value="10">10%</option>
+                        <option value="20">20%</option>
+                    </select>
+                </div>
+            </div>
+            <div class="axial_spacer"></div>
+            
+            <div class="axial_service_form_item-group">
+                <div class="ax_ri">Total HT</div>
+                <div class="axial_service_form_item-grouprow">
+                    <div class="axial_service_form_item-grouphtml" id="subtotalNoTax">0.00€</div>
+                </div>    
+            </div>
+            <div class="axial_service_form_item-group">
+                <div class="ax_ri">Total TVA</div>
+                <div class="axial_service_form_item-grouprow">
+                    <div class="axial_service_form_item-grouphtml" id="taxValue">0.00€</div>
+                </div>
+            </div>
+            <div class="axial_service_form_item-group">
+                <div class="ax_ri">Total TTC</div>
+                <div class="axial_service_form_item-grouprow">
+                    <div class="axial_service_form_item-grouphtml" id="subtotalWithTax">0.00€</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

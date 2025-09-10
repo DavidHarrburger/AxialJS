@@ -5,6 +5,7 @@ class PathUtils
 
     /**
      * @static
+     * @param { String } relative 
      * @returns { String }
      */
     static getPathFromRelative( relative )

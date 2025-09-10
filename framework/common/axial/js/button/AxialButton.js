@@ -31,7 +31,7 @@ class AxialButton extends AxialButtonBase
     #text = "";
 
     /** @type { Number } */
-    #iconSpace = 16;
+    #gap = 10;
 
     /** @type { String } */
     #iconPosition = "left";
@@ -85,7 +85,7 @@ class AxialButton extends AxialButtonBase
 
     static get observedAttributes()
     {
-        return ["axial-text", "axial-icon-position", "axial-theme", "axial-color", "axial-size", "axial-weight", "axial-align", "axial-style" ];
+        return ["axial-text", "axial-icon-position", "axial-theme", "axial-color", "axial-size", "axial-weight", "axial-align", "axial-style", "axial-gap" ];
     }
 
     _buildComponent()
@@ -114,6 +114,7 @@ class AxialButton extends AxialButtonBase
         if( this.#content )
         {
             this.#content.style.justifyContent = this.#align;
+            this.#content.style.gap = this.#gap + "px";
         }
         
         if( this.#label )
@@ -145,6 +146,8 @@ class AxialButton extends AxialButtonBase
             {
                 this.#textWeight = window.getComputedStyle( this.#label ).fontWeight;
             }
+
+            this.#label.style.display = this.#text === "" ? "none" : "block";
         }
         
         this.#iconSlot = this.shadowRoot.getElementById("iconSlot");
@@ -161,6 +164,7 @@ class AxialButton extends AxialButtonBase
             if( this.#label )
             {
                 this.#label.innerHTML = this.#text;
+                this.#label.style.display = this.#text === "" ? "none" : "block";
             }
         }
 
@@ -203,6 +207,12 @@ class AxialButton extends AxialButtonBase
             this.#textSize = newValue;
             if( this.#label ) { this.#label.style.fontSize = this.#textSize; }
         }
+
+        if( name === "axial-gap" )
+        {
+            this.#gap = isNaN( Number(newValue) ) === true ? 10 : Number(newValue);
+            if( this.#content ) { this.#content.style.gap = String(this.#gap) + "px"; }
+        }
     }
 
     get text() { return this.#text; }
@@ -217,6 +227,7 @@ class AxialButton extends AxialButtonBase
         if( this.#label )
         {
             this.#label.innerHTML = this.#text;
+            this.#label.style.display = this.#text === "" ? "none" : "block";
         }
     }
 
@@ -226,75 +237,35 @@ class AxialButton extends AxialButtonBase
 
     #layoutComponent()
     {
-        // consider to move the layout of the content in a separated switch
         const slotElements = this.#iconSlot.assignedElements( { flatten: true } );
-        if( slotElements.length === 0 )
+        this.#icon.style.display = slotElements.length === 0 ? "none" : "block";
+
+        if( slotElements.length > 0 )
         {
-            this.#icon.style.marginLeft = "0px";
-            this.#icon.style.marginRight = "0px";
-            this.#icon.style.marginTop = "0px";
-            this.#icon.style.marginBottom = "0px";
-        }
-        else
-        {
-            if( this.#text === "" )
+            let dir = "row";
+            switch( this.#iconPosition )
             {
-                this.#icon.style.marginLeft = "0px";
-                this.#icon.style.marginRight = "0px";
-                this.#icon.style.marginTop = "0px";
-                this.#icon.style.marginBottom = "0px";
+                case "left":
+                    dir = "row";
+                break;
+
+                case "right":
+                    dir = "row-reverse";
+                break;
+
+                case "top":
+                    dir = "column";
+                break;
+
+                case "bottom":
+                    dir = "column-reverse";
+                break;
+
+                default:
+                    dir = "row";
+                break;
             }
-            else
-            {
-                switch( this.#iconPosition )
-                {
-                    case "left":
-                        this.#content.style.flexDirection = "row";
-
-                        this.#icon.style.marginLeft = "0px";
-                        this.#icon.style.marginRight = String( this.#iconSpace ) + "px";
-                        this.#icon.style.marginTop = "0px";
-                        this.#icon.style.marginBottom = "0px";
-                    break;
-    
-                    case "right":
-                        this.#content.style.flexDirection = "row-reverse";
-
-                        this.#icon.style.marginLeft = String( this.#iconSpace ) + "px";
-                        this.#icon.style.marginRight = "0px";
-                        this.#icon.style.marginTop = "0px";
-                        this.#icon.style.marginBottom = "0px";
-                    break;
-    
-                    case "top":
-                        this.#content.style.flexDirection = "column";
-
-                        this.#icon.style.marginLeft = "0px";
-                        this.#icon.style.marginRight = "0px";
-                        this.#icon.style.marginTop = "0px";
-                        this.#icon.style.marginBottom = String( this.#iconSpace ) + "px";
-                    break;
-    
-                    case "bottom":
-                        this.#content.style.flexDirection = "column-reverse";
-
-                        this.#icon.style.marginLeft = "0px";
-                        this.#icon.style.marginRight = "0px";
-                        this.#icon.style.marginTop = String( this.#iconSpace ) + "px";
-                        this.#icon.style.marginBottom = "0px";
-                    break;
-    
-                    // just in case
-                    default:
-                        this.#content.style.flexDirection = "row";
-
-                        this.#icon.style.marginLeft = "0px";
-                        this.#icon.style.marginRight = "0px";
-                        this.#icon.style.marginTop = "0px";
-                        this.#icon.style.marginBottom = "0px";
-                    break;
-                }              
-            }
+            this.#content.style.flexDirection = dir;
         }
     }
 

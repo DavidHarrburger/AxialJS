@@ -1,12 +1,42 @@
-"use strict"
+"use strict";
 
 import { AxialPopupBase } from "./AxialPopupBase.js";
 
 class AxialPopupManager
 {
+    /**
+     * @static
+     * @type { Set<AxialPopupBase }
+     */
     static #POPUPS = new Set();
-    /** @readonly */
+
+    /**
+     * @static
+     * @type { Array<AxialPopupBase }
+     */
+    static #STACK = new Array();
+
+    /**
+     * @type { Number }
+     * @static
+     * @private
+     */
+    static #Z = 300;
+    
+    /**
+     * @readonly
+     */
     static get POPUPS() { return AxialPopupManager.#POPUPS; }
+
+    /**
+     * @readonly
+     */
+    static get STACK() { return AxialPopupManager.#STACK; }
+
+    /**
+     * @readonly
+     */
+    static get Z() { return AxialPopupManager.#Z; }
 
     static get LAYER() { return document.getElementById("axialPopupLayer"); }
 
@@ -46,7 +76,7 @@ class AxialPopupManager
         let popupToReturn = undefined;
         for( const popup of AxialPopupManager.POPUPS )
         {
-            if( popup.id == id )
+            if( popup.id === id )
             {
                 popupToReturn = popup;
                 break;
@@ -86,76 +116,64 @@ class AxialPopupManager
      * @static
      * Show the AxialPopupBase and manage its lifecycle
      * @param { AxialPopupBase } popup - The popup we want to show
-     * @returns { void }
      */
     static showPopup( popup )
     {
-        if( popup instanceof AxialPopupBase == false )
+        if( popup instanceof AxialPopupBase === false )
         {
             throw new TypeError( "AxialPopupBase value expected" );
         }
 
-        if( AxialPopupManager.#currentPopup != undefined )
-        {
-            if( AxialPopupManager.#currentPopup != popup )
-            {
-                AxialPopupManager.#nextPopup = popup;
-                AxialPopupManager.hidePopup();
-            }
-            return;
-        }
+        if( AxialPopupManager.#STACK.includes(popup) === true ) { return; }
+
+        const popupIndex = AxialPopupManager.#STACK.length + AxialPopupManager.#Z;
+        popup.style.zIndex = popupIndex;
+        AxialPopupManager.#STACK.push( popup );
+        console.log(AxialPopupManager.#STACK);
 
         // we ensure the document will not respond to click (that hides the popup)
         document.removeEventListener("pointerdown", AxialPopupManager.#documentPopupClickHandler, {capture: false} );
+        
+        AxialPopupManager.#currentPopup = popup; // change the getter, always the last index
 
-        if( AxialPopupManager.#currentPopup == undefined )
+                        
+        const isModal = popup.isModal;
+        if( isModal === false )
         {
-            AxialPopupManager.#currentPopup = popup;
-            
-            const isModal = popup.isModal;
-            if( isModal == false )
-            {
-                document.addEventListener("pointerdown", AxialPopupManager.#documentPopupClickHandler, {capture: false} );
-            }
+            document.addEventListener("pointerdown", AxialPopupManager.#documentPopupClickHandler, {capture: false} );
+        }
 
-            const duration = String(AxialPopupManager.#currentPopup.duration) + "ms";
-            
-            const useObfuscator = popup.useObfuscator;
-            if( useObfuscator == true )
-            {
-                AxialPopupManager.OBFUSCATOR.style.visibility = "visible";
-                AxialPopupManager.OBFUSCATOR.addEventListener("animationend", AxialPopupManager.#obfuscatorAnimationEndHandler);
-                AxialPopupManager.OBFUSCATOR.style.animation = duration + " linear 0ms 1 normal both running axial_obfuscator_fade-in";
-            }
+        const duration = String(AxialPopupManager.#currentPopup.duration) + "ms";
+        
+        const useObfuscator = popup.useObfuscator;
+        if( useObfuscator == true )
+        {
+            AxialPopupManager.OBFUSCATOR.style.visibility = "visible";
+            AxialPopupManager.OBFUSCATOR.addEventListener("animationend", AxialPopupManager.#obfuscatorAnimationEndHandler);
+            AxialPopupManager.OBFUSCATOR.style.animation = duration + " linear 0ms 1 normal both running axial_obfuscator_fade-in";
+        }
 
-            AxialPopupManager.#currentPopup.style.visibility = "visible";
-            
-            AxialPopupManager.#currentPopup._onShowing();
+        AxialPopupManager.#currentPopup.style.visibility = "visible";
+        
+        AxialPopupManager.#currentPopup._onShowing();
 
-            let popupShowingEvent = new CustomEvent("popupShowing");
-            AxialPopupManager.#currentPopup.dispatchEvent(popupShowingEvent);
-            
-            if( AxialPopupManager.#currentPopup.animation == "none" )
-            {
-                AxialPopupManager.#currentPopup._onShown();
-
-                let popupShownEvent = new CustomEvent("popupShown");
-                AxialPopupManager.#currentPopup.dispatchEvent(popupShownEvent);
-            }
-            else
-            {
-                AxialPopupManager.#isPlaying = true;
-                const animationName = "axial_popup_" + AxialPopupManager.#currentPopup.animation + "-in";
-                const atf = AxialPopupManager.#currentPopup.timingFunction;
-                const animationIn = duration + " " + atf + " 0ms 1 normal both running " + animationName;
-                AxialPopupManager.#currentPopup.addEventListener("animationend", AxialPopupManager.#popupShowAnimationEndHandler);
-                AxialPopupManager.#currentPopup.style.animation = animationIn;
-            }
+        let popupShowingEvent = new CustomEvent("popupShowing");
+        AxialPopupManager.#currentPopup.dispatchEvent(popupShowingEvent);
+        
+        if( AxialPopupManager.#currentPopup.animation === "none" )
+        {
+            AxialPopupManager.#currentPopup._onShown();
+            let popupShownEvent = new CustomEvent("popupShown");
+            AxialPopupManager.#currentPopup.dispatchEvent(popupShownEvent);
         }
         else
         {
-            throw new Error("Incorrect call : a popup is already displayed. You have to hide the popup before showing a new one.");
-            /// TODO a popup is already displayed and we want to show another one OR we want to show the same popup with different data or target
+            AxialPopupManager.#isPlaying = true;
+            const animationName = "axial_popup_" + AxialPopupManager.#currentPopup.animation + "-in";
+            const atf = AxialPopupManager.#currentPopup.timingFunction;
+            const animationIn = duration + " " + atf + " 0ms 1 normal both running " + animationName;
+            AxialPopupManager.#currentPopup.addEventListener("animationend", AxialPopupManager.#popupShowAnimationEndHandler);
+            AxialPopupManager.#currentPopup.style.animation = animationIn;
         }
     }
 
@@ -171,7 +189,7 @@ class AxialPopupManager
         document.removeEventListener("pointerdown", AxialPopupManager.#documentPopupClickHandler, {capture: false});
         
         // just in case
-        if( AxialPopupManager.#currentPopup == undefined ) { return; } // no need to hide
+        if( AxialPopupManager.#currentPopup === undefined ) { return; } // no need to hide
 
         const duration = String(AxialPopupManager.#currentPopup.duration) + "ms";
         
@@ -190,23 +208,20 @@ class AxialPopupManager
         if( AxialPopupManager.#currentPopup.animation == "none" )
         {
             AxialPopupManager.#currentPopup._onHidden();
-
             let popupHiddenEvent = new CustomEvent("popupHidden");
             AxialPopupManager.#currentPopup.dispatchEvent(popupHiddenEvent);
-
             AxialPopupManager.#currentPopup.style.visibility = "hidden";
-            if( AxialPopupManager.#nextPopup !== undefined )
+
+            AxialPopupManager.#STACK.pop();
+            const stackLength = AxialPopupManager.#STACK.length;
+            if( stackLength === 0 )
             {
-                const nextPopup = AxialPopupManager.#nextPopup
                 AxialPopupManager.#currentPopup = undefined;
-                AxialPopupManager.#nextPopup = undefined;
-                AxialPopupManager.showPopup(nextPopup);
             }
             else
             {
-                AxialPopupManager.#currentPopup = undefined;
+                AxialPopupManager.#currentPopup = AxialPopupManager.#STACK[stackLength-1];
             }
-            
         }
         else
         {
@@ -246,39 +261,31 @@ class AxialPopupManager
 
     static #popupShowAnimationEndHandler( event )
     {
-        //console.log("popup show animation end");
         AxialPopupManager.#currentPopup.removeEventListener("animationend", AxialPopupManager.#popupShowAnimationEndHandler);
-
         AxialPopupManager.#isPlaying = false;
-
         AxialPopupManager.#currentPopup._onShown();
-
         let popupShownEvent = new CustomEvent("popupShown");
         AxialPopupManager.#currentPopup.dispatchEvent(popupShownEvent);
     }
 
     static #popupHideAnimationEndHandler( event )
     {
-        //console.log("popup hide animation end");
-        const popup = AxialPopupManager.#currentPopup;
-        const nextPopup = AxialPopupManager.#nextPopup;
-        
-        AxialPopupManager.#currentPopup = undefined;
-        AxialPopupManager.#nextPopup = undefined;
-
-        popup.removeEventListener("animationend", AxialPopupManager.#popupHideAnimationEndHandler);
-
+        AxialPopupManager.#currentPopup.removeEventListener("animationend", AxialPopupManager.#popupHideAnimationEndHandler);
         AxialPopupManager.#isPlaying = false;
-        popup.style.visibility = "hidden";
-
-        popup._onHidden();
-        
+        AxialPopupManager.#currentPopup._onHidden();
         let popupHiddenEvent = new CustomEvent("popupHidden");
-        popup.dispatchEvent(popupHiddenEvent);
+        AxialPopupManager.#currentPopup.dispatchEvent(popupHiddenEvent);
+        AxialPopupManager.#currentPopup.style.visibility = "hidden";
 
-        if( nextPopup != undefined )
+        AxialPopupManager.#STACK.pop();
+        const stackLength = AxialPopupManager.#STACK.length;
+        if( stackLength === 0 )
         {
-            AxialPopupManager.showPopup(nextPopup);
+            AxialPopupManager.#currentPopup = undefined;
+        }
+        else
+        {
+            AxialPopupManager.#currentPopup = AxialPopupManager.#STACK[stackLength-1];
         }
     }
 }

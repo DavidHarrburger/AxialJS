@@ -28,12 +28,12 @@
   },
   "homepage": "https://github.com/DavidHarrburger/AxialJS#readme",
   "dependencies": {
-    "@electron-forge/core": "7.8.2",
-    "@electron-forge/maker-squirrel": "7.8.2",
-    "@electron-forge/maker-zip": "7.8.2",
-    "fs-extra": "11.3.0",
-    "less": "4.3.0",
-    "mongodb": "6.18.0",
-    "webpack": "5.101.0"
+    "@electron-forge/core": "7.8.3",
+    "@electron-forge/maker-squirrel": "7.8.3",
+    "@electron-forge/maker-zip": "7.8.3",
+    "fs-extra": "11.3.1",
+    "less": "4.4.1",
+    "mongodb": "6.19.0",
+    "webpack": "5.101.3"
   }
 }

@@ -62,7 +62,7 @@ class AxialMongo extends EventEmitter
      * @param { Object } o the object we want to parse
      * @param {*} n 
      * @param {*} f 
-     * @param { Boolean} r recursive
+     * @param { Boolean } r recursive
      * @returns 
      */
     static getObjectByField( o, n, f, r = true )
@@ -84,6 +84,30 @@ class AxialMongo extends EventEmitter
         return undefined;
     }
 
+    async getDatabaseStats()
+    {
+        let stats = {}
+        try
+        {
+            const mongo = await this.#mongo.connect();
+            const db = mongo.db( this.#dbName );
+            const collections = await db.listCollections().toArray();
+            for( const collection of collections )
+            {
+                
+            }
+            stats = await db.stats( { scale: 1024 } );
+        }
+        catch(err)
+        {
+            console.log(err);
+        }
+        finally
+        {
+            return stats;
+        }
+    }
+
 
     static getObjectDifference( no, oo )
     {
@@ -93,6 +117,7 @@ class AxialMongo extends EventEmitter
     async getData( c = "", f = {}, m = "" )
     {
         console.log("AxialMongo.getData");
+        console.log( c, f, m );
         let result;
         try
         {
@@ -201,7 +226,7 @@ class AxialMongo extends EventEmitter
                     result = result[0];
                 }
             }
-            console.log("final result", result);
+            //console.log("api data get result", result);
             return result;
         }
     }
@@ -228,129 +253,97 @@ class AxialMongo extends EventEmitter
             const models = db.collection( "models" );
             let tempModel = undefined;
             let actualDocument = undefined;
+            let update = false;
+            let final = {};
+
+            // on récupère le modèle
             if( m !== "" && m !== undefined && m !== null )
             {
                 tempModel = await models.findOne( { name: m } );
             }
 
+            // on recherche un document existant
             if( _id !== undefined )
             {
                 actualDocument = await collection.findOne( { _id: new ObjectId( String(_id) ) } );
             }
 
+            // le document existe on ne mettra à jour que les champs concernés
+            if( actualDocument ) { update = true; } else { update = false; }
+
             if( tempModel )
             {
-                const initial = d;
-                d = {};
-                // check for immutable prop and review this part w/ a good objectutils
-                if( actualDocument && actualDocument.uuid )
-                {
-                    d.uuid = actualDocument.uuid;
-                }
+                // le modèle existe et un document existe avec un _id
+                // on parse d avec le modèle pour le checker par exemple si il faut crypter un champ
                 const props = tempModel.props;
-                
-                if( props )
+                for( const propertyName of Object.keys(props) )
                 {
-                    for( const p of Object.keys(props) )
+                    let testValue = undefined;
+                    let finalValue = undefined;
+                    const propertyParams = props[propertyName];
+
+                    // on recherche la propriété au niveau 1 de l'objet
+                    testValue = d[propertyName];
+                    // propriété non trouvée, on cherche
+                    if( testValue === undefined )
                     {
-                        let finalValue = undefined;
-
-                        const modelProperty = props[p];
-
-                        let value = initial[p];
-                        if( value === undefined )
+                        const testObject = AxialMongo.getObjectByField( d, "field", propertyName );
+                        if( testObject && testObject.value )
                         {
-                            const tempObject = AxialMongo.getObjectByField( initial, "field", p );
-                            if( tempObject && tempObject.value )
-                            {
-                                // cas spécial des array qd chaine requise // A REVOIR MAIS FIXE POUR LE MOMENT
-                                if( Array.isArray( tempObject.value ) === true )
-                                {
-                                    let parser = {};
-                                    parser.array = tempObject.value;
-                                    value = AxialMongo.getObjectByField( parser, "field", p ).value;
-                                }
-                                else
-                                {
-                                    value = tempObject.value;
-                                }
-                            }
+                            testValue = testObject.value;
                         }
+                    }
                     
-                        // cryptage si requis et si la valeyur est bien une chaine
-                        if( value )
+                    if( testValue === undefined )
+                    {
+                        // AUCUNE valeur n'a été trouvée dans le document transmis en POST
+                        // si le document n'existe pas, on crée le default
+                        if( update === false && propertyParams.default !== undefined )
                         {
-                            if( modelProperty.type && modelProperty.type === "number" )
-                            {
-                                value = Number(value);
-                            }
-
-                            if( modelProperty.crypted && modelProperty.crypted === true && typeof value === "string" )
-                            {
-                                const cryptedValue = AxialCryptoUtils.encrypt(value);
-                                finalValue = cryptedValue;
-                            }
-                            else
-                            {
-                                finalValue = value;
-                            }
+                            testValue = propertyParams.default;
+                        }
+                    }
+                    else
+                    {
+                        // une valeur a été trouvée, on regarde si elle doit être traitée et notamment cryptée
+                        // passage en nombre
+                        if( propertyParams.type && propertyParams.type === "number" )
+                        {
+                            testValue = Number(testValue);
                         }
 
-                        // comparaison rapide pour ne pas écraser l'objet créer Utils pour diff
-                        if( finalValue === undefined )
+                        // cryptage
+                        if( propertyParams.crypted && propertyParams.crypted === true && typeof testValue === "string" )
                         {
-                            if( actualDocument && actualDocument[p] )
-                            {
-                                finalValue = actualDocument[p];
-                            }
-                            else
-                            {
-                                if( Object.hasOwn(modelProperty,"default") === true )
-                                {
-                                    finalValue = modelProperty.default;
-                                }
-                                else
-                                {
-                                    finalValue = "";
-                                }
-                            }
+                            const cryptedValue = AxialCryptoUtils.encrypt(testValue);
+                            testValue = cryptedValue;
                         }
-
-                        if( finalValue !== undefined )
-                        {
-                            d[p] = finalValue;
-                        }
+                    }
+                    finalValue = testValue; // not super but have my idea
+                    if( update === false || ( update === true && finalValue != undefined ) )
+                    {
+                        final[propertyName] = finalValue;
                     }
                 }
             }
-
-            // check what happen without models
-
-            if( d.uuid === undefined )
+            else
             {
-                d.uuid = crypto.randomUUID();
+                final = d;
             }
 
-            if( d.creation_date === undefined )
+            /// final
+            if( update === false )
             {
-                d.creation_date = new Date();
-            }
-            
-            if( _id )
-            {
-                delete d._id; // there is probably a mongo flag for that
-                const replaced = await collection.updateOne({ _id: new ObjectId( String(_id) ) }, { $set: d } ); // use set / update instead of replace here important
-                // DO NOT DELETED ID
-                // PARSE THE NEW DOC AND COMPARE
-                // THEN UPDATE
-                result = replaced;
+                if( final.uuid === undefined ) { final.uuid = crypto.randomUUID(); }
+                if( final.creation_date === undefined ) { final.creation_date = new Date(); }
+
+                result = await collection.insertOne( final );
             }
             else
             {
-                const inserted = await collection.insertOne(d);
-                result = inserted;
-            }
-            
+                delete final._id; // there is probably a mongo flag for that
+                result = await collection.updateOne({ _id: new ObjectId( String(_id) ) }, { $set: final } ); // use set / update instead of replace here important
+            }            
         }
         catch(err)
         {
@@ -358,7 +351,6 @@ class AxialMongo extends EventEmitter
         }
         finally
         {
-            //await this.#mongo.close();
             return result;
         }
     }
@@ -392,24 +384,36 @@ class AxialMongo extends EventEmitter
 
     /**
      * 
-     * @param { String } c 
-     * @param { String } uuid 
+     * @param { String } m 
+     * @param { String } _id 
      * @returns 
      */
-    async delData( c = "", uuid = "" )
+    async delData( m = "", _id = "" )
     {
         let result;
         try
         {
+            if( m === undefined || m.trim() === "" )
+            {
+                throw new Error("param 'm' model is missing");
+            }
+
+            if( _id === undefined || _id.trim() === "" )
+            {
+                throw new Error("param '_id' is missing");
+            }
+
             const mongo = await this.#mongo.connect();
             const db = mongo.db( this.#dbName );
-            const collection = db.collection( c );
-            const deletion = collection.deleteOne( { uuid: uuid } );
+            const model = await this.getData("models", { name: m} );
+            const collection = db.collection( model.collection );
+            const deletion = await collection.deleteOne( { _id: new ObjectId( String(_id) ) } );
+            console.log( deletion );
+            result = deletion;
         }
         catch(err)
         {
             console.log(err);
-            result = err;
         }
         finally
         {

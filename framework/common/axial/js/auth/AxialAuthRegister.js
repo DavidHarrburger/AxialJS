@@ -26,7 +26,13 @@ class AxialAuthRegister extends AxialComponentBase
 
     /// elements
     /** @type { HTMLInputElement } */
-    #username;
+    #username; // deprecated
+
+    /** @type { HTMLInputElement } */
+    #firstName;
+
+    /** @type { HTMLInputElement } */
+    #lastName;
 
     /** @type { HTMLInputElement } */
     #email;
@@ -86,6 +92,10 @@ class AxialAuthRegister extends AxialComponentBase
         super._buildComponent();
 
         this.#username = this.shadowRoot.getElementById("username");
+
+        this.#firstName = this.shadowRoot.getElementById("firstName");
+        this.#lastName = this.shadowRoot.getElementById("lastName");
+
         this.#email = this.shadowRoot.getElementById("email");
         this.#password = this.shadowRoot.getElementById("password");
         this.#toggle = this.shadowRoot.getElementById("toggle");
@@ -192,7 +202,13 @@ class AxialAuthRegister extends AxialComponentBase
     {
         try
         {
-            const infos = { username: this.#username.value, email: this.#email.value, password: this.#password.value };
+            const infos =
+            {
+                first_name: this.#firstName.value,
+                last_name: this.#lastName.value,
+                email: this.#email.value,
+                password: this.#password.value
+            };
             const response = await fetch( this.#path, { method: "POST", body: JSON.stringify(infos), headers: { "Content-Type":"application/json", "Cache-Control":"no-cache" } } );
             const json = await response.json();
             console.log(json);

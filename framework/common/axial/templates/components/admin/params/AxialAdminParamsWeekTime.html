@@ -1,0 +1,19 @@
+<!-- ./admin/params/AxialAdminParamsWeekTime -->
+<template id="axial-admin-params-weektime-template">
+    <link rel="stylesheet" href="./styles.css">
+    <p class="axial_admin_params_p">
+        Définir ici les horaires d'ouverture ou de contact.<br>
+    </p>
+    <form>
+        <div class="axial_admin_form_item">
+            <axial-week-planning id="weekPlanning"></axial-week-planning>
+        </div>
+        
+        <div class="axial_admin_form_item">
+            <label class="axial_admin_form_label">Sauvegarder les modifications :</label>
+            <div class="axial_admin_form_comp">
+                <axial-service-button id="button" axial-text="Enregistrer"></axial-service-button>
+            </div>
+        </div>
+    </form>
+</template>

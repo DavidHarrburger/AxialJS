@@ -3,13 +3,12 @@
 import { LanguageUtils } from "../utils/LanguageUtils.js";
 import { AxialOverlayManager } from "../overlay/AxialOverlayManager.js";
 import { AxialDropdownManager } from "../dropdown/AxialDropdownManager.js";
-import { AxialOverlayBase } from "../overlay/AxialOverlayBase.js";
-import { AxialTooltipBase } from "../tooltip/AxialTooltipBase.js";
+import { AxialConsentManager } from "../application/AxialConsentManager.js";
 
 import { AxialNotifier } from "../application/AxialNotifier.js";
 import { AxialInformationBar } from "../application/AxialInformationBar.js";
+import { AxialDeletionOverlay } from "../application/AxialDeletionOverlay.js";
 import { AxialConsentOverlay } from "../application/AxialConsentOverlay.js";
-import { AxialConsentManager } from "../application/AxialConsentManager.js";
 
 /**
  * The main base class for your application.
@@ -296,6 +295,9 @@ class AxialApplicationBase extends EventTarget
 
     /** @type { AxialConsentOverlay } */
     #consentOverlay;
+
+    /** @type { AxialDeletionOverlay } */
+    #deletionOverlay;
 
     /**
      * Create the main AxialApplicationBase and make it a property of its window.
@@ -601,10 +603,13 @@ class AxialApplicationBase extends EventTarget
         ///
 
         // notifier
-        this.#notifier = document.getElementById("notifier");
+        this.#notifier = document.getElementById("axialNotifier");
 
         // notifier
-        this.#informationBar = document.getElementById("informationBar");
+        this.#informationBar = document.getElementById("axialInformationBar");
+
+        // deletionOverlay
+        this.#deletionOverlay = document.getElementById("axialDeletionOverlay");
 
 
         if( this.useScrollParallax === true )
@@ -1058,6 +1063,12 @@ class AxialApplicationBase extends EventTarget
      * @readonly
      */
     get consentOverlay() { return this.#consentOverlay; }
+
+    /** 
+     * @type { AxialDeletionOverlay }
+     * @readonly
+     */
+    get deletionOverlay() { return this.#deletionOverlay; }
 
     /// INFORMATION BAR
     /** 

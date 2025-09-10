@@ -1,6 +1,7 @@
 "use strict";
 
 import { AxialMailTemplateBase } from "./AxialMailTemplateBase.js";
+import { MAIN_DOMAIN } from "../AxialServerConstants.js";
 
 class AxialMailTemplateSendCode extends AxialMailTemplateBase
 {
@@ -30,7 +31,7 @@ class AxialMailTemplateSendCode extends AxialMailTemplateBase
         html += "<header style='text-align:left; height:60px; color:rgb(35, 41, 47);'>";
         // header logo in table
         html += "<table style='width:100%; border-spacing:0px;'><thead><tr>";
-        html += "<th style='text-align:left; width:40px; height:40px;'><img width='40' height='40' style='width:40px; height:40px;' alt='logo' src='https://axial-js.net/assets/mails/logo-dnd-mail.png'></th>";
+        html += `<th style='text-align:left; width:40px; height:40px;'><img width='40' height='40' style='width:40px; height:40px;' alt='logo' src='${MAIN_DOMAIN}/assets/mails/logo-mail.png'></th>`;
         html += "<th style='padding-left:14px; font-size:24px; text-align:left; width:auto; height:40px;'>DnDev Auth Code</th>";
         html += "<tr></thead></table></header>";
         //header divider

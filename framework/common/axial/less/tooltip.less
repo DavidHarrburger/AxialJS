@@ -36,13 +36,26 @@
     transition-duration: 500ms;
     transition-timing-function: ease;
 }
+.axial_overlay_obfuscator
+{
+    pointer-events: all;
+    visibility: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(1px);
+
+}
 /* AxialConsentOverlay */
 .axial_consent_overlay
 {
     width: 300px;
     height: auto;
     padding: 20px;
-    border-radius: 10px;
+    border-radius: var(--component___borderRadius);
     border: 2px solid #fff;
     background-color: rgba(0, 0, 0, 0.83);
     backdrop-filter: blur(10px);
@@ -88,4 +101,78 @@
     align-items: center;
     justify-content: flex-end;
     gap: 20px;
+}
+/* AxialDeletionOverlay */
+.axial_deletion_overlay
+{
+    width: 300px;
+    height: auto;
+    padding: 20px;
+    border-radius: var(--component___borderRadius);
+    border: 2px solid #cc0000;
+    background-color: rgba(255, 255, 255, 0.83);
+    backdrop-filter: blur(10px);
+}
+.axial_deletion_overlay-holder
+{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.axial_deletion_overlay-header
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+}
+.axial_deletion_overlay-cookie
+{
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.axial_deletion_overlay-title
+{
+    color: var(--body___textColor);
+    font-weight: 600;
+    font-size: 18px;
+}
+.axial_deletion_overlay-content
+{
+    color: var(--body___textColor);
+}
+.axial_deletion_overlay-actions
+{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 20px;
+}
+/* AxialListOverlay */
+.axial_list_overlay
+{
+    min-width: 200px;
+    min-height: 40px;
+    height: auto;
+    
+}
+.axial_list_overlay-group
+{
+    position: absolute;
+    width: 100%;
+    height: auto;
+    border-radius: var(--component___borderRadius);
+    border: 2px solid var(--themeColor);
+    background-color: #fff;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }

@@ -23,7 +23,7 @@ class AxialPopupBase extends AxialComponentBase
     #position = "center";
 
     /** @type { String } */
-    #animation = "fade_translate_up";
+    #animation = "translate_up";
 
     /** @type { String } */
     #timingFunction = "ease";
@@ -32,12 +32,13 @@ class AxialPopupBase extends AxialComponentBase
     #duration = 400;
 
     /** @type { Boolean } */
-    #useObfuscator = true;
+    #useObfuscator = false;
 
     /** @type { Boolean } */
     #isModal = true;
 
     /// events
+    /** @type { Function } */
     #boundPopupPointerDownHandler;
 
     constructor()

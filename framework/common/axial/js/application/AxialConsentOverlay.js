@@ -29,15 +29,15 @@ class AxialConsentOverlay extends AxialOverlayBase
 
         this.#boundDeclineHandler = this.#declineHandler.bind(this);
         this.#boundAcceptHandler = this.#acceptHandler.bind(this);
-
-        this.displayMode = "window";
-        this.position = "bottom-left";
-        this.isModal = true;
     }
 
     _buildComponent()
     {
         super._buildComponent();
+
+        this.displayMode = "window";
+        this.position = "bottom-right";
+        this.isModal = true;
 
         this.#decline = this.shadowRoot.getElementById("decline");
         this.#accept = this.shadowRoot.getElementById("accept");

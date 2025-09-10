@@ -791,10 +791,14 @@
     </div>
     
     <div id="axialNotificationLayer" class="axial_layer_base axial_notification_layer">
-        <axial-notifier id="notifier"></axial-notifier>
+        <axial-notifier id="axialNotifier"></axial-notifier>
     </div>
 
-    <div id="axialOverlayLayer" class="axial_layer_base axial_overlay_layer"></div>
+    <div id="axialOverlayLayer" class="axial_layer_base axial_overlay_layer">
+        <div id="overlayObfuscator" class="axial_overlay_obfuscator"></div>
+        <axial-consent-overlay id="axialConsentOverlay"></axial-consent-overlay>
+        <axial-deletion-overlay id="axialDeletionOverlay"></axial-deletion-overlay>
+    </div>
 
     <div id="axialTooltipLayer" class="axial_layer_base axial_tooltip_layer"></div>
 

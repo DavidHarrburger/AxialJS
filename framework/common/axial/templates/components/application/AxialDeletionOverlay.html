@@ -1,0 +1,25 @@
+<!-- ./application/AxialDeletionOverlay -->
+<template id="axial-deletion-overlay-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div class="axial_deletion_overlay-holder">
+        <div class="axial_deletion_overlay-header">
+            
+            <div class="axial_deletion_overlay-icon">
+                &#9888;
+            </div>
+            
+            <div class="axial_deletion_overlay-title"> Attention</div>
+        </div>
+        <div class="axial_deletion_overlay-content">
+            La suppression des données est irreversible.
+        </div>
+        <div class="axial_deletion_overlay-actions">
+            <axial-button id="cancel" axial-text="Annuler" axial-theme="#232323" axial-color="#ffffff">
+                <i slot="axial-icon" class="fa-color fa-solid fa-arrow-left"></i>
+            </axial-button>
+            <axial-button id="confirm" axial-text="Suprrimer" axial-theme="#cc0000">
+                <i slot="axial-icon" class="fa-color fa-regular fa-trash-can"></i>
+            </axial-button>
+        </div>
+    </div>
+</template>

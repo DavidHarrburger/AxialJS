@@ -496,7 +496,7 @@ class AxialCommands extends EventEmitter
                                     }
                                     else
                                     {
-                                        propertyDefault = ""
+                                        propertyDefault = "";
                                     }
                                 }
                                 doc[prop] = propertyDefault;

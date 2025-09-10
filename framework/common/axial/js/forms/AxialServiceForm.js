@@ -281,6 +281,7 @@ class AxialServiceForm extends AxialServiceComponentBase
 
     #itemValidityChangedHandler( event )
     {
+        console.log("item validity changed");
         this.#checkValidity();
     }
 

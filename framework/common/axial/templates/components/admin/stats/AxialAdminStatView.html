@@ -1,12 +1,18 @@
-<!-- AxialAdminStatView -->
+<!-- ./admin/stats/AxialAdminStatView -->
 <template id="axial-admin-stat-view-template">
     <link rel="stylesheet" href="./styles.css">
-    <div class="axial_admin_stat_view-holder">
-        <div class="axial_admin_stat_view-bar axial_admin_card">
-            
+    <div class="axial_admin_view-holder">
+        <div class="axial_admin_view-header">
+            <div id="title" class="axial_admin_view-title">Statistiques</div>
+            <div class="axial_spacer"></div>
+            <axial-calendar-button id="dateStartButton" axial-text="date start"></axial-calendar-button>
+            <axial-calendar-button id="dateEndButton" axial-text="date end"></axial-calendar-button>
+            <axial-list-button id="listButton" axial-text="Période"></axial-list-button>
         </div>
-        <div class="axial_admin_stat_view-grid">
-            <axial-admin-stat-grid></axial-admin-stat-grid>
+        <div class="axial_admin_view-content">
+            <div class="axial_admin_view-stats_grid">
+                <axial-chart-traffic id="trafficChart" class="axial_admin_view-stats_traffic"></axial-chart-traffic>
+            </div>
         </div>
     </div>
 </template>

@@ -147,7 +147,7 @@ class AxialToggleButtonGroupBase extends AxialComponentBase
      */
     addToggle( toggle )
     {
-        if( toggle instanceof AxialToggleButtonBase == false )
+        if( toggle instanceof AxialToggleButtonBase === false )
         {
             throw new TypeError( "AxialToggleButtonBase value expected" );
         }
@@ -259,6 +259,14 @@ class AxialToggleButtonGroupBase extends AxialComponentBase
 
         const indexChangedEvent = new CustomEvent("indexChanged", { detail: { selectedIndex: indexChanged } });
         this.dispatchEvent(indexChangedEvent);
+    }
+
+    setGroupEnabled( enable = false )
+    {
+        for( const t of this.#toggles )
+        {
+            t.enabled = enable;
+        }
     }
 }
 

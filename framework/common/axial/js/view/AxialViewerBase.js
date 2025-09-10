@@ -287,13 +287,13 @@ class AxialViewerBase extends AxialComponentBase
         const viewEnteringEvent = new CustomEvent("viewEntering", { bubbles: true, detail: { view: this.#newView } } );
         this.#newView.dispatchEvent(viewEnteringEvent);
 
-        const viewerChangingEvent = new CustomEvent("viewerChanging", { detail: { oldView: this.#oldView, newView: this.#newView } } )
-        this.dispatchEvent(viewerChangingEvent);
-
         // main code
         this.#direction = index > this.#index ? -1 : 1;
         this.#index = index;
         this.#currentTransition = transition;
+
+        const viewerChangingEvent = new CustomEvent("viewerChanging", { detail: { oldView: this.#oldView, newView: this.#newView } } )
+        this.dispatchEvent(viewerChangingEvent);
 
         if( transition == "none" )
         {

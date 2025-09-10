@@ -4,7 +4,7 @@ import { AxialAdminListItemBase } from "../base/AxialAdminListItemBase.js";
 import { DateUtils } from "../../utils/DateUtils.js";
 import { AxialButton } from "../../button/AxialButton.js";
 
-class AxialAdminUserListItem extends AxialAdminListItemBase
+class AxialAdminMailListItem extends AxialAdminListItemBase
 {
     /// elements
     /** @type { HTMLElement } */
@@ -65,5 +65,5 @@ class AxialAdminUserListItem extends AxialAdminListItemBase
     }
 }
 
-window.customElements.define("axial-admin-user-list-item", AxialAdminUserListItem);
-export { AxialAdminUserListItem }
+window.customElements.define("axial-admin-mail-list-item", AxialAdminMailListItem);
+export { AxialAdminMailListItem }

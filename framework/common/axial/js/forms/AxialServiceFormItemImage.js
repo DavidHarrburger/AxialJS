@@ -2,6 +2,7 @@
 
 import { AxialServiceFormItem } from "./AxialServiceFormItem.js";
 import { AxialUploadTask } from "../upload/AxialUploadTask.js";
+import { PathUtils } from "../utils/PathUtils.js";
 
 class AxialServiceFormItemImage extends AxialServiceFormItem
 {
@@ -59,9 +60,13 @@ class AxialServiceFormItemImage extends AxialServiceFormItem
         if( name === "axial-upload-path" )
         {
             this.#uploadPath = newValue;
+            if( this.#uploadPath.indexOf("./") === 0 )
+            {
+                this.#uploadPath = PathUtils.getPathFromRelative(this.#uploadPath);
+            }
         }
 
-        if( name === "axial-max-size" && isNaN( Number(newValue)) === false )
+        if( name === "axial-max-size" && isNaN( Number(newValue) ) === false )
         {
             this.#maxSize = Number(newValue);
         }

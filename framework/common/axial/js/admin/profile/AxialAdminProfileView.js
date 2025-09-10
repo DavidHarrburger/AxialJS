@@ -5,19 +5,29 @@ import { AxialAdminViewBase } from "../base/AxialAdminViewBase.js";
 
 class AxialAdminProfileView extends AxialAdminViewBase
 {
+    /// elements
     /** @type { AxialServiceForm } */
     #profileForm;
+
+    /// events
+    /** @type { Function } */
+    #boundFormSuccessHandler;
 
     constructor()
     {
         super();
         this.template = "axial-admin-profile-view-template";
+        this.#boundFormSuccessHandler = this.#formSuccesHandler.bind(this);
     }
 
     _buildComponent()
     {
         super._buildComponent();
         this.#profileForm = this.shadowRoot.getElementById("profileForm");
+        if( this.#profileForm )
+        {
+            this.#profileForm.addEventListener("serviceSuccess", this.#boundFormSuccessHandler);
+        }
     }
 
     _prepareGetData()
@@ -35,6 +45,15 @@ class AxialAdminProfileView extends AxialAdminViewBase
         {
             this.#profileForm._fillForm(formObject);
         }
+    }
+
+    /**
+     * 
+     * @param { CustomEvent } event 
+     */
+    #formSuccesHandler( event )
+    {
+        window.AXIAL.notify("Les modifications de votre profil on été enregistrées avec succès");
     }
 
 }

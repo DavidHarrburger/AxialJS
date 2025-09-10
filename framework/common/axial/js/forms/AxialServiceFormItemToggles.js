@@ -33,12 +33,13 @@ class AxialServiceFormItemToggles extends AxialServiceFormItem
         if( this.#toggles )
         {
             this.#toggles.forceSelection = true;
-            this.#toggles.addEventListener("indexChangedHandler", this.#boundIndexChangedHandler);
+            this.#toggles.addEventListener("indexChanged", this.#boundIndexChangedHandler);
         }
     }
 
     _checkValidity()
     {
+        super._checkValidity();
         const finalValid = this.#toggles.selectedIndex != -1;
         return finalValid;       
     }
@@ -53,8 +54,8 @@ class AxialServiceFormItemToggles extends AxialServiceFormItem
         {
             itemObject.value = toggle.value;
         }
+        /// TODO : else
 
-        console.log( "toggle object", itemObject);
         return itemObject;
     }
 

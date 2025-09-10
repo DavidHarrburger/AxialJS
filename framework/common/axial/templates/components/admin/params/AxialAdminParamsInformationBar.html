@@ -1,7 +1,7 @@
 <!-- ./admin/params/AxialAdminParamsInformationBar -->
 <template id="axial-admin-params-infobar-template">
     <link rel="stylesheet" href="./styles.css">
-    <p class="axial_admin_params_infobar-p">
+    <p class="axial_admin_params_p">
         La barre d'information est une petite barre qui s'affiche en haut de chaque page.<br>
         Elle vous permet de communiquer une information importante de manière temporaire comme une promotion ou une fermeture pour congés.<br>
     </p>
@@ -21,13 +21,25 @@
         <div class="axial_admin_form_item">
             <label class="axial_admin_form_label">Date de début :</label>
             <div class="axial_admin_form_comp">
-                <axial-dropdown-calendar id="calendarStart"></axial-dropdown-calendar>
+                <axial-calendar-button id="calendarStart" axial-text="select"></axial-calendar-button>
             </div>
         </div>
         <div class="axial_admin_form_item">
             <label class="axial_admin_form_label">Date de fin :</label>
             <div class="axial_admin_form_comp">
-                <axial-dropdown-calendar id="calendarEnd"></axial-dropdown-calendar>
+                <axial-calendar-button id="calendarEnd" axial-text="select"></axial-calendar-button>
+            </div>
+        </div>
+        <div class="axial_admin_form_item">
+            <label class="axial_admin_form_label">Couleur du texte :</label>
+            <div class="axial_admin_form_comp">
+                <input type="color" id="textColor" value="#ffffff">
+            </div>
+        </div>
+        <div class="axial_admin_form_item">
+            <label class="axial_admin_form_label">Couleur de fond :</label>
+            <div class="axial_admin_form_comp">
+                <input type="color" id="themeColor" value="#0463b1">
             </div>
         </div>
         <div class="axial_admin_form_item">

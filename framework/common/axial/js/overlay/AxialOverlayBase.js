@@ -16,7 +16,7 @@ class AxialOverlayBase extends AxialComponentBase
 
     #OVERLAY_HIDE_MODE = new Set( ["off", "out", "click"] );
 
-    #OVERLAY_DISPLAY_MODE = new Set( ["target", "window"] );
+    #OVERLAY_DISPLAY_MODE = new Set( ["target", "window", "center"] );
 
     /** @type { Boolean } */
     #isShown = false;
@@ -62,6 +62,9 @@ class AxialOverlayBase extends AxialComponentBase
 
     /** @type { Function } */
     #boundOverlayClickHandler;
+
+    /** @type { Boolean } */
+    #useObfuscator = false;
 
     constructor()
     {
@@ -151,6 +154,20 @@ class AxialOverlayBase extends AxialComponentBase
             this.#displayMode = value;
         }
         this.#layoutOverlay();
+    }
+
+    get useObfuscator() { return this.#position; }
+    set useObfuscator( value )
+    {
+        if( this.#isShown === true ) { return; }
+        if( typeof value !== "boolean" )
+        {
+            throw new TypeError("Boolean value required");
+        }
+        if( value !== this.#useObfuscator )
+        {
+            this.#useObfuscator = value;
+        }
     }
 
     get showMode() { return this.#showMode; }
@@ -420,52 +437,59 @@ class AxialOverlayBase extends AxialComponentBase
 
                     // right TODO
                     case "right-top":
-                        overlayX = targetBounds.right + this.#offset;
-                        overlayY = targetBounds.top;
+                        overlayX = ww - overlayBounds.width - this.#offset;
+                        overlayY = this.#offset;
                     break;
 
                     case "right-center":
-                        overlayX = targetBounds.right + this.#offset;
-                        overlayY = targetBounds.top + (targetBounds.height / 2) - (overlayBounds.height / 2);
+                        overlayX = ww - overlayBounds.width - this.#offset;
+                        overlayY = ( wh - overlayBounds.height ) / 2;
                     break;
 
                     case "right-bottom":
-                        overlayX = targetBounds.right + this.#offset;
-                        overlayY = targetBounds.bottom - overlayBounds.height;
+                        overlayX = ww - overlayBounds.width - this.#offset;
+                        overlayY = wh - overlayBounds.height - this.#offset;
                     break;
 
                     // top TODO
                     case "top-left":
-                        overlayY = targetBounds.top - this.#offset - overlayBounds.height;
-                        overlayX = targetBounds.left;
+                        overlayY = this.#offset;
+                        overlayX = this.#offset;
                     break;
 
                     case "top-center":
-                        overlayY = targetBounds.top - this.#offset - overlayBounds.height;
-                        overlayX = targetBounds.left + (targetBounds.width / 2)- (overlayBounds.width / 2);
+                        overlayY = this.#offset;
+                        overlayX = ( ww - overlayBounds.width ) / 2;
                     break;
 
                     case "top-right":
-                        overlayY = targetBounds.top - this.#offset - overlayBounds.height;
-                        overlayX = targetBounds.right - overlayBounds.width;
+                        overlayY = this.#offset;
+                        overlayX = ww - overlayBounds.width - this.#offset;
                     break;
 
                     // left TODO
                     case "left-top":
-                        overlayX = targetBounds.left - this.#offset - overlayBounds.width;
-                        overlayY = targetBounds.top;
+                        overlayX = this.#offset;
+                        overlayY = this.#offset;
                     break;
 
                     case "left-center":
-                        overlayX = targetBounds.left - this.#offset - overlayBounds.width;
-                        overlayY = targetBounds.top + (targetBounds.height / 2)- (overlayBounds.height / 2);
+                        overlayX = this.#offset;
+                        overlayY = ( wh - overlayBounds.height ) / 2;
                     break;
 
                     case "left-bottom":
-                        overlayX = targetBounds.left - this.#offset - overlayBounds.width;
+                        overlayX = this.#offset;
                         overlayY = targetBounds.bottom - overlayBounds.height;
                     break;
                 }
+            break;
+
+            case "center":
+                const wwc = window.innerWidth;
+                const whc = window.innerHeight;
+                overlayX = ( wwc - overlayBounds.width ) / 2;
+                overlayY = ( whc - overlayBounds.height ) / 2;
             break;
 
             default:
@@ -513,6 +537,15 @@ class AxialOverlayBase extends AxialComponentBase
             this.style.opacity = "1";
             this.style.transform = "translate(0%, 0%)";
         }
+
+        if( this.#useObfuscator === true )
+        {
+            const oo = document.getElementById("overlayObfuscator");
+            if( oo )
+            {
+                oo.style.visibility = "visible";
+            }
+        }
     }
 
     hide()
@@ -527,6 +560,15 @@ class AxialOverlayBase extends AxialComponentBase
         else
         {
             this.style.visibility = "hidden";
+        }
+
+        if( this.#useObfuscator === true )
+        {
+            const oo = document.getElementById("overlayObfuscator");
+            if( oo )
+            {
+                oo.style.visibility = "hidden";
+            }
         }
     }
 

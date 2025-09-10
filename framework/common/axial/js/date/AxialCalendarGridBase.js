@@ -2,10 +2,12 @@
 
 //import { AxialComponentBase } from "../core/AxialComponentBase.js";
 import { AxialToggleButtonGroupBase } from "../button/AxialToggleButtonGroupBase.js";
+import { DateUtils } from "../utils/DateUtils.js";
 import { AxialToggleCalendarDate } from "./AxialToggleCalendarDate.js";
 
 class AxialCalendarGridBase extends AxialToggleButtonGroupBase
 {
+    /// vars
     /** @type { Date } */
     #initDate;
 
@@ -15,6 +17,16 @@ class AxialCalendarGridBase extends AxialToggleButtonGroupBase
     /** @type { Date } */
     #date = undefined;
 
+    /** @type { Boolean } */
+    #allowPast = true;
+
+    /** @type { Date } */
+    #min;
+
+    /** @type { Date } */
+    #max;
+
+    /// events
     /** @type { Function } */
     #boundIndexChangedHandler;
 
@@ -37,6 +49,75 @@ class AxialCalendarGridBase extends AxialToggleButtonGroupBase
         }
         this.#date = value;
         this.setNewDate( this.#date );
+    }
+
+    get allowPast() { return this.#allowPast; }
+    set allowPast( value )
+    {
+        if( typeof value !== "boolean")
+        {
+            throw new TypeError("Boolean value expected");
+        }
+        if( value === this.#allowPast ) { return; }
+        this.#allowPast = value;
+        for( const toggle of this.toggles )
+        {
+            const d = toggle.date;
+            if( this.#allowPast === false && DateUtils.isPast(d) === true )
+            {
+                toggle.enabled = false;
+            }
+            else
+            {
+                toggle.enabled = true;
+            }            
+        }
+    }
+
+    get min() { return this.#min; }
+    set min( value )
+    {
+        if( DateUtils.isValidDate(value) === false )
+        {
+            throw new TypeError("Date value expected"); 
+        }
+        if( value === this.#min ) { return; }
+        this.#min = value;
+        for( const toggle of this.toggles )
+        {
+            const d = toggle.date;
+            if( DateUtils.isPastFrom( d, this.#min ) === true )
+            {
+                toggle.enabled = false;
+            }
+            else
+            {
+                toggle.enabled = true;
+            }
+        }
+    }
+
+    get max() { return this.#max; }
+    set max( value )
+    {
+        if( DateUtils.isValidDate(value) === false )
+        {
+            throw new TypeError("Date value expected"); 
+        }
+        if( value === this.#max ) { return; }
+        this.#max = value;
+        for( const toggle of this.toggles )
+        {
+            const d = toggle.date;
+            if( DateUtils.isFutureFrom( d, this.#max ) === true )
+            {
+                toggle.enabled = false;
+            }
+            else
+            {
+                toggle.enabled = true;
+            }
+        }
     }
 
     _buildComponent()
@@ -67,6 +148,74 @@ class AxialCalendarGridBase extends AxialToggleButtonGroupBase
             toggleDate.style.gridRow = rowIndex;
             toggleDate.date = date;
             this.appendToggle( toggleDate );
+
+            if( this.#allowPast === false && DateUtils.isPast(date) === true )
+            {
+                toggleDate.enabled = false;
+            }
+
+            if( this.#min !== undefined && this.#max !== undefined )
+            {
+                //if( DateUtils.isInPeriod())
+                if( DateUtils.isInPeriodFrom( date, this.#min, this.#max ) === false )
+                {
+                    toggleDate.enabled = false;
+                }
+                else
+                {
+                    toggleDate.enabled = true;
+                }
+            }
+            else if( this.#min !== undefined && this.#max === undefined )
+            {
+                if( DateUtils.isPastFrom( date, this.#min ) === true )
+                {
+                    toggleDate.enabled = false;
+                }
+                else
+                {
+                    toggleDate.enabled = true;
+                }
+            }
+            else if( this.#min === undefined && this.#max !== undefined )
+            {
+                if( DateUtils.isFutureFrom( date, this.#max ) === true )
+                {
+                    toggleDate.enabled = false;
+                }
+                else
+                {
+                    toggleDate.enabled = true;
+                }
+            }
+            
+
+            // ensure what happens if min < today when allowPast false;
+            /*
+            if( this.#min !== undefined )
+            {
+                if( DateUtils.isPastFrom( date, this.#min ) === true )
+                {
+                    toggleDate.enabled = false;
+                }
+                else
+                {
+                    toggleDate.enabled = true;
+                }
+            }
+
+            if( this.#max !== undefined )
+            {
+                if( DateUtils.isFutureFrom( date, this.#max ) === true )
+                {
+                    toggleDate.enabled = false;
+                }
+                else
+                {
+                    toggleDate.enabled = true;
+                }
+            }
+            */
 
             if( this.#date != undefined )
             {
@@ -104,6 +253,11 @@ class AxialCalendarGridBase extends AxialToggleButtonGroupBase
         this.#date = toggle.date;
         const dateChangedEvent = new CustomEvent("dateChanged", { bubbles: true, detail: { date: this.#date } } );
         this.dispatchEvent( dateChangedEvent );
+    }
+
+    #updateMinMax()
+    {
+
     }
 }
 window.customElements.define("axial-calendar-grid-base", AxialCalendarGridBase);

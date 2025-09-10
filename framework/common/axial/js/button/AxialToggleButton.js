@@ -39,6 +39,9 @@ class AxialToggleButton extends AxialToggleButtonBase
     /** @type { Number } */
     #iconSpace = 0;
 
+    /** @type { Number } */
+    #gap = 10;
+
     /** @type { Boolean } */
     #hasIcon = false;
 
@@ -100,7 +103,7 @@ class AxialToggleButton extends AxialToggleButtonBase
 
     static get observedAttributes()
     {
-        return [ "axial-text", "axial-icon-position", "axial-color", "axial-theme", "axial-align", "axial-style" ];
+        return ["axial-text", "axial-icon-position", "axial-theme", "axial-color", "axial-size", "axial-weight", "axial-align", "axial-style", "axial-gap" ];
     }
 
     get text() { return this.#text; }
@@ -153,12 +156,13 @@ class AxialToggleButton extends AxialToggleButtonBase
         if( this.#content )
         {
             this.#content.style.justifyContent = this.#align;
+            this.#content.style.gap = this.#gap + "px";
         }
         
         if( this.#label )
         {
             this.#label.innerHTML = this.#text;
-            if( this.#themeColor != "" )
+            if( this.#textColor != "" )
             {
                 this.#label.style.color = this.#textColor;
             }
@@ -249,6 +253,12 @@ class AxialToggleButton extends AxialToggleButtonBase
             this.#textSize = newValue;
             if( this.#label ) { this.#label.style.fontSize = this.#textSize; }
         }
+
+        if( name === "axial-gap" )
+        {
+            this.#gap = isNaN( Number(newValue) ) === true ? 10 : Number(newValue);
+            if( this.#content ) { this.#content.style.gap = String(this.#gap) + "px"; }
+        }
     }
 
     ///
@@ -293,138 +303,6 @@ class AxialToggleButton extends AxialToggleButtonBase
                     // just in case
                     default:
                         this.#content.style.flexDirection = "row";
-                    break;
-                }              
-            }
-        }
-    }
-    
-
-    #layoutComponent2()
-    {
-        // consider to move the layout of the content in a separated switch
-        //const slotElements = this.#iconSlot.assignedElements( { flatten: true } );
-        if( this.#hasIcon === false && this.#icon )
-        {
-            this.#icon.style.marginLeft = "0px";
-            this.#icon.style.marginRight = "0px";
-            this.#icon.style.marginTop = "0px";
-            this.#icon.style.marginBottom = "0px";
-
-            if( this.#iconToggle )
-            {
-                this.#iconToggle.style.marginLeft = "0px";
-                this.#iconToggle.style.marginRight = "0px";
-                this.#iconToggle.style.marginTop = "0px";
-                this.#iconToggle.style.marginBottom = "0px";
-            }
-        }
-        else
-        {
-            if( this.#text === "" )
-            {
-                this.#icon.style.marginLeft = "0px";
-                this.#icon.style.marginRight = "0px";
-                this.#icon.style.marginTop = "0px";
-                this.#icon.style.marginBottom = "0px";
-
-                if( this.#iconToggle )
-                {
-                    this.#iconToggle.style.marginLeft = "0px";
-                    this.#iconToggle.style.marginRight = "0px";
-                    this.#iconToggle.style.marginTop = "0px";
-                    this.#iconToggle.style.marginBottom = "0px";
-                }
-                
-            }
-            else
-            {
-                switch( this.#iconPosition )
-                {
-                    case "left":
-                        this.#content.style.flexDirection = "row";
-
-                        this.#icon.style.marginLeft = "0px";
-                        this.#icon.style.marginRight = String( this.#iconSpace ) + "px";
-                        this.#icon.style.marginTop = "0px";
-                        this.#icon.style.marginBottom = "0px";
-
-                        if( this.#iconToggle )
-                        {
-                            this.#iconToggle.style.marginLeft = "0px";
-                            this.#iconToggle.style.marginRight = String( this.#iconSpace ) + "px";
-                            this.#iconToggle.style.marginTop = "0px";
-                            this.#iconToggle.style.marginBottom = "0px";
-                        }
-                    break;
-    
-                    case "right":
-                        this.#content.style.flexDirection = "row-reverse";
-
-                        this.#icon.style.marginLeft = String( this.#iconSpace ) + "px";
-                        this.#icon.style.marginRight = "0px";
-                        this.#icon.style.marginTop = "0px";
-                        this.#icon.style.marginBottom = "0px";
-                        
-                        if( this.#iconToggle )
-                        {
-                            this.#iconToggle.style.marginLeft = String( this.#iconSpace ) + "px";
-                            this.#iconToggle.style.marginRight = "0px";
-                            this.#iconToggle.style.marginTop = "0px";
-                            this.#iconToggle.style.marginBottom = "0px";
-                        }
-                    break;
-    
-                    case "top":
-                        this.#content.style.flexDirection = "column";
-
-                        this.#icon.style.marginLeft = "0px";
-                        this.#icon.style.marginRight = "0px";
-                        this.#icon.style.marginTop = "0px";
-                        this.#icon.style.marginBottom = String( this.#iconSpace ) + "px";
-
-                        if( this.#iconToggle )
-                        {
-                            this.#iconToggle.style.marginLeft = "0px";
-                            this.#iconToggle.style.marginRight = "0px";
-                            this.#iconToggle.style.marginTop = "0px";
-                            this.#iconToggle.style.marginBottom = String( this.#iconSpace ) + "px";
-                        }
-                    break;
-    
-                    case "bottom":
-                        this.#content.style.flexDirection = "column-reverse";
-
-                        this.#icon.style.marginLeft = "0px";
-                        this.#icon.style.marginRight = "0px";
-                        this.#icon.style.marginTop = String( this.#iconSpace ) + "px";
-                        this.#icon.style.marginBottom = "0px";
-
-                        if( this.#iconToggle )
-                        {
-                            this.#iconToggle.style.marginLeft = "0px";
-                            this.#iconToggle.style.marginRight = "0px";
-                            this.#iconToggle.style.marginTop = String( this.#iconSpace ) + "px";
-                            this.#iconToggle.style.marginBottom = "0px";
-                        }
-                    break;
-    
-                    // just in case
-                    default:
-                        this.#content.style.flexDirection = "row";
-
-                        this.#icon.style.marginLeft = "0px";
-                        this.#icon.style.marginRight = "0px";
-                        this.#icon.style.marginTop = "0px";
-                        this.#icon.style.marginBottom = "0px";
-
-                        if( this.#iconToggle )
-                        {
-                            this.#iconToggle.style.marginLeft = "0px";
-                            this.#iconToggle.style.marginRight = "0px";
-                            this.#iconToggle.style.marginTop = "0px";
-                            this.#iconToggle.style.marginBottom = "0px";
-                        }
                     break;
                 }              
             }

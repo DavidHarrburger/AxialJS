@@ -6,6 +6,9 @@ import nodemailer from "nodemailer";
 import { AxialMailTemplateBase } from "./mail/AxialMailTemplateBase.js";
 import { AxialMailTemplateSendCode } from "./mail/AxialMailTemplateSendCode.js";
 import { AxialMailTemplateAnalyticsReport } from "./mail/AxialMailTemplateAnalyticsReport.js";
+import { AxialMailTemplateStripeWebhook } from "./mail/AxialMailTemplateStripeWebhook.js";
+import { AxialMailTemplateSubscriptionCreated } from "./mail/AxialMailTemplateSubscriptionCreated.js";
+import { AxialMailTemplateSubscriptionDeleted } from "./mail/AxialMailTemplateSubscriptionDeleted.js";
 
 import { EMAIL_USER } from "./AxialServerConstants.js";
 
@@ -33,6 +36,9 @@ class AxialMailer extends EventEmitter
 
         this.#templates.push( new AxialMailTemplateSendCode() );
         this.#templates.push( new AxialMailTemplateAnalyticsReport() );
+        this.#templates.push( new AxialMailTemplateStripeWebhook() );
+        this.#templates.push( new AxialMailTemplateSubscriptionCreated() );
+        this.#templates.push( new AxialMailTemplateSubscriptionDeleted() );
     }
 
     #getTemplateByName( name )

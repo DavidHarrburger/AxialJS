@@ -46,6 +46,7 @@
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    gap: 10px;
 
     padding-top: 9px;
     padding-bottom: 9px;
@@ -126,8 +127,7 @@
     flex-direction: row;
     justify-content: center;
     align-items: center;
-
-    gap: 14px;
+    gap: 10px;
 
     padding-top: 9px;
     padding-bottom: 9px;
@@ -159,6 +159,140 @@
 
     width: 18px;
     height: 18px;
+}
+
+/* AxialAccordionToggle */
+.axial_accordion_toggle
+{
+    overflow: hidden;
+    position: relative;
+
+    width: auto;
+    height: auto;
+
+    border-radius: 0;
+
+    fill: #627183;
+    border-bottom: 1px solid #627183;
+}
+
+.axial_accordion_toggle-background
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: var(--white);
+}
+.axial_accordion_toggle-foreground
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+
+    background-color: rgba(218, 218, 218, 0.23);
+    opacity: 0;
+
+    transition-property: opacity;
+    transition-duration: 320ms;
+    transition-timing-function: ease;
+}
+.axial_accordion_toggle-main
+{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+
+    padding-top: 9px;
+    padding-bottom: 9px;
+    padding-left: 14px;
+    padding-right: 14px;
+}
+.axial_accordion_toggle-arrow
+{
+    position: relative;
+    width: 18px;
+    height: 18px;
+    
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    transform: rotate(0deg);
+
+    transition-property: transform;
+    transition-duration: 240ms;
+    transition-timing-function: ease;
+}
+.axial_accordion_toggle-path
+{
+    fill: #627183;
+}
+.axial_accordion_toggle-content
+{
+    flex-grow: 1;
+    position: relative;
+    height: 100%;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+.axial_accordion_toggle-label
+{
+    width: auto;
+    color: #627183;
+    font-weight: var(--AxialToggleButton___fontWeight);
+}
+.axial_accordion_toggle-icon
+{
+    position: relative;
+    display: block;
+}
+.axial_accordion_toggle-icontoggle
+{
+    position: relative;
+    display: none;
+}
+/* AxialAccordionContainer */
+.axial_accordion_container
+{
+    position: relative;
+
+    width: 100%;
+    height: 0;
+
+    transition-property: height;
+    transition-duration: 400ms;
+    transition-timing-function: ease;
+
+    overflow: hidden;
+}
+.axial_accordion_container-content
+{
+    position: absolute;
+    width: 100%;
+    height: auto;
+    bottom: 0;
+}
+.axial_accordion_container-slot
+{
+    width: 100%;
+    height: auto;
+}
+/* AxialAccordionElement */
+.axial_accordion_element
+{
+    position: relative;
+    width: 100%;
+    height: auto;
+    overflow: hidden;
 }
 
 /* AxialToggleCheck */
@@ -252,8 +386,8 @@
     min-height: 30px;
     height: 30px;
     border-radius: 15px;
-    border: 2px solid var(--blackLight);
     padding: 4px;
+    border: 2px solid var(--blackLight);
     background-color: var(--white);
     flex-shrink: 0;
     color: var(--themeColor);
@@ -392,7 +526,7 @@
     justify-content: flex-start;
     align-items: center;
     
-    gap: 14px;
+    gap: 10px;
 
     padding-top: 9px;
     padding-bottom: 9px;
@@ -465,12 +599,14 @@
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
+    gap: 10px;
 
     padding-top: 9px;
     padding-bottom: 9px;
     padding-left: 14px;
     padding-right: 14px;
 }
+.axial_admin_toggle_bar_button-fill { fill: #627183; }
 .axial_admin_toggle_bar_button-label
 {
     width: auto;

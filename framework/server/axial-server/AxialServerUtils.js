@@ -1,5 +1,7 @@
 "use strict";
 
+import { MAIN_DOMAIN } from "./AxialServerConstants.js";
+
 class AxialServerUtils
 {
     /**
@@ -53,6 +55,18 @@ class AxialServerUtils
         }
         return r;
     }
+
+    /**
+     * 
+     * @param { String } relative 
+     */
+    static getPathFromRelative( relative )
+    {
+        const path = MAIN_DOMAIN + relative.substring(1);
+        return path;
+    }
+
+    
 }
 
 export { AxialServerUtils }

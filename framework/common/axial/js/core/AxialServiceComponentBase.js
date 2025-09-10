@@ -1,5 +1,6 @@
 "use strict";
 
+import { PathUtils } from "../utils/PathUtils.js";
 import { AxialComponentBase } from "./AxialComponentBase.js";
 
 class AxialServiceComponentBase extends AxialComponentBase
@@ -31,23 +32,41 @@ class AxialServiceComponentBase extends AxialComponentBase
     {
         super._buildComponent();
         this.#getPath = this.getAttribute("axial-get-path");
+        if( this.#getPath && this.#getPath.indexOf("./") === 0 )
+        {
+            this.#getPath = PathUtils.getPathFromRelative(this.#getPath)
+        }
         this.#postPath = this.getAttribute("axial-post-path");
+        if( this.#postPath && this.#postPath.indexOf("./") === 0 )
+        {
+            this.#postPath = PathUtils.getPathFromRelative(this.#postPath)
+        }
     }
 
-    /**
-     * @readonly
-     */
     get getPath() { return this.#getPath; }
+    set getPath( value )
+    {
+        if( typeof value !== "string" )
+        {
+            throw new TypeError("String value required");
+        }
+        this.#getPath = value;
+    }
 
     /**
      * @readonly
      */
     get getData() { return this.#getData; }
 
-    /**
-     * @readonly
-     */
     get postPath() { return this.#postPath; }
+    set postPath( value )
+    {
+        if( typeof value !== "string" )
+        {
+            throw new TypeError("String value required");
+        }
+        this.#postPath = value;
+    }
 
     /**
      * @readonly
@@ -84,7 +103,7 @@ class AxialServiceComponentBase extends AxialComponentBase
         {
             const path = this._prepareGetData();
             console.log(path);
-            const response = await fetch( path, { method: "GET", headers: { "Content-Type":"application/json" } } );
+            const response = await fetch( path, { method: "GET", headers: { "Content-Type":"application/json", "Cache-Control":"no-cache" } } );
             const json = await response.json();
             this.#getData = json;
             const serviceEvent = new CustomEvent( "serviceSuccess", { detail: { data: this.#getData, method:"get" } } );
@@ -116,7 +135,7 @@ class AxialServiceComponentBase extends AxialComponentBase
         try
         {
             const infos = this._preparePostData();
-            const response = await fetch(this.#postPath, { method: "POST", body: JSON.stringify(infos), headers: { "Content-Type":"application/json" } } );
+            const response = await fetch(this.#postPath, { method: "POST", body: JSON.stringify(infos), headers: { "Content-Type":"application/json", "Cache-Control":"no-cache" } } );
             const json = await response.json();
             this.#postData = json;
                 
