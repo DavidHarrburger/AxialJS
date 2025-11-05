@@ -67,6 +67,8 @@ class AxialSchedulerOperations
                 {
                     // rank
                     const url = stat.url;
+                    if( url.indexOf("localhost") > 0 ) { continue; }
+                    
                     if( rankMap.has(url) === false )
                     {
                         rankMap.set( url, 1 );

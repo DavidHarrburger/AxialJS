@@ -113,16 +113,16 @@ class DateUtils
 
     static goToPast( d, n )
     {
-        const present = new Date( d.getFullYear(), d.getMonth(), d.getDate() ).getTime();
-        const past = present - ( 1000 * 60 * 60 * 24 * n );
-        return new Date( past );
+        //const present = new Date( d.getFullYear(), d.getMonth(), d.getDate() ).getTime();
+        //const past = present - ( 1000 * 60 * 60 * 24 * n );
+        return new Date( d.getFullYear(), d.getMonth(), d.getDate() - n );
     }
 
     static goToFuture( d, n )
     {
-        const present = new Date( d.getFullYear(), d.getMonth(), d.getDate() ).getTime();
-        const future = present + ( 1000 * 60 * 60 * 24 * n );
-        return new Date( future );
+        //const present = new Date( d.getFullYear(), d.getMonth(), d.getDate() ).getTime();
+        //const future = present + ( 1000 * 60 * 60 * 24 * n );
+        return new Date( d.getFullYear(), d.getMonth(), d.getDate() + n );
     }
 
     static midnight( d )

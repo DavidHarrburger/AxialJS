@@ -56,8 +56,8 @@
     height: auto;
     padding: 20px;
     border-radius: var(--component___borderRadius);
-    border: 2px solid #fff;
-    background-color: rgba(0, 0, 0, 0.83);
+    border: 1px solid #fff;
+    background-color: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(10px);
 }
 .axial_consent_overlay-holder
@@ -93,6 +93,9 @@
 .axial_consent_overlay-content
 {
     color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 .axial_consent_overlay-actions
 {
@@ -101,6 +104,26 @@
     align-items: center;
     justify-content: flex-end;
     gap: 20px;
+}
+.axial_consent_overlay-p
+{
+    margin: 0;
+    padding: 0;
+}
+.axial_consent_overlay-link
+{
+    color: #fff;
+    text-decoration: underline;
+}
+.axial_consent_overlay-link:hover
+{
+    color: #fefefe;
+    text-decoration: underline;
+}
+.axial_consent_overlay-link:visited
+{
+    color: #fefefe;
+    text-decoration: underline;
 }
 /* AxialDeletionOverlay */
 .axial_deletion_overlay

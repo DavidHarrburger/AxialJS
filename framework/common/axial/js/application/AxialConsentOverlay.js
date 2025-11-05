@@ -3,6 +3,7 @@
 import { AxialConsentManager } from "./AxialConsentManager.js";
 import { AxialOverlayBase } from "../overlay/AxialOverlayBase.js";
 import { AxialButton } from "../button/AxialButton.js";
+import { PathUtils } from "../utils/PathUtils.js";
 
 class AxialConsentOverlay extends AxialOverlayBase
 {
@@ -12,6 +13,9 @@ class AxialConsentOverlay extends AxialOverlayBase
 
     /** @type { AxialButton } */
     #accept;
+
+    /** @type { HTMLElement } */
+    #privacy;
 
     /// events
     /** @type { Function } */
@@ -36,11 +40,21 @@ class AxialConsentOverlay extends AxialOverlayBase
         super._buildComponent();
 
         this.displayMode = "window";
-        this.position = "bottom-right";
+        this.position = "bottom-left";
         this.isModal = true;
 
         this.#decline = this.shadowRoot.getElementById("decline");
         this.#accept = this.shadowRoot.getElementById("accept");
+        this.#privacy = this.shadowRoot.getElementById("privacy");
+
+        if( this.#privacy )
+        {
+            if( this.#privacy instanceof HTMLAnchorElement === true )
+            {
+                const privacyPath = PathUtils.getPathFromRelative(this.#privacy.getAttribute("href") );
+                this.#privacy.setAttribute("href", privacyPath);
+            }
+        }
 
         if( this.#decline )
         {

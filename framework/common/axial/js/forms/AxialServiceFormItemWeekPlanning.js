@@ -1,6 +1,6 @@
 "use strict";
 
-import { AxialWeekPlanning } from "../date/AxialWeekPlanning";
+import { AxialWeekPlanning } from "../date/AxialWeekPlanning.js";
 import { AxialServiceFormItem } from "./AxialServiceFormItem.js";
 
 class AxialServiceFormItemWeekPlanning extends AxialServiceFormItem

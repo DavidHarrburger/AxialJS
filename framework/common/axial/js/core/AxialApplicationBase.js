@@ -998,6 +998,7 @@ class AxialApplicationBase extends EventTarget
     {
         if( event.currentTarget.href.indexOf("mailto:") == 0 ) { return; }
         if( event.currentTarget.href.indexOf("tel:") == 0 ) { return; }
+        if( event.currentTarget.getAttribute("download") != null ) { return; }
         const url = new URL(event.currentTarget.href);
 
         if( window.location.hostname != url.hostname ) { return; }

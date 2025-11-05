@@ -1,5 +1,5 @@
-<!-- ./forms/AxialServiceFormItemWeekPlanning -->
-<template id="axial-service-form-item-week-planning-template">
+<!-- ./forms/AxialServiceFormItemCalendar -->
+<template id="axial-service-form-item-calendar-template">
     <link rel="stylesheet" href="./styles.css">
     <div class="axial_service_form_item-holder">
         <div class="axial_service_form_item-header">
@@ -13,7 +13,9 @@
         </div>
         <div id="content" class="axial_service_form_item-content">
             <slot id="contentSlot" name="axial-content"></slot>
-            <axial-week-planning id="weekPlanning"></axial-week-planning>
+            <div>
+                <axial-calendar-button id="calendarButton" axial-text="Sélectionner une date"></axial-calendar-button>
+            </div>
         </div>
     </div>
 </template>

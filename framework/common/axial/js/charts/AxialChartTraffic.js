@@ -4,6 +4,7 @@ import { AxialChart } from "./AxialChart.js";
 import { DomUtils } from "../utils/DomUtils.js";
 import { DateUtils } from "../utils/DateUtils.js";
 import { Point } from "../geom/Point.js";
+
 class AxialChartTraffic extends AxialChart
 {
     /// vars
@@ -122,7 +123,7 @@ class AxialChartTraffic extends AxialChart
 
     #checkPeriod()
     {
-        console.log( "checkperiod", this.#mode );
+        //console.log( "checkperiod", this.#mode );
         if( this.#mode !== "period" ) { return; }
         this._clearChart();
         this.#createMap();
@@ -195,8 +196,9 @@ class AxialChartTraffic extends AxialChart
 
             for( const stat of this.chartData )
             {
+                if( stat.url && stat.url.indexOf("localhost") > 0 ) { continue; }
+
                 const sd = DateUtils.midnight(new Date(stat.dateStart));
-                //console.log(sd);
                 if( this.#mode === "year" )
                 {
                     if( cm.getFullYear() === sd.getFullYear() &&  cm.getMonth() === sd.getMonth() )
@@ -206,7 +208,7 @@ class AxialChartTraffic extends AxialChart
                 }
                 else
                 {
-                    if( cd.getTime() === sd.getTime() )
+                    if( cd.getFullYear() === sd.getFullYear() && cd.getMonth() === sd.getMonth() && cd.getDate() === sd.getDate() )
                     {
                         this.#map[i] = this.#map[i] + 1;
                     }
@@ -218,8 +220,8 @@ class AxialChartTraffic extends AxialChart
                 }
             }
         }
-        console.log(this.#map);
-        console.log( this.#maxValue );
+        //console.log(this.#map);
+        //console.log( this.#maxValue );
     }
 
     _drawChart()

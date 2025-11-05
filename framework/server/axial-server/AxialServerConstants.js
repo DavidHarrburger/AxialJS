@@ -1,4 +1,5 @@
 export const MAIN_DOMAIN = "";
+export const MAIN_NAME = "";
 
 export const DATABASE_URL = "";
 export const DATABASE_NAME = "";
@@ -19,6 +20,7 @@ export const AUTHORIZED_DOMAINS = [];
 
 export const ROLES = 
 [
+    "master",
     "admin",
     "user",
     "client"
@@ -34,6 +36,7 @@ export const AUTH_REDIRECT_PATH = "/account/redirect/";
 
 export const AUTH_PATHES = 
 [
+    { path: "/master/",  permission: "master" },
     { path: "/admin/",  permission: "admin" },
     { path: "/user/",   permission: "user" },
     { path: "/client/", permission: "client" },
@@ -91,3 +94,7 @@ export const SUBSCRIPTION_TYPES =
 export const STRIPE_USE = true;
 export const STRIPE_PRIVATE_KEY = "";
 export const STRIPE_WEBHOOK_SECRET = "";
+
+// CONST FOR EMAIL AUTOMATION
+export const MAIL_TEMPLATE_SENDER_DOMAIN = "https://dndev.fr";
+export const MAIL_TEMPLATE_SENDER_NAME = "dndev.fr";

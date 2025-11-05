@@ -1,0 +1,24 @@
+<!-- ./admin/subscriptions/AxialAdminSubscriptionView -->
+<template id="axial-admin-subscription-view-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div class="axial_admin_view-holder">
+        <div class="axial_admin_view-header">
+            <div id="title" class="axial_admin_view-title">Abonnements</div>
+            <div class="axial_spacer"></div>
+            <axial-button id="addButton" axial-text="Ajouter un abonnement">
+                <i slot="axial-icon" class="fa-color fa-regular fa-square-plus"></i>
+            </axial-button>
+        </div>
+        <div class="axial_admin_view-content">
+            <axial-admin-list id="list">
+                <div slot="axial-header" class="axial_admin_subscription_list_item-product">Abonnement</div>
+                <div slot="axial-header" class="axial_admin_subscription_list_item-price">Prix</div>
+                <div slot="axial-header" class="axial_admin_subscription_list_item-recurrence">Récurrence</div>
+                <div slot="axial-header" class="axial_admin_subscription_list_item-state">Actif</div>
+                <div slot="axial-header" class="axial_admin_subscription_list_item-creation">Creation</div>
+                <div slot="axial-header" class="axial_spacer"></div>
+                <div slot="axial-header" class="axial_admin_list_item-actions"></div>
+            </axial-admin-list>
+        </div>
+    </div>
+</template>

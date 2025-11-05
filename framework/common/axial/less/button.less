@@ -412,8 +412,8 @@
 {
     position: relative;
     display: block;
-    width: 48px;
-    height: 48px;
+    width: 42px;
+    height: 42px;
     overflow: hidden;
     border-radius: var(--component___borderRadius);
     z-index: 23;
@@ -424,7 +424,29 @@
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background-color: var(--AxialBurgerButton___backgroundColor);
+    background-color: transparent;
+}
+.axial_burger_button-foreground
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: rgba(255, 255, 255, 0.23);
+    opacity: 0;
+
+    transition-property: opacity;
+    transition-duration: 240ms;
+    transition-timing-function: ease;
+}
+.axial_burger_button-border
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: var(--component___borderRadius);
+    border: 2px solid #fff;
 }
 .axial_burger_button-lines
 {
@@ -436,17 +458,19 @@
 .axial_burger_button-line
 {
     position: absolute;
-    width: 26px;
+    width: 22px;
     height: 2px;
     overflow: hidden;
-    left: 11px;
+    left: 10px;
     transform-origin: center;
+    overflow: hidden;
+    border-radius: 1px;
 
     transition-property: top, transform;
     transition-duration: 400ms;
     transition-timing-function: ease;
 
-    background-color: var(--AxialBurgerButton___lineColor);
+    background-color: #fff;
 }
 .axial_burger_button-top
 {
@@ -454,11 +478,11 @@
 }
 .axial_burger_button-middle
 {
-    top: 23px;
+    top: 20.5px;
 }
 .axial_burger_button-bottom
 {
-    top: 33px;
+    top: 27px;
 }
 /* PROBABLY MISS SOMETHING ABOVE */
 /* AxialTogglePasswordButton */

@@ -1,0 +1,21 @@
+<!-- ./admin/kpi/AxialAdminKpiView -->
+<template id="axial-admin-kpi-view-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div class="axial_admin_view-holder">
+        <div class="axial_admin_view-header">
+            <div id="title" class="axial_admin_view-title">Home - KPI</div>
+        </div>
+        <div class="axial_admin_view-content axial_admin_view-content-transparent">
+            <div id="kpiHolder" class="axial_admin_view-kpi_grid">
+                <axial-admin-kpi-tile
+                    axial-title="Database"
+                    axial-get-path="./api/kpi/database/get/">
+                </axial-admin-kpi-tile>
+                <axial-admin-kpi-tile-storage
+                    axial-title="Storage"
+                    axial-get-path="./api/kpi/storage/get/">
+                </axial-admin-kpi-tile-storage>
+            </div>
+        </div>
+    </div>
+</template>

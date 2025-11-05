@@ -1,7 +1,11 @@
 "use strict";
 
 import { AxialMailTemplateBase } from "./AxialMailTemplateBase.js";
-import { MAIN_DOMAIN } from "../AxialServerConstants.js";
+import
+{
+    MAIN_DOMAIN,
+    MAIN_NAME
+} from "../AxialServerConstants.js";
 
 class AxialMailTemplateAnalyticsReport extends AxialMailTemplateBase
 {

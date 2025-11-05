@@ -1,8 +1,12 @@
 "use strict";
 
-//import EventEmitter from "node:events";
-
-import { MAIN_DOMAIN } from "../AxialServerConstants.js";
+import
+{
+    MAIN_DOMAIN,
+    MAIL_TEMPLATE_SENDER_DOMAIN,
+    MAIL_TEMPLATE_SENDER_NAME
+}
+from "../AxialServerConstants.js";
 
 class AxialMailTemplateBase
 {
@@ -40,7 +44,7 @@ class AxialMailTemplateBase
     {
         const footer = 
             `<div style='margin-top:20px;'>` +
-            `<a href='${MAIN_DOMAIN}' style='color:rgb(35, 41, 47); text-decoration:underline; font-size:12px; font-weight:bold; display:block; text-align:center;'>${MAIN_DOMAIN}</a>` +
+            `<a href='${MAIL_TEMPLATE_SENDER_DOMAIN}' style='color:rgb(35, 41, 47); text-decoration:underline; font-size:12px; font-weight:bold; display:block; text-align:center;'>${MAIL_TEMPLATE_SENDER_NAME}</a>` +
             `<div style='text-align:center; color:rgb(35, 41, 47); font-size:11px; margin-top:10px;'>This is an automated message. Please do not reply.</div>`+
             `</div>`;
         return footer;

@@ -16,7 +16,7 @@ class AxialAdminProjectView extends AxialAdminViewBase
     /** @type { AxialButton } */
     #addProjectButton;
 
-    /** @type { AxialAdminEventPopup } */
+    /** @type { AxialAdminProjectPopup } */
     #projectPopup;
 
     /// events

@@ -10,6 +10,21 @@
 
 @media screen and ( min-width: 768px )
 {
+    :root
+    {
+        /* footer legal */
+        --footer___legal___direction: row;
+        --footer___legal___justify:   flex-start;
+        --footer___legal___align:     center;
+        --footer___legal___gap:       20px;
+
+        /* footer social */
+        --footer___social___direction: row;
+        --footer___social___justify:   flex-start;
+        --footer___social___align:     center;
+        --footer___social___gap:       20px;
+    }
+
     .axial_form_utils_grid
     {
         display: grid;
@@ -55,6 +70,16 @@
         .axial_admin_burger
         {
             display: none;
+        }
+
+        .axial_web_menu_button_holder
+        {
+            display: none;
+        }
+
+        .axial_web_desktop_nav
+        {
+            display: flex;
         }
     }
 }
