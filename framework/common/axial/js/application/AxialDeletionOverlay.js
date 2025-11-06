@@ -13,6 +13,7 @@ class AxialDeletionOverlay extends AxialOverlayBase
     /** @type { String } */
     #model;
 
+    /** @type { String } */
     #deletionPath = "./api/data/del/";
 
     /// elements
@@ -40,8 +41,6 @@ class AxialDeletionOverlay extends AxialOverlayBase
 
         this.#boundCancelClickHandler = this.#cancelClickHandler.bind(this);
         this.#boundConfirmClickHandler = this.#confirmClickHandler.bind(this);
-
-        
     }
 
     get _id() { return this.#_id; }

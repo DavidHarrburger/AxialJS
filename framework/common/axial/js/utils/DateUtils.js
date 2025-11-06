@@ -17,6 +17,11 @@ class DateUtils
         return DateUtils.#MONTH_NAMES[n];
     }
 
+    static getDayName( n )
+    {
+        return DateUtils.#DAY_NAMES[n];
+    }
+
     /**
      * Check if the current day i.e. new Date is between a Date Start and a Date End, assuming Date Start < Date End
      * @static
@@ -172,6 +177,19 @@ class DateUtils
      * @param { Date } d 
      * @returns { String }
      */
+    static formatString( d )
+    {
+        const day = DateUtils.#DAY_NAMES[d.getDay()];
+        const num = d.getDate();
+        const s = `${day} ${num}`;
+        return s;
+    }
+
+    /**
+     * 
+     * @param { Date } d 
+     * @returns { String }
+     */
     static formatWithTime( d )
     {
         if( d instanceof Date === false )
@@ -192,11 +210,6 @@ class DateUtils
 
         const formated = `${year}-${formatedMonth}-${formatedDate} ${hours}:${minutes}:${seconds}`;
         return formated;
-    }
-
-    static formatString( d )
-    {
-        
     }
 
     static tomorrow()

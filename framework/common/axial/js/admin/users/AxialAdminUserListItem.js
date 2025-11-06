@@ -41,7 +41,6 @@ class AxialAdminUserListItem extends AxialAdminListItemBase
     constructor()
     {
         super();
-        this.classList.add("axial_admin_user_list_item");
         this.template = "axial-admin-user-list-item-template";
     }
 
@@ -86,12 +85,13 @@ class AxialAdminUserListItem extends AxialAdminListItemBase
     {
         if( this.componentBuilt === true && this.data !== undefined )
         {
-            this.#getSubscription();
+            //this.#getSubscription();
 
             this.#name.innerHTML = this.data.first_name + " " + this.data.last_name;
             this.#email.innerHTML = this.data.email;
             this.#role.innerHTML = this.data.role;
 
+            /*
             const currentStatus = this.data.stripe_subscription_status;
             const currentColor = currentStatus === "active" ? ColorUtils.UI_COLORS.get("success") : ColorUtils.UI_COLORS.get("error");
 
@@ -101,7 +101,7 @@ class AxialAdminUserListItem extends AxialAdminListItemBase
             
             this.#status.innerHTML = currentStatus;
             this.#status.style.color = currentColor.mid_dark;
-
+            */
 
             this.#creation.innerHTML = DateUtils.format( new Date( this.data.creation_date ) );
         }

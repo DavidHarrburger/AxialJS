@@ -61,7 +61,6 @@ export const API_PRIVATE_PATHES =
     { path: "/api/params/weektime/set", verification: true },
 
     { path: "/api/services/qrcode/", verification: true },
-    
 
     { path: "/api/medias/get", verification: true },
     { path: "/api/medias/all", verification: true },

@@ -70,6 +70,12 @@ class AxialServiceForm extends AxialServiceComponentBase
         return [ "axial-name", "axial-collection", "axial-model", "axial-defaults" ];
     }
 
+    /**
+     * @type { Array<AxialServiceFormItemBase> }
+     * @readonly
+     */
+    get items() { return this.#items; }
+
     attributeChangedCallback(name, oldValue, newValue)
     {
         super.attributeChangedCallback(name, oldValue, newValue);
@@ -110,7 +116,6 @@ class AxialServiceForm extends AxialServiceComponentBase
         if( this.#slot )
         {
             const elements = this.#slot.assignedElements();
-            //console.log(elements);
             for( const element of elements )
             {
                 if( element instanceof AxialServiceFormItemBase )
@@ -119,7 +124,6 @@ class AxialServiceForm extends AxialServiceComponentBase
                     this.#items.push( element );
                 }
             }
-            //console.log(this.#items);
         }
 
         this.#postButton = this.shadowRoot.getElementById("postButton");
@@ -147,15 +151,11 @@ class AxialServiceForm extends AxialServiceComponentBase
 
     #checkValidity()
     {
-        //console.log("AxialServiceForm.#checkValidity()");
         const currentValidity = this.#isValid;
 
         let finalValid = true;
         for( const item of this.#items )
         {
-            //console.log( "1", item);
-            //console.log( "2", item.isValid);
-
             if( item.isValid === false )
             {
                 finalValid = false;
@@ -167,8 +167,6 @@ class AxialServiceForm extends AxialServiceComponentBase
         {
             this.#isValid = finalValid;
         }
-
-        //console.log(this.#isValid);
 
         if( this.#postButton )
         {
@@ -208,7 +206,6 @@ class AxialServiceForm extends AxialServiceComponentBase
         }
         finally
         {
-            console.log("finally", this.postPath);
             super.loadPostData();
         }
     }
@@ -221,8 +218,11 @@ class AxialServiceForm extends AxialServiceComponentBase
 
     _onPostResponse()
     {
-        console.log("_onPostResponse");
-        this.clearForm();
+        if( this.postData && this.postData.content && this.postData.content.insertedId )
+        {
+            this.#_id = this.postData.content.insertedId;
+        }
+        //this.clearForm();
         this.enabled = true;
     }
 
@@ -241,10 +241,6 @@ class AxialServiceForm extends AxialServiceComponentBase
         if( formModel )
         {
             this._fillForm( formModel );
-        }
-        else
-        {
-            this.clearForm();
         }
     }
 
@@ -281,36 +277,16 @@ class AxialServiceForm extends AxialServiceComponentBase
 
     #itemValidityChangedHandler( event )
     {
-        console.log("item validity changed");
+        //console.log("item validity changed");
         this.#checkValidity();
     }
 
     #fillForm( object = {} )
     {
-        //console.log( "#fillForm" ); // ERROR SOMEWHERE WE FILL ON NAME PROPERTY
-        //console.log( object );
-        // we store the immutable id property
         if( object._id !== undefined )
         {
             this.#_id = object._id;
         }
-        /*
-        for( const item of this.#items )
-        {
-            // we check if the field exist. If yes we pass the entire object and let the item parse it
-            const field = item.field;
-            console.log("#fillForm fiels = ", field);
-            if( field )
-            {
-                const model = ObjectUtils.getObjectByProperty( object, field );
-                console.log(model);
-                if( model )
-                {
-                    item._fillItem(object);
-                }
-            }
-        }
-            */
         
         for( const item of this.#items )
         {
@@ -334,8 +310,16 @@ class AxialServiceForm extends AxialServiceComponentBase
         this.#postButton.loading = false;
         for( const item of this.#items )
         {
-            //if( item._clearItem ) { item._clearItem(); }
+            if( item._clearItem ) { item._clearItem(); }
         }
+        this.#_id = undefined;
+    }
+
+    // weird, to check (we have a getter and a setter)
+    enableForm()
+    {
+        this.#postButton.enabled = true;
+        this.#postButton.loading = false;
     }
 
     /**
@@ -348,7 +332,7 @@ class AxialServiceForm extends AxialServiceComponentBase
         if( this.#defaults && this.#defaults !== "" )
         {
             const defaultsArray = this.#defaults.split("&");
-            console.log(defaultsArray);
+            //console.log(defaultsArray);
 
             for( const def of defaultsArray )
             {
@@ -362,6 +346,25 @@ class AxialServiceForm extends AxialServiceComponentBase
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * 
+     * @param { AxialServiceFormItemBase } item 
+     */
+    addFormItem( item )
+    {
+        if( item instanceof AxialServiceFormItemBase === false )
+        {
+            throw new TypeError("AxialServiceFormItemBase value required");
+        }
+
+        const test = new Set( this.#items );
+        if( test.has( item ) === false )
+        {
+            item.addEventListener("itemValidityChanged", this.#boundItemValidityChangedHandler);
+            this.#items.push( item );
         }
     }
 }

@@ -127,7 +127,6 @@ class AxialAdminApplicationBase extends AxialApplicationBase
             this.#panelToggles.selectedIndex = 0;
         }
         
-
         // viewer
         this.#mainViewer = document.getElementById("mainViewer");
 
@@ -163,7 +162,6 @@ class AxialAdminApplicationBase extends AxialApplicationBase
         const allPopups = AxialPopupManager.POPUPS;
         for( const popup of allPopups )
         {
-            console.log( popup );
             popup.addEventListener("popupHidden", this.#boundPopupHiddenHandler);
         }
 

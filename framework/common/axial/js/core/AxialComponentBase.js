@@ -376,7 +376,7 @@ class AxialComponentBase extends HTMLElement
     get data() { return this.#data; }
     set data( value )
     {
-        if( this.#data == value ) { return; }
+        if( this.#data == value && value !== undefined ) { return; }
         this.#data = value;
         this._onDataChanged();
         const dataChangedEvent = new CustomEvent("dataChanged", { detail: this.#data });

@@ -333,6 +333,15 @@
     "documents":
     [
         {
+            "model": "master",
+            "email": "the_master_email",
+            "password": "the_master_password",
+            "username": "the_master_username",
+            "role": "master",
+            "connected": false,
+            "verified": false
+        },
+        {
             "model": "admin",
             "email": "the_admin_email",
             "password": "the_admin_password",

@@ -299,6 +299,19 @@ class AxialApplicationBase extends EventTarget
     /** @type { AxialDeletionOverlay } */
     #deletionOverlay;
 
+    /// events
+    /** @type { Function } */
+    #boundDeletionCancelledHandler;
+
+    /** @type { Function } */
+    #boundDeletionConfirmedHandler;
+
+    /** @type { Function } */
+    #boundDeletionErrorHandler;
+
+    /** @type { Function } */
+    #boundDeletionSuccessHandler;
+
     /**
      * Create the main AxialApplicationBase and make it a property of its window.
      * The Application is freezed to avoid interference with others scripts.
@@ -377,6 +390,12 @@ class AxialApplicationBase extends EventTarget
         // overlay - dropdown
         document.addEventListener("click", AxialOverlayManager.documentOverlayClickHandler);
         document.addEventListener("click", AxialDropdownManager.documentDropdownClickHandler);
+
+        // ui
+        this.#boundDeletionCancelledHandler = this.#deletionCancelledHandler.bind(this);
+        this.#boundDeletionConfirmedHandler = this.#deletionConfirmedHandler.bind(this);
+        this.#boundDeletionErrorHandler = this.#deletionErrorHandler.bind(this);
+        this.#boundDeletionSuccessHandler = this.#deletionSuccessHandler.bind(this);
     }
 
     get language() { return this.#language; }
@@ -605,11 +624,21 @@ class AxialApplicationBase extends EventTarget
         // notifier
         this.#notifier = document.getElementById("axialNotifier");
 
-        // notifier
+        // informationBar
         this.#informationBar = document.getElementById("axialInformationBar");
 
+        // consentOverlay
+        this.#consentOverlay = document.getElementById("axialConsentOverlay");
+        
         // deletionOverlay
         this.#deletionOverlay = document.getElementById("axialDeletionOverlay");
+        if( this.#deletionOverlay )
+        {
+            this.#deletionOverlay.addEventListener("deletionCancelled", this.#boundDeletionCancelledHandler);
+            this.#deletionOverlay.addEventListener("deletionConfirmed", this.#boundDeletionConfirmedHandler);
+            this.#deletionOverlay.addEventListener("deletionError", this.#boundDeletionErrorHandler);
+            this.#deletionOverlay.addEventListener("deletionSuccess", this.#boundDeletionSuccessHandler);
+        }
 
 
         if( this.useScrollParallax === true )
@@ -1065,12 +1094,6 @@ class AxialApplicationBase extends EventTarget
      */
     get consentOverlay() { return this.#consentOverlay; }
 
-    /** 
-     * @type { AxialDeletionOverlay }
-     * @readonly
-     */
-    get deletionOverlay() { return this.#deletionOverlay; }
-
     /// INFORMATION BAR
     /** 
      * @type { AxialInformationBar }
@@ -1096,6 +1119,45 @@ class AxialApplicationBase extends EventTarget
             this.#notifier.show( message );
         }
     }
+
+    /// DELETION OVERLAY
+    /** 
+     * @type { AxialDeletionOverlay }
+     * @readonly
+     */
+    get deletionOverlay() { return this.#deletionOverlay; }
+
+    #deletionCancelledHandler( event )
+    {
+        if( this._onDeletionCancelled ) { this._onDeletionCancelled( event ); }
+    }
+
+    #deletionConfirmedHandler( event )
+    {
+        if( this._onDeletionConfirmed ) { this._onDeletionConfirmed( event ); }
+    }
+
+    #deletionErrorHandler( event )
+    {
+        if( this._onDeletionError ) { this._onDeletionError( event ); }
+    }
+
+    #deletionSuccessHandler( event )
+    {
+        if( this._onDeletionSuccess ) { this._onDeletionSuccess( event ); }
+    }
+
+    /** @abstract */
+    _onDeletionCancelled( event ) {}
+
+    /** @abstract */
+    _onDeletionConfirmed( event ) {}
+
+    /** @abstract */
+    _onDeletionError( event ) {}
+
+    /** @abstract */
+    _onDeletionSuccess( event ) {}
 }
 
 export { AxialApplicationBase }

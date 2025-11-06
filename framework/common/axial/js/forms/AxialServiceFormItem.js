@@ -8,6 +8,12 @@ class AxialServiceFormItem extends AxialServiceFormItemBase
     /** @type { String } */
     #labelText = "";
 
+    /** @type { Boolean } */
+    #isRequired = false;
+
+    /** @type { String } */
+    #requiredChar = " *";
+
     /// styles
     /** @type { Set<String> } */
     #DIRECTIONS = new Set( [ "column", "row" ] );
@@ -37,7 +43,7 @@ class AxialServiceFormItem extends AxialServiceFormItemBase
 
     static get observedAttributes()
     {
-        return [ "axial-label", "axial-direction", "axial-field" ];
+        return [ "axial-label", "axial-direction", "axial-field", "axial-required" ];
     }
 
     attributeChangedCallback(name, oldValue, newValue)
@@ -61,6 +67,15 @@ class AxialServiceFormItem extends AxialServiceFormItemBase
                 this.#content.style.flexDirection = this.#direction;
             }
         }
+
+        if( name === "axial-required" )
+        {
+            this.#isRequired = true;
+            if( this.#label && this.#labelText )
+            {
+                this.#label.innerHTML = this.#labelText + this.#requiredChar;
+            }
+        }
     }
 
     get labelText() { return this.#labelText; }
@@ -71,6 +86,7 @@ class AxialServiceFormItem extends AxialServiceFormItemBase
         
         /// vars
         this.#labelText = this.getAttribute("axial-label") || "";
+        this.#isRequired = this.getAttribute("axial-required") !== null ? true : false;
         const tempDirection = this.getAttribute("axial-direction") || "column";
         if( this.#DIRECTIONS.has(tempDirection) === true && tempDirection != this.#direction )
         {
@@ -80,7 +96,7 @@ class AxialServiceFormItem extends AxialServiceFormItemBase
         this.#label = this.shadowRoot.getElementById("label");
         if( this.#label )
         {
-            this.#label.innerHTML = this.#labelText;
+            this.#label.innerHTML = this.#isRequired === true ? this.#labelText + this.#requiredChar : this.#labelText;
         }
 
         this.#content = this.shadowRoot.getElementById("content");
@@ -106,8 +122,6 @@ class AxialServiceFormItem extends AxialServiceFormItemBase
                 this.#info.style.display = "none";
             }
         }
-        
-        
     }
 
     _getItemAsObject()

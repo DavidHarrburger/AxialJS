@@ -149,6 +149,7 @@ class AxialAuthVerifyer extends AxialComponentBase
      */
     #inputHandler( event )
     {
+        console.log( event );
         event.preventDefault();
         const input = event.target;
         const data = event.data;

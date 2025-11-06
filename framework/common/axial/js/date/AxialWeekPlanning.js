@@ -139,6 +139,9 @@ class AxialWeekPlanning extends AxialComponentBase
         this.#totalMorning.innerHTML = resultMorning;
         this.#totalNoon.innerHTML = resultNoon;
         this.#totalWeek.innerHTML = resultWeek;
+
+        const weekPlanningEvent = new CustomEvent("weekPlanningChanged");
+        this.dispatchEvent( weekPlanningEvent );
     }
 
     getAsArray()

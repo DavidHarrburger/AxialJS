@@ -36,6 +36,26 @@ class AxialAdminEmployeePopup extends AxialAdminPopup
         }
     }
 
+    _onDataChanged()
+    {
+        super._onDataChanged();
+        if( this.#employeeForm )
+        {
+            if( this.data === undefined )
+            {
+                this.title = "Ajouter un employé";
+                const userUuid = window.AXIAL.userUuid;
+                const defaultUuid = "user_uuid," + userUuid;
+                this.#employeeForm.setAttribute("axial-defaults", defaultUuid);
+                this.#employeeForm.clearForm();
+            }
+            else
+            {
+                this.#employeeForm._fillForm( this.data );
+            }
+        }
+    }
+
     /**
      * 
      * @param { CustomEvent } event 

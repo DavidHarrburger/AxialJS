@@ -178,24 +178,24 @@
     justify-content: flex-end;
     gap: 20px;
 }
-/* AxialListOverlay */
+/* ./overlay/AxialListOverlay */
 .axial_list_overlay
 {
+    display: block;
     min-width: 200px;
-    min-height: 40px;
     height: auto;
-    
 }
 .axial_list_overlay-group
 {
-    position: absolute;
+    /*position: absolute;*/ /* KEEP SUPER IMPORTANT NEVER REMOVE */
     width: 100%;
     height: auto;
     border-radius: var(--component___borderRadius);
-    border: 2px solid var(--themeColor);
-    background-color: #fff;
+    border: 2px solid var(--white);
+    background-color: var(--white);
     padding: 6px;
     display: flex;
     flex-direction: column;
     gap: 6px;
+    box-shadow: 0 10px 10px rgba(0, 0, 0, 0.23);
 }

@@ -2,6 +2,9 @@
 
 import { AxialAdminListItem } from "../base/AxialAdminListItem.js";
 import { PathUtils } from "../../utils/PathUtils.js";
+import { DateUtils } from "../../utils/DateUtils.js";
+import { FormatUtils } from "../../utils/FormatUtils.js";
+import { AxialPopupManager } from "../../popup/AxialPopupManager.js";
 
 class AxialAdminClientListItem extends AxialAdminListItem
 {
@@ -26,6 +29,7 @@ class AxialAdminClientListItem extends AxialAdminListItem
         super();
         this.classList.add("axial_admin_list_item");
         this.template = "axial-admin-client-list-item-template";
+        this.popupId = "clientPopup";
     }
 
     _buildComponent()
@@ -59,7 +63,7 @@ class AxialAdminClientListItem extends AxialAdminListItem
         {
             if( this.data.image_main !== "" )
             {
-                this.#photo.src = PathUtils.getPathFromRelative(this.data.image_main);
+                this.#photo.style.backgroundImage = `url('${PathUtils.getPathFromRelative(this.data.image_main)}')`;
             }
             
             const clientType = this.data.client_type;
@@ -75,7 +79,7 @@ class AxialAdminClientListItem extends AxialAdminListItem
             }
             
             this.#email.innerHTML = this.data.email;
-            this.#tel.innerHTML = this.data.tel;
+            this.#tel.innerHTML = FormatUtils.formatPhone(this.data.tel);
         }
     }
 }

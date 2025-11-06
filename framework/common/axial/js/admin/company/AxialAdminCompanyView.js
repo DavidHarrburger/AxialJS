@@ -6,19 +6,29 @@ import { AxialWeekPlanning } from "../../date/AxialWeekPlanning.js";
 
 class AxialAdminCompanyView extends AxialAdminViewBase
 {
+    /// elements
     /** @type { AxialServiceForm } */
     #companyForm;
+
+    /// events
+    /** @type {Function } */
+    #boundFormSuccessHandler;
 
     constructor()
     {
         super();
         this.template = "axial-admin-company-view-template";
+        this.#boundFormSuccessHandler = this.#formSuccesHandler.bind(this);
     }
 
     _buildComponent()
     {
         super._buildComponent();
         this.#companyForm = this.shadowRoot.getElementById("companyForm");
+        if( this.#companyForm )
+        {
+            this.#companyForm.addEventListener("serviceSuccess", this.#boundFormSuccessHandler);
+        }
     }
 
     _onViewEntered()
@@ -34,8 +44,9 @@ class AxialAdminCompanyView extends AxialAdminViewBase
 
     _prepareGetData()
     {
+
         const userUuid = window.AXIAL.userUuid;
-        const path = this.getPath + "&f=model,company&f=user_uuid," + userUuid;
+        const path = this.getPath + "?c=companies&m=company&f=model,company&f=user_uuid," + userUuid;
         return path;
     }
 
@@ -50,6 +61,19 @@ class AxialAdminCompanyView extends AxialAdminViewBase
             {
                 this.#companyForm._fillForm(formObject);
             }
+        }
+    }
+
+    /**
+     * 
+     * @param { CustomEvent } event 
+     */
+    #formSuccesHandler( event )
+    {
+        window.AXIAL.notify("Informations enregistrées avec succès");
+        if( this.#companyForm )
+        {
+            this.#companyForm.enableForm();
         }
     }
 

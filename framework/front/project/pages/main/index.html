@@ -3,10 +3,6 @@
 <head>
     <meta charset="utf-8">
 
-    <!-- ELECTRON -->
-    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'"> -->
-    <!-- <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'"> -->
-
     <title>AXIAL</title>
     
     <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> -->
@@ -29,11 +25,106 @@
 <body>
 
     <!--$$$ COMPONENTS_ENTRY_POINT $$$-->
-    <!-- AxialNotifier -->
+    <!-- BUTTON PACKAGE -->
+    <!-- ./button/AxialButton -->
+    <template id="axial-button-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div id="background" class="axial_button-background"></div>
+        <div id="foreground" class="axial_button-foreground"></div>
+        <div id="content" class="axial_button-content">
+            <div id="icon" class="axial_button-icon">
+                <slot id="iconSlot" name="axial-icon"></slot>
+            </div>
+            <div id="label" class="axial_button-label"></div>
+        </div>
+    </template>
+    <!-- ./button/AxialServiceButton -->
+    <template id="axial-service-button-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div id="background" class="axial_service_button-background"></div>
+        <div id="foreground" class="axial_service_button-foreground"></div>
+        <div id="content" class="axial_service_button-content">
+            <div id="icon" class="axial_service_button-icon">
+                <div id="indicator" class="axial_service_button-indicator"></div>
+            </div>
+            <div id="label" class="axial_service_button-label"></div>
+        </div>
+    </template>
+    <!-- ./button/AxialBurgerButton -->
+    <template id="axial-burger-button-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div id="background" class="axial_burger_button-background"></div>
+        <div id="foreground" class="axial_burger_button-foreground"></div>
+        <div id="lines" class="axial_burger_button-lines">
+            <div id="top" class="axial_burger_button-line axial_burger_button-top"></div>
+            <div id="middle" class="axial_burger_button-line axial_burger_button-middle"></div>
+            <div id="bottom" class="axial_burger_button-line axial_burger_button-bottom"></div>
+        </div>
+        <div id="border" class="axial_burger_button-border"></div>
+    </template>
+    <!-- APPLICATION PACKAGE -->
+    <!-- ./application/AxialNotifier -->
     <template id="axial-notifier-template">
         <link rel="stylesheet" href="./styles.css">
         <div id="holder" class="axial_notifier_holder">
             <div id="content" class="axial_notifier_content"></div>
+        </div>
+    </template>
+    <!-- ./application/AxialInformationBar -->
+    <template id="axial-information-bar-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div id="holder" class="axial_information_bar-holder">
+            <div id="content" class="axial_information_bar-content">
+                <slot name="axial-content" id="slot"></slot>
+            </div>
+            <div id="closer" class="axial_information_bar-closer">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" class="axial_information_bar-svg">
+                    <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/>
+                </svg>
+            </div>
+        </div>
+    </template>
+    <!-- ./application/AxialConsentOverlay -->
+    <template id="axial-consent-overlay-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div class="axial_consent_overlay-holder">
+            <div class="axial_consent_overlay-header">
+                <div class="axial_consent_overlay-cookie">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="#fff" d="M257.5 27.6c-.8-5.4-4.9-9.8-10.3-10.6c-22.1-3.1-44.6 .9-64.4 11.4l-74 39.5C89.1 78.4 73.2 94.9 63.4 115L26.7 190.6c-9.8 20.1-13 42.9-9.1 64.9l14.5 82.8c3.9 22.1 14.6 42.3 30.7 57.9l60.3 58.4c16.1 15.6 36.6 25.6 58.7 28.7l83 11.7c22.1 3.1 44.6-.9 64.4-11.4l74-39.5c19.7-10.5 35.6-27 45.4-47.2l36.7-75.5c9.8-20.1 13-42.9 9.1-64.9c-.9-5.3-5.3-9.3-10.6-10.1c-51.5-8.2-92.8-47.1-104.5-97.4c-1.8-7.6-8-13.4-15.7-14.6c-54.6-8.7-97.7-52-106.2-106.8zM208 144a32 32 0 1 1 0 64 32 32 0 1 1 0-64zM144 336a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zm224-64a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/>
+                    </svg>
+                </div>
+                <div class="axial_consent_overlay-title">Votre consentement</div>
+            </div>
+            <div class="axial_consent_overlay-content">
+                <p class="axial_consent_overlay-p">En naviguant sur ce site pour accepter l'utilisation des cookies et API de stockage essentiels au bon fonctionnement de ce site.</p>
+                <p class="axial_consent_overlay-p">Pour en savoir davantage, consultez notre <a id="privacy" class="axial_consent_overlay-link" href="./politique-de-confidentialite/" target="_self">politique-de-confidentialite</a></p>
+            </div>
+            <div class="axial_consent_overlay-actions">
+                <!--<axial-button id="decline" axial-text="Je refuse"></axial-button>-->
+                <axial-button id="accept" axial-text="J'ai compris"></axial-button>
+            </div>
+        </div>
+    </template>
+    <!-- ./application/AxialDeletionOverlay -->
+    <template id="axial-deletion-overlay-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div class="axial_deletion_overlay-holder">
+            <div class="axial_deletion_overlay-header">
+                <div class="axial_deletion_overlay-icon">&#9888;</div>
+                <div class="axial_deletion_overlay-title">Attention</div>
+            </div>
+            <div class="axial_deletion_overlay-content">
+                La suppression des données est irreversible.
+            </div>
+            <div class="axial_deletion_overlay-actions">
+                <axial-button id="cancel" axial-text="Annuler" axial-theme="#232323" axial-color="#ffffff">
+                    <i slot="axial-icon" class="fa-color fa-solid fa-arrow-left"></i>
+                </axial-button>
+                <axial-button id="confirm" axial-text="Suprrimer" axial-theme="#cc0000">
+                    <i slot="axial-icon" class="fa-color fa-regular fa-trash-can"></i>
+                </axial-button>
+            </div>
         </div>
     </template>
     
@@ -41,73 +132,153 @@
     
     <div id="axialMainLayer" class="axial_main_layer">
 
+        <axial-information-bar id="axialInformationBar"></axial-information-bar>
         <!--$$$ HEADER_ENTRY_POINT $$$-->
         <header class="axial_header">
             <div class="axial_header_background"></div>
             <div class="axial_header_content">
-                <a class="axial_header_logo" href="../" target="_self">
+                <a class="axial_header_logo" href="#" target="_self">
                     <img class="axial_header_logo_svg" alt="logo" src="./assets/logos/logo.svg">
                 </a>
+                <div class="axial_spacer"></div>
+                <axial-navigation-helper id="axialDesktopNavHelper">
+                    <nav class="axial_web_desktop_nav">
+                        <a class="axial_header_nav_item" target="_self" href="#">
+                            <div class="axial_header_nav_item-label">Item 1</div>
+                            <div class="axial_header_nav_item-line"></div>
+                        </a>
+
+                        <a class="axial_header_nav_item" target="_self" href="#">
+                            <div class="axial_header_nav_item-label">Item 2</div>
+                            <div class="axial_header_nav_item-line"></div>
+                        </a>
+
+                        <a class="axial_header_nav_item" target="_self" href="#">
+                            <div class="axial_header_nav_item-label">Item 3</div>
+                            <div class="axial_header_nav_item-line"></div>
+                        </a>
+
+                        <a class="axial_header_nav_item" target="_self" href="#">
+                            <div class="axial_header_nav_item-label">Item 4</div>
+                            <div class="axial_header_nav_item-line"></div>
+                        </a>
+
+                        <a class="axial_header_nav_item" target="_self" href="#">
+                            <div class="axial_header_nav_item-label">Item 5</div>
+                            <div class="axial_header_nav_item-line"></div>
+                        </a>
+                    </nav>
+                </axial-navigation-helper>
+                <div class="axial_web_menu_button_holder">
+                    <axial-burger-button id="axialMenuButton" class="axial_web_menu_button"></axial-burger-button>
+                </div>
             </div>
         </header>
 
         <!--$$$ MAIN_ENTRY_POINT $$$-->
         <main class="axial_main">
 
-            <!-- FIRST SECTION -->
             <section class="axial_section">
                 <div class="axial_section_background"></div>
-                <div class="axial_section_content axial_section_padding">SECTION 1</div>
+                <div class="axial_section_content axial_section_padding axial_section_temp">SECTION 1</div>
             </section>
 
-            <!-- FIRST SECTION -->
             <section class="axial_section">
                 <div class="axial_section_background"></div>
-                <div class="axial_section_content axial_section_padding">SECTION 2</div>
+                <div class="axial_section_content axial_section_padding axial_section_temp">SECTION 2</div>
             </section>
 
-            <!-- FIRST SECTION -->
             <section class="axial_section">
                 <div class="axial_section_background"></div>
-                <div class="axial_section_content axial_section_padding">SECTION 3</div>
+                <div class="axial_section_content axial_section_padding axial_section_temp">SECTION 3</div>
             </section>
 
-            <!-- FIRST SECTION -->
             <section class="axial_section">
                 <div class="axial_section_background"></div>
-                <div class="axial_section_content axial_section_padding">SECTION 4</div>
+                <div class="axial_section_content axial_section_padding axial_section_temp">SECTION 4</div>
             </section>
 
-            <!-- FIRST SECTION -->
             <section class="axial_section">
                 <div class="axial_section_background"></div>
-                <div class="axial_section_content axial_section_padding">SECTION 5</div>
+                <div class="axial_section_content axial_section_padding axial_section_temp">SECTION 5</div>
             </section>
 
             <!--$$$ FOOTER_ENTRY_POINT $$$-->
             <footer class="axial_footer">
                 <div class="axial_footer_background"></div>
                 <div class="axial_footer_content">
-                    <div class="axial_footer_section"></div>
+                    <div class="axial_footer_section">
+                        <div class="axial_footer_legal">
+                            <a class="axial_footer_legal_link" target="_self" href="./politique-de-confidentialite/">Politique de confidentialité</a>
+                            <a class="axial_footer_legal_link" target="_self" href="./mentions-legales/">Mentions légales</a>
+                        </div>
+                        <div class="axial_footer_social">
+                            <a class="axial_footer_social_link" target="_blank" title="instagram" href="https://www.instagram.com/">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                                    <path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"/>
+                                </svg>
+                            </a>
+                            <a class="axial_footer_social_link" target="_blank" title="facebook" href="https://www.facebook.com/">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                    <path d="M512 256C512 114.6 397.4 0 256 0S0 114.6 0 256C0 376 82.7 476.8 194.2 504.5V334.2H141.4V256h52.8V222.3c0-87.1 39.4-127.5 125-127.5c16.2 0 44.2 3.2 55.7 6.4V172c-6-.6-16.5-1-29.6-1c-42 0-58.2 15.9-58.2 57.2V256h83.6l-14.4 78.2H287V510.1C413.8 494.8 512 386.9 512 256h0z"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </footer>
-
         </main>
-        
+        <div class="axial_web_menu_panel" id="axialMenuPanel">
+            <div class="axial_web_menu_panel-holder">
+                <div class="ft_menu_panel-background">
+                    
+                </div>
+                <div class="ft_menu_panel-foreground">
+                    <nav class="axial_mobile_nav">
+                        <a class="axial_mobile_nav_item" target="_self" href="#">
+                            <div class="axial_mobile_nav_item-label">Item 1</div>
+                            <div class="axial_mobile_nav_item-line"></div>
+                        </a>
+
+                        <a class="axial_mobile_nav_item" target="_self" href="#">
+                            <div class="axial_mobile_nav_item-label">Item 2</div>
+                            <div class="axial_mobile_nav_item-line"></div>
+                        </a>
+
+                        <a class="axial_mobile_nav_item" target="_self" href="#">
+                            <div class="axial_mobile_nav_item-label">Item 3</div>
+                            <div class="axial_mobile_nav_item-line"></div>
+                        </a>
+
+                        <a class="axial_mobile_nav_item" target="_self" href="#">
+                            <div class="axial_mobile_nav_item-label">Item 4</div>
+                            <div class="axial_mobile_nav_item-line"></div>
+                        </a>
+
+                        <a class="axial_mobile_nav_item" target="_self" href="#">
+                            <div class="axial_mobile_nav_item-label">Item 5</div>
+                            <div class="axial_mobile_nav_item-line"></div>
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div id="axialIntroLayer" class="axial_layer_base axial_intro_layer"></div>
-
     <div id="axialPopupLayer" class="axial_layer_base axial_popup_layer">
         <div id="axialPopupObfuscator" class="axial_popup_obfuscator"></div>
     </div>
-    
-    <div id="axialNotificationLayer" class="axial_layer_base axial_notification_layer"></div>
-
-    <div id="axialOverlayLayer" class="axial_layer_base axial_overlay_layer"></div>
-
+    <div id="axialMediasLayer" class="axial_layer_base axial_medias_layer"></div>
+    <div id="axialNotificationLayer" class="axial_layer_base axial_notification_layer">
+        <axial-notifier id="axialNotifier"></axial-notifier>
+    </div>
+    <div id="axialOverlayLayer" class="axial_layer_base axial_overlay_layer">
+        <div id="axialOverlayObfuscator" class="axial_overlay_obfuscator"></div>
+        <axial-consent-overlay id="axialConsentOverlay"></axial-consent-overlay>
+        <axial-deletion-overlay id="axialDeletionOverlay"></axial-deletion-overlay>
+    </div>
     <div id="axialTooltipLayer" class="axial_layer_base axial_tooltip_layer"></div>
-
     <div id="axialTransitionLayer" class="axial_layer_base axial_transition_layer"></div>
     
     <script src="./application.js" defer></script>

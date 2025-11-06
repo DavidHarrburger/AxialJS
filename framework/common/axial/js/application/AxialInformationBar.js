@@ -6,6 +6,7 @@ import { DateUtils } from "../utils/DateUtils.js";
 class AxialInformationBar extends AxialServiceComponentBase
 {
     /// vars
+    /** @type { String } */
     #message = "";
 
     /// elements
@@ -152,7 +153,6 @@ class AxialInformationBar extends AxialServiceComponentBase
                 this.#textWeight = window.getComputedStyle( this.#holder ).fontWeight;
             }
         }
-
         this.loadGetData();
     }
 
@@ -160,8 +160,7 @@ class AxialInformationBar extends AxialServiceComponentBase
     {
         try
         {
-            console.log( this.getData);
-            if( this.getData.status === "ok" )
+            if( this.getData && this.getData.status === "ok" && this.getData.content  )
             {
                 const dataContent = this.getData.content;
                 if( dataContent.message && dataContent.message !== "" )

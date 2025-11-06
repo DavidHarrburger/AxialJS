@@ -117,6 +117,13 @@ class AxialMongo extends EventEmitter
     async getData( c = "", f = {}, m = "" )
     {
         console.log("AxialMongo.getData");
+
+        /// DANGER TEST
+        if( f && f._id )
+        {
+            f._id = new ObjectId( String(f._id ) );
+        }
+
         console.log( c, f, m );
         let result;
         try

@@ -9,5 +9,6 @@ class AxialAdminViewBase extends AxialViewBase
         super();
     }
 }
+
 window.customElements.define("axial-admin-view-base", AxialAdminViewBase);
 export { AxialAdminViewBase }

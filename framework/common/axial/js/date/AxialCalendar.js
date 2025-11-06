@@ -226,7 +226,10 @@ class AxialCalendar extends AxialComponentBase
         }
     }
 
-    
+    unselect()
+    {
+        this.#grid.unselect();
+    }
 }
 window.customElements.define("axial-calendar", AxialCalendar);
 export { AxialCalendar }

@@ -1,7 +1,7 @@
 "use strict";
 
-import { PathUtils } from "../utils/PathUtils.js";
 import { AxialComponentBase } from "./AxialComponentBase.js";
+import { PathUtils } from "../utils/PathUtils.js";
 
 class AxialServiceComponentBase extends AxialComponentBase
 {
@@ -31,11 +31,24 @@ class AxialServiceComponentBase extends AxialComponentBase
     _buildComponent()
     {
         super._buildComponent();
-        this.#getPath = this.getAttribute("axial-get-path");
+        
+        // GET
+        if( this.#getPath === undefined )
+        {
+            this.#getPath = this.getAttribute("axial-get-path");
+        }
+        
         if( this.#getPath && this.#getPath.indexOf("./") === 0 )
         {
             this.#getPath = PathUtils.getPathFromRelative(this.#getPath)
         }
+
+        // POST
+        if( this.#postPath === undefined )
+        {
+            this.#postPath = this.getAttribute("axial-get-path");
+        }
+
         this.#postPath = this.getAttribute("axial-post-path");
         if( this.#postPath && this.#postPath.indexOf("./") === 0 )
         {
@@ -85,7 +98,6 @@ class AxialServiceComponentBase extends AxialComponentBase
      */
     async loadGetData()
     {
-        console.log("getdata");
         await this.#loadGetData();
     }
 
@@ -95,14 +107,12 @@ class AxialServiceComponentBase extends AxialComponentBase
      */
     async #loadGetData()
     {
-        //console.log(this.#getPath);
         if( this.#getPath === undefined || this.#getPath === null ) { return; }
         if( this.#isFetching === true ) { return; }
         this.#isFetching = true;
         try
         {
             const path = this._prepareGetData();
-            console.log(path);
             const response = await fetch( path, { method: "GET", headers: { "Content-Type":"application/json", "Cache-Control":"no-cache" } } );
             const json = await response.json();
             this.#getData = json;
@@ -175,14 +185,14 @@ class AxialServiceComponentBase extends AxialComponentBase
     _onPostResponse() {}
 
     /**
-     * Prepare the data as you want ;)
+     * Prepare the query as you want ;)
      * @abstract
-     * @returns { Object }
+     * @returns { String }
      */
     _prepareGetData() { return this.#getPath; }
 
     /**
-     * Prepare the data as you want ;)
+     * Prepare the data to post as you want ;)
      * @abstract
      * @returns { Object }
      */

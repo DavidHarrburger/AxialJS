@@ -407,7 +407,7 @@
     transition-duration: 200ms;
 }
 
-/* AxialBurgerButton */
+/* ./button/AxialBurgerButton */
 .axial_burger_button
 {
     position: relative;
@@ -446,7 +446,7 @@
     height: 100%;
     overflow: hidden;
     border-radius: var(--component___borderRadius);
-    border: 2px solid #fff;
+    border: 2px solid var(--blackLight);
 }
 .axial_burger_button-lines
 {
@@ -470,7 +470,7 @@
     transition-duration: 400ms;
     transition-timing-function: ease;
 
-    background-color: #fff;
+    background-color: var(--blackLight);
 }
 .axial_burger_button-top
 {
@@ -779,7 +779,7 @@
     flex-direction: column;
     gap: 4px;
 }
-/* AxialDropdownToggle */
+/* ./dropdown/AxialDropdownToggle */
 .axial_dropdown_toggle
 {
     overflow: hidden;
@@ -787,7 +787,7 @@
     width: auto;
     height: auto;
     border-radius: var(--component___borderRadius);    
-    fill: #627183;
+    fill: #111;
 }
 .axial_dropdown_toggle-background
 {
@@ -828,9 +828,9 @@
 .axial_dropdown_toggle-label
 {
     width: auto;
-    color: #627183;
-    font-weight: 400;
-    font-size: 13px;
+    color: #111;
+    font-weight: 500;
+    font-size: 16px;
 }
 .axial_dropdown_toggle-icon
 {
@@ -864,18 +864,14 @@
 }
 
 
-/* AxialServiceButton */
+/* ./button/AxialServiceButton */
 .axial_service_button
 {
     overflow: hidden;
     position: relative;
-
     width: auto;
     height: auto;
-
     border-radius: var(--component___borderRadius);  
-    /*box-shadow: var(--AxialButton___boxShadow);*/
-
     fill: #fff;
 }
 .axial_service_button-background
@@ -936,6 +932,7 @@
     justify-content: center;
     align-items: center;
     overflow: hidden;
+    flex-shrink: 0;
 
     transition-property: width, margin-right;
     transition-duration: 400ms;

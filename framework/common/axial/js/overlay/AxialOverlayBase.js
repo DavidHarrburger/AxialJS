@@ -270,11 +270,17 @@ class AxialOverlayBase extends AxialComponentBase
         this.addEventListener("transitionend", this.#boundTransitionEndHandler);
     }
 
+    /**
+     * 
+     * @param { TransitionEvent } event 
+     */
     #transitionEndHandler( event )
     {
-        if( this.#isShown === false )
+        if( this.#isShown === false && event.propertyName === "opacity" )
         {
             this.style.visibility = "hidden";
+            const overlayEvent = new CustomEvent("overlayHidden");
+            this.dispatchEvent( overlayEvent );
         }
     }
 
@@ -540,7 +546,7 @@ class AxialOverlayBase extends AxialComponentBase
 
         if( this.#useObfuscator === true )
         {
-            const oo = document.getElementById("overlayObfuscator");
+            const oo = AxialOverlayManager.OBFUSCATOR;
             if( oo )
             {
                 oo.style.visibility = "visible";
@@ -560,11 +566,13 @@ class AxialOverlayBase extends AxialComponentBase
         else
         {
             this.style.visibility = "hidden";
+            const overlayEvent = new CustomEvent("overlayHidden");
+            this.dispatchEvent( overlayEvent );
         }
 
         if( this.#useObfuscator === true )
         {
-            const oo = document.getElementById("overlayObfuscator");
+            const oo = AxialOverlayManager.OBFUSCATOR;
             if( oo )
             {
                 oo.style.visibility = "hidden";

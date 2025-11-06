@@ -1,19 +1,28 @@
-"use strict"
+"use strict";
 
 import { AxialPopupBase } from "../../popup/AxialPopupBase.js";
 import { AxialButton } from "../../button/AxialButton.js";
 
 class AxialAdminPopup extends AxialPopupBase
 {
+    /// elements
     /** @type { HTMLElement } */
     #titleElement;
+
+    /** @type { HTMLElement } */
+    #contentElement;
 
     /** @type { AxialButton } */
     #closer;
 
+    /// vars
     /** @type { String } */
     #title = "TITLE";
 
+    /** @type { HTMLElement } */
+    #caller;
+
+    /// events
     /** @type { Function } */
     #boundCloserClickHandler;
 
@@ -28,6 +37,18 @@ class AxialAdminPopup extends AxialPopupBase
     static get observedAttributes()
     {
         return [ "axial-position", "axial-animation", "axial-function", "axial-duration", "axial-title" ];
+    }
+
+    get caller() { return this.#caller; }
+    set caller( value )
+    {
+        /*
+        if( value instanceof HTMLElement === false )
+        {
+            throw new TypeError("HTMLElement value expected");
+        }
+        */
+        this.#caller = value;
     }
 
     _buildComponent()
@@ -45,17 +66,17 @@ class AxialAdminPopup extends AxialPopupBase
         {
             this.#closer.addEventListener("click", this.#boundCloserClickHandler);
         }
+
+        this.#contentElement = this.shadowRoot.getElementById("content");
     }
 
     attributeChangedCallback(name, oldValue, newValue)
     {
         super.attributeChangedCallback(name, oldValue, newValue);
-    
         if( name === "axial-title" )
         {
             this.title = newValue;
         }
-        
     }
 
     #closerClickHandler( event )
@@ -77,6 +98,15 @@ class AxialAdminPopup extends AxialPopupBase
             this.#titleElement.innerHTML = this.title;
         }
     }
+
+    _onShowing()
+    {
+        if( this.#contentElement )
+        {
+            this.#contentElement.scrollTo( {top: 0} );
+        }
+    }
 }
+
 window.customElements.define("axial-admin-popup", AxialAdminPopup);
 export { AxialAdminPopup }

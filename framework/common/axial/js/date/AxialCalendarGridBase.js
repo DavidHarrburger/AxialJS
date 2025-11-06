@@ -255,6 +255,11 @@ class AxialCalendarGridBase extends AxialToggleButtonGroupBase
         this.dispatchEvent( dateChangedEvent );
     }
 
+    unselect()
+    {
+        this.selectedIndex = -1;
+    }
+
     #updateMinMax()
     {
 

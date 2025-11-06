@@ -2,10 +2,15 @@
 
 import { AxialOverlayBase } from "./AxialOverlayBase.js";
 import { AxialToggleButtonGroupBase } from "../button/AxialToggleButtonGroupBase.js";
-import { AxialToggleButton } from "../button/AxialToggleButton.js";
+import { AxialDropdownToggle } from "../dropdown/AxialDropdownToggle.js";
+import { AxialListOverlayButton } from "./AxialListOverlayButton.js";
 
 class AxialListOverlay extends AxialOverlayBase
 {
+    /// vars
+    /** @type { Array } */
+    #values;
+
     /// elements
     /** @type { AxialToggleButtonGroupBase } */
     #group;
@@ -28,12 +33,45 @@ class AxialListOverlay extends AxialOverlayBase
      */
     get group() { return this.#group; }
 
+    get values() { return this.#values; }
+    set values( value )
+    {
+        
+        if( Array.isArray(value) === false ) { throw new TypeError("Array required"); }
+        this.#values = value;
+        if( this.#group )
+        {
+            this.#group.clearToggles();
+            const l = this.#values.length;
+            for( let i = 0; i < l; i++ )
+            {
+                const t = new AxialDropdownToggle();
+                t.text = this.#values[i].label;
+                t.data = this.#values[i].value;
+                this.#group.appendToggle(t);
+            }
+        }
+    }
+
     _buildComponent()
     {
         super._buildComponent();
         this.#group = this.shadowRoot.getElementById("group");
         this.#group.forceSelection = true;
         this.#group.addEventListener("indexChanged", this.#boundIndexChangedHandler);
+
+        if( this.#values && this.#group )
+        {
+            //console.log("should update data")
+            const l = this.#values.length;
+            for( let i = 0; i < l; i++ )
+            {
+                const t = new AxialDropdownToggle();
+                t.text = this.#values[i].label;
+                t.data = this.#values[i].value;
+                this.#group.appendToggle(t);
+            }
+        }
     }
 
     #indexChangedHandler( event )
@@ -58,8 +96,6 @@ class AxialListOverlay extends AxialOverlayBase
 
         this.hide();
     }
-
-
 }
 
 window.customElements.define("axial-list-overlay", AxialListOverlay);

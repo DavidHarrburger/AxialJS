@@ -44,7 +44,7 @@ class AxialAdminClientView extends AxialAdminViewBase
     _prepareGetData()
     {
         const userUuid = window.AXIAL.userUuid;
-        const path = this.getPath + "&f=model,client&f=user_uuid," + userUuid;
+        const path = this.getPath + "?c=clients&m=client&f=model,client&f=user_uuid," + userUuid;
         return path;
     }
 
@@ -63,10 +63,13 @@ class AxialAdminClientView extends AxialAdminViewBase
         this.#clientPopup = AxialPopupManager.getPopupById("clientPopup");
         if( this.#clientPopup )
         {
+            /*
             const userUuid = window.AXIAL.userUuid;
             const defaultUuid = "user_uuid," + userUuid;
             this.#clientPopup.form.setAttribute("axial-defaults", defaultUuid);
             this.#clientPopup.title = "Ajouter un client";
+            */
+            this.#clientPopup.data = undefined;
             this.#clientPopup.show();
         }
     }

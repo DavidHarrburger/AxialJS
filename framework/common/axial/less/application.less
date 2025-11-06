@@ -74,7 +74,8 @@ input::placeholder
 }
 input:disabled
 {
-    opacity: 0.5;
+    opacity: 1;
+    cursor: not-allowed;
 }
 input[type="file"]
 {
@@ -129,8 +130,6 @@ input[type="color"]::-webkit-color-swatch
 {
   border: none;
 }
-
-
 textarea
 {
     display: block;
@@ -309,11 +308,11 @@ select
     font-size: var(--headerNavItem___fontSize);
     font-weight: var(--headerNavItem___fontWeight);
     cursor: pointer;
-    color: #fff;
+    color: var(--blackLight);;
 }
 .axial_header_nav_item:visited
 {
-    color: #fff;
+    color: var(--blackLight);
 }
 .axial_header_nav_item-label
 {
@@ -324,7 +323,7 @@ select
     width: 100%;
     height: 2px;
     border-radius: 1px;
-    background-color: var(--white);
+    background-color: var(--blackLight);
 
     transform-origin: center;
     transform: scaleX(0);
@@ -362,11 +361,11 @@ select
     font-size: 32px;
     font-weight: var(--headerNavItem___fontWeight);
     cursor: pointer;
-    color: #fff;
+    color: var(--blackLight);
 }
 .axial_mobile_nav_item:visited
 {
-    color: #fff;
+    color: var(--blackLight);
 }
 .axial_mobile_nav_item:first-child
 {
@@ -387,7 +386,7 @@ select
     width: 100%;
     height: 2px;
     border-radius: 1px;
-    background-color: var(--white);
+    background-color: var(--blackLight);
 
     transform-origin: center;
     transform: scaleX(0);
@@ -479,6 +478,7 @@ select
 }
 .axial_section_temp
 {
+    height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;

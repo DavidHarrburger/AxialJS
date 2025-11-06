@@ -133,7 +133,7 @@ class AxialServiceFormItemImage extends AxialServiceFormItem
     #fillItem( object )
     {
         console.log("#fillItem AxialServiceFormItemImage");
-        console.log( object );
+        //console.log( object );
         const imageRelativePath = object[this.field];
         if( imageRelativePath !== "" )
         {
@@ -197,6 +197,12 @@ class AxialServiceFormItemImage extends AxialServiceFormItem
         {
             console.log(err);
         }
+    }
+
+    _clearItem()
+    {
+        this.#image.src = "";
+        this.#image.style.display = "none";
     }
 }
 

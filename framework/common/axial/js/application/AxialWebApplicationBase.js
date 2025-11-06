@@ -43,14 +43,14 @@ class AxialWebApplicationBase extends AxialApplicationBase
     {
         super._onApplicationDomLoaded( event );
 
-        this.#menuButton = document.getElementById("menuButton");
+        this.#menuButton = document.getElementById("axialMenuButton");
         if( this.#menuButton )
         {
             this.#menuButton.addEventListener("toggleChanged", this.#boundMenuButtonHandler);
         }
-        this.#menuPanel = document.getElementById("menuPanel");
+        this.#menuPanel = document.getElementById("axialMenuPanel");
 
-        this.#desktopNavHelper = document.getElementById("desktopNavHelper");
+        this.#desktopNavHelper = document.getElementById("axialDesktopNavHelper");
         if( this.#desktopNavHelper )
         {
             this.#desktopNavHelper.addEventListener("navigationItemFound", this.#boundDesktopNavItemFoundHandler);

@@ -29,7 +29,7 @@ class AxialConsentManager extends EventTarget
     {
         const consentOverlay = document.getElementById( AxialConsentManager.CONSENT_OVERLAY_ID )
         const storedConsent = window.localStorage.getItem( AxialConsentManager.CONSENT_KEY );
-        console.log( storedConsent );
+        //console.log( storedConsent );
         if( storedConsent === null )
         {
             if( consentOverlay )

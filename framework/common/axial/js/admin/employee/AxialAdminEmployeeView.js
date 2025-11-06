@@ -44,7 +44,7 @@ class AxialAdminEmployeeView extends AxialAdminViewBase
     _prepareGetData()
     {
         const userUuid = window.AXIAL.userUuid;
-        const path = this.getPath + "&f=model,employee&f=user_uuid," + userUuid;
+        const path = this.getPath + "?c=employees&m=employee&f=model,employee&f=user_uuid," + userUuid;
         return path;
     }
 
@@ -63,10 +63,7 @@ class AxialAdminEmployeeView extends AxialAdminViewBase
         this.#employeePopup = AxialPopupManager.getPopupById("employeePopup");
         if( this.#employeePopup )
         {
-            const userUuid = window.AXIAL.userUuid;
-            const defaultUuid = "user_uuid," + userUuid;
-            this.#employeePopup.form.setAttribute("axial-defaults", defaultUuid);
-            this.#employeePopup.title = "Ajouter un employé";
+            this.#employeePopup.data = undefined;
             this.#employeePopup.show();
         }
     }

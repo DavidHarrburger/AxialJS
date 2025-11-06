@@ -26,6 +26,12 @@ class AxialServiceFormItemToggles extends AxialServiceFormItem
         return [ "axial-label", "axial-field", "axial-direction" ];
     }
 
+    /**
+     * @type { AxialToggleButtonGroup }
+     * @readonly
+     */
+    get toggles() { return this.#toggles; }
+
     _buildComponent()
     {
         super._buildComponent();
@@ -40,8 +46,13 @@ class AxialServiceFormItemToggles extends AxialServiceFormItem
     _checkValidity()
     {
         super._checkValidity();
-        const finalValid = this.#toggles.selectedIndex != -1;
-        return finalValid;       
+
+        // temp
+        return true;
+
+        // good only if required
+        //const finalValid = this.#toggles.selectedIndex != -1;
+        //return finalValid;
     }
 
     _getItemAsObject()
@@ -61,7 +72,7 @@ class AxialServiceFormItemToggles extends AxialServiceFormItem
 
     #fillItem( object )
     {
-        /// TODO
+        console.log("item toggles fill ", object);
     }
 
     _fillItem( object )
@@ -71,7 +82,7 @@ class AxialServiceFormItemToggles extends AxialServiceFormItem
 
     _clearItem()
     {
-        /// TODO
+        this.#toggles.selectedIndex = -1;
     }
 
     #indexChangedHandler( event )
