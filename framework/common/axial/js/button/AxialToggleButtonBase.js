@@ -28,6 +28,11 @@ class AxialToggleButtonBase extends AxialButtonBase
     _buildComponent()
     {
         super._buildComponent();
+        
+        if( this.#selected === true && this._onToggleChanged )
+        {
+            this._onToggleChanged();
+        }
     }
 
     get selected() { return this.#selected; }
@@ -37,6 +42,9 @@ class AxialToggleButtonBase extends AxialButtonBase
         {
             throw new TypeError("Boolean value expected");
         }
+
+        if( this.componentBuilt === false ) { this.#selected = value; return; }
+
         if( value == this.#selected ) { return; }
         this.#selected = value;
         this._onToggleChanged();
@@ -87,16 +95,6 @@ class AxialToggleButtonBase extends AxialButtonBase
 
         const toggleChangedEvent = new CustomEvent("toggleChanged", { detail: { selected: this.#selected } } );
         this.dispatchEvent(toggleChangedEvent);
-    }
-
-    /**
-     * 
-     * @param { CustomEvent } event 
-     */
-    #popupHidingHandler( event )
-    {
-        this.#selected = false;
-        this._onToggleChanged();
     }
 
     /**

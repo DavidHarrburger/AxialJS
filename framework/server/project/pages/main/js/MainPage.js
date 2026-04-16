@@ -2,7 +2,7 @@
 
 import { AxialWebApplicationBase } from "../../../../axial/js/application/AxialWebApplicationBase.js";
 
-class MainPage extends GlobalPage
+class MainPage extends AxialWebApplicationBase
 {
     constructor()
     {

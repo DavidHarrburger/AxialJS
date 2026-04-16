@@ -9,13 +9,17 @@
         { "name": "models",    "options": { "capped": true, "size": 10000000 }  },
         { "name": "users",     "options": { "capped": true, "size": 10000000 }  },
         { "name": "misc",      "options": { "capped": true, "size": 10000000 }  },
+        { "name": "companies", "options": { "capped": true, "size": 10000000 }  },
+        { "name": "employees", "options": { "capped": true, "size": 10000000 }  },
+        { "name": "clients",   "options": { "capped": true, "size": 10000000 }  },
+        { "name": "quotes",    "options": { "capped": true, "size": 10000000 }  },
+        { "name": "invoices",  "options": { "capped": true, "size": 10000000 }  },
         { "name": "products",  "options": { "capped": true, "size": 10000000 }  },
-        { "name": "prices",    "options": { "capped": true, "size": 10000000 }  },
         { "name": "stats",     "options": { "capped": true, "size": 10000000 }  },
         { "name": "mails",     "options": { "capped": true, "size": 10000000 }  },
         { "name": "params",    "options": { "capped": true, "size": 10000000 }  },
         { "name": "events",    "options": { "capped": true, "size": 10000000 }  },
-        { "name": "projects",   "options": { "capped": true, "size": 10000000 } }
+        { "name": "projects",  "options": { "capped": true, "size": 10000000 } }
     ],
     "models":
     [

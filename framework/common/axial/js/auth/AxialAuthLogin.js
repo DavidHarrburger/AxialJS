@@ -10,7 +10,6 @@ class AxialAuthLogin extends AxialComponentBase
     /** @type { String } */
     #path = "../../api/auth/signin";
 
-
     /// elements
     /** @type { HTMLInputElement } */
     #email;
@@ -143,7 +142,6 @@ class AxialAuthLogin extends AxialComponentBase
         finally
         {
             //this.#clearForm();
-            
         }
     }
 }

@@ -11,7 +11,7 @@ class AxialDropdownList extends AxialDropdown
     /** @type { String } */
     #value = "";
 
-    /** @type { Array.<String> } */
+    /** @type { Array.<Object> } */
     #values;
 
     /// elements
@@ -37,9 +37,22 @@ class AxialDropdownList extends AxialDropdown
         {
             throw new TypeError("String value required");
         }
-        if( this.#values.includes(value) === false ) { return; }
-        this.#value = value;
-        this.text = value;
+
+        if( value === "" )
+        {
+            console.warn("CHECK DROPDOWN LIST");
+
+        }
+        
+        for( const kv of this.#values )
+        {
+            if( value === kv.value || value === kv.label )
+            {
+                this.#value = kv.value;
+                this.text = kv.label;
+                break;
+            }
+        }
     }
 
     /**
@@ -55,7 +68,8 @@ class AxialDropdownList extends AxialDropdown
             for( const s of this.#values )
             {
                 const dropdownToggle = new AxialDropdownToggle();
-                dropdownToggle.text = s;
+                dropdownToggle.text = s.label;
+                // update value
                 this.#group.appendToggle(dropdownToggle);
             }       
         }
@@ -68,6 +82,15 @@ class AxialDropdownList extends AxialDropdown
         this.#group = this.shadowRoot.getElementById("group");
         this.#group.forceSelection = true;
         this.#group.addEventListener("indexChanged", this.#boundIndexChangedHandler);
+    }
+
+    attributeChangedCallback(name, oldValue, newValue)
+    {
+        super.attributeChangedCallback(name, oldValue, newValue);
+        if( name === "axial-text" )
+        {
+            //console.log("TEST DROPDOWN");
+        }
     }
 
     /**
@@ -86,17 +109,16 @@ class AxialDropdownList extends AxialDropdown
     #indexChangedHandler( event )
     {
         const toggle = this.#group.getSelectedToggle();
-        if( toggle && toggle.text )
+        if( toggle )
         {
-            this.text = toggle.text;
-            this.#value = toggle.text;
+            const index = this.#group.toggles.indexOf(toggle);
+            this.text = this.#values[index].label;
+            this.#value = this.#values[index].value;
             const valueChangedEvent = new CustomEvent("valueChanged", { detail: { newValue: this.#value } } );
             this.dispatchEvent(valueChangedEvent);
         }
-        
         this.close();
     }
-    
 }
 
 window.customElements.define("axial-dropdown-list", AxialDropdownList);

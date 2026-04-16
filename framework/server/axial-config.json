@@ -67,6 +67,18 @@
             }
         },
         {
+            "name": "master",
+            "path": "master",
+            "template": "",
+            "build": true,
+            "sitemap":
+            {
+                "use": false,
+                "priority": 0,
+                "changefreq": "weekly"
+            }
+        },
+        {
             "name": "admin",
             "path": "admin",
             "template": "",

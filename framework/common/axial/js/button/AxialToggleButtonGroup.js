@@ -1,6 +1,7 @@
 "use strict";
 
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
+import { DomUtils } from "../utils/DomUtils.js";
 import { AxialToggleButtonBase } from "./AxialToggleButtonBase.js";
 
 class AxialToggleButtonGroup extends AxialComponentBase
@@ -10,6 +11,12 @@ class AxialToggleButtonGroup extends AxialComponentBase
     #toggles = new Array();
 
     /** @type { Number } */
+    #maxCounter = 0;
+    
+    /** @type { Number } */
+    #counter = 0;
+
+    /** @type { Number } */
     #selectedIndex = -1;
 
     /** @type { Boolean } */
@@ -17,35 +24,61 @@ class AxialToggleButtonGroup extends AxialComponentBase
 
     /// elements
     /** @type { HTMLSlotElement } */
+    #holder;
+
+    /** @type { HTMLSlotElement } */
     #slot;
 
     /// events
     /** @type { Function } */
     #boundToggleChangedHandler;
 
+    /** @type { Function } */
+    #boundTogglesBuiltHandler;
+
     constructor()
     {
         super();
         this.template = "axial-toggle-button-group-template";
+        this.classList.add("axial_toggle_button_group")
         this.#boundToggleChangedHandler = this.#toggleChangedHandler.bind(this);
+        this.#boundTogglesBuiltHandler = this.#togglesBuiltHandler.bind(this);
     }
 
-    connectedCallback()
-    {
-        super.connectedCallback();
-    }
     
     _buildComponent()
     {
         super._buildComponent();
+        this.#holder = this.shadowRoot.getElementById("holder");
         this.#slot = this.shadowRoot.getElementById("slot");
         const slotElements = this.#slot.assignedElements({flatten: true});
         for( const se of slotElements )
         {
             if( se instanceof AxialToggleButtonBase )
             {
+                this.#maxCounter++;
+                se.addEventListener("componentBuilt", this.#boundTogglesBuiltHandler);
                 this.addToggle( se );
+
             }
+        }
+        if( this.#selectedIndex !== -1 )
+        {
+            if( this.#selectedIndex < this.#toggles.length )
+            {
+                const toggle = this.#toggles[this.#selectedIndex];
+                toggle.selected = true;
+            }
+        }
+    }
+
+    #togglesBuiltHandler( event )
+    {
+        this.#counter++;
+        if( this.#counter >= this.#maxCounter )
+        {
+            const togglesReadyEvent = new CustomEvent("togglesReady");
+            this.dispatchEvent( togglesReadyEvent );
         }
     }
 
@@ -65,11 +98,18 @@ class AxialToggleButtonGroup extends AxialComponentBase
     get selectedIndex() { return this.#selectedIndex; }
     set selectedIndex( value ) 
     {
-        if( isNaN(value) == true )
+        if( isNaN(value) === true )
         {
             throw new TypeError( "Number value expected" );
         }
 
+        if( this.componentBuilt === false )
+        {
+            // compute in _buildComponent
+            this.#selectedIndex = value;
+            return;
+        }
+        
         const togglesLength = this.#toggles.length;
         if( togglesLength == 0 || value > togglesLength ) { return; }
 
@@ -174,9 +214,9 @@ class AxialToggleButtonGroup extends AxialComponentBase
     appendToggle( toggle )
     {
         this.addToggle(toggle);
-        if( this.contains( toggle ) === false )
+        if( this.#holder.contains( toggle ) === false )
         {
-            this.appendChild( toggle );
+            this.#holder.appendChild( toggle );
         }
     }
 
@@ -205,12 +245,9 @@ class AxialToggleButtonGroup extends AxialComponentBase
         for( const toggle of this.#toggles )
         {
             toggle.removeEventListener("toggleChanged", this.#boundToggleChangedHandler);
-            if( this.contains(toggle) === true )
-            {
-                toggle.remove();
-            }
         }
-        this.#toggles.splice(0);
+        DomUtils.cleanElement( this.#holder );
+        this.#toggles = new Array();
     }
 
     /**

@@ -11,11 +11,6 @@ class AxialView extends AxialComponentBase
         this.template = "axial-view-template";
     }
 
-    connectedCallback()
-    {
-        super.connectedCallback();
-    }
-
     _buildComponent()
     {
         super._buildComponent();

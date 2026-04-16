@@ -7,7 +7,10 @@ class AxialListOverlayButton extends AxialButton
     constructor()
     {
         super();
-        
+        this.textSize = "14px";
+        this.textWeight = "500";
+        this.textColor = "#111";
+        this.themeColor = "#efefef";
     }
 }
 

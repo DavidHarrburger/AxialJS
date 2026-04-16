@@ -274,6 +274,8 @@ class AxialComponentBase extends HTMLElement
         if( this.#componentBuilt === true ) { return; }
         this.#componentBuilt = true;
         this._buildComponent();
+        const axialEvent = new CustomEvent("componentBuilt", { detail: { component: this}, bubbles: false });
+        this.dispatchEvent(axialEvent);
     }
 
     /**
@@ -376,7 +378,7 @@ class AxialComponentBase extends HTMLElement
     get data() { return this.#data; }
     set data( value )
     {
-        if( this.#data == value && value !== undefined ) { return; }
+        //if( this.#data == value && value !== undefined ) { return; }
         this.#data = value;
         this._onDataChanged();
         const dataChangedEvent = new CustomEvent("dataChanged", { detail: this.#data });
@@ -392,6 +394,12 @@ class AxialComponentBase extends HTMLElement
     {
         //console.log("AxialComponentBase._onDataChanged()");
     }
+
+    /**
+     * A convenience method to format the component as an Object.
+     * @abstract
+     */
+    _getAsObject() { return {}; }
 
     ///
     /// PART: RESIZE

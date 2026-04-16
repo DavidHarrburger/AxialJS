@@ -1,9 +1,9 @@
 "use strict";
 
 import { AxialOverlayBase } from "./AxialOverlayBase.js";
-import { AxialToggleButtonGroupBase } from "../button/AxialToggleButtonGroupBase.js";
-import { AxialDropdownToggle } from "../dropdown/AxialDropdownToggle.js";
 import { AxialListOverlayButton } from "./AxialListOverlayButton.js";
+import { AxialInputBase } from "../core/AxialInputBase.js";
+import { DomUtils } from "../utils/DomUtils.js";
 
 class AxialListOverlay extends AxialOverlayBase
 {
@@ -12,23 +12,23 @@ class AxialListOverlay extends AxialOverlayBase
     #values;
 
     /// elements
-    /** @type { AxialToggleButtonGroupBase } */
+    /** @type { HTMLElement } */
     #group;
 
     /// events
     /** @type { Function } */
-    #boundIndexChangedHandler;
+    #boundButtonClickHandler;
 
     constructor()
     {
         super();
         this.classList.add("axial_list_overlay");
         this.template = "axial-list-overlay-template";
-        this.#boundIndexChangedHandler = this.#indexChangedHandler.bind(this);
+        this.#boundButtonClickHandler = this.#buttonClickHandler.bind(this);
     }
 
     /**
-     * @type { AxialToggleButtonGroupBase }
+     * @type { HTMLElement }
      * @readonly
      */
     get group() { return this.#group; }
@@ -41,14 +41,15 @@ class AxialListOverlay extends AxialOverlayBase
         this.#values = value;
         if( this.#group )
         {
-            this.#group.clearToggles();
+            DomUtils.cleanElement( this.#group );
             const l = this.#values.length;
             for( let i = 0; i < l; i++ )
             {
-                const t = new AxialDropdownToggle();
-                t.text = this.#values[i].label;
-                t.data = this.#values[i].value;
-                this.#group.appendToggle(t);
+                const button = new AxialListOverlayButton();
+                button.text = this.#values[i].label;
+                button.data = this.#values[i].value;
+                button.addEventListener( "click", this.#boundButtonClickHandler);
+                this.#group.appendChild( button );
             }
         }
     }
@@ -57,43 +58,70 @@ class AxialListOverlay extends AxialOverlayBase
     {
         super._buildComponent();
         this.#group = this.shadowRoot.getElementById("group");
-        this.#group.forceSelection = true;
-        this.#group.addEventListener("indexChanged", this.#boundIndexChangedHandler);
 
+        if( this.#group )
+        {
+            if( this.#values !== undefined && this.#values.length > 0 )
+            {
+                DomUtils.cleanElement( this.#group );
+                const l = this.#values.length;
+                for( let i = 0; i < l; i++ )
+                {
+                    const button = new AxialListOverlayButton();
+                    button.text = this.#values[i].label;
+                    button.data = this.#values[i].value;
+                    button.addEventListener( "click", this.#boundButtonClickHandler);
+                    this.#group.appendChild( button );
+                }
+            }
+            else if( this.#group.children.length > 0 )
+            {
+                for( const child of this.#group.children )
+                {
+                    if( child instanceof AxialListOverlayButton === true )
+                    {
+                        console.log("button found");
+                        child.addEventListener("click", this.#boundButtonClickHandler);
+                    }
+                }
+            }
+        }
+
+        /*
         if( this.#values && this.#group )
         {
             //console.log("should update data")
-            const l = this.#values.length;
-            for( let i = 0; i < l; i++ )
-            {
-                const t = new AxialDropdownToggle();
-                t.text = this.#values[i].label;
-                t.data = this.#values[i].value;
-                this.#group.appendToggle(t);
-            }
+            
         }
+        */
     }
 
-    #indexChangedHandler( event )
+    #buttonClickHandler( event )
     {
-        //console.log("list overlay group changed");
-        //console.log( event );
+        const button = event.target;
 
-        const index = event.detail.selectedIndex;
-        const toggle = this.group.toggles[index];
-        const label = toggle.text;
-        const value = toggle.data;
+        const index = Array.from(this.#group.children).indexOf( button );
+        const label = button.text;
+        const value = button.data;
 
-        const eventDetail = 
+        const listOverlayData = 
         {
             index: index,
             label: label,
             value: value
         }
 
-        const listEvent = new CustomEvent("listChanged", { bubbles: true, detail: eventDetail } );
-        this.dispatchEvent(listEvent);
+        const listOverlayEvent = new CustomEvent("listOverlayChanged", { bubbles: true, detail: listOverlayData } );
+        this.dispatchEvent(listOverlayEvent);
 
+        /// WARNING SUPER DELICAT
+        /// .value ne prend pas avant le blur, petit tour de magie mais à revoir
+        
+        if( this.target instanceof AxialInputBase )
+        {
+            this.target.forceValue( label );
+        }
+        
         this.hide();
     }
 }

@@ -6,13 +6,13 @@ class AxialPopupManager
 {
     /**
      * @static
-     * @type { Set<AxialPopupBase }
+     * @type { Set<AxialPopupBase> }
      */
     static #POPUPS = new Set();
 
     /**
      * @static
-     * @type { Array<AxialPopupBase }
+     * @type { Array<AxialPopupBase> }
      */
     static #STACK = new Array();
 
@@ -129,7 +129,7 @@ class AxialPopupManager
         const popupIndex = AxialPopupManager.#STACK.length + AxialPopupManager.#Z;
         popup.style.zIndex = popupIndex;
         AxialPopupManager.#STACK.push( popup );
-        console.log(AxialPopupManager.#STACK);
+        //console.log(AxialPopupManager.#STACK);
 
         // we ensure the document will not respond to click (that hides the popup)
         document.removeEventListener("pointerdown", AxialPopupManager.#documentPopupClickHandler, {capture: false} );
@@ -204,15 +204,16 @@ class AxialPopupManager
 
         let popupHidingEvent = new CustomEvent("popupHiding");
         AxialPopupManager.#currentPopup.dispatchEvent(popupHidingEvent);
+
+        AxialPopupManager.#STACK.pop();
         
-        if( AxialPopupManager.#currentPopup.animation == "none" )
+        if( AxialPopupManager.#currentPopup.animation === "none" )
         {
             AxialPopupManager.#currentPopup._onHidden();
-            let popupHiddenEvent = new CustomEvent("popupHidden");
+            const popupHiddenEvent = new CustomEvent("popupHidden");
             AxialPopupManager.#currentPopup.dispatchEvent(popupHiddenEvent);
             AxialPopupManager.#currentPopup.style.visibility = "hidden";
 
-            AxialPopupManager.#STACK.pop();
             const stackLength = AxialPopupManager.#STACK.length;
             if( stackLength === 0 )
             {
@@ -277,7 +278,6 @@ class AxialPopupManager
         AxialPopupManager.#currentPopup.dispatchEvent(popupHiddenEvent);
         AxialPopupManager.#currentPopup.style.visibility = "hidden";
 
-        AxialPopupManager.#STACK.pop();
         const stackLength = AxialPopupManager.#STACK.length;
         if( stackLength === 0 )
         {

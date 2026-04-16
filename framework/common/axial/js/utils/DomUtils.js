@@ -2,6 +2,10 @@
 
 class DomUtils
 {
+    /**
+     * Empty the whole element
+     * @param { HTMLElement } element 
+     */
     static cleanElement( element )
     {
         if( element instanceof Element == false )

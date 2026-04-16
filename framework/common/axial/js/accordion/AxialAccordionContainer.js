@@ -17,7 +17,7 @@ class AxialAccordionContainer extends AxialComponentBase
         super();
         this.classList.add("axial_accordion_container");
         this.template = "axial-accordion-container-template";
-        this.useResizeObserver = true;
+        this.useResizeObserver = false; // too much dispatch
     }
 
     /**
@@ -44,7 +44,6 @@ class AxialAccordionContainer extends AxialComponentBase
 
     open()
     {
-        console.log("open container");
         this.#isOpened = true;
         const h = this.#content.offsetHeight;
         this.style.height = String(h) + "px";
@@ -54,6 +53,18 @@ class AxialAccordionContainer extends AxialComponentBase
     {
         this.#isOpened = false;
         this.style.height = "0px";
+    }
+
+    /**
+     * 
+     * @param { HTMLElement } element 
+     */
+    addElement( element )
+    {
+        if( element && element instanceof HTMLElement === true && this.#content )
+        {
+            this.#content.appendChild(element);
+        }
     }
 }
 

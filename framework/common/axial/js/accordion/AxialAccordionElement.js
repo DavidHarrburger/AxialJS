@@ -10,6 +10,9 @@ class AxialAccordionElement extends AxialComponentBase
     /** @type { String } */
     #text = "";
 
+    /** @type { String } */
+    #dataTextProperty;
+
     /// elements
     /** @type { AxialAccordionToggle } */
     #toggle;
@@ -24,28 +27,60 @@ class AxialAccordionElement extends AxialComponentBase
         this.template = "axial-accordion-element-template";
     }
 
+    get text() { return this.#text; }
+    set text( value )
+    {
+        if( typeof value !== "string" )
+        {
+            throw new TypeError("String value required");
+        }
+        this.#text = value;
+        
+        if( this.#toggle )
+        {
+            this.#toggle.text = this.#text;
+        }
+    }
+
+    attributeChangedCallback(name, oldValue, newValue)
+    {
+        super.attributeChangedCallback(name, oldValue, newValue);
+    }
+
+    _onDataChanged()
+    {
+        this.#updateComponent();
+    }
+
     _buildComponent()
     {
         super._buildComponent();
         this.#container = this.shadowRoot.getElementById("container");
         this.#toggle = this.shadowRoot.getElementById("toggle");
         this.#toggle.container = this.#container;
+        
+        this.#updateComponent();
     }
 
-    attributeChangedCallback(name, oldValue, newValue)
+    #updateComponent()
     {
-        super.attributeChangedCallback(name, oldValue, newValue);
-        /*
-        if( name === "axial-state" )
+        if( this.componentBuilt === true && this.data !== undefined )
         {
-            if( this.#states.has( newValue ) === true )
-            {
-                this.#state = newValue;
-            }
+            if( this.#toggle ) { this.#toggle.text = this.data.name; } // WARNING not here move to admin file
         }
-        */
     }
 
+    /**
+     * 
+     * @param { HTMLElement } element 
+     */
+    addElement( element )
+    {
+        if( element && element instanceof HTMLElement && this.#container )
+        {
+            this.#container.addElement(element);
+        }
+    }
 }
 
 window.customElements.define("axial-accordion-element", AxialAccordionElement);

@@ -8,7 +8,9 @@ import { AxialConsentManager } from "../application/AxialConsentManager.js";
 import { AxialNotifier } from "../application/AxialNotifier.js";
 import { AxialInformationBar } from "../application/AxialInformationBar.js";
 import { AxialDeletionOverlay } from "../application/AxialDeletionOverlay.js";
+import { AxialArchiveOverlay } from "../application/AxialArchiveOverlay.js";
 import { AxialConsentOverlay } from "../application/AxialConsentOverlay.js";
+import { PathUtils } from "../utils/PathUtils.js";
 
 /**
  * The main base class for your application.
@@ -284,6 +286,16 @@ class AxialApplicationBase extends EventTarget
     #boundPageShowHandler;
 
     ///
+    /// PART : LOADER LAYER
+    ///
+
+    /**
+     * @private
+     * @type { HTMLElement }
+     */
+    #loaderLayer;
+
+    ///
     /// UI
     ///
 
@@ -299,6 +311,9 @@ class AxialApplicationBase extends EventTarget
     /** @type { AxialDeletionOverlay } */
     #deletionOverlay;
 
+    /** @type { AxialArchiveOverlay } */
+    #archiveOverlay;
+
     /// events
     /** @type { Function } */
     #boundDeletionCancelledHandler;
@@ -311,6 +326,19 @@ class AxialApplicationBase extends EventTarget
 
     /** @type { Function } */
     #boundDeletionSuccessHandler;
+
+    /// events
+    /** @type { Function } */
+    #boundArchiveCancelledHandler;
+
+    /** @type { Function } */
+    #boundArchiveConfirmedHandler;
+
+    /** @type { Function } */
+    #boundArchiveErrorHandler;
+
+    /** @type { Function } */
+    #boundArchiveSuccessHandler;
 
     /**
      * Create the main AxialApplicationBase and make it a property of its window.
@@ -396,6 +424,11 @@ class AxialApplicationBase extends EventTarget
         this.#boundDeletionConfirmedHandler = this.#deletionConfirmedHandler.bind(this);
         this.#boundDeletionErrorHandler = this.#deletionErrorHandler.bind(this);
         this.#boundDeletionSuccessHandler = this.#deletionSuccessHandler.bind(this);
+
+        this.#boundArchiveCancelledHandler = this.#archiveCancelledHandler.bind(this);
+        this.#boundArchiveConfirmedHandler = this.#archiveConfirmedHandler.bind(this);
+        this.#boundArchiveErrorHandler = this.#archiveErrorHandler.bind(this);
+        this.#boundArchiveSuccessHandler = this.#archiveSuccessHandler.bind(this);
     }
 
     get language() { return this.#language; }
@@ -638,6 +671,16 @@ class AxialApplicationBase extends EventTarget
             this.#deletionOverlay.addEventListener("deletionConfirmed", this.#boundDeletionConfirmedHandler);
             this.#deletionOverlay.addEventListener("deletionError", this.#boundDeletionErrorHandler);
             this.#deletionOverlay.addEventListener("deletionSuccess", this.#boundDeletionSuccessHandler);
+        }
+
+        // archiveOverlay
+        this.#archiveOverlay = document.getElementById("axialArchiveOverlay");
+        if( this.#archiveOverlay )
+        {
+            this.#archiveOverlay.addEventListener("archiveCancelled", this.#boundArchiveCancelledHandler);
+            this.#archiveOverlay.addEventListener("archiveConfirmed", this.#boundArchiveConfirmedHandler);
+            this.#archiveOverlay.addEventListener("archiveError", this.#boundArchiveErrorHandler);
+            this.#archiveOverlay.addEventListener("archiveSuccess", this.#boundArchiveSuccessHandler);
         }
 
 
@@ -1158,6 +1201,110 @@ class AxialApplicationBase extends EventTarget
 
     /** @abstract */
     _onDeletionSuccess( event ) {}
+
+    /// ARCHIVE OVERLAY
+    /** 
+     * @type { AxialArchiveOverlay }
+     * @readonly
+     */
+    get archiveOverlay() { return this.#archiveOverlay; }
+
+    #archiveCancelledHandler( event )
+    {
+        if( this._onArchiveCancelled ) { this._onArchiveCancelled( event ); }
+    }
+
+    #archiveConfirmedHandler( event )
+    {
+        if( this._onArchiveConfirmed ) { this._onArchiveConfirmed( event ); }
+    }
+
+    #archiveErrorHandler( event )
+    {
+        if( this._onArchiveError ) { this._onArchiveError( event ); }
+    }
+
+    #archiveSuccessHandler( event )
+    {
+        if( this._onArchiveSuccess ) { this._onArchiveSuccess( event ); }
+    }
+
+    /** @abstract */
+    _onArchiveCancelled( event ) {}
+
+    /** @abstract */
+    _onArchiveConfirmed( event ) {}
+
+    /** @abstract */
+    _onArchiveError( event ) {}
+
+    /** @abstract */
+    _onArchiveSuccess( event ) {}
+
+    ///
+    /// SERVICES
+    ///
+
+    /**
+     * Shortcut to Mongo
+     * @param { String } collection 
+     * @param { String } model 
+     * @returns { Array | undefined }
+     */
+    async getCollection( collection, model )
+    {
+        let a;
+        try
+        {
+            if( typeof collection !== "string" )
+            {
+                throw new TypeError("String value required");
+            }
+
+            const c = collection.trim();
+            const p = "./api/data/get";
+            const cp = PathUtils.getPathFromRelative(p);
+            const cpc = `${cp}?c=${c}`;
+            const h = 
+            {
+                "Content-Type":"application/json",
+                "Cache-Control":"no-cache"
+            };
+            
+            const r = await fetch( cpc, { method: "GET", headers: h } );
+            const j = await r.json();
+            console.log(j);
+            if( j && j.status && j.status === "ok" && j.content && Array.isArray(j.content) )
+            {
+                a = j.content;
+            }
+        }
+        catch(err)
+        {
+            console.log(err);
+            // -> we will see
+        }
+        finally
+        {
+            return a;
+        }
+    }
+
+    async setOneInCollection( collection, doc, model )
+    {
+        try
+        {
+
+        }
+        catch(err)
+        {
+            console.log(err);
+        }
+        finally
+        {
+            
+        }
+    }
 }
 
 export { AxialApplicationBase }

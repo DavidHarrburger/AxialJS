@@ -195,7 +195,6 @@ class AxialInformationBar extends AxialServiceComponentBase
         {
             console.log(err);
         }
-        
     }
 
     show()

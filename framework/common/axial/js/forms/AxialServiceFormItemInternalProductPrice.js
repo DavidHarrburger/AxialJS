@@ -9,12 +9,6 @@ class AxialServiceFormItemInternalProductPrice extends AxialServiceFormItem
     /** @type { HTMLInputElement } */
     #costInput;
 
-    /** @type { HTMLElement } */
-    #stockSwitch;
-
-    /** @type { HTMLInputElement } */
-    #stockInput;
-
     /** @type { HTMLInputElement } */
     #coefInput;
 
@@ -30,7 +24,6 @@ class AxialServiceFormItemInternalProductPrice extends AxialServiceFormItem
     /** @type { HTMLElement } */
     #subtotalWithTax;
     
-
     /// events
     /** @type { Function } */
     #boundInputChangeHandler;
@@ -59,7 +52,7 @@ class AxialServiceFormItemInternalProductPrice extends AxialServiceFormItem
         this.#costInput = this.shadowRoot.getElementById("costInput");
         this.#coefInput = this.shadowRoot.getElementById("coefInput");
         this.#taxSelect = this.shadowRoot.getElementById("taxSelect");
-        this.#stockInput = this.shadowRoot.getElementById("stockInput");
+        //this.#stockInput = this.shadowRoot.getElementById("stockInput");
 
         this.#costInput.addEventListener("change", this.#boundInputChangeHandler);
         this.#coefInput.addEventListener("change", this.#boundInputChangeHandler);
@@ -96,13 +89,12 @@ class AxialServiceFormItemInternalProductPrice extends AxialServiceFormItem
         const cost = isNaN(this.#costInput.valueAsNumber) === true ? 0 : this.#costInput.valueAsNumber;
         const coef = isNaN(this.#coefInput.valueAsNumber) === true ? 1 : this.#coefInput.valueAsNumber;
         const tax = Number(this.#taxSelect.value);
-        const stock = this.#stockInput.valueAsNumber;
+        //const stock = this.#stockInput.valueAsNumber;
 
         itemObject.value.push(
             { field: "cost", value: cost },
             { field: "coef", value: coef },
-            { field: "tax", value: tax },
-            { field: "stock", value: stock }
+            { field: "tax", value: tax }
         );
 
         return itemObject;

@@ -446,38 +446,42 @@ class AxialCommands extends EventEmitter
 
                 for( let doc of docsToInsert )
                 {
+                    console.log( doc );
                     const docModelName = doc.model;
+                    console.log( docModelName)
                     let docModel;
                     for( const tempModel of modelsToInsert )
                     {
+                        console.log( tempModel );
                         if( tempModel.name == docModelName )
                         {
                             docModel = tempModel;
                             break;
                         }
                     }
-
+                    console.log(docModel);
                     // encrypt
-                    for( const p of Object.keys(doc) )
-                    {
-                        //console.log(p);
-                        const modelProp = docModel.props[p];
-                        if( modelProp !== undefined && modelProp.crypted && modelProp.crypted === true )
-                        {
-                            //console.log("crypted property found");
-                            let propToEncrypt = doc[p];
-                            //console.log(propToEncrypt);
-                            const cipher = crypto.createCipheriv( "aes-256-cbc", Buffer.from(databaseConfig.crypto_key), Buffer.from(databaseConfig.crypto_iv) );
-                            let encrypted = cipher.update(propToEncrypt, "utf-8", "hex");
-                            encrypted += cipher.final("hex");
-                            //console.log(encrypted);
-                            doc[p] = encrypted;
-                        }
-                    }
-
-                    // check for missin props and them
                     if( docModel )
                     {
+                        for( const p of Object.keys(doc) )
+                        {
+                            console.log(p);
+                            const modelProp = docModel.props[p];
+                            if( modelProp !== undefined && modelProp.crypted && modelProp.crypted === true )
+                            {
+                                //console.log("crypted property found");
+                                let propToEncrypt = doc[p];
+                                //console.log(propToEncrypt);
+                                const cipher = crypto.createCipheriv( "aes-256-cbc", Buffer.from(databaseConfig.crypto_key), Buffer.from(databaseConfig.crypto_iv) );
+                                let encrypted = cipher.update(propToEncrypt, "utf-8", "hex");
+                                encrypted += cipher.final("hex");
+                                //console.log(encrypted);
+                                doc[p] = encrypted;
+                            }
+                        }
+
+                        // check for missin props and them
+                    
                         const modelProperties = docModel.props;
                         for( const prop of Object.keys(modelProperties) )
                         {
@@ -502,16 +506,15 @@ class AxialCommands extends EventEmitter
                                 doc[prop] = propertyDefault;
                             }
                         }
+
+                        // default properties for every docs -> TODO : add to a config file
+                        doc.uuid = crypto.randomUUID();
+                        doc.creation_date = new Date();
+
+                        const collectionName = docModel.collection;
+                        const collection = newDb.collection(collectionName);
+                        const result = await collection.insertOne( doc );
                     }
-
-
-                    // default properties for every docs -> TODO : add to a config file
-                    doc.uuid = crypto.randomUUID();
-                    doc.creation_date = new Date();
-
-                    const collectionName = docModel.collection;
-                    const collection = newDb.collection(collectionName);
-                    const result = await collection.insertOne( doc );
                 }
             }
             else if( dbExists === true )

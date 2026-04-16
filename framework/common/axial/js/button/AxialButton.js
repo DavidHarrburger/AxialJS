@@ -88,6 +88,16 @@ class AxialButton extends AxialButtonBase
         return ["axial-text", "axial-icon-position", "axial-theme", "axial-color", "axial-size", "axial-weight", "axial-align", "axial-style", "axial-gap" ];
     }
 
+    get align() {return this.#align; }
+    set align( value )
+    {
+        if( this.#aligns.has(value) === false )
+        {
+            throw new TypeError("String value required : 'flex-start', 'center', 'flex-end'");
+        }
+        this.#align = value;
+    }
+
     _buildComponent()
     {
         super._buildComponent();
@@ -193,6 +203,10 @@ class AxialButton extends AxialButtonBase
             if( this.#aligns.has( newValue ) && this.#align !== newValue )
             {
                 this.#align = newValue;
+                if( this.#content )
+                {
+                    this.#content.style.justifyContent = this.#align;
+                }
             }
         }
 

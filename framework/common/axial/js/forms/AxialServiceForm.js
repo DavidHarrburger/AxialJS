@@ -38,6 +38,9 @@ class AxialServiceForm extends AxialServiceComponentBase
     #_id;
 
     /// elements
+    /** @type { HTMLElement} */
+    #holder;
+
     /** @type { HTMLSlotElement} */
     #slot;
 
@@ -71,10 +74,32 @@ class AxialServiceForm extends AxialServiceComponentBase
     }
 
     /**
-     * @type { Array<AxialServiceFormItemBase> }
+     * @type { Array.< AxialServiceFormItemBase > }
      * @readonly
      */
     get items() { return this.#items; }
+
+    get collection() { return this.#collection; }
+    set collection( value )
+    {
+        if( typeof value !== "string" )
+        {
+            throw new TypeError("String value required");
+        }
+
+        this.#collection = value.trim();
+    }
+
+    get model() { return this.#model; }
+    set model( value )
+    {
+        if( typeof value !== "string" )
+        {
+            throw new TypeError("String value required");
+        }
+
+        this.#model = value.trim();
+    }
 
     attributeChangedCallback(name, oldValue, newValue)
     {
@@ -111,6 +136,17 @@ class AxialServiceForm extends AxialServiceComponentBase
         this.#defaults = this.getAttribute("axial-defaults") || "";
 
         this.#parseDefaults();
+
+        this.#holder = this.shadowRoot.getElementById("holder");
+        const holderElements = this.#holder.getElementsByClassName("axial_service_form_item");
+        for( const he of holderElements )
+        {
+            if( he instanceof AxialServiceFormItemBase )
+            {
+                he.addEventListener("itemValidityChanged", this.#boundItemValidityChangedHandler);
+                this.#items.push( he );
+            }
+        }
 
         this.#slot = this.shadowRoot.getElementById("slot");
         if( this.#slot )
@@ -224,6 +260,7 @@ class AxialServiceForm extends AxialServiceComponentBase
         }
         //this.clearForm();
         this.enabled = true;
+        this.#postButton.loading = false;
     }
 
     _onGetResponse()

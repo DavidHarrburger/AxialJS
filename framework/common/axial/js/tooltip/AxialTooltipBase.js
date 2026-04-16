@@ -18,13 +18,19 @@ class AxialTooltipBase extends AxialComponentBase
     #target = undefined;
 
     /** @type { String } */
-    #position = "bottom-left";
+    #position = "bottom-center";
 
     /** @type { Number } */
     #offset = 4;
 
+    /** @type { Number } */
+    #initWidth = 0;
+
+    /** @type { Number } */
+    #initHeight = 0;
+
     /** @type { String } */
-    #transform = "translate(0%, 0%)";
+    #transformOrigin = "center top";
 
     /** @type { Boolean } */
     #useTransitions = true;
@@ -50,10 +56,24 @@ class AxialTooltipBase extends AxialComponentBase
         
         this.#boundTransitionEndHandler = this.#transitionEndHandler.bind(this);
 
+        /*
         AxialTooltipManager.TOOLTIPS.add(this);
 
+        console.log(AxialTooltipManager.LAYER)
+
         const tooltipLayer = AxialTooltipManager.LAYER;
-        //console.log("overlaysLayer = " + overlaysLayer);
+        console.log("tooltipLayer = " + tooltipLayer);
+        if( tooltipLayer && tooltipLayer.contains(this) === false )
+        {
+            tooltipLayer.appendChild(this) ;
+        }
+        */
+    }
+
+    addTooltip()
+    {
+        AxialTooltipManager.TOOLTIPS.add(this);
+        const tooltipLayer = AxialTooltipManager.LAYER;
         if( tooltipLayer && tooltipLayer.contains(this) === false )
         {
             tooltipLayer.appendChild(this) ;
@@ -79,6 +99,14 @@ class AxialTooltipBase extends AxialComponentBase
             this.#removeTooltipHandlers();
         }
         this.#target = value;
+        
+        // not super but fix the scale init "problem"
+        const initBounds = this.getBoundingClientRect();
+        this.#initWidth = initBounds.width;
+        this.#initHeight = initBounds.height;
+
+        this.style.transform = "scale(0)";
+        
         this.#layoutTooltip();
         this.#addTooltipHandlers();
     }
@@ -155,6 +183,10 @@ class AxialTooltipBase extends AxialComponentBase
             this.position = tempPosition;
         }
 
+        const initBounds = this.getBoundingClientRect();
+        this.#initWidth = initBounds.width;
+        this.#initHeight = initBounds.height;
+
         this.addEventListener("transitionend", this.#boundTransitionEndHandler);
     }
 
@@ -168,14 +200,14 @@ class AxialTooltipBase extends AxialComponentBase
 
     #addTooltipHandlers()
     {
-        this.#target.addEventListener("pointerover", this.#boundTooltipTargetOverHandler);
-        this.#target.addEventListener("pointerout", this.#boundTooltipTargetOutHandler);
+        this.#target.addEventListener("pointerenter", this.#boundTooltipTargetOverHandler);
+        this.#target.addEventListener("pointerleave", this.#boundTooltipTargetOutHandler);
     }
 
     #removeTooltipHandlers()
     {
-        this.#target.removeEventListener("pointerover", this.#boundTooltipTargetOverHandler);
-        this.#target.removeEventListener("pointerout", this.#boundTooltipTargetOutHandler);
+        this.#target.removeEventListener("pointerenter", this.#boundTooltipTargetOverHandler);
+        this.#target.removeEventListener("pointerleave", this.#boundTooltipTargetOutHandler);
     }
 
     /**
@@ -210,64 +242,76 @@ class AxialTooltipBase extends AxialComponentBase
             case "bottom-left":
                 tooltipY = targetBounds.bottom + this.#offset;
                 tooltipX = targetBounds.left;
+                this.#transformOrigin = "left top";
             break;
 
             case "bottom-center":
                 tooltipY = targetBounds.bottom + this.#offset;
-                tooltipX = targetBounds.left + (targetBounds.width / 2) - (tooltipBounds.width / 2);
+                tooltipX = targetBounds.left + (targetBounds.width / 2) - (this.#initWidth / 2);
+                this.#transformOrigin = "center top";
             break;
 
             case "bottom-right":
                 tooltipY = targetBounds.bottom + this.#offset;
-                tooltipX = targetBounds.right - tooltipBounds.width;
+                tooltipX = targetBounds.right - this.#initWidth;
+                this.#transformOrigin = "right top";
             break;
 
-            // bottom
+            // right
             case "right-top":
                 tooltipX = targetBounds.right + this.#offset;
                 tooltipY = targetBounds.top;
+                this.#transformOrigin = "left top";
             break;
 
             case "right-center":
                 tooltipX = targetBounds.right + this.#offset;
-                tooltipY = targetBounds.top + (targetBounds.height / 2) - (tooltipBounds.height / 2);
+                tooltipY = targetBounds.top + (targetBounds.height / 2) - (this.#initHeight / 2);
+                this.#transformOrigin = "left center";
             break;
 
             case "right-bottom":
                 tooltipX = targetBounds.right + this.#offset;
-                tooltipY = targetBounds.bottom - tooltipBounds.height;
+                tooltipY = targetBounds.bottom - this.#initHeight;
+                this.#transformOrigin = "left bottom";
             break;
 
             // top
             case "top-left":
-                tooltipY = targetBounds.top - this.#offset - tooltipBounds.height;
+                tooltipY = targetBounds.top - this.#offset - this.#initHeight;
                 tooltipX = targetBounds.left;
+                this.#transformOrigin = "left bottom";
             break;
 
             case "top-center":
-                tooltipY = targetBounds.top - this.#offset - tooltipBounds.height;
-                tooltipX = targetBounds.left + (targetBounds.width / 2) - (tooltipBounds.width / 2);
+                tooltipY = targetBounds.top - this.#offset - this.#initHeight;
+                tooltipX = targetBounds.left + (targetBounds.width / 2) - (this.#initWidth / 2);
+                this.#transformOrigin = "center bottom";
             break;
 
             case "top-right":
-                tooltipY = targetBounds.top - this.#offset - tooltipBounds.height;
-                tooltipX = targetBounds.right - tooltipBounds.width;
+                tooltipY = targetBounds.top - this.#offset - this.#initHeight;
+                tooltipX = targetBounds.right - this.#initWidth;
+                this.#transformOrigin = "right bottom";
             break;
 
             // left
             case "left-top":
-                tooltipX = targetBounds.left - this.#offset - tooltipBounds.width;
+                tooltipX = targetBounds.left - this.#offset - this.#initWidth;
                 tooltipY = targetBounds.top;
+                this.#transformOrigin = "right top";
             break;
 
             case "left-center":
-                tooltipX = targetBounds.left - this.#offset - tooltipBounds.width;
-                tooltipY = targetBounds.top + (targetBounds.height / 2) - (tooltipBounds.height / 2);
+                tooltipX = targetBounds.left - this.#offset - this.#initWidth;
+                tooltipY = targetBounds.top + (targetBounds.height / 2) - (this.#initHeight / 2);
+                this.#transformOrigin = "right center";
             break;
 
             case "left-bottom":
-                tooltipX = targetBounds.left - this.#offset - tooltipBounds.width;
-                tooltipY = targetBounds.bottom - tooltipBounds.height;
+                tooltipX = targetBounds.left - this.#offset - this.#initWidth;
+                tooltipY = targetBounds.bottom - this.#initHeight;
+                this.#transformOrigin = "right bottom";
             break;
         }
 
@@ -276,6 +320,7 @@ class AxialTooltipBase extends AxialComponentBase
 
         if( this.#useTransitions === true )
         {
+            /*
             const transformDirection = this.#position.split("-")[0];
             switch( transformDirection )
             {
@@ -285,16 +330,17 @@ class AxialTooltipBase extends AxialComponentBase
                 case "right" :  this.#transform = "translate(20%, 0%)";  break;
                 default:        this.#transform = "translate(0%, 0%)";   break;
             }
+            */
 
             this.style.opacity = "0";
-            this.style.transform = this.#transform;
+            this.style.transformOrigin = this.#transformOrigin;
         }
         else
         {
             this.style.transitionProperty = "none";
-            this.#transform = "translate(0%, 0%)";
+            this.style.transformOrigin = this.#transformOrigin;
+            this.style.transform = "scale(1)";
             this.style.opacity = "1";
-            this.style.transform = this.#transform;
         }
     }
 
@@ -308,7 +354,7 @@ class AxialTooltipBase extends AxialComponentBase
         {
             this.style.transitionProperty = "opacity, transform";
             this.style.opacity = "1";
-            this.style.transform = "translate(0%, 0%)";
+            this.style.transform = "scale(1)";
         }
     }
 
@@ -319,7 +365,7 @@ class AxialTooltipBase extends AxialComponentBase
         if( this.useTransitions === true )
         {
             this.style.opacity = "0";
-            this.style.transform = this.#transform;
+            this.style.transform = "scale(0)";
         }
         else
         {

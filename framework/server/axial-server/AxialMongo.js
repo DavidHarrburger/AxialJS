@@ -191,7 +191,7 @@ class AxialMongo extends EventEmitter
                         {
                             if( item[p] )
                             {
-                                item[p] = AxialCryptoUtils.decrypt( item[p]);
+                                item[p] = AxialCryptoUtils.decrypt( item[p] );
                             } 
                         }
                     }
@@ -222,7 +222,7 @@ class AxialMongo extends EventEmitter
             {
                 result = null;
             }
-            else if( Array.isArray(result) )
+            else if( Array.isArray(result) === true )
             {
                 if( result.length === 0 )
                 { 

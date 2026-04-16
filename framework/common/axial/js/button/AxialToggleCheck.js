@@ -6,20 +6,31 @@ class AxialToggleCheck extends AxialToggleButtonBase
 {
     /// vars
     /** @type { String } */
-    #label = "Label";
-
-    /** @type { String } */
     #unselectedScale = "scale(0)";
 
     /** @type { String } */
     #selectedScale = "scale(1)";
 
+    /** @type { Number } */
+    #radiusScaleDownFactor = 3;
+
+    #CHECK_POSITIONS = new Set( [ "left", "right" ] );
+
+    /** @type { String } */
+    #text = "";
+
+    /** @type { Number } */
+    #radius;
+
+    /** @type { Number } */
+    #gap = 12;
+
     /// elements
     /** @type { HTMLElement } */
-    #signElement;
+    #sign;
 
     /** @type { HTMLElement } */
-    #labelElement;
+    #label;
 
     constructor()
     {
@@ -30,33 +41,49 @@ class AxialToggleCheck extends AxialToggleButtonBase
 
     static get observedAttributes()
     {
-        return ["axial-label"];
+        return ["axial-text", "axial-check-position", "axial-theme", "axial-color", "axial-size", "axial-weight", "axial-style", "axial-gap", "axial-radius" ];
     }
 
     _buildComponent()
     {
         super._buildComponent();
-        this.#signElement = this.shadowRoot.getElementById("signElement");
-        this.#labelElement = this.shadowRoot.getElementById("labelElement");
+        this.#sign = this.shadowRoot.getElementById("signElement");
+        this.#label = this.shadowRoot.getElementById("labelElement");
 
-        const tempLabel = this.getAttribute("axial-label");
-        if( tempLabel !== null )
+        if( this.#label )
         {
-            this.#label = tempLabel;
-            if( this.#labelElement )
-            {
-                this.#labelElement.innerHTML = tempLabel;
-            }
+            this.#label.innerHTML = this.#text;
+            this.#label.style.display = this.#text === "" ? "none" : "block";
+        }
+    }
+
+    get text() { return this.#text; }
+    set text( value )
+    {
+        if( typeof value !== "string" )
+        {
+            throw new TypeError("String value required");
+        }
+        if( this.#text === value ) { return; }
+        this.#text = value;
+        if( this.#label )
+        {
+            this.#label.innerHTML = this.#text;
+            this.#label.style.display = this.#text === "" ? "none" : "block";
         }
     }
 
     attributeChangedCallback(name, oldValue, newValue)
     {
-        if( this.isConnected === false ) { return; }
-        if( name == "axial-label" && this.#labelElement )
+        super.attributeChangedCallback(name, oldValue, newValue);
+        if( name === "axial-text" )
         {
-            this.#label = newValue;
-            this.#labelElement.innerHTML = newValue;
+            this.#text = newValue;
+            if( this.#label )
+            {
+                this.#label.innerHTML = this.#text;
+                this.#label.style.display = this.#text === "" ? "none" : "block";
+            }
         }
     }
     
@@ -64,15 +91,15 @@ class AxialToggleCheck extends AxialToggleButtonBase
     {
         super._onToggleChanged();
         
-        if( this.#signElement )
+        if( this.#sign )
         {
             if( this.selected === true )
             {
-                this.#signElement.style.transform = this.#selectedScale;
+                this.#sign.style.transform = this.#selectedScale;
             }
             else
             {
-                this.#signElement.style.transform = this.#unselectedScale;
+                this.#sign.style.transform = this.#unselectedScale;
             }
         }
     }

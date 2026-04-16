@@ -1,7 +1,7 @@
 "use strict";
 
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
-
+import { PathUtils } from "../utils/PathUtils.js";
 import { AxialTogglePasswordButton } from "../admin/button/AxialTogglePasswordButton.js";
 import { AxialServiceButton } from "../button/AxialServiceButton.js";
 
@@ -22,7 +22,6 @@ class AxialAuthRegister extends AxialComponentBase
 
     /** @type { RegExp } */
     #specialRegex = /[!?#-_@]/;
-
 
     /// elements
     /** @type { HTMLInputElement } */
@@ -80,6 +79,8 @@ class AxialAuthRegister extends AxialComponentBase
         super();
         this.classList.add("axial_auth_register");
         this.template = "axial-auth-register-template";
+
+        this.#path = PathUtils.getPathFromRelative( this.#path );
 
         this.#boundToggleHandler = this.#toggleHandler.bind(this);
         this.#boundInputChangeHandler = this.#inputChangeHandler.bind(this);
@@ -140,7 +141,6 @@ class AxialAuthRegister extends AxialComponentBase
 
     #inputChangeHandler( event )
     {
-        console.log("input changed");
         this.#checkValidity();
     }
 

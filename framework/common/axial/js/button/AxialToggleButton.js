@@ -37,9 +37,6 @@ class AxialToggleButton extends AxialToggleButtonBase
     #text = "";
 
     /** @type { Number } */
-    #iconSpace = 0;
-
-    /** @type { Number } */
     #gap = 10;
 
     /** @type { Boolean } */
@@ -130,6 +127,25 @@ class AxialToggleButton extends AxialToggleButtonBase
         }
     }
 
+    // elements
+    /**
+     * @type { HTMLElement }
+     * @readonly
+     */
+    get background() { return this.#background; }
+
+    /**
+     * @type { HTMLElement }
+     * @readonly
+     */
+    get foreground() { return this.#foreground; }
+
+    /**
+     * @type { HTMLElement }
+     * @readonly
+     */
+    get label() { return this.#label; }
+
     _buildComponent()
     {
         super._buildComponent();
@@ -151,6 +167,11 @@ class AxialToggleButton extends AxialToggleButtonBase
             {
                 this.#themeColor = window.getComputedStyle( this.#background ).backgroundColor;
             }
+        }
+
+        if( this.#foreground && this.selected === true )
+        {
+            this.#foreground.style.opacity = "1";
         }
 
         if( this.#content )

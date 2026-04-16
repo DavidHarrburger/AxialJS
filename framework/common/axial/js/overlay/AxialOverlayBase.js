@@ -1,11 +1,13 @@
 "use strict";
 
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
+import { AxialInputBase } from "../core/AxialInputBase.js";
 import { AxialOverlayManager } from "./AxialOverlayManager.js";
 
 class AxialOverlayBase extends AxialComponentBase
 {
 
+    /// vars
     /** @type { Set } */
     #OVERLAY_POSITIONS = new Set( [ "bottom-left", "bottom-center", "bottom-right",
                                     "right-top", "right-center", "right-bottom",
@@ -14,9 +16,9 @@ class AxialOverlayBase extends AxialComponentBase
 
     #OVERLAY_SHOW_MODE = new Set( ["off", "over", "click"] );
 
-    #OVERLAY_HIDE_MODE = new Set( ["off", "out", "click"] );
+    #OVERLAY_HIDE_MODE = new Set( ["off", "out", "click" ] );
 
-    #OVERLAY_DISPLAY_MODE = new Set( ["target", "window", "center"] );
+    #OVERLAY_DISPLAY_MODE = new Set( ["target", "window", "center", "context"] );
 
     /** @type { Boolean } */
     #isShown = false;
@@ -48,6 +50,19 @@ class AxialOverlayBase extends AxialComponentBase
     /** @type { Boolean } */
     #useTransitions = true;
 
+    /** @type { Boolean } */
+    #useObfuscator = false;
+
+    /** @type { String } */
+    #obfuscatorId = "axialOverlayObfuscator";
+
+    /** @type { PointerEvent } */
+    #contextPointerEvent;
+
+    /** @type { HTMLElement } */
+    #contextInitializer;
+
+    /// events
     /** @type { Function } */
     #boundTransitionEndHandler;
 
@@ -63,13 +78,12 @@ class AxialOverlayBase extends AxialComponentBase
     /** @type { Function } */
     #boundOverlayClickHandler;
 
-    /** @type { Boolean } */
-    #useObfuscator = false;
-
     constructor()
     {
         super();
         this.classList.add("axial_overlay_base");
+        
+        // HTMLElement
         this.#boundOverlayTargetOverHandler = this.#overlayTargetOverHandler.bind(this);
         this.#boundOverlayTargetOutHandler = this.#overlayTargetOutHandler.bind(this);
         this.#boundOverlayTargetClickHandler = this.#overlayTargetClickHandler.bind(this);
@@ -94,6 +108,12 @@ class AxialOverlayBase extends AxialComponentBase
      * @readonly
      */
     get isShown() { return this.#isShown; }
+
+    /**
+     * @type { HTMLElement }
+     * @readonly
+     */
+    get contextInitializer() { return this.#contextInitializer; }
 
     get target() { return this.#target; }
     set target( value )
@@ -156,7 +176,7 @@ class AxialOverlayBase extends AxialComponentBase
         this.#layoutOverlay();
     }
 
-    get useObfuscator() { return this.#position; }
+    get useObfuscator() { return this.#useObfuscator; }
     set useObfuscator( value )
     {
         if( this.#isShown === true ) { return; }
@@ -221,7 +241,7 @@ class AxialOverlayBase extends AxialComponentBase
 
     static get observedAttributes()
     {
-        return [ "axial-target", "axial-position", "axial-display" ];
+        return [ "axial-target", "axial-position", "axial-display", "axial-offset" ];
     }
 
     attributeChangedCallback(name, oldValue, newValue)
@@ -244,6 +264,15 @@ class AxialOverlayBase extends AxialComponentBase
         if( name === "axial-display" )
         {
             this.displayMode = newValue;
+        }
+
+        if( name === "axial-offset" )
+        {
+            const tempOffset = Number( newValue );
+            if( isNaN(tempOffset) === false && tempOffset > 0 )
+            {
+                this.offset = tempOffset;
+            }
         }
     }
 
@@ -279,6 +308,7 @@ class AxialOverlayBase extends AxialComponentBase
         if( this.#isShown === false && event.propertyName === "opacity" )
         {
             this.style.visibility = "hidden";
+            this._onHidden();
             const overlayEvent = new CustomEvent("overlayHidden");
             this.dispatchEvent( overlayEvent );
         }
@@ -286,16 +316,22 @@ class AxialOverlayBase extends AxialComponentBase
 
     #addOverlayHandlers()
     {
-        this.#target.addEventListener("pointerover", this.#boundOverlayTargetOverHandler);
-        this.#target.addEventListener("pointerout", this.#boundOverlayTargetOutHandler);
-        this.#target.addEventListener("click", this.#boundOverlayTargetClickHandler);
+        if( this.#target instanceof AxialInputBase === false )
+        {
+            this.#target.addEventListener("pointerover", this.#boundOverlayTargetOverHandler);
+            this.#target.addEventListener("pointerout", this.#boundOverlayTargetOutHandler);
+            this.#target.addEventListener("click", this.#boundOverlayTargetClickHandler);
+        }
     }
 
     #removeOverlayHandlers()
     {
-        this.#target.removeEventListener("pointerover", this.#boundOverlayTargetOverHandler);
-        this.#target.removeEventListener("pointerout", this.#boundOverlayTargetOutHandler);
-        this.#target.removeEventListener("click", this.#boundOverlayTargetClickHandler);
+        if( this.#target instanceof AxialInputBase === false )
+        {
+            this.#target.removeEventListener("pointerover", this.#boundOverlayTargetOverHandler);
+            this.#target.removeEventListener("pointerout", this.#boundOverlayTargetOutHandler);
+            this.#target.removeEventListener("click", this.#boundOverlayTargetClickHandler);
+        }
     }
 
     #overlayTargetOverHandler( event )
@@ -330,13 +366,11 @@ class AxialOverlayBase extends AxialComponentBase
                     overlay.hide();
                 }
             }
-            
         }
         else if( this.#hideMode === "click" && this.#isShown === true )
         {
             this.hide();
         }
-
     }
 
     #layoutOverlay()
@@ -498,6 +532,19 @@ class AxialOverlayBase extends AxialComponentBase
                 overlayY = ( whc - overlayBounds.height ) / 2;
             break;
 
+            case "context":
+                /// to check
+                const wwm = window.innerWidth;
+                const whm = window.innerHeight;
+
+                const contextCallX = this.#contextPointerEvent?.pageX || 0;
+                const contextCallY = this.#contextPointerEvent?.pageY || 0;
+
+                overlayX = contextCallX <= ( wwm / 2 ) ? contextCallX : (contextCallX - overlayBounds.width);
+                overlayY = contextCallY <= ( whm / 2 ) ? contextCallY : (contextCallY - overlayBounds.height);
+
+            break;
+
             default:
                 overlayX = 0;
                 overlayY = 0;
@@ -509,7 +556,7 @@ class AxialOverlayBase extends AxialComponentBase
 
         if( this.#useTransitions === true )
         {
-            const transformDirection = this.#position.split("-")[0];
+            let transformDirection = this.#position.split("-")[0];
             switch( transformDirection )
             {
                 case "bottom" : this.#transform = "translate(0%, 20%)";  break;
@@ -534,6 +581,8 @@ class AxialOverlayBase extends AxialComponentBase
     show()
     {
         if( this.#isShown === true ) { return; }
+        if( !this.#target && this.#displayMode === "target" ) { return; }
+        this._onShowing();
         this.#layoutOverlay();
         this.style.visibility = "visible";
         this.#isShown = true;
@@ -546,7 +595,7 @@ class AxialOverlayBase extends AxialComponentBase
 
         if( this.#useObfuscator === true )
         {
-            const oo = AxialOverlayManager.OBFUSCATOR;
+            const oo = document.getElementById( this.#obfuscatorId );
             if( oo )
             {
                 oo.style.visibility = "visible";
@@ -558,6 +607,7 @@ class AxialOverlayBase extends AxialComponentBase
     {
         if( this.#isShown === false ) { return; }
         this.#isShown = false;
+        
         if( this.useTransitions === true )
         {
             this.style.opacity = "0";
@@ -566,13 +616,14 @@ class AxialOverlayBase extends AxialComponentBase
         else
         {
             this.style.visibility = "hidden";
+            this._onHidden();
             const overlayEvent = new CustomEvent("overlayHidden");
             this.dispatchEvent( overlayEvent );
         }
 
         if( this.#useObfuscator === true )
         {
-            const oo = AxialOverlayManager.OBFUSCATOR;
+            const oo = document.getElementById( this.#obfuscatorId );
             if( oo )
             {
                 oo.style.visibility = "hidden";
@@ -581,11 +632,94 @@ class AxialOverlayBase extends AxialComponentBase
     }
 
     /**
+     * 
+     * @param { HTMLElement } target 
+     * @param { PointerEvent } event 
+     * @returns 
+     */
+    showAtTarget( target, event )
+    {
+        if( target instanceof HTMLElement === false ) { throw new TypeError("HTMLElement value required"); }
+        if( event instanceof PointerEvent === false && event instanceof FocusEvent === false ) { throw new TypeError("PointerEvent or FocusEvent value required"); }
+
+        if( this.#target === target && this.#target instanceof AxialInputBase === false )
+        {
+            //console.log("listeners are here so nothing to do in theory");
+            return;
+        }
+        else
+        {
+            // we check if we the overlay is shown
+            if( this.#isShown === true )
+            {
+                //console.log("overlay is shown, we need to hide it first");
+                const tempUseTransitions = this.#useTransitions;
+                this.#useTransitions = false;
+                //console.log("Input come from here ???")
+                this.hide();
+                this.#useTransitions = tempUseTransitions;
+            }
+
+            if( this.#target !== undefined )
+            {
+                this.#removeOverlayHandlers();
+            }
+
+            if( event instanceof PointerEvent && event.type === "click" )
+            {
+                event.stopPropagation();
+            }
+
+            // now we set the new target
+            this.#target = target;
+            this.#addOverlayHandlers();
+            this.#layoutOverlay();
+            this.show();
+        }
+    }
+
+    /**
+     * 
+     * @param { PointerEvent } event 
+     */
+    showAsContext( event, initializer )
+    {
+        //console.log("SHHOW_AS_CONTEXT");
+        if( event instanceof PointerEvent === false ) { throw new TypeError("PointerEvent value required"); }
+        this.#contextInitializer = initializer;
+        this.#contextPointerEvent = event;
+        console.log(event);
+        if( this.#isShown === true )
+        {
+            const tempUseTransitions = this.#useTransitions;
+            this.#useTransitions = false;
+            this.hide();
+            this.#useTransitions = tempUseTransitions;
+        }
+        this.show();
+        console.log("context menu endpoint");
+    }
+
+    /**
      * @private
      * Prevent the popup from being closed if user click outside of its DOMRect
      * @param { PointerEvent } event 
      */
-    #overlayClickHandler( event ) { event.stopImmediatePropagation(); }
+    #overlayClickHandler( event )
+    {
+        //console.log("overlay click");
+        event.stopImmediatePropagation();
+    }
+
+    /**
+     * @abstract
+     */
+    _onShowing() {};
+
+    /**
+     * @abstract
+     */
+    _onHidden() {};
 }
 
 window.customElements.define("axial-overlay-base", AxialOverlayBase);

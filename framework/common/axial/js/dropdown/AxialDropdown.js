@@ -105,7 +105,7 @@ class AxialDropdown  extends AxialComponentBase
     {
         super._buildComponent();
 
-        console.log("dropdown", this.enabled)
+        //console.log("dropdown", this.enabled)
         
         this.#toggle = this.shadowRoot.getElementById("toggle");
         if( this.#toggle )

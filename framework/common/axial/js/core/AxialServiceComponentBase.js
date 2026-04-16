@@ -46,10 +46,9 @@ class AxialServiceComponentBase extends AxialComponentBase
         // POST
         if( this.#postPath === undefined )
         {
-            this.#postPath = this.getAttribute("axial-get-path");
+            this.#postPath = this.getAttribute("axial-post-path");
         }
 
-        this.#postPath = this.getAttribute("axial-post-path");
         if( this.#postPath && this.#postPath.indexOf("./") === 0 )
         {
             this.#postPath = PathUtils.getPathFromRelative(this.#postPath)
@@ -139,6 +138,7 @@ class AxialServiceComponentBase extends AxialComponentBase
 
     async #loadPostData()
     {
+        console.log(this.#postPath)
         if( this.#postPath === undefined || this.#postPath === null ) { return; }
         if( this.#isFetching === true ) { return; }
         this.#isFetching = true;

@@ -2,15 +2,16 @@
 
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
 import { AxialServiceButton } from "../button/AxialServiceButton.js";
+import { PathUtils } from "../utils/PathUtils.js";
 
 class AxialAuthVerifyer extends AxialComponentBase
 {
     /// var
     /** @type { String } */
-    #sendPath = "../../api/auth/code/send";
+    #sendPath = "./api/auth/code/send";
 
     /** @type { String } */
-    #verificationPath = "../../api/auth/code/verify";
+    #verificationPath = "./api/auth/code/verify";
 
     /** @type { RegExp } */
     #numberRegex = /^\d+$/;
@@ -43,6 +44,9 @@ class AxialAuthVerifyer extends AxialComponentBase
         super();
         this.classList.add("axial_auth_verifyer");
         this.template = "axial-auth-verifyer-template";
+
+        this.#sendPath = PathUtils.getPathFromRelative(this.#sendPath);
+        this.#verificationPath = PathUtils.getPathFromRelative(this.#verificationPath);
 
         this.#boundPasteHandler = this.#pasteHandler.bind(this);
         this.#boundInputHandler = this.#inputHandler.bind(this);
@@ -197,5 +201,3 @@ class AxialAuthVerifyer extends AxialComponentBase
 
 window.customElements.define("axial-auth-verifyer", AxialAuthVerifyer);
 export { AxialAuthVerifyer }
-
-

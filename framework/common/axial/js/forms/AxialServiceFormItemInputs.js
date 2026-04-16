@@ -6,10 +6,10 @@ import { ObjectUtils } from "../utils/ObjectUtils.js";
 class AxialServiceFormItemInputs extends AxialServiceFormItem
 {
     /// vars
-    /** @type { Array<HTMLInputElement> } */
+    /** @type { Array.< HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement > } */
     #inputs = new Array();
 
-    /** @type { HTMLSlotElement} */
+    /** @type { HTMLSlotElement } */
     #contentSlot;
 
     /// events
@@ -42,15 +42,18 @@ class AxialServiceFormItemInputs extends AxialServiceFormItem
             //console.log(elements);
             for( const element of elements )
             {
-                if( element instanceof HTMLInputElement === true || element instanceof HTMLTextAreaElement === true )
+                if( element instanceof HTMLInputElement === true
+                    || element instanceof HTMLTextAreaElement === true
+                    || element instanceof HTMLSelectElement === true )
                 {
                     element.addEventListener("focusout", this.#boundFocusOutHandler);
-                    element.value = ""; // hack the browser
+                    //element.value = ""; // hack the browser
                     this.#inputs.push( element );
                 }
                 else
                 {
                     const possibleInputs = element.getElementsByTagName("input");
+                    // BUGGY HERE -> miss the textarea and select elements
                     for( const possibleInput of possibleInputs )
                     {
                         possibleInput.addEventListener("focusout", this.#boundFocusOutHandler);
@@ -81,12 +84,10 @@ class AxialServiceFormItemInputs extends AxialServiceFormItem
         let itemObject = {};
 
         itemObject.field = this.field;
-        //itemObject.inputs = new Array();
         itemObject.value = new Array();
 
         for( const input of this.#inputs )
         {
-            //itemObject.inputs.push( { name: input.name, value: input.value } );
             const inputValue =  input.type === "number" ? input.valueAsNumber : input.value;
             itemObject.value.push( { field: input.name, value: inputValue } );
         }
@@ -96,7 +97,6 @@ class AxialServiceFormItemInputs extends AxialServiceFormItem
 
     #focusOutHandler( event )
     {
-        console.log("focus out");
         const formItemEvent = new CustomEvent("itemValidityChanged", { bubbles: true } );
         this.dispatchEvent( formItemEvent );
     }
@@ -120,31 +120,11 @@ class AxialServiceFormItemInputs extends AxialServiceFormItem
             {
                 input.value = value;
             }
-        }
-
-        /*
-        if( typeof object === "string" )
-        {
-            if( this.#inputs && this.#inputs[0] )
+            else
             {
-                this.#inputs[0].value = object;
+                input.value = "";
             }
         }
-        else
-        {
-            console.log("SUPER IMPORTANT", object); // possible problems with array
-            for( const input of this.#inputs )
-            {
-                
-                const kvo = ObjectUtils.getObjectByField( object, "name", input.name );
-                if( kvo && kvo.value )
-                {
-                    input.value = kvo.value;
-                }
-                
-            }
-        }
-        */
     }
 
     _fillItem( object )
