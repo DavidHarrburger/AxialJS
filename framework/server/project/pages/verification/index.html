@@ -2,10 +2,10 @@
 <html lang="fr">
 <head>
     <meta charset="utf-8">
-    <title>Vérification</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vérification de votre identité</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
-    <link rel="icon" type="image/x-icon" href="./assets/favicon/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="../../assets/favicon/favicon.ico">
     <link rel="stylesheet" href="./styles.css">
 </head>
 
@@ -47,6 +47,21 @@
             <div id="bottom" class="axial_burger_button-line axial_burger_button-bottom"></div>
         </div>
         <div id="border" class="axial_burger_button-border"></div>
+    </template>
+    <!-- ./buttons/AxialToggleButtonGroup -->
+    <template id="axial-toggle-button-group-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div id="holder" class="axial_toggle_button_group-holder">
+            <slot id="slot" name="axial-toggles"></slot>
+        </div>
+    </template>
+    <!-- ./buttons/AxialToggleRadio -->
+    <template id="axial-toggle-radio-template">
+        <link rel="stylesheet" href="./styles.css">
+        <div id="border" class="axial_toggle_radio-border">
+            <div id="circle" class="axial_toggle_radio-circle"></div>
+        </div>
+        <div id="label" class="axial_toggle_radio-label">Label</div>
     </template>
     <!-- APPLICATION PACKAGE -->
     <!-- ./application/AxialNotifier -->
@@ -107,18 +122,27 @@
                 <axial-button id="cancel" axial-text="Annuler" axial-theme="#232323" axial-color="#ffffff">
                     <i slot="axial-icon" class="fa-color fa-solid fa-arrow-left"></i>
                 </axial-button>
-                <axial-button id="confirm" axial-text="Suprrimer" axial-theme="#cc0000">
+                <axial-button id="confirm" axial-text="Supprimer" axial-theme="#cc0000">
                     <i slot="axial-icon" class="fa-color fa-regular fa-trash-can"></i>
                 </axial-button>
             </div>
         </div>
     </template>
+    
     <!-- AUTH PACKAGE -->
     <!-- ./auth/AxialAuthVerifyer -->
     <template id="axial-auth-verifyer-template">
         <link rel="stylesheet" href="./styles.css">
         <form id="form" class="axial_auth_verifyer-form" autocomplete="off">
-            <div class="axial_auth_verifyer-baseline">An email has been sent to this address:<br><span class="axial_auth_verifyer-email" id="email">email to check</span></div>
+            <div class="axial_auth_verifyer-question">Recevoir mon code par :</div>
+            <axial-toggle-button-group id="group">
+                <axial-toggle-radio slot="axial-toggles" axial-text="SMS" axial-value="sms"></axial-toggle-radio>
+                <axial-toggle-radio slot="axial-toggles" axial-text="Email" axial-value="email"></axial-toggle-radio>
+            </axial-toggle-button-group>
+
+            <axial-service-button id="sendButton" axial-text="Recevoir mon code"></axial-service-button>
+
+            <div class="axial_auth_verifyer-recipient" id="recipient"></div>
             
             <div class="axial_auth_verifyer-inputs" id="holder">
                 <input class="axial_auth_verifyer-numinput" type="text" pattern="[0-9]" id="num_1" value="" required minlength="1" maxlength="1" autocomplete="off">
@@ -128,29 +152,40 @@
                 <input class="axial_auth_verifyer-numinput" type="text" pattern="[0-9]" id="num_5" value="" required minlength="1" maxlength="1" autocomplete="off">
                 <input class="axial_auth_verifyer-numinput" type="text" pattern="[0-9]" id="num_6" value="" required minlength="1" maxlength="1" autocomplete="off">
             </div>
-            <div class="axial_auth_verifyer-message" id="message"></div>
+            
             <div class="axial_auth_verifyer-divider"></div>
-            <axial-service-button id="button" axial-text="Renvoyer un code"></axial-service-button>
+            
         </form>
     </template>
     
-    <div id="axialBackgroundLayer" class="axial_layer_base axial_background_layer"></div>
+    <div id="axialBackgroundLayer" class="axial_layer_base axial_background_layer">
+        <div class="axial_verification_page-background"></div>
+    </div>
     
     <div id="axialMainLayer" class="axial_main_layer">
-
         <main class="axial_main">
             <section class="axial_section">
-                <div class="axial_section_background"></div>
-                <div class="axial_section_content axial_100vh">
+                <div class="axial_section_content">
                     <div class="axial_verification_content">
-                        <div class="axial_verification_holder">
-                            <axial-auth-verifyer id="verifyer"></axial-auth-verifyer>
+                        <div class="axial_verification_content-left">
+                            <a class="axial_verification_logo-link axial_verification_logo-left" href="../../" target="_self">
+                                <img class="axial_verification_logo-img" alt="logo" src="../../assets/logos/logo.png">
+                            </a>
+                        </div>
+                        <div class="axial_verification_content-right">
+                            <div class="axial_verification_holder">
+                                <a class="axial_verification_logo-link axial_verification_logo-right" href="../../" target="_self">
+                                    <img class="axial_verification_logo-img" alt="logo" src="../../assets/logos/logo.png">
+                                </a>
+                                <h1>Vérifier votre identité</h1>
+                                <p class="axial_verification_content-p">Pour votre sécurité, l'authentification à 2 facteurs est obligatoire sur ce site.</p>
+                                <axial-auth-verifyer id="verifyer"></axial-auth-verifyer>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
         </main>
-        
     </div>
 
     <div id="axialIntroLayer" class="axial_layer_base axial_intro_layer"></div>

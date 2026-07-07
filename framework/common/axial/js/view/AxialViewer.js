@@ -10,6 +10,9 @@ class AxialViewer extends AxialComponentBase
     /** @type { Array<AxialView> } */
     #views = new Array();
 
+    /** @type { Number } */
+    #currentIndex = 0;
+
     /// elements
     /** @type { HTMLElement } */
     #holder;
@@ -107,8 +110,25 @@ class AxialViewer extends AxialComponentBase
             for( let i = 0; i < viewsLength; i++ )
             {
                 const view = this.#views[i];
-                if( i === index ) { view.style.display = "block"; } else { view.style.display = "none"; }
+                if( i === index )
+                {
+                    view.style.display = "block";
+                    this.#currentIndex = i;
+                }
+                else
+                {
+                    view.style.display = "none";
+                }
             }
+        }
+    }
+
+    nextView()
+    {
+        const nextIndex = this.#currentIndex + 1 < this.#views.length ? this.#currentIndex + 1 : this.#currentIndex;
+        if( nextIndex != this.#currentIndex )
+        {
+            this.gotoViewByIndex( nextIndex );
         }
     }
 

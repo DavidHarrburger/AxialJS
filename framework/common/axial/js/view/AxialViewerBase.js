@@ -340,7 +340,7 @@ class AxialViewerBase extends AxialComponentBase
         }
     }
 
-    #fade()
+  #fade()
     {
         this.#newView.style.display = "block";
         

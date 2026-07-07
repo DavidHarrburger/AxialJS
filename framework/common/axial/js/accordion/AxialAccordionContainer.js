@@ -17,7 +17,7 @@ class AxialAccordionContainer extends AxialComponentBase
         super();
         this.classList.add("axial_accordion_container");
         this.template = "axial-accordion-container-template";
-        this.useResizeObserver = false; // too much dispatch
+        this.useResizeObserver = true; // too much dispatch
     }
 
     /**
@@ -35,7 +35,7 @@ class AxialAccordionContainer extends AxialComponentBase
     _observerResize( entries, observer )
     {
         super._observerResize( entries, observer );
-        if( this.isOpened === true )
+        if( this.#isOpened === true )
         {
             const h = this.#content.offsetHeight;
             this.style.height = String(h) + "px";
@@ -66,6 +66,8 @@ class AxialAccordionContainer extends AxialComponentBase
             this.#content.appendChild(element);
         }
     }
+
+    
 }
 
 window.customElements.define("axial-accordion-container", AxialAccordionContainer);

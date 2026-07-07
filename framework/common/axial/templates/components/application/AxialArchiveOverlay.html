@@ -1,0 +1,25 @@
+<!-- ./application/AxialArchiveOverlay -->
+<template id="axial-archive-overlay-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div class="axial_archive_overlay-holder">
+        <div class="axial_archive_overlay-header">
+            
+            <div class="axial_archive_overlay-icon">
+                &#9888;
+            </div>
+            
+            <div class="axial_archive_overlay-title">Attention</div>
+        </div>
+        <div class="axial_archive_overlay-content">
+            L'archivage des données rend les données invisibles mais ne les suprrime pas. Néanmoins la fonction de restauration de l'affichage n'existe pas encore et doit être opérée manuellement par David.
+        </div>
+        <div class="axial_archive_overlay-actions">
+            <axial-button id="cancel" axial-text="Annuler" axial-theme="#232323" axial-color="#ffffff">
+                <i slot="axial-icon" class="fa-color fa-solid fa-arrow-left"></i>
+            </axial-button>
+            <axial-button id="confirm" axial-text="Archiver" axial-theme="#cc0000">
+                <i slot="axial-icon" class="fa-color fa-solid fa-box-archive"></i>
+            </axial-button>
+        </div>
+    </div>
+</template>

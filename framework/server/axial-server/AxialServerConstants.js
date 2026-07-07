@@ -10,6 +10,9 @@ export const CRYPTO_IV = ""; // 16
 
 export const JWT_SECRET_KEY = ""; //32
 
+export const VAPID_PUBLIC_KEY = "";
+export const VAPID_PRIVATE_KEY = "";
+
 export const EMAIL_HOST = "";
 export const EMAIL_PASS = "";
 export const EMAIL_PORT = 465;
@@ -18,13 +21,9 @@ export const EMAIL_RECIPIENT = "";
 
 export const AUTHORIZED_DOMAINS = [];
 
-export const ROLES = 
-[
-    "master",
-    "admin",
-    "user",
-    "client"
-];
+export const WEBSOCKET_URL = "ws://localhost:80/";
+
+export const ROLES = [ "master", "admin", "user", "client" ];
 
 export const MEDIAS_FOLDER = "medias";
 export const UPLOADS_FOLDER = "uploads";
@@ -67,9 +66,23 @@ export const API_PRIVATE_PATHES =
     { path: "/api/medias/public", verification: true },
     { path: "/api/medias/upload", verification: true },
 
+    { path: "/api/conversation/create", verification: true },
+    { path: "/api/conversation/list", verification: true },
+    { path: "/api/conversation/contacts", verification: true },
+
+    { path: "/api/message/get", verification: true },
+    { path: "/api/message/create", verification: true },
+
     { path: "/api/files/get/all", verification: true },
 
     { path: "/api/products/set/", verification: true },
+
+    { path: "/api/projects/create/", verification: true },
+    { path: "/api/projects/get/", verification: true },
+    { path: "/api/projects/update/", verification: true },
+
+    { path: "/api/simulations/get/", verification: true },
+    { path: "/api/simulations/update/", verification: true },
 
     { path: "/api/subscriptions/set/", verification: true },
     { path: "/api/subscriptions/get/", verification: true },
@@ -95,5 +108,5 @@ export const STRIPE_PRIVATE_KEY = "";
 export const STRIPE_WEBHOOK_SECRET = "";
 
 // CONST FOR EMAIL AUTOMATION
-export const MAIL_TEMPLATE_SENDER_DOMAIN = "https://dndev.fr";
-export const MAIL_TEMPLATE_SENDER_NAME = "dndev.fr";
+export const MAIL_TEMPLATE_SENDER_DOMAIN = "";
+export const MAIL_TEMPLATE_SENDER_NAME = "";

@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
 
@@ -26,20 +26,18 @@ class AxialTickerBase extends AxialComponentBase
     /** @type { Function } */
     #boundAnimate;
 
-    
     constructor()
     {
         super();
         this.#boundAnimate = this.#animate.bind(this);
     }
 
-    connectedCallback()
+    _buildComponent()
     {
-        super.connectedCallback();
+        super._buildComponent();
 
         let tempTickTime = Number( this.getAttribute("axial-tick-time") );
         // TODO better control here --> default and min tick time for getter setter but no time righjt now to code it
-        // but it's very 
         this.#tickTime = tempTickTime;
     }
 
@@ -82,10 +80,7 @@ class AxialTickerBase extends AxialComponentBase
         {
             this.#animationId = window.requestAnimationFrame( this.#boundAnimate );
         }
-        
     }
-
-
 }
 
 window.customElements.define("axial-ticker-base", AxialTickerBase);

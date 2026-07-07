@@ -1,14 +1,16 @@
 "use strict";
 
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
-import { AxialTogglePasswordButton } from "../admin/button/AxialTogglePasswordButton.js";
+import { AxialTogglePasswordButton } from "../button/AxialTogglePasswordButton.js";
 import { AxialServiceButton } from "../button/AxialServiceButton.js";
+import { PathUtils } from "../utils/PathUtils.js";
+import { AxialAccordionContainer } from "../accordion/AxialAccordionContainer.js";
 
 class AxialAuthLogin extends AxialComponentBase
 {
     /// vars
     /** @type { String } */
-    #path = "../../api/auth/signin";
+    #path = "./api/auth/signin";
 
     /// elements
     /** @type { HTMLInputElement } */
@@ -21,8 +23,13 @@ class AxialAuthLogin extends AxialComponentBase
     #toggle;
 
     /** @type { AxialServiceButton } */
-    #button;
+    #connectButton;
 
+    /** @type { AxialAccordionContainer } */
+    #messageContainer;
+
+    /** @type { HTMLElement } */
+    #message;
 
     /// events
     /** @type { Function } */
@@ -34,15 +41,21 @@ class AxialAuthLogin extends AxialComponentBase
     /** @type { Function } */
     #boundInputChangeHandler;
 
+    /** @type { Function } */
+    #boundMessageTimeoutHandler;
+
     constructor()
     {
         super();
         this.classList.add("axial_auth_login");
         this.template = "axial-auth-login-template";
 
+        this.#path = PathUtils.getPathFromRelative( this.#path );
+
         this.#boundToggleHandler = this.#toggleHandler.bind(this);
         this.#boundInputChangeHandler = this.#inputChangeHandler.bind(this);
         this.#boundButtonHandler = this.#buttonHandler.bind(this);
+        this.#boundMessageTimeoutHandler = this.#messageTimeoutHandler.bind(this);
     }
 
     _buildComponent()
@@ -52,7 +65,10 @@ class AxialAuthLogin extends AxialComponentBase
         this.#email = this.shadowRoot.getElementById("email");
         this.#password = this.shadowRoot.getElementById("password");
         this.#toggle = this.shadowRoot.getElementById("toggle");
-        this.#button = this.shadowRoot.getElementById("button");
+        this.#connectButton = this.shadowRoot.getElementById("connectButton");
+
+        this.#messageContainer = this.shadowRoot.getElementById("messageContainer");
+        this.#message = this.shadowRoot.getElementById("message");
 
         if( this.#email )
         {
@@ -69,10 +85,10 @@ class AxialAuthLogin extends AxialComponentBase
             this.#toggle.addEventListener("toggleChanged", this.#boundToggleHandler);
         }
 
-        if( this.#button )
+        if( this.#connectButton )
         {
-            this.#button.enabled = false;
-            this.#button.addEventListener("click", this.#boundButtonHandler);
+            this.#connectButton.enabled = false;
+            this.#connectButton.addEventListener("click", this.#boundButtonHandler);
         }
     }
 
@@ -80,7 +96,7 @@ class AxialAuthLogin extends AxialComponentBase
     {
         if( this.#password )
         {
-            this.#toggle.selected === true ? this.#password.type = "text": this.#password.type = "password";
+            this.#password.type = this.#toggle.selected === true ?  "text": "password";
         }
     }
 
@@ -95,18 +111,18 @@ class AxialAuthLogin extends AxialComponentBase
         const passValid = this.#password.validity.valid;
         if( emailValid === true && passValid === true )
         {
-            this.#button.enabled = true;
+            this.#connectButton.enabled = true;
         }
         else
         {
-            this.#button.enabled = false;
+            this.#connectButton.enabled = false;
         }
     }
 
     #buttonHandler( event )
     {
-        this.#button.enabled = false;
-        this.#button.loading = true;
+        this.#connectButton.enabled = false;
+        this.#connectButton.loading = true;
         this.#requestLogin();
     }
 
@@ -117,17 +133,25 @@ class AxialAuthLogin extends AxialComponentBase
             const infos = { email: this.#email.value, password: this.#password.value };
             const response = await fetch( this.#path, { method: "POST", body: JSON.stringify(infos), headers: { "Content-Type":"application/json", "Cache-Control":"no-cache" } } );
             const json = await response.json();
-            
-            if( json )
+            console.log(json);
+            if( json && json.status )
             {
-                if( json.status && json.status === "ok" )
+                if( json.status === "ok" )
                 {
                     const loginSuccessEvent = new CustomEvent("loginSuccess", { detail: json } );
                     this.dispatchEvent(loginSuccessEvent);
                 }
+                else if( json.status === "ko" )
+                {
+                    this.#showErrorMessage("Email et / ou mot de passe incorrect. Veuillez réessayer svp.");
+                    this.#reinit();
+                }
             }
             else
             {
+                this.#showErrorMessage("Une erreur réseau s'est produite. Veuillez svp réessayer ultérieurement. N'hésitez pas à contacter le support client.");
+                this.#reinit();
+
                 const loginErrorEvent = new CustomEvent("loginError");
                 this.dispatchEvent(loginErrorEvent);
             }
@@ -136,6 +160,10 @@ class AxialAuthLogin extends AxialComponentBase
         catch( err )
         {
             console.log(err);
+            
+            this.#showErrorMessage("Une erreur réseau s'est produite. Veuillez svp réessayer ultérieurement. N'hésitez pas à contacter le support client.");
+            this.#reinit();
+            
             const loginErrorEvent = new CustomEvent("loginError");
             this.dispatchEvent(loginErrorEvent);
         }
@@ -143,6 +171,37 @@ class AxialAuthLogin extends AxialComponentBase
         {
             //this.#clearForm();
         }
+    }
+
+    #showErrorMessage( message )
+    {
+        console.log("show message")
+        if( message === undefined || typeof message !== "string" )
+        {
+            console.warn("check login");
+        }
+        this.#message.innerHTML = message;
+        this.#messageContainer.open();
+    }
+
+    focusFirst()
+    {
+        
+    }
+
+    #reinit()
+    {
+        this.#email.value = "";
+        this.#password.value = "";
+        this.#connectButton.enabled = false;
+        this.#connectButton.loading = false;
+
+        window.setTimeout( this.#boundMessageTimeoutHandler, 10000 );
+    }
+
+    #messageTimeoutHandler()
+    {
+        this.#messageContainer.close();
     }
 }
 

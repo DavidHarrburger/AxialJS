@@ -1,5 +1,10 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import
 {
+    MAIN_DOMAIN,
+
     DATABASE_URL,
     DATABASE_NAME,
 
@@ -9,6 +14,9 @@ import
 
     JWT_SECRET_KEY,
 
+    VAPID_PUBLIC_KEY,
+    VAPID_PRIVATE_KEY,
+
     EMAIL_HOST,
     EMAIL_PASS,
     EMAIL_PORT,
@@ -16,6 +24,8 @@ import
     EMAIL_RECIPIENT,
 
     ROLES,
+
+    WEBSOCKET_URL,
 
     MEDIAS_FOLDER,
     UPLOADS_FOLDER,
@@ -35,8 +45,8 @@ import
     STRIPE_PRIVATE_KEY,
     STRIPE_USE,
     STRIPE_WEBHOOK_SECRET
-}
-from "./axial-server/AxialServerConstants.js";
+} from "./axial-server/AxialServerConstants.js";
+
 import { AxialCryptoUtils } from "./axial-server/AxialCryptoUtils.js";
 import { AxialServerUtils } from "./axial-server/AxialServerUtils.js";
 import { AxialServerFileUtils } from "./axial-server/utils/AxialServerFileUtils.js";
@@ -48,11 +58,17 @@ import { AxialSchedulerOperations } from "./axial-server/schedule/AxialScheduler
 import { AxialPdfMaker } from "./axial-server/pdf/AxialPdfMaker.js";
 
 import express from "express";
+import http, { IncomingMessage } from "node:http";
+import https from "node:https";
 import path, { dirname } from "node:path";
+import WebSocket, { WebSocketServer } from "ws";
 import crypto from "node:crypto";
+import process from "node:process";
 import fs from "node:fs";
 import fsp from "node:fs/promises";
 import { fileURLToPath } from "node:url";
+import webpush from "web-push";
+import Prelude from "@prelude.so/sdk";
 
 import nodemailer from "nodemailer";
 import cookieParser from "cookie-parser";
@@ -70,7 +86,21 @@ const DIRNAME = path.dirname(FILENAME);
 const BASIC_OK = { status: "ok" };
 const BASIC_KO = { status: "ko" };
 
+const MESSAGING_RULES = new Map();
+MESSAGING_RULES.set( "user",  { allow_to: [ { role: "admin", view_as: "group", copy_to: [], display_as: "Name to display" } ] } );
+MESSAGING_RULES.set( "admin", { allow_to: [ { role: "user",  view_as: "single", copy_to: [ "admin" ], display_as:"user" } ] } );
+
+const CORS_OPTIONS =
+{
+    origin: [ "http://localhost", "https://localhost", "http://localhost:3000", "https://localhost:3000", "http://localhost:8080", "https://localhost:8080", "http://localhost:8081", "https://localhost:8081" ],
+    credentials: true,
+    optionsSuccessStatus: 200 // Pour certains navigateurs anciens
+};
+
 const multerUploader = multer();
+const preludeClient = new Prelude( { apiToken: process.env.PRELUDE_API_TOKEN } );
+
+webpush.setVapidDetails("mailto:david@dndev.fr", VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
 
 const EMAIL_TRANSPORTER = nodemailer.createTransport(
 {
@@ -285,18 +315,25 @@ const authMiddleware = async function( request, response, next )
                     {
                         //console.log( "POSSIBLE BUG HERE" );
                         //console.log( role, pathToCheck.permission );
-                        if( pathToCheck.permission !== role )
+                        if( pathToCheck.permission !== role && pathToCheck.permission === "all" )
                         {
-                            response.redirect("/");
+                            //response.redirect("/");
+                            next();
+                        }
+                        else if( role === pathToCheck.permission )
+                        {
+                            next();
                         }
                         else
                         {
-                            next();
+                            //next();
+                            response.redirect("/");
                         }
                     }
                     else
                     {
                         // check api role here
+                        console.log("test important keep todo");
                         next();
                     }
                 }
@@ -416,16 +453,41 @@ const apiAuthCodeSendHandler = async function( request, response )
 {
     try
     {
-        // check if user exists
-        // check if timecode exist if yes replace
+        const body = request.body;
+        const verifType = String(body.method);
         const user = response.locals.user;
+        // WW
         const tempCode = AxialServerUtils.getVerificationCode();
+        console.log( tempCode );
         const decryptedEmail = AxialCryptoUtils.decrypt( user.email );
         const timeResult = await AXIAL_MONGO.setTimeCode( tempCode, user.email );
 
-        await AXIAL_MAILER.sendMail( "Your verification code", decryptedEmail, "sendcode", { code: tempCode } );
+        const decryptedTel = AxialCryptoUtils.decrypt( user.tel );
+        const realTel = "+33" + decryptedTel.substring(1);
 
-        response.json( { email: decryptedEmail } )
+        let result;
+        const recipient = verifType === "sms" ? decryptedTel : decryptedEmail;
+
+        if( verifType === "sms" )
+        {
+            const prelude_object = 
+            {
+                target:
+                {
+                    type:"phone_number",
+                    value: realTel
+                }
+            };
+            const verification = await preludeClient.verification.create( prelude_object );
+            console.log( verification.id );
+            
+        }
+        else if( verifType === "email" )
+        {
+            result = await AXIAL_MAILER.sendMail( "Votre code de vérification", decryptedEmail, "sendcode", { code: tempCode } );
+        }
+        console.log( verifType, result );
+        response.json( { status: "ok", recipient: recipient } );
     }
     catch(err)
     {
@@ -445,13 +507,46 @@ const apiAuthCodeVerifyHandler = async function( request, response )
     {
         const user = response.locals.user;
         const code = request.body.code;
-        const timeFilter = { timecode: code, timechecker: user.email };
-        const timeResult = await AXIAL_MONGO.getData("codes", timeFilter);
-        if( Array.isArray(timeResult) && timeResult.length === 0 )
+        const method = String(request.body.method);
+        let verified = false;
+        if( method === "sms" )
         {
-            response.json(BASIC_KO);
+            const decryptedTel = AxialCryptoUtils.decrypt( user.tel );
+            const realTel = "+33" + decryptedTel.substring(1);
+            console.log(realTel);
+            const sms_object = 
+            {
+                target: { type: "phone_number", value: realTel }, code: code
+            };
+            const smsCheck = await preludeClient.verification.check( sms_object );
+            console.log( smsCheck.status )
+            if( smsCheck.status && smsCheck.status == "success" )
+            {
+                verified = true;
+            }
+        }
+        else if( method === "email" )
+        {
+            const timeFilter = { timecode: code, timechecker: user.email };
+            const timeResult = await AXIAL_MONGO.getData("codes", timeFilter);
+            console.log(timeResult);
+
+            if( timeResult === null || ( Array.isArray(timeResult) === true && timeResult.length === 0 ) )
+            {
+                verified = false;
+            }
+            else
+            {
+                verified = true;
+            }
         }
         else
+        {
+            response.json(BASIC_KO);
+            return;
+        }
+
+        if( verified === true )
         {
             const userUpdated = await AXIAL_MONGO.updateData("users", {email: user.email}, {$set: {verified: true}});
             const currentUser = await AXIAL_MONGO.getData( "users", {uuid: user.uuid} );
@@ -467,7 +562,6 @@ const apiAuthCodeVerifyHandler = async function( request, response )
             const jsonResponse = { status: "ok", uuid: user.uuid, path: redirection };
             response.json(jsonResponse);
         }
-        
     }
     catch(err)
     {
@@ -490,7 +584,7 @@ const apiAuthSignupHandler = async function( request, response )
     {
         const encryptedEmail = AxialCryptoUtils.encrypt( email );
         const possibleUsers = await AXIAL_MONGO.getData("users", { model: "user", email: encryptedEmail } );
-        console.log( possibleUsers );
+        //console.log( possibleUsers );
         if( possibleUsers === null )
         {
             if( STRIPE_USE === true )
@@ -528,6 +622,37 @@ const apiAuthSignupHandler = async function( request, response )
             // user already exists
             response.json(BASIC_KO);
         }
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( { status: "ko", error: err } );
+    }
+};
+
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiAuthEmailCheckHandler = async function( request, response )
+{
+    //console.log("check email server");
+    let body = request.body;
+    const email = body.email;
+    try
+    {
+        const encryptedEmail = AxialCryptoUtils.encrypt( email );
+        const possibleUsers = await AXIAL_MONGO.getData("users", { email: encryptedEmail }, "user_base" );
+        //console.log( "mail checker", possibleUsers );
+        if( possibleUsers === null )
+        {
+            response.json( { status: "ok", exists: false } );
+        }
+        else
+        {
+            response.json( { status: "ok", exists: true } );
+        }
         
     }
     catch(err)
@@ -559,6 +684,11 @@ const apiAuthSignoutHandler = function( request, response )
 ///
 /// DATA MAIN PART
 ///
+
+/**
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
 const apiDataGet = async function( request, response )
 {
     try
@@ -670,6 +800,10 @@ const apiDataGet = async function( request, response )
     }
 };
 
+/**
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
 const apiDataSet = async function( request, response )
 {
     try
@@ -689,6 +823,10 @@ const apiDataSet = async function( request, response )
     }
 };
 
+/**
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
 const apiDataDel = async function( request, response )
 {
     console.log("API_DATA_DEL");
@@ -1447,13 +1585,474 @@ const apiEventSet = async function( request, response )
 };
 
 ///
+/// PUSH
+///
+
+const apiPushSubscribe = async function( request, response )
+{
+    let message = "";
+    try
+    {
+        const doc = request.body;
+        const alreadyExist = await AXIAL_MONGO.getData( "notifications", { user_id: doc.user_id }, "notif_subscription" );
+        //console.log( alreadyExist );
+
+        if( alreadyExist === null )
+        {
+            const result = await AXIAL_MONGO.setData( "notifications", doc, "notif_subscription" );
+            console.log( result );
+            message = "subscription_registered";
+        }
+        else
+        {
+            message = "subscription_exists";
+        }
+
+        
+        response.json( { status: "ok", message: message } );
+
+    }
+    catch(err)
+    {
+        console.log(err);
+        message = "subscription_error"
+        response.json( { status: "ko", message: message } );
+    }
+};
+
+const apiPushUnsubscribe = async function( request, response )
+{
+
+};
+
+const apiPushSend = async function( request, response )
+{
+    try
+    {
+        const subs = await AXIAL_MONGO.getData("notifications", { model: "notif_subscription" } , "notif_subscription" );
+        const pushTest = { title: "I'm ze Title", body: "The Hell I'm Rockin'!" };
+        const pushPayload = JSON.stringify(pushTest);
+
+        if( subs !== null )
+        {
+            if( Array.isArray(subs) === true )
+            {
+
+            }
+            else
+            {
+                const realSubscription = JSON.parse( subs.subscription );
+                console.log( realSubscription );
+                await webpush.sendNotification( realSubscription, pushPayload );
+            }
+        }
+        
+        response.json( {status: "ok", sent: true } );
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( BASIC_KO );
+    }
+};
+
+///
+/// PROJECTS
+///
+
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiProjectsCreate = async function( request, response )
+{
+    try
+    {
+        // we need the uuid of the user that is not necessary the one of the logged person
+        const doc = request.body;
+        const localUser = response.locals.user;
+        let projectData = {};
+
+        const simulation = await AXIAL_MONGO.setData( "projects", { simulation_name: "Estimation 1", user_uuid: doc.uuid } , "simulation" );
+        console.log( simulation );
+        if( simulation?.acknowledged === true )
+        {
+            const project = await AXIAL_MONGO.setData( "projects", { simulations: [simulation.insertedId.toString()], user_uuid: doc.uuid } ,"project" );
+            console.log( project );
+            projectData = await AXIAL_MONGO.getData( "projects", { _id: project.insertedId.toString() }, "project" );
+        }
+        
+        response.json( { status: "ok", content: projectData } );
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( BASIC_KO );
+    }
+};
+
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiProjectsGet = async function( request, response )
+{
+    console.log("API_PROJECTS_GET");
+    try
+    {
+        const uuid = request.query.uuid;
+        if( uuid )
+        {
+            const projectsData = await AXIAL_MONGO.getData( "projects", { user_uuid: uuid, model: "project" } );
+            response.json( { status: "ok", content: projectsData } );
+        }
+        else
+        {
+            response.json(  BASIC_KO  );
+        }
+        
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( BASIC_KO );
+    }
+};
+
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiProjectsUpdate = async function( request, response )
+{
+    try
+    {
+        const projectData = request.body;
+        const update = await AXIAL_MONGO.setData( "projects", projectData ,"project" );
+        response.json( BASIC_OK );
+
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( BASIC_KO );
+    }
+};
+
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiSimulationGet = async function( request, response )
+{
+    console.log("API_SIMULATION_GET");
+    try
+    {
+        const simid = request.query.simid;
+        if( simid )
+        {
+            const simulation = await AXIAL_MONGO.getData( "projects", { _id: simid, model: "simulation" } );
+            response.json( { status: "ok", content: simulation } );
+        }
+        else
+        {
+            response.json( { BASIC_KO } );
+        }
+        
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( BASIC_KO );
+    }
+};
+
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiSimulationUpdate = async function( request, response )
+{
+    console.log("API_SIMULATION_UPDATE");
+    try
+    {
+        const simulationData = request.body;
+        console.log(simulationData);
+        const update = await AXIAL_MONGO.setData( "projects", simulationData ,"simulation" );
+        console.log(update);
+        response.json( BASIC_OK );
+        
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( BASIC_KO );
+    }
+};
+
+///
+/// CONVERSATIONS
+///
+
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiConversationCreate = async function( request, response )
+{
+    console.log("API_CONVERSATION_CREATE");
+    try
+    {
+        const localUser = response.locals.user;
+        
+        const body = request.body;
+        const inserted = await AXIAL_MONGO.setData("messages", body, "conversation");
+        const _id = inserted.insertedId.toHexString()
+        const conversation = await AXIAL_MONGO.getData("messages", { _id: _id } );
+        
+        response.json( { status: "ok", content: conversation } );
+
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( BASIC_KO );
+    }
+};
+
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiConversationGet = async function( request, response )
+{
+    try
+    {
+        
+        response.json( BASIC_OK );
+
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( BASIC_KO );
+    }
+};
+
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiConversationList = async function( request, response )
+{
+    console.log("API_CONVERSATION_LIST");
+    try
+    {
+        const query = request.query;
+        //console.log(query);
+        
+        const localUser = response.locals.user;
+        const uuid = localUser.uuid;
+        let conversations = new Array();
+        const conversationsFrom = await AXIAL_MONGO.getData( "messages",  { model:"conversation", from: uuid }  );
+        
+        console.log( conversationsFrom );
+        
+        if( conversationsFrom !== null )
+        {
+            if( Array.isArray(conversationsFrom) === true )
+            {
+                conversations.concat(conversationsFrom);
+            }
+            else
+            {
+                conversations.push( conversationsFrom );
+            }
+        }
+        const conversationsTo = await AXIAL_MONGO.getData( "messages",  { model:"conversation", to: uuid }  );
+        console.log( conversationsTo );
+
+        if( conversationsTo !== null )
+        {
+            if( Array.isArray(conversationsTo) === true )
+            {
+                conversations.concat(conversationsTo);
+            }
+            else
+            {
+                conversations.push( conversationsTo );
+            }
+        }
+
+        console.log( conversations );
+
+        response.json( { status: "ok", content: conversations } );
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( BASIC_KO );
+    }
+};
+
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiConversationContacts = async function( request, response )
+{
+    console.log("API_CONVERSATION_CONTACTS");
+    try
+    {
+        const localUser = response.locals.user;
+        const uuid = localUser.uuid;
+        const role = localUser.role;
+
+        const messagingRule = MESSAGING_RULES.get( role ).allow_to;
+        let contacts = new Array();
+        for( const mr of messagingRule )
+        {
+            let uuids = new Array();
+            const arole = mr.role;
+            const vas = mr.view_as;
+            if( vas === "group" )
+            {
+                const group = await AXIAL_MONGO.getData( "users", { role: "admin" }, "user_base" );
+                console.log( group );
+                if( group === null ) { continue; }
+                if( Array.isArray(group) === true )
+                {
+                    for( const u of group )
+                    {
+                        uuids.push( u.uuid );
+                    }
+                }
+                else
+                {
+                    uuids.push( group.uuid );
+                }
+                
+            }
+            contacts.push( { label: mr.display_as, uuids: uuids } );
+        }
+        response.json( { status: "ok", content: contacts } );
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( BASIC_KO );
+    }
+};
+
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiConversationUpdate = async function( request, response )
+{
+    try
+    {
+        response.json( BASIC_OK );
+
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( BASIC_KO );
+    }
+};
+
+
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiConversationDelete = async function( request, response )
+{
+    try
+    {
+        
+        response.json( BASIC_OK );
+
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( BASIC_KO );
+    }
+};
+
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiMessageGet = async function( request, response )
+{
+    console.log("API_MESSAGE_GET");
+    try
+    {
+        const convUuid = request.query.c;
+        console.log( convUuid );
+        const messages = await AXIAL_MONGO.getData( "messages", { model: "message", conversation_id: convUuid }, "message" );
+        console.log( messages );
+        let array = new Array();
+        if( messages !== null )
+        {
+            if( Array.isArray(messages) ) { array = messages; }
+            else { array.push( messages ); }
+        }
+        response.json( { status: "ok", content: array } );
+
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( BASIC_KO );
+    }
+};
+
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiMessageCreate = async function( request, response )
+{
+    console.log("API_MESSAGE_CREATE");
+    try
+    {
+        const body = request.body;
+        const inserted = await AXIAL_MONGO.setData("messages", body, "message" );
+        response.json( BASIC_OK );
+
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( BASIC_KO );
+    }
+};
+
+///
 /// SERVER ROUTES
 ///
 
 const AXIAL_SERVER_APPLICATION = express();
 
 AXIAL_SERVER_APPLICATION.disable("x-powered-by");
-
+AXIAL_SERVER_APPLICATION.use( cors(CORS_OPTIONS) );
 AXIAL_SERVER_APPLICATION.use( startMiddleware );
 //AXIAL_SERVER_APPLICATION.use( jsonRawMiddleware );
 //AXIAL_SERVER_APPLICATION.use( express.json() );
@@ -1498,6 +2097,7 @@ AXIAL_SERVER_APPLICATION.post( "/api/params/infobar/set", apiParamsInfobarSet );
 AXIAL_SERVER_APPLICATION.get( "/api/params/weektime/get", apiParamsWeektimeGet );
 AXIAL_SERVER_APPLICATION.post( "/api/params/weektime/set", apiParamsWeektimeSet );
 
+
 // SERVICES
 AXIAL_SERVER_APPLICATION.post( "/api/services/qrcode/", apiServicesQRCode );
 
@@ -1507,6 +2107,11 @@ AXIAL_SERVER_APPLICATION.post( "/api/auth/signup", apiAuthSignupHandler);
 AXIAL_SERVER_APPLICATION.post( "/api/auth/signout", apiAuthSignoutHandler);
 AXIAL_SERVER_APPLICATION.post( "/api/auth/code/send", apiAuthCodeSendHandler);
 AXIAL_SERVER_APPLICATION.post( "/api/auth/code/verify", apiAuthCodeVerifyHandler);
+AXIAL_SERVER_APPLICATION.post( "/api/auth/email/check/", apiAuthEmailCheckHandler);
+
+// PUSH
+AXIAL_SERVER_APPLICATION.post( "/api/push/subscribe", apiPushSubscribe);
+AXIAL_SERVER_APPLICATION.get( "/api/push/send", apiPushSend);
 
 // MEDIAS
 AXIAL_SERVER_APPLICATION.get( "/api/medias/get", apiMediasGetHandler );
@@ -1519,6 +2124,15 @@ AXIAL_SERVER_APPLICATION.get( "/api/files/get/all", apiFilesGetAllHandler );
 
 // PRODUCTS
 AXIAL_SERVER_APPLICATION.post( "/api/products/set", apiProductsSet );
+
+// PROJECTS
+AXIAL_SERVER_APPLICATION.post( "/api/projects/create", apiProjectsCreate );
+AXIAL_SERVER_APPLICATION.get( "/api/projects/get", apiProjectsGet );
+AXIAL_SERVER_APPLICATION.post( "/api/projects/update", apiProjectsUpdate );
+
+// SIMULATIONS
+AXIAL_SERVER_APPLICATION.get( "/api/simulations/get", apiSimulationGet );
+AXIAL_SERVER_APPLICATION.post( "/api/simulations/update", apiSimulationUpdate );
 
 // SUBSCRIPTIONS
 AXIAL_SERVER_APPLICATION.post( "/api/subscriptions/set", apiSubscriptionsSet );
@@ -1533,12 +2147,116 @@ AXIAL_SERVER_APPLICATION.post( "/api/webhooks/stripe", apiWebhooksStripe );
 // EVENTS
 AXIAL_SERVER_APPLICATION.post( "/api/events/set", apiEventSet );
 
+// CONVERSATIONS
+AXIAL_SERVER_APPLICATION.get( "/api/conversation/list", apiConversationList );
+AXIAL_SERVER_APPLICATION.get( "/api/conversation/contacts", apiConversationContacts );
+AXIAL_SERVER_APPLICATION.post( "/api/conversation/create", apiConversationCreate );
+
+// MESSAGES
+AXIAL_SERVER_APPLICATION.get( "/api/message/get", apiMessageGet );
+AXIAL_SERVER_APPLICATION.post( "/api/message/create", apiMessageCreate );
+
 // STATIC
 AXIAL_SERVER_APPLICATION.use( "/", express.static( path.join( DIRNAME, "static" )) );
 // NO DEV FOLDER
 AXIAL_SERVER_APPLICATION.use( "/medias", express.static( path.join( DIRNAME, MEDIAS_FOLDER )) );
 AXIAL_SERVER_APPLICATION.use( "/events", express.static( path.join( "events" )) ); // NOT NORMAL
 
+AXIAL_SERVER_APPLICATION.use( "/pdf", express.static( path.join( "pdf" )) ); // NOT NORMAL
+
 AXIAL_SERVER_APPLICATION.use( finalMiddleware );
 
-export default AXIAL_SERVER_APPLICATION;
+const AXIAL_SERVER = http.createServer( AXIAL_SERVER_APPLICATION );
+//const PORT = process.env.PORT || 80;
+const PORT = 2383;
+
+const SOCKETS_MAP = new Map();
+
+// SOCKET ENTRY POINT
+const socketOpenHandler = function( event )
+{
+    console.log("socket open");
+    console.log(event);
+};
+
+const socketMessageHandler = function( data )
+{
+    console.log("socket message");
+    const jsonData = JSON.parse( data.toString() );
+    console.log( jsonData );
+    
+    
+    
+    
+    ///const allWS = Array.from( wss.clients );
+
+
+
+    /*
+    for( const ws of allWS )
+    {
+        ws.send( data.toString() );
+    }
+    */
+    
+    /// keep super important
+    /*
+    for( const ws of allWS )
+    {
+        if( ws == this )
+        {
+            console.log("same socket, do not send");
+            continue;
+        }
+        ws.send( data.toString() );
+    }
+    */
+};
+
+const socketErrorHandler = function( event )
+{
+    console.log("socket error");
+    console.log(event);
+};
+
+const socketCloseHandler = function( event )
+{
+    console.log("socket close");
+    const ws = this;
+    SOCKETS_MAP.delete(ws);
+    //console.log(SOCKETS_MAP);
+};
+
+/**
+ * 
+ * @param { WebSocket } ws 
+ * @param { IncomingMessage } im 
+ */
+const wssConnectionHandler = function ( ws, im )
+{
+    console.log("SOCKET CONNECTION");
+
+    console.log(im.url);
+
+    const SURL = new URL( im.url, WEBSOCKET_URL );
+    const userUuid = SURL.searchParams.get("u");
+    const userRole = SURL.searchParams.get("r");
+    
+    ws.addListener("open", socketOpenHandler);
+    ws.addListener("message", socketMessageHandler);
+    ws.addListener("error", socketErrorHandler);
+    ws.addListener("close", socketCloseHandler);
+
+    SOCKETS_MAP.set( ws, { role: userRole, uuid: userUuid } );
+
+    //console.log( SOCKETS_MAP );
+};
+
+
+const wss = new WebSocketServer( { server: AXIAL_SERVER, path: "/ws" } );
+wss.addListener("connection", wssConnectionHandler );
+
+
+AXIAL_SERVER.listen(PORT);
+
+export { AXIAL_SERVER, AXIAL_SERVER_APPLICATION }

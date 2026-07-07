@@ -1,0 +1,20 @@
+<!-- ./list/AxialListAccordionToggle -->
+<template id="axial-list-accordion-toggle-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="background" class="axial_list_accordion_toggle-background"></div>
+    <div id="foreground" class="axial_list_accordion_toggle-foreground"></div>
+    <div id="main" class="axial_list_accordion_toggle-main">
+        <div id="content" class="axial_list_accordion_toggle-content">
+            <div id="icon" class="axial_list_accordion_toggle-icon">
+                <slot id="iconSlot" name="axial-icon"></slot>
+            </div>
+            <div id="iconToggle" class="axial_list_accordion_toggle-icontoggle">
+                <slot id="iconToggleSlot" name="axial-icon-toggle"></slot>
+            </div>
+            <div id="label" class="axial_list_accordion_toggle-label"></div>
+        </div>
+        <div id="arrow" class="axial_list_accordion_toggle-arrow">
+            <i class="fa-solid fa-chevron-right" style="color: #fff;"></i>
+        </div>
+    </div>
+</template>

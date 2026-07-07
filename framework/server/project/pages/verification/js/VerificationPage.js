@@ -1,9 +1,9 @@
 "use strict";
 
-import { GlobalPage } from "../../../js/GlobalPage.js";
 import { AxialAuthVerifyer } from "../../../../axial/js/auth/AxialAuthVerifyer.js";
+import { AxialWebApplicationBase } from "../../../../axial/js/core/AxialWebApplicationBase.js";
 
-class VerificationPage extends GlobalPage
+class VerificationPage extends AxialWebApplicationBase
 {
     /// elements
     /** @type { AxialAuthVerifyer } */

@@ -2,7 +2,7 @@
 
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
 import { PathUtils } from "../utils/PathUtils.js";
-import { AxialTogglePasswordButton } from "../admin/button/AxialTogglePasswordButton.js";
+import { AxialTogglePasswordButton } from "../button/AxialTogglePasswordButton.js";
 import { AxialServiceButton } from "../button/AxialServiceButton.js";
 
 class AxialAuthRegister extends AxialComponentBase

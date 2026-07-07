@@ -8,7 +8,7 @@ class AxialAccordionElement extends AxialComponentBase
 {
     /// vars
     /** @type { String } */
-    #text = "";
+    #text;
 
     /** @type { String } */
     #dataTextProperty;
@@ -26,6 +26,13 @@ class AxialAccordionElement extends AxialComponentBase
         this.classList.add("axial_accordion_element");
         this.template = "axial-accordion-element-template";
     }
+
+    static get observedAttributes()
+    {
+        return ["axial-text" ];
+    }
+
+    //get toggle() { }
 
     get text() { return this.#text; }
     set text( value )
@@ -45,6 +52,15 @@ class AxialAccordionElement extends AxialComponentBase
     attributeChangedCallback(name, oldValue, newValue)
     {
         super.attributeChangedCallback(name, oldValue, newValue);
+
+        if( name === "axial-text" )
+        {
+            this.#text = newValue;
+            if( this.#toggle )
+            {
+                this.#toggle.text = this.#text;
+            }
+        }
     }
 
     _onDataChanged()
@@ -58,8 +74,13 @@ class AxialAccordionElement extends AxialComponentBase
         this.#container = this.shadowRoot.getElementById("container");
         this.#toggle = this.shadowRoot.getElementById("toggle");
         this.#toggle.container = this.#container;
+
+        if( this.#text !== undefined )
+        {
+            this.#toggle.text = this.#text;
+        }
         
-        this.#updateComponent();
+        //this.#updateComponent();
     }
 
     #updateComponent()

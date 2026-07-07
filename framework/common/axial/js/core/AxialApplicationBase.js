@@ -1,16 +1,35 @@
 "use strict";
 
-import { LanguageUtils } from "../utils/LanguageUtils.js";
-import { AxialOverlayManager } from "../overlay/AxialOverlayManager.js";
-import { AxialDropdownManager } from "../dropdown/AxialDropdownManager.js";
-import { AxialConsentManager } from "../application/AxialConsentManager.js";
+///
+/// APPLICATION
+///
 
-import { AxialNotifier } from "../application/AxialNotifier.js";
+import { AxialConsentManager } from "../application/AxialConsentManager.js";
 import { AxialInformationBar } from "../application/AxialInformationBar.js";
 import { AxialDeletionOverlay } from "../application/AxialDeletionOverlay.js";
 import { AxialArchiveOverlay } from "../application/AxialArchiveOverlay.js";
 import { AxialConsentOverlay } from "../application/AxialConsentOverlay.js";
+import { AxialNotifier } from "../application/AxialNotifier.js";
+
+///
+/// UTILS
+///
+
 import { PathUtils } from "../utils/PathUtils.js";
+import { LanguageUtils } from "../utils/LanguageUtils.js";
+
+///
+/// OVERLAY
+///
+
+import { AxialOverlayManager } from "../overlay/AxialOverlayManager.js";
+
+///
+/// DROPDOWN
+///
+
+import { AxialDropdownManager } from "../dropdown/AxialDropdownManager.js";
+
 
 /**
  * The main base class for your application.

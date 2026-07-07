@@ -22,8 +22,17 @@ class AxialToggleButtonGroup extends AxialComponentBase
     /** @type { Boolean } */
     #forceSelection = false;
 
+    /** @type { Set.<String>} */
+    #DIRECTIONS = Object.freeze( new Set( [ "row", "column" ] ) ); // CSS.supports(k, v) also a good choice
+
+    /** @type { String } */
+    #direction = "row"; // must be computed
+
+    /** @type { Number } */
+    #gap = 20;
+
     /// elements
-    /** @type { HTMLSlotElement } */
+    /** @type { HTMLElement } */
     #holder;
 
     /** @type { HTMLSlotElement } */
@@ -45,6 +54,46 @@ class AxialToggleButtonGroup extends AxialComponentBase
         this.#boundTogglesBuiltHandler = this.#togglesBuiltHandler.bind(this);
     }
 
+    static get observedAttributes()
+    {
+        return ["axial-direction", "axial-gap" ];
+    }
+
+    attributeChangedCallback(name, oldValue, newValue)
+    {
+        super.attributeChangedCallback(name, oldValue, newValue);
+        if( name === "axial-direction" )
+        {
+            if( this.#DIRECTIONS.has(newValue) && this.#direction !== newValue )
+            {
+                this.#direction = newValue;
+                if( this.#holder )
+                {
+                    this.#holder.style.flexDirection = this.#direction;
+                }
+            }
+        }
+
+        if( name === "axial-gap" )
+        {
+            const testGap = Number( newValue );
+            if( isNaN( Number( testGap ) ) === false )
+            {
+                this.#gap = testGap
+            }
+            if( this.#holder )
+            {
+                this.#holder.style.gap = `${this.#gap}px`;
+            }
+        }
+    }
+
+    /**
+     * TEMPORARY until add at index is ok
+     * @type { HTMLElement }
+     * @readonly
+     */
+    get holder() { return this.#holder; }
     
     _buildComponent()
     {
@@ -54,13 +103,17 @@ class AxialToggleButtonGroup extends AxialComponentBase
         const slotElements = this.#slot.assignedElements({flatten: true});
         for( const se of slotElements )
         {
-            if( se instanceof AxialToggleButtonBase )
+            se.addEventListener("componentBuilt", this.#boundTogglesBuiltHandler);
+            /*
+            if( se instanceof AxialToggleButtonBase == true )
             {
+                console.log("se ok");
                 this.#maxCounter++;
                 se.addEventListener("componentBuilt", this.#boundTogglesBuiltHandler);
+                se.addEventListener("toggleChanged", this.#boundToggleChangedHandler);
                 this.addToggle( se );
-
             }
+            */
         }
         if( this.#selectedIndex !== -1 )
         {
@@ -70,10 +123,28 @@ class AxialToggleButtonGroup extends AxialComponentBase
                 toggle.selected = true;
             }
         }
+
+        if( this.#holder )
+        {
+            this.#holder.style.flexDirection = this.#direction;
+            this.#holder.style.gap = `${this.#gap}px`;
+        }
     }
 
+    /**
+     * 
+     * @param { CustomEvent } event 
+     */
     #togglesBuiltHandler( event )
     {
+        const isToggle = event.target instanceof AxialToggleButtonBase;
+        //console.log( "isToggle on built ", isToggle );
+        if( isToggle === true )
+        {
+            this.addToggle( event.target )
+        }
+
+        /// ne fonctionne plus du coup
         this.#counter++;
         if( this.#counter >= this.#maxCounter )
         {
@@ -88,7 +159,8 @@ class AxialToggleButtonGroup extends AxialComponentBase
      * @public
      * @readonly
      */
-    get toggles() { return Array.from(this.#toggles); }
+    //get toggles() { return Array.from(this.#toggles); }
+    get toggles() { return this.#toggles; }
 
     /**
      * Get or set the selected button by index.
@@ -301,6 +373,16 @@ class AxialToggleButtonGroup extends AxialComponentBase
 
         const indexChangedEvent = new CustomEvent("indexChanged", { detail: { selectedIndex: indexChanged } });
         this.dispatchEvent(indexChangedEvent);
+    }
+
+    /**
+     * 
+     * @param { AxialToggleButtonBase } toggle 
+     * @returns 
+     */
+    addToggleListener( toggle )
+    {
+        return toggle.addEventListener("toggleChanged", this.#boundToggleChangedHandler);
     }
 }
 

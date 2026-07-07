@@ -1,0 +1,49 @@
+<!---------------------------------->
+<!--      ACCORDION  PACKAGE      -->
+<!---------------------------------->
+
+<!-- ./accordion/AxialAccordionToggle -->
+<template id="axial-accordion-toggle-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="background" class="axial_accordion_toggle-background"></div>
+    <div id="foreground" class="axial_accordion_toggle-foreground"></div>
+    <div id="main" class="axial_accordion_toggle-main">
+        <div id="arrow" class="axial_accordion_toggle-arrow">
+            <i class="fa-solid fa-chevron-right"></i>
+        </div>
+        <div id="content" class="axial_accordion_toggle-content">
+            <div id="icon" class="axial_accordion_toggle-icon">
+                <slot id="iconSlot" name="axial-icon"></slot>
+            </div>
+            <div id="iconToggle" class="axial_accordion_toggle-icontoggle">
+                <slot id="iconToggleSlot" name="axial-icon-toggle"></slot>
+            </div>
+            <div id="label" class="axial_accordion_toggle-label"></div>
+        </div>
+    </div>
+</template>
+
+<!-- ./accordion/AxialAccordionContainer -->
+<template id="axial-accordion-container-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="content" class="axial_accordion_container-content">
+        <slot id="slot" name="axial-content"></slot>
+    </div>
+</template>
+
+<!-- ./accordion/AxialAccordionElement -->
+<template id="axial-accordion-element-template">
+    <link rel="stylesheet" href="./styles.css">
+    <axial-accordion-toggle id="toggle"></axial-accordion-toggle>
+    <axial-accordion-container id="container">
+        <slot id="slot" slot="axial-content" name="axial-content"></slot>
+    </axial-accordion-container>
+</template>
+
+<!-- ./accordion/AxialAccordion -->
+<template id="axial-accordion-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="elements" class="axial_accordion-elements">
+        <slot id="slot" name="axial-elements"></slot>
+    </div>
+</template>

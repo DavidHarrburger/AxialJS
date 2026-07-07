@@ -1,10 +1,9 @@
 "use strict";
 
-import { GlobalPage } from "../../../js/GlobalPage.js";
-
+import { AxialWebApplicationBase } from "../../../../axial/js/core/AxialWebApplicationBase.js";
 import { AxialAuthLogin } from "../../../../axial/js/auth/AxialAuthLogin.js";
 
-class LoginPage extends GlobalPage
+class LoginPage extends AxialWebApplicationBase
 {
     /// elements
     /** @type { AxialAuthLogin } */
@@ -27,12 +26,14 @@ class LoginPage extends GlobalPage
     _onApplicationDomLoaded( event )
     {
         super._onApplicationDomLoaded( event );
+
+        this.#login = document.getElementById("login");
     }
 
     _onApplicationPageLoaded( event )
     {
         super._onApplicationPageLoaded( event );
-        this.#login = document.getElementById("login");
+        
         if( this.#login )
         {
             this.#login.addEventListener("loginSuccess", this.#boundLoginSuccess);
@@ -42,7 +43,7 @@ class LoginPage extends GlobalPage
 
     #loginSuccess( event )
     {
-        window.location.href = "../verification/";
+        window.location.href = "../verification/"; /// hmmmmm
     }
 
     #loginError( event ) {}

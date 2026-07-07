@@ -83,6 +83,13 @@ class AxialButton extends AxialButtonBase
         this.addEventListener("pointerleave", this.#boundLeaveHandler);
     }
 
+    disconnectedCallback()
+    {
+        this.removeEventListener("pointerenter", this.#boundEnterHandler);
+        this.removeEventListener("pointerleave", this.#boundLeaveHandler);
+        if( super.disconnectedCallback ) { super.disconnectedCallback(); }
+    }
+
     static get observedAttributes()
     {
         return ["axial-text", "axial-icon-position", "axial-theme", "axial-color", "axial-size", "axial-weight", "axial-align", "axial-style", "axial-gap" ];
@@ -170,7 +177,7 @@ class AxialButton extends AxialButtonBase
         super.attributeChangedCallback(name, oldValue, newValue);
         if( name === "axial-text" )
         {
-            this.#text = newValue;
+            this.#text = newValue === null ? "" : newValue;
             if( this.#label )
             {
                 this.#label.innerHTML = this.#text;
@@ -180,7 +187,7 @@ class AxialButton extends AxialButtonBase
 
         if( name === "axial-icon-position" )
         {
-            if( this.#iconPositions.has(newValue) === true )
+            if( newValue !== null && this.#iconPositions.has(newValue) === true )
             {
                 this.#iconPosition = newValue;
             }
@@ -188,14 +195,30 @@ class AxialButton extends AxialButtonBase
 
         if( name === "axial-theme" )
         {
-            this.#themeColor = newValue;
-            if( this.#background ) { this.#background.style.backgroundColor = this.#themeColor; }
+            if( newValue === null )
+            {
+                this.#themeColor = "";
+                if( this.#background ) { this.#background.style.backgroundColor = window.getComputedStyle(this.#background).backgroundColor; }
+            }
+            else
+            {
+                this.#themeColor = newValue;
+                if( this.#background ) { this.#background.style.backgroundColor = this.#themeColor; }
+            }
         }
 
         if( name === "axial-color" )
         {
-            this.#textColor = newValue;
-            if( this.#label ) { this.#label.style.color = this.#textColor; }
+            if( newValue === null )
+            {
+                this.#textColor = "";
+                if( this.#label ) { this.#label.style.color = window.getComputedStyle(this.#label).color; }
+            }
+            else
+            {
+                this.#textColor = newValue;
+                if( this.#label ) { this.#label.style.color = this.#textColor; }
+            }
         }
 
         if( name === "axial-align" )
@@ -212,19 +235,42 @@ class AxialButton extends AxialButtonBase
 
         if( name === "axial-weight" )
         {
-            this.#textWeight = newValue;
-            if( this.#label ) { this.#label.style.fontWeight = this.#textWeight; }
+            if( newValue === null )
+            {
+                this.#textWeight = "";
+                if( this.#label ) { this.#label.style.fontWeight = window.getComputedStyle(this.#label).fontWeight; }
+            }
+            else
+            {
+                this.#textWeight = newValue;
+                if( this.#label ) { this.#label.style.fontWeight = this.#textWeight; }
+            }
         }
 
         if( name === "axial-size" )
         {
-            this.#textSize = newValue;
-            if( this.#label ) { this.#label.style.fontSize = this.#textSize; }
+            if( newValue === null )
+            {
+                this.#textSize = "";
+                if( this.#label ) { this.#label.style.fontSize = window.getComputedStyle(this.#label).fontSize; }
+            }
+            else
+            {
+                this.#textSize = newValue;
+                if( this.#label ) { this.#label.style.fontSize = this.#textSize; }
+            }
         }
 
         if( name === "axial-gap" )
         {
-            this.#gap = isNaN( Number(newValue) ) === true ? 10 : Number(newValue);
+            if( newValue === null )
+            {
+                this.#gap = 10;
+            }
+            else
+            {
+                this.#gap = isNaN( Number(newValue) ) === true ? 10 : Number(newValue);
+            }
             if( this.#content ) { this.#content.style.gap = String(this.#gap) + "px"; }
         }
     }

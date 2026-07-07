@@ -1,0 +1,14 @@
+<!-- ./list/AxialList -->
+<template id="axial-list-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div class="axial_list-holder">
+        <div id="header" class="axial_list-header">
+            <slot id="headerSlot" name="axial-header"></slot>
+        </div>
+        <div id="content" class="axial_admin_list-content">
+        </div>
+        <div id="footer" class="axial_admin_list-footer">
+            <slot id="footerSlot" name="axial-footer"></slot>
+        </div>
+    </div>
+</template>

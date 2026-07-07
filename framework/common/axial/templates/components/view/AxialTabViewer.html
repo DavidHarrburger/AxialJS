@@ -1,0 +1,25 @@
+<!-- AxialTabViewer -->
+<template id="axial-tab-viewer-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="holder" class="axial_tab_viewer-holder">
+        <div id="header" class="axial_tab_viewer-header">
+            <slot id="headerSlot" name="axial-header"></slot>
+        </div>
+        <div id="main" class="axial_tab_viewer-main">
+            <div id="tabsHolder" class="axial_tab_viewer-tabsholder">
+                <axial-tab-bar id="tabs" class="axial_tab_viewer-tabs">
+                    <slot id="slotTabs" name="axial-tab-toggles" slot="axial-toggles"></slot>
+                </axial-tab-bar>
+                <axial-tab-button id="addTabButton" class="axial_tab_viewer-addtab">
+                    <i slot="axial-icon" class="axial_tab_button-icon fa-solid fa-plus"></i>
+                </axial-tab-button>
+            </div>
+            <axial-viewer id="viewer" class="axial_tab_viewer-viewer">
+                <slot id="slotViews" name="axial-tab-views" slot="axial-views"></slot>
+            </axial-viewer>
+        </div>
+        <div id="footer" class="axial_tab_viewer-footer">
+            <slot id="footerSlot" name="axial-footer"></slot>
+        </div>
+    </div>
+</template>

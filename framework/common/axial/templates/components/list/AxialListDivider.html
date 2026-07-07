@@ -1,0 +1,20 @@
+<!-- ./list/AxialAdminListDivider -->
+<template id="axial-admin-list-divider-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="background" class="axial_admin_list_item-background">
+        <div id="droptop" class="axial_admin_list_item-droptop"></div>
+        <div id="dropbottom" class="axial_admin_list_item-dropbottom"></div>
+    </div>
+    <div id="content" class="axial_admin_list_item-content axial_admin_list_divider-content">
+        <axial-input-base id="titleInput" class="axial_admin_list_divider-title">DIVIDER</axial-input-base>
+        <div class="axial_spacer"></div>
+        <div id="actions" class="axial_admin_list_item-actions">
+            <axial-button id="trashButton" axial-theme="#000" class="axial_admin_list_divider-button">
+                <i slot="axial-icon" class="fa-color fa-solid fa-trash-can"></i>
+            </axial-button>
+            <axial-button id="gripButton" axial-theme="#000" class="axial_admin_list_divider-button">
+                <i slot="axial-icon" class="fa-color fa-solid fa-grip-vertical"></i>
+            </axial-button>
+        </div>
+    </div>
+</template>

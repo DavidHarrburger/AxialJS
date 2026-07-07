@@ -1,0 +1,186 @@
+<!---------------------------------->
+<!--         DATE  PACKAGE        -->
+<!---------------------------------->
+
+<!-- AxialAgendaCell -->
+<template id="axial-agenda-cell-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="background" class="axial_agenda_cell-background"></div>
+    <div id="over" class="axial_agenda_cell-over"></div>
+</template>
+
+<!-- AxialAgendaDay -->
+<template id="axial-agenda-day-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="background" class="axial_agenda_day-background"></div>
+    <div id="content" class="axial_agenda_day-content">
+        <div id="dayName" class="axial_agenda_day-dayname"></div>
+        <div id="dateNum" class="axial_agenda_day-datenum"></div>
+    </div>
+</template>
+
+<!-- AxialAgendaHour -->
+<template id="axial-agenda-hour-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="background" class="axial_agenda_hour-background"></div>
+</template>
+
+<!-- AxialAgendaTime -->
+<template id="axial-agenda-time-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="label" class="axial_agenda_time-label"></div>
+</template>
+
+<!-- AxialAgenda -->
+<template id="axial-agenda-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="background" class="axial_agenda-background"></div>
+    <div id="main" class="axial_agenda-main">
+        <div id="header" class="axial_agenda-header">
+            
+            <div id="label" class="axial_agenda_header-label">Month Year</div>
+            <div id="previous" class="axial_agenda_header-nav">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                    <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256 246.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z"/>
+                </svg>
+            </div>
+            <div id="next" class="axial_agenda_header-nav">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                    <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/>
+                </svg>
+            </div>
+            
+        </div>
+        <div id="days" class="axial_agenda-days"></div>
+        <div id="content" class="axial_agenda-content">
+            <div id="grid" class="axial_agenda-grid">
+                <div id="hours" class="axial_agenda-hours"></div>
+                <div id="times" class="axial_agenda-times"></div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- AxialCalendar -->
+<template id="axial-calendar-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="background" class="axial_calendar-background"></div>
+    <div id="content" class="axial_calendar-content">
+        <div id="header" class="axial_calendar-header">
+            <div id="label" class="axial_calendar-label"></div>
+            <div id="previous" class="axial_calendar-nav">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                    <path d="M0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32C28.7 32 0 60.7 0 96L0 416zM128 256c0-6.7 2.8-13 7.7-17.6l112-104c7-6.5 17.2-8.2 25.9-4.4s14.4 12.5 14.4 22l0 208c0 9.5-5.7 18.2-14.4 22s-18.9 2.1-25.9-4.4l-112-104c-4.9-4.5-7.7-10.9-7.7-17.6z"/>
+                </svg>
+            </div>
+            <div id="next" class="axial_calendar-nav">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                    <path d="M448 96c0-35.3-28.7-64-64-64L64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320zM320 256c0 6.7-2.8 13-7.7 17.6l-112 104c-7 6.5-17.2 8.2-25.9 4.4s-14.4-12.5-14.4-22l0-208c0-9.5 5.7-18.2 14.4-22s18.9-2.1 25.9 4.4l112 104c4.9 4.5 7.7 10.9 7.7 17.6z"/>
+                </svg>
+            </div>
+        </div>
+        <div id="days" class="axial_calendar-days"></div>
+        <axial-calendar-grid-base id="dates"></axial-calendar-grid-base>
+    </div>
+</template>
+
+<!-- AxialOverlayCalendar -->
+<template id="axial-overlay-calendar-template">
+    <link rel="stylesheet" href="./styles.css">
+    <axial-calendar id="calendar"></axial-calendar>
+</template>
+
+<!-- AxialToggleCalendarDate -->
+<template id="axial-toggle-calendar-date-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="holder" class="axial_toggle_calendar_date-holder">
+        <div id="background" class="axial_toggle_calendar_date-background"></div>
+        <div id="middleground" class="axial_toggle_calendar_date-middleground"></div>
+        <div id="foreground" class="axial_toggle_calendar_date-foreground"></div>
+        <div id="num" class="axial_toggle_calendar_date-num"></div>
+    </div>
+</template>
+
+<!-- AxialWeekPlanning -->
+<template id="axial-week-planning-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="grid" class="axial_week_planning-grid">
+        <div class="axial_week_planning-cell axial_week_planning-morning">Matin</div>
+        <div class="axial_week_planning-cell axial_week_planning-morning_start">Début</div>
+        <div class="axial_week_planning-cell axial_week_planning-morning_end">Fin</div>
+        <div class="axial_week_planning-cell axial_week_planning-morning_total">Total</div>
+        <div id="totalMorning" class="awp_total awp_morning_total">20:00</div>
+
+        <div class="axial_week_planning-cell axial_week_planning-noon">Après-midi</div>
+        <div class="axial_week_planning-cell axial_week_planning-noon_start">Début</div>
+        <div class="axial_week_planning-cell axial_week_planning-noon_end">Fin</div>
+        <div class="axial_week_planning-cell axial_week_planning-noon_total">Total</div>
+        <div id="totalNoon" class="awp_total awp_noon_total">15:00</div>
+
+        <div id="totalWeek" class="awp_total awp_week_total">35:00</div>
+
+        <div class="axial_week_planning-cell axial_week_planning-day">Jour</div>
+        <div class="axial_week_planning-cell axial_week_planning-monday">Lundi</div>
+        <div class="axial_week_planning-cell axial_week_planning-tuesday">Mardi</div>
+        <div class="axial_week_planning-cell axial_week_planning-wednesday">Mercredi</div>
+        <div class="axial_week_planning-cell axial_week_planning-thursday">Jeudi</div>
+        <div class="axial_week_planning-cell axial_week_planning-friday">Vendredi</div>
+        <div class="axial_week_planning-cell axial_week_planning-saturday">Samedi</div>
+        <div class="axial_week_planning-cell axial_week_planning-sunday">Dimanche</div>
+
+        <input type="time" value="08:00" class="awp_input awp_morning_start-1"> <input type="time" value="12:00" class="awp_input awp_morning_end-1"> <div class="awp_subtotal awp_morning_subtotal-1">04:00</div>
+        <input type="time" value="08:00" class="awp_input awp_morning_start-2"> <input type="time" value="12:00" class="awp_input awp_morning_end-2"> <div class="awp_subtotal awp_morning_subtotal-2">04:00</div>
+        <input type="time" value="08:00" class="awp_input awp_morning_start-3"> <input type="time" value="12:00" class="awp_input awp_morning_end-3"> <div class="awp_subtotal awp_morning_subtotal-3">04:00</div>
+        <input type="time" value="08:00" class="awp_input awp_morning_start-4"> <input type="time" value="12:00" class="awp_input awp_morning_end-4"> <div class="awp_subtotal awp_morning_subtotal-4">04:00</div>
+        <input type="time" value="08:00" class="awp_input awp_morning_start-5"> <input type="time" value="12:00" class="awp_input awp_morning_end-5"> <div class="awp_subtotal awp_morning_subtotal-5">04:00</div>
+        <input type="time" value="00:00" class="awp_input awp_morning_start-6"> <input type="time" value="00:00" class="awp_input awp_morning_end-6"> <div class="awp_subtotal awp_morning_subtotal-6">00:00</div>
+        <input type="time" value="00:00" class="awp_input awp_morning_start-7"> <input type="time" value="00:00" class="awp_input awp_morning_end-7"> <div class="awp_subtotal awp_morning_subtotal-7">00:00</div>
+
+        <input type="time" value="14:00" class="awp_input awp_noon_start-1"> <input type="time" value="17:00" class="awp_input awp_noon_end-1"> <div class="awp_subtotal awp_noon_subtotal-1">03:00</div>
+        <input type="time" value="14:00" class="awp_input awp_noon_start-2"> <input type="time" value="17:00" class="awp_input awp_noon_end-2"> <div class="awp_subtotal awp_noon_subtotal-2">03:00</div>
+        <input type="time" value="14:00" class="awp_input awp_noon_start-3"> <input type="time" value="17:00" class="awp_input awp_noon_end-3"> <div class="awp_subtotal awp_noon_subtotal-3">03:00</div>
+        <input type="time" value="14:00" class="awp_input awp_noon_start-4"> <input type="time" value="17:00" class="awp_input awp_noon_end-4"> <div class="awp_subtotal awp_noon_subtotal-4">03:00</div>
+        <input type="time" value="14:00" class="awp_input awp_noon_start-5"> <input type="time" value="17:00" class="awp_input awp_noon_end-5"> <div class="awp_subtotal awp_noon_subtotal-5">03:00</div>
+        <input type="time" value="00:00" class="awp_input awp_noon_start-6"> <input type="time" value="00:00" class="awp_input awp_noon_end-6"> <div class="awp_subtotal awp_noon_subtotal-6">00:00</div>
+        <input type="time" value="00:00" class="awp_input awp_noon_start-7"> <input type="time" value="00:00" class="awp_input awp_noon_end-7"> <div class="awp_subtotal awp_noon_subtotal-7">00:00</div>
+    </div>
+</template>
+
+<!-- AxialOpenHours -->
+<template id="axial-open-hours-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="holder" class="axial_open_hours-holder">
+        <div class="axial_open_hours-amt">Midi</div>
+        <div class="axial_open_hours-pmt">Soir</div>
+
+        <div class="axial_open_hours-d1">Lundi</div>
+        <div class="axial_open_hours-d2">Mardi</div>
+        <div class="axial_open_hours-d3">Mercredi</div>
+        <div class="axial_open_hours-d4">Jeudi</div>
+        <div class="axial_open_hours-d5">Vendredi</div>
+        <div class="axial_open_hours-d6">Samedi</div>
+        <div class="axial_open_hours-d7">Dimanche</div>
+
+        <div class="axial_open_hours-am1">Fermé</div>
+        <div class="axial_open_hours-pm1">Fermé</div>
+
+        <div class="axial_open_hours-am2">12h00 - 14h30</div>
+        <div class="axial_open_hours-pm2">18h30 - 22h00</div>
+
+        <div class="axial_open_hours-am3">12h00 - 14h30</div>
+        <div class="axial_open_hours-pm3">18h30 - 22h00</div>
+
+        <div class="axial_open_hours-am4">12h00 - 14h30</div>
+        <div class="axial_open_hours-pm4">18h30 - 22h00</div>
+
+        <div class="axial_open_hours-am5">12h00 - 14h30</div>
+        <div class="axial_open_hours-pm5">18h30 - 22h30</div>
+
+        <div class="axial_open_hours-am6">12h00 - 14h30</div>
+        <div class="axial_open_hours-pm6">18h30 - 22h30</div>
+
+        <div class="axial_open_hours-am7">Fermé</div>
+        <div class="axial_open_hours-pm7">Fermé</div>
+    </div>
+    
+</template>

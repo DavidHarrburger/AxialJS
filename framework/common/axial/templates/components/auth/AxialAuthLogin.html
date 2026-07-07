@@ -4,14 +4,14 @@
     <form id="form" class="axial_auth_login-form" autocomplete="off">
         
         <div class="axial_auth_login-formitem">
-            <label for="email">Email:</label>
-            <input class="axial_auth_login-input" type="email" id="email" value="" required minlength="8" maxlength="60" autocomplete="off">
+            <label class="axial_auth_login-label" for="email">Email :</label>
+            <input class="axial_auth_login-input" type="email" id="email" value="" required minlength="12" maxlength="60" autocomplete="email">
         </div>
         
         <div class="axial_auth_login-formitem">
-            <label for="password">Password:</label>
+            <label class="axial_auth_login-label" for="password">Mot de passe :</label>
             <div class="axial_auth_login-passholder">
-                <input class="axial_auth_login-password" type="password" value="" id="password" required minlength="12" autocomplete="off">
+                <input class="axial_auth_login-password" type="password" value="" id="password" required minlength="12" autocomplete="current-password">
                 <axial-toggle-password-button id="toggle">
                     <div slot="axial-icon" class="axial_button-icon_holder">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
@@ -26,9 +26,17 @@
                 </axial-toggle-password-button>
             </div>
         </div>
-        <axial-service-button id="button" axial-text="Se connecter" class="axial_auth_login-button"></axial-service-button>
-        <div class="axial_auth_login-message" id="message"></div>
+        <axial-service-button id="connectButton" axial-text="Se connecter" class="axial_auth_login-button"></axial-service-button>
+
+        <div class="axial_auth_login-options">
+            <a class="axial_auth_login-reset" href="../password/reset/" target="_self">Mot de passe oublié</a>
+        </div>
+        
+        <axial-accordion-container id="messageContainer">
+            <div slot="axial-content" class="axial_auth_login-message" id="message"></div>
+        </axial-accordion-container>
+        
         <div class="axial_auth_login-divider"></div>
-        <div class="axial_auth_login-register">Pas encore de compte ? <a class="axial_auth_login-link" href="../register" target="_self">S'inscrire</a></div>
+        <div class="axial_auth_login-register">Pas encore de compte ? <a class="axial_auth_login-link" href="../register/" target="_self">S'inscrire</a></div>
     </form>
 </template>

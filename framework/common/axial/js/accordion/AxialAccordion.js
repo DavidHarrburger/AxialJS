@@ -7,7 +7,10 @@ class AxialAccordion extends AxialComponentBase
 {
     /// elements
     /** @type { HTMLElement } */
-    #content;
+    #elements;
+
+    /** @type { HTMLSlotElement } */
+    #slot;
 
     /// var
     /** @type { Array<AxialAccordionElement> } */
@@ -23,15 +26,18 @@ class AxialAccordion extends AxialComponentBase
     _buildComponent()
     {
         super._buildComponent();
-        this.#content = this.shadowRoot.getElementById("content");
+        this.#elements = this.shadowRoot.getElementById("elements");
+        this.#slot = this.shadowRoot.getElementById("slot");
+
+        const assigned = this.#slot.assignedElements();
     }
 
     /** @type { HTMLElement } */
     addElement( element )
     {
-        if( element && this.#content && element instanceof HTMLElement === true )
+        if( element && this.#elements && element instanceof HTMLElement === true )
         {
-            this.#content.appendChild( element );
+            this.#elements.appendChild( element );
             if( element instanceof AxialAccordionElement === true )
             {
                 this.#accordionElements.push( element );

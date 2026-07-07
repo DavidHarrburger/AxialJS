@@ -1,16 +1,95 @@
-.axial_verification_content
+:root
+{
+    --axial___verification___headingFontSize: 42px;
+    --axial___verification___headingLineHeight: 48px;
+
+    --axial___verification___leftDisplay: none;
+
+    --axial___verification___pagePadding: 30px 20px;
+}
+
+h1
+{
+    width: 100%;
+    text-align: left;
+    font-size: var(--axial___verification___headingFontSize);
+    line-height: var(--axial___verification___headingLineHeight);
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.axial_main
+{
+    background-color: transparent;
+    min-height: unset;
+    height: auto;
+}
+.axial_main_layer
+{
+    background-color: transparent;
+    min-width: unset;
+    min-height: unset;
+    width: 100%;
+    height: auto;
+}
+.axial_verification_page-background
 {
     position: absolute;
     width: 100%;
     height: 100%;
+
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url("../../assets/main/verification.webp");
+}
+.axial_verification_content
+{
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+}
+.axial_verification_content-left
+{
+    padding: 40px;
+    display: var(--axial___verification___leftDisplay);
+    width: 100%;
+}
+.axial_verification_content-right
+{
+    width: 100%;
+    background-color: #f1f1f1;
+}
+.axial_verification_logo-link
+{
+    align-self: flex-start;
+    margin-bottom: 20px;
+}
+.axial_verification_logo-left  { display: none; }
+.axial_verification_logo-right { display: block; }
+.axial_verification_logo-img
+{
+    display: block;
+    height: 64px;
+    width: auto;
+}
+.axial_verification_content-p
+{
+    width: 100%;
+    font-size: 18px;
+    text-align: left;
+    margin-bottom: 40px;
 }
 .axial_verification_holder
 {
-    position: absolute;
     width: 100%;
-    height: 100%;
+    height: auto;
+    padding: var(--axial___verification___pagePadding);
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    justify-content: flex-start;
+    align-items: flex-start;
 }

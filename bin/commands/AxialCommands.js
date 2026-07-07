@@ -7,6 +7,7 @@ import path from "path";
 import fse from "fs-extra";
 import less from "less";
 import webpack from "webpack";
+import { promisify } from "node:util";
 import os from "os";
 import { MongoClient, ObjectId, ServerApiVersion } from "mongodb";
 import { api as electronForge } from "@electron-forge/core";
@@ -736,6 +737,18 @@ class AxialCommands extends EventEmitter
             }
 
             // files to copy
+            const filesToCopy = config.files_to_copy;
+            if( filesToCopy )
+            {
+                const filesToCopyLength = filesToCopy.length;
+                for( let i = 0; i < filesToCopyLength; i++ )
+                {
+                    const fileToCopyModel = filesToCopy[i];
+                    const dirSource = path.resolve(this.#currentDirectory, fileToCopyModel.source);
+                    const dirDest = path.resolve(this.#currentDirectory, config.build_directory, fileToCopyModel.dest);
+                    await fse.copy(dirSource, dirDest);
+                }
+            }
 
             // directories to copy
             const dirToCopy = config.directories_to_copy;
@@ -793,7 +806,8 @@ class AxialCommands extends EventEmitter
                     }
                 }
 
-                const compiler = webpack( webpackConfig );
+                /*
+                const compilerRun = webpack( webpackConfig );
                 
                 compiler.run( (err, stats) =>
                 {
@@ -803,7 +817,11 @@ class AxialCommands extends EventEmitter
                         if( closeErr ) { console.log(closeErr); }
                     })
                 });
+                */
+                const compilerRun = promisify( webpack );
+                const webpackStats = await compilerRun( webpackConfig );
             }
+            await this.#upload();
         }
         catch(err)
         {
@@ -932,6 +950,8 @@ class AxialCommands extends EventEmitter
         console.log( process.cwd());
         console.log(this.#commands);
     }
+
+    
 }
 
 export default AxialCommands

@@ -2,6 +2,8 @@
 
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
 import { AxialServiceButton } from "../button/AxialServiceButton.js";
+import { AxialToggleRadio } from "../button/AxialToggleRadio.js";
+import { AxialToggleButtonGroup } from "../button/AxialToggleButtonGroup.js";
 import { PathUtils } from "../utils/PathUtils.js";
 
 class AxialAuthVerifyer extends AxialComponentBase
@@ -17,19 +19,28 @@ class AxialAuthVerifyer extends AxialComponentBase
     #numberRegex = /^\d+$/;
 
     /// elements
+    /** @type { AxialToggleButtonGroup } */
+    #group;
+    
     /** @type { HTMLElement} */
     #holder;
 
     /** @type { HTMLElement} */
-    #email;
+    #recipient;
 
     /** @type { Array } */
     #inputs;
 
     /** @type { AxialServiceButton } */
-    #button;
+    #sendButton;
     
     /// events
+    /** @type { Function } */
+    #boundGroupChangedHandler;
+
+    /** @type { Function } */
+    #boundSendButtonHandler;
+
     /** @type { Function } */
     #boundPasteHandler;
 
@@ -48,6 +59,9 @@ class AxialAuthVerifyer extends AxialComponentBase
         this.#sendPath = PathUtils.getPathFromRelative(this.#sendPath);
         this.#verificationPath = PathUtils.getPathFromRelative(this.#verificationPath);
 
+        this.#boundGroupChangedHandler = this.#groupChangedHandler.bind(this);
+        this.#boundSendButtonHandler = this.#sendButtonHandler.bind(this);
+
         this.#boundPasteHandler = this.#pasteHandler.bind(this);
         this.#boundInputHandler = this.#inputHandler.bind(this);
         this.#boundFocusHandler = this.#focusHandler.bind(this);
@@ -57,8 +71,17 @@ class AxialAuthVerifyer extends AxialComponentBase
     {
         super._buildComponent();
 
-        this.#button = this.shadowRoot.getElementById("button");
-        this.#email = this.shadowRoot.getElementById("email");
+        this.#group = this.shadowRoot.getElementById("group");
+        this.#group.forceSelection = true;
+        
+        this.#group.addEventListener("indexChanged", this.#boundGroupChangedHandler);
+
+        this.#sendButton = this.shadowRoot.getElementById("sendButton");
+        this.#sendButton.enabled = false;
+        this.#sendButton.addEventListener("click", this.#boundSendButtonHandler);
+        
+        this.#recipient = this.shadowRoot.getElementById("recipient");
+        
         this.#holder = this.shadowRoot.getElementById("holder");
         if( this.#holder )
         {
@@ -70,23 +93,53 @@ class AxialAuthVerifyer extends AxialComponentBase
                 //input.addEventListener("focus", this.#boundFocusHandler);
             }
         }
-        this.#inputs[0].focus();
+        //this.#inputs[0].focus();
+        //this.#getVerificationCode();
+    }
+
+    #groupChangedHandler( event )
+    {
+        /** @type { AxialToggleRadio } */
+        const toggle = this.#group.getSelectedToggle();
+        console.log( toggle.value );
+
+        this.#sendButton.enabled = true;
+    }
+
+    #sendButtonHandler( event )
+    {
+        this.#sendButton.enabled = false;
+        this.#sendButton.loading = true;
+        for( const toggle of this.#group.toggles )
+        {
+            toggle.enabled = false;
+        }
         this.#getVerificationCode();
     }
+
     
     async #getVerificationCode()
     {
         try
         {
-            const infos = {}; // we will see
+            /** @type { AxialToggleRadio } */
+            const toggle = this.#group.getSelectedToggle();
+            const infos =
+            {
+                method: toggle.value
+            }; 
             const response = await fetch( this.#sendPath, { method: "POST", body: JSON.stringify(infos), headers: { "Content-Type":"application/json", "Cache-Control":"no-cache" } } );
             const json = await response.json();
             console.log(json);
 
-            if( json && json.email )
+            
+            if( json && json.recipient )
             {
-                this.#email.innerHTML = json.email;
+                this.#recipient.innerHTML = json.recipient;
+                this.#holder.style.display = "flex";
+                this.#inputs[0].focus();
             }
+            
         }
         catch(err)
         {
@@ -113,7 +166,9 @@ class AxialAuthVerifyer extends AxialComponentBase
     {
         try
         {
-            const infos = { code: code }; // we will see
+            /** @type { AxialToggleRadio } */
+            const toggle = this.#group.getSelectedToggle();
+            const infos = { code: code, method: toggle.value }; // we will see
             const response = await fetch( this.#verificationPath, { method: "POST", body: JSON.stringify(infos), headers: { "Content-Type":"application/json", "Cache-Control":"no-cache" } } );
             const json = await response.json();
             if( json )

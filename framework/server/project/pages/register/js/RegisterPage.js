@@ -1,14 +1,19 @@
 "use strict";
 
-import { GlobalPage } from "../../../js/GlobalPage.js";
+import { AxialWebApplicationBase } from "../../../../axial/js/core/AxialWebApplicationBase.js";
 
 import { AxialAuthRegister } from "../../../../axial/js/auth/AxialAuthRegister.js";
+import { AxialAuthRegisterAddress } from "../../../../axial/js/auth/AxialAuthRegisterAddress.js"; 
 
-class RegisterPage extends GlobalPage
+class RegisterPage extends AxialWebApplicationBase
 {
     /// elements
-    /** @type { AxialAuthRegister } */
+    /** @type { AxialAuthRegisterAddress } */
     #register;
+
+    /// vars
+    /** @type { String } */
+    #referrer;
 
     /// events
     /** @type { Function } */

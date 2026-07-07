@@ -2,6 +2,7 @@
 
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
 import { AxialViewerBase } from "./AxialViewerBase.js";
+import { AxialViewer } from "./AxialViewer.js";
 import { AxialViewerIndicatorStep } from "./AxialViewerIndicatorStep.js";
 
 class AxialViewerIndicator extends AxialComponentBase
@@ -10,7 +11,7 @@ class AxialViewerIndicator extends AxialComponentBase
     /** @type { String } */
     #viewerId;
 
-    /** @type { Array<AxialViewerIndicatorStep } */
+    /** @type { Array<AxialViewerIndicatorStep> } */
     #steps = new Array();
 
     /** @type { Number } */
@@ -26,7 +27,7 @@ class AxialViewerIndicator extends AxialComponentBase
     #lineSize = 2;
 
     /// elements
-    /** @type { AxialViewerBase } */
+    /** @type { AxialViewerBase | AxialViewer } */
     #viewer;
 
     /** @type { HTMLElement } */
@@ -54,7 +55,7 @@ class AxialViewerIndicator extends AxialComponentBase
     get viewer() { return this.#viewer; }
     set viewer( value )
     {
-        if( value instanceof AxialViewerBase === false )
+        if( value instanceof AxialViewerBase === false || value instanceof AxialViewer === false )
         {
             throw new TypeError("AxialViewerBase value required");
         }

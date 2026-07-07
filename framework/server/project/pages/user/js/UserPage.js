@@ -62,31 +62,7 @@ class UserPage extends AxialAdminApplicationBase
      */
     _onApplicationViewChanged( view )
     {
-        console.log( view );
-        if( view instanceof AxialAdminProfileView === true )
-        {
-            view.loadGetData();
-        }
-        else if( view instanceof AxialAdminCompanyView === true )
-        {
-            console.log("COMPANY LOAD ENTRY POINT");
-            view.loadGetData();
-        }
-        else if( view instanceof AxialAdminEmployeeView === true )
-        {
-            console.log("EMPLOYEE LOAD ENTRY POINT");
-            view.loadGetData();
-        }
-        else if( view instanceof AxialAdminClientView === true )
-        {
-            console.log("CLIENT LOAD ENTRY POINT");
-            view.loadGetData();
-        }
-        else if( view instanceof AxialAdminInternalProductView === true )
-        {
-            console.log("CLIENT LOAD ENTRY POINT");
-            view.loadGetData();
-        }
+        
     }
 
     /**
@@ -95,19 +71,7 @@ class UserPage extends AxialAdminApplicationBase
      */
     _onApplicationPopupHidden( popup )
     {
-        const currentView = this.mainViewer.currentView;
-        if( popup instanceof AxialAdminEmployeePopup === true && currentView instanceof AxialAdminEmployeeView )
-        {
-            currentView.loadGetData();
-        }
-        else if( popup instanceof AxialAdminClientPopup === true && currentView instanceof AxialAdminClientView )
-        {
-            currentView.loadGetData();
-        }
-        else if( popup instanceof AxialAdminInternalProductPopup === true && currentView instanceof AxialAdminInternalProductView )
-        {
-            currentView.loadGetData();
-        }
+        
     }
 }
 

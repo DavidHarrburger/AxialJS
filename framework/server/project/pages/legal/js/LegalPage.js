@@ -1,8 +1,8 @@
 "use strict";
 
-import { GlobalPage } from "../../../js/GlobalPage.js";
+import { AxialApplicationBase } from "../../../../axial/js/core/AxialApplicationBase.js";
 
-class LegalPage extends GlobalPage
+class LegalPage extends AxialApplicationBase
 {
     constructor()
     {

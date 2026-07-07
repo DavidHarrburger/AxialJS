@@ -2,6 +2,7 @@
 
 import { AxialServiceComponentBase } from "../core/AxialServiceComponentBase.js";
 
+/** en cours d'écriture */
 class AxialOpenHours extends AxialServiceComponentBase
 {
     /** @type { Set } */

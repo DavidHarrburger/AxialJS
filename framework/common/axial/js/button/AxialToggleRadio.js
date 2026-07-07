@@ -59,6 +59,22 @@ class AxialToggleRadio extends AxialToggleButtonBase
      */
     get value() { return this.#value; }
 
+    get text() { return this.#text; }
+    set text( value )
+    {
+        if( typeof value !== "string" )
+        {
+            throw new TypeError("String value required");
+        }
+        if( this.#text === value ) { return; }
+        this.#text = value;
+        if( this.#label )
+        {
+            this.#label.innerHTML = this.#text;
+            this.#label.style.display = this.#text === "" ? "none" : "block";
+        }
+    }
+
     attributeChangedCallback(name, oldValue, newValue)
     {
         if( name === "axial-text" )
