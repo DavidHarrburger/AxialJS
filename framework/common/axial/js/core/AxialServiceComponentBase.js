@@ -166,13 +166,6 @@ class AxialServiceComponentBase extends AxialComponentBase
     }
 
     /**
-     * Update component once data are loaded or not. Use _onGetResponse or _onPostResponse abstract methods
-     * @abstract
-     * @deprecated
-     */
-    _updateComponent() {}
-
-    /**
      * Update component once get data are loaded or not
      * @abstract
      */

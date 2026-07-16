@@ -1,7 +1,4 @@
-*
-{
-    box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 html
 {
     -webkit-tap-highlight-color: transparent;
@@ -67,6 +64,12 @@ input:not([type="checkbox"]):not([type="radio"])
     border: 1px solid var(--greyDark);
     background-color: rgba(255, 255, 255, 0.83);
 }
+
+label { font-size: 14px; }
+.axial_mandatory { color: #cc0000; font-weight: 600; }
+.axial_input_info { font-size: 12px; }
+.axial_input_legend { font-size: 12px; font-weight: 500; }
+
 input:focus:not([type="checkbox"]):not([type="radio"])
 {
     background-color: rgba(255, 255, 255, 1);
@@ -259,11 +262,12 @@ select
     width: 100%;
     height: 100%;
 
-    background-color: var(--header___backgroundColor);
+    background-color: var(--axial___header___backgroundColor);
     opacity: 1;
     transition-property: opacity;
     transition-duration: 400ms;
     transition-timing-function: ease;
+    backdrop-filter: blur(10px);
 }
 .axial_header_content
 {
@@ -670,7 +674,76 @@ select
     height: 100%;
     display: none;
     flex-direction: row;
-    justify-content: flex-end;
+    justify-content: flex-start;
     align-items: center;
     gap: 40px;
+    padding: 0 40px;
+}
+
+/* sections important */
+.axs_hero
+{
+    height: 100vh;
+}
+.axs_hero-background
+{
+    /*background-image: url("./assets/main/hero.webp");*/
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+.axs_hero-content
+{
+    top: 0;
+    left: 0;
+    position: absolute;
+    height: 100vh;
+}
+.axs_hero-baseline
+{
+    margin-top: 40px;
+    font-size: 40px;
+}
+.axs_hero-h1
+{
+    font-size: 64px;
+    line-height: 72px;
+    font-weight: 800;
+    margin: 10px 0;
+}
+.axs_hero-orb
+{
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+}
+.axs_hero-orb1
+{
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, #ff4e1a 0%, transparent 70%);
+    top: -180px; left: -120px;
+    opacity: 0.5;
+}
+.axs_hero-orb2
+{
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, #ffb300 0%, transparent 70%);
+    bottom: -160px; right: -100px;
+    opacity: 0.4;
+}
+.axs_hero-orb3
+{
+    width: 380px; height: 380px;
+    background: radial-gradient(circle, #ff7a00 0%, transparent 70%);
+    top: 50%; left: 55%;
+    transform: translate(-50%, -50%);
+    opacity: 0.22;
+}
+.axs_hero-orb4
+{
+    width: 280px; height: 280px;
+    background: radial-gradient(circle, #ffd000 0%, transparent 70%);
+    bottom: 20%; left: 10%;
+    opacity: 0.18;
 }

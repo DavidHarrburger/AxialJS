@@ -1,8 +1,8 @@
 "use strict";
 
-import { AxialWebApplicationBase } from "../../../../axial/js/application/AxialWebApplicationBase.js";
+import { AxialApplicationBase } from "../../../../axial/js/core/AxialApplicationBase.js";
 
-class TemplateBasePage extends AxialWebApplicationBase
+class TemplateBasePage extends AxialApplicationBase
 {
     constructor()
     {

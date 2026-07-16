@@ -2,12 +2,17 @@
 
 import { AxialListItemBase } from "./AxialListItemBase.js";
 import { AxialDeletionButton } from "../button/AxialDeletionButton.js";
-import { AxialArchiveButton } from "../button/AxialArchiveButton.js";
 import { AxialButton } from "../button/AxialButton.js";
 import { AxialPopupManager } from "../popup/AxialPopupManager.js";
 import { AxialPopupBase } from "../popup/AxialPopupBase.js";
 import { AxialInputBase } from "../core/AxialInputBase.js";
 import { AxialOverlayBase } from "../overlay/AxialOverlayBase.js";
+import { AxialIconButton } from "../button/AxialIconButton.js";
+import { AxialIconFetchButton } from "../button/AxialIconFetchButton.js";
+
+import { AxialIconListButtonArchive } from "./buttons/AxialIconListButtonArchive.js";
+import { AxialIconListButtonClone } from "./buttons/AxialIconListButtonClone.js";
+import { AxialIconListButtonDelete } from "./buttons/AxialIconListButtonDelete.js";
 
 class AxialListItem extends AxialListItemBase
 {
@@ -43,8 +48,14 @@ class AxialListItem extends AxialListItemBase
     /** @type { AxialDeletionButton } */
     #deletionButton;
 
-    /** @type { AxialArchiveButton } */
+    /** @type { AxialIconListButtonArchive } */
     #archiveButton;
+
+    /** @type { AxialIconListButtonClone } */
+    #cloneButton;
+
+    /** @type { AxialIconListButtonDelete } */
+    #deleteButton;
 
     /** @type { AxialButton } */
     #trashButton;
@@ -72,10 +83,10 @@ class AxialListItem extends AxialListItemBase
     #boundTrashHandler;
 
     /** @type { Function } */
-    #boundArchiveHandler;
+    #boundCopyHandler;
 
     /** @type { Function } */
-    #boundCopyHandler;
+    #boundCloneSuccessHandler;
 
     /** @type { Function } */
     #boundGripDownHandler;
@@ -102,12 +113,14 @@ class AxialListItem extends AxialListItemBase
      */
     constructor( defaults )
     {
-        super( defaults );
+        super();
         this.classList.add("axial_list_item");
         this.template = "axial-list-item-template";
+        
+        this.#boundCloneSuccessHandler = this.#cloneSuccessHandler.bind(this);
+        
         this.#boundEditHandler = this.#editHandler.bind(this);
         this.#boundTrashHandler = this.#trashHandler.bind(this);
-        this.#boundArchiveHandler = this.#archiveHandler.bind(this);
         this.#boundCopyHandler = this.#copyHandler.bind(this);
         this.#boundInputShortcutRequestedHandler = this.#inputShortcutRequestedHandler.bind(this);
 
@@ -145,6 +158,24 @@ class AxialListItem extends AxialListItemBase
      */
     get dropbottom() { return this.#dropbottom; }
 
+    /** 
+     * @type { AxialIconListButtonArchive }
+     * @readonly
+    */
+    get archiveButton() { return this.#archiveButton; }
+
+    /** 
+     * @type { AxialIconListButtonClone }
+     * @readonly
+    */
+    get cloneButton() { return this.#cloneButton; }
+
+    /** 
+     * @type { AxialIconListButtonDelete }
+     * @readonly
+    */
+    get deleteButton() { return this.#deleteButton; }
+
     /**
      * @type { String }
      */
@@ -181,10 +212,13 @@ class AxialListItem extends AxialListItemBase
         this.#content = this.shadowRoot.getElementById("content");
         this.#actions = this.shadowRoot.getElementById("actions");
         
-        this.#deletionButton = this.shadowRoot.getElementById("deletionButton");
-        this.#editButton = this.shadowRoot.getElementById("editButton");
-        this.#trashButton = this.shadowRoot.getElementById("trashButton");
+        this.#deletionButton = this.shadowRoot.getElementById("deletionButton"); // @deprecated
+
         this.#archiveButton = this.shadowRoot.getElementById("archiveButton");
+        this.#cloneButton = this.shadowRoot.getElementById("cloneButton");
+        this.#deleteButton = this.shadowRoot.getElementById("deleteButton"); // re insert trash
+        this.#trashButton = this.shadowRoot.getElementById("trashButton"); // re insert trash
+        this.#editButton = this.shadowRoot.getElementById("editButton");
         this.#copyButton = this.shadowRoot.getElementById("copyButton");
         this.#gripButton = this.shadowRoot.getElementById("gripButton");
 
@@ -221,9 +255,9 @@ class AxialListItem extends AxialListItemBase
             this.#trashButton.addEventListener("click", this.#boundTrashHandler);
         }
 
-        if( this.#archiveButton )
+        if( this.#cloneButton )
         {
-            this.#archiveButton.addEventListener("click", this.#boundArchiveHandler);
+            this.#cloneButton.addEventListener("fetchSuccess", this.#boundCloneSuccessHandler);
         }
 
         if( this.#copyButton )
@@ -290,20 +324,24 @@ class AxialListItem extends AxialListItemBase
             this.#deletionButton.model = this.data.model;
         }
 
-        if( this.#archiveButton )
+        if( this._updateComponent )
         {
-            this.#archiveButton._id = this.data._id;
-            this.#archiveButton.model = this.data.model;
+            this._updateComponent();
         }
     }
 
+    _updateComponent() {}
+
     #editHandler( event )
     {
+        console.log("edit clicked");
         if( this.#popupId !== undefined )
         {
+            console.log(this.#popupId);
             const popup = AxialPopupManager.getPopupById( this.#popupId )
             if( popup )
             {
+                console.log("popup should show");
                 this._onItemEdit( popup );
                 popup.data = this.data;
                 popup.show();
@@ -311,16 +349,15 @@ class AxialListItem extends AxialListItemBase
         }
     }
 
-    #trashHandler( event )
+    #cloneSuccessHandler( event )
     {
-        const listItemEvent = new CustomEvent("listItemTrash", { detail: { item: this } } );
+        const listItemEvent = new CustomEvent("listItemCloned");
         this.dispatchEvent(listItemEvent);
     }
 
-    #archiveHandler( event )
+    #trashHandler( event )
     {
-        console.log("archive click");
-        const listItemEvent = new CustomEvent("listItemArchive", { detail: { item: this } } );
+        const listItemEvent = new CustomEvent("listItemTrash", { detail: { item: this } } );
         this.dispatchEvent(listItemEvent);
     }
 

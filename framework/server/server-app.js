@@ -167,7 +167,9 @@ const authMiddleware = async function( request, response, next )
 {
     // First check if auth path is authorized
     const requestedPath = request.path;
+    console.log(requestedPath);
     const isAPI = requestedPath.indexOf("/api/") === 0;
+    console.log( isAPI );
 
     let authRequired = false;
     let verificationRequired = false;
@@ -211,6 +213,8 @@ const authMiddleware = async function( request, response, next )
             }
         }
     }
+
+    console.log("authRequired", authRequired);
     
     if( authRequired === false && isSpecialPath === false )
     {
@@ -221,6 +225,7 @@ const authMiddleware = async function( request, response, next )
     /// AUTH REQUIRED TRUE HERE
     // check now if user is already connected
     const token = request.cookies.axial_auth_jwt;
+    console.log(token);
 
     if( token === undefined )
     {
@@ -253,6 +258,7 @@ const authMiddleware = async function( request, response, next )
         if( user !== null )
         {
             response.locals.user = user;
+            console.log(user);
             
             // cool the token is ok and the user exists, we now go with the redirect middlewares
             if( user.verified === false )
@@ -451,6 +457,7 @@ const apiAuthSigninHandler = async function( request, response )
  */
 const apiAuthCodeSendHandler = async function( request, response )
 {
+    console.log("API_AUTH_CODE_SEND");
     try
     {
         const body = request.body;
@@ -503,6 +510,7 @@ const apiAuthCodeSendHandler = async function( request, response )
  */
 const apiAuthCodeVerifyHandler = async function( request, response )
 {
+    console.log("API_AUTH_CODE_VERIFY");
     try
     {
         const user = response.locals.user;
@@ -833,10 +841,56 @@ const apiDataDel = async function( request, response )
     try
     {
         const doc = request.body;
-        const model = doc.model;
+        const collection = doc.collection;
         const _id = doc._id;
-        const deletion = await AXIAL_MONGO.delData(model, _id);
+        const deletion = await AXIAL_MONGO.delData(collection, _id);
         const result = { status: "ok", content: deletion };
+        response.json( result );
+    }
+    catch( err )
+    {
+        console.log(err);
+        response.json( BASIC_KO );
+    }
+};
+
+/**
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiDataArchive = async function( request, response )
+{
+    console.log("API_DATA_ARCHIVE");
+    try
+    {
+        const doc = request.body;
+        const collection = doc.collection;
+        const _id = doc._id;
+        const archive = await AXIAL_MONGO.archiveData( collection, _id );
+        const result = { status: "ok", content: archive };
+        response.json( result );
+    }
+    catch( err )
+    {
+        console.log(err);
+        response.json( BASIC_KO );
+    }
+};
+
+/**
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiDataClone = async function( request, response )
+{
+    console.log("API_DATA_Clone");
+    try
+    {
+        const doc = request.body;
+        const collection = doc.collection;
+        const _id = doc._id;
+        const clone = await AXIAL_MONGO.cloneData( collection, _id );
+        const result = { status: "ok", content: clone };
         response.json( result );
     }
     catch( err )
@@ -1667,23 +1721,32 @@ const apiPushSend = async function( request, response )
  */
 const apiProjectsCreate = async function( request, response )
 {
+    console.log("API_PROJECT_CREATE");
     try
     {
         // we need the uuid of the user that is not necessary the one of the logged person
         const doc = request.body;
+        const simulationName = doc?.simulation_name || "Estimation 1";
+        const projectName = doc?.project_name || "Nouveau projet";
         const localUser = response.locals.user;
+        console.log(localUser);
         let projectData = {};
 
-        const simulation = await AXIAL_MONGO.setData( "projects", { simulation_name: "Estimation 1", user_uuid: doc.uuid } , "simulation" );
+        const projectId = crypto.randomUUID();
+
+        const simulation = await AXIAL_MONGO.setData( "projects", { project_id:projectId, simulation_name: simulationName, user_uuid: localUser.uuid } , "simulation" );
         console.log( simulation );
         if( simulation?.acknowledged === true )
         {
-            const project = await AXIAL_MONGO.setData( "projects", { simulations: [simulation.insertedId.toString()], user_uuid: doc.uuid } ,"project" );
+            const project = await AXIAL_MONGO.setData( "projects", { project_name: projectName, simulations: [simulation.insertedId.toString()], user_uuid: localUser.uuid, uuid: projectId } ,"project" );
             console.log( project );
             projectData = await AXIAL_MONGO.getData( "projects", { _id: project.insertedId.toString() }, "project" );
+            response.json( { status: "ok", content: projectData } );
         }
-        
-        response.json( { status: "ok", content: projectData } );
+        else
+        {
+            response.json( BASIC_KO );
+        }
     }
     catch(err)
     {
@@ -1705,12 +1768,42 @@ const apiProjectsGet = async function( request, response )
         const uuid = request.query.uuid;
         if( uuid )
         {
-            const projectsData = await AXIAL_MONGO.getData( "projects", { user_uuid: uuid, model: "project" } );
-            response.json( { status: "ok", content: projectsData } );
+            let projects = [];
+            let projectsData = await AXIAL_MONGO.getData( "projects", { user_uuid: uuid, model: "project", archived: false } );
+            //console.log( projectsData );
+            if( projectsData !== null )
+            {
+                if( Array.isArray( projectsData ) === false )
+                {
+                    projects.push(projectsData);
+                }
+                else
+                {
+                    projects = projectsData;
+                }
+
+                for( let project of projects )
+                {
+                    let simulationsData = new Array();
+                    const simulationsIds = project.simulations;
+                    for( const simId of simulationsIds )
+                    {
+                        let sim = await AXIAL_MONGO.getData( "projects", { _id: simId, archived: false }, "simulation" );
+                        if( sim !== null )
+                        {
+                            simulationsData.push(sim);
+                        }
+                    }
+                    project.simulations_data = simulationsData;
+                }
+
+            }
+            //console.log(projectsData);
+            response.json( { status: "ok", content: projects } );
         }
         else
         {
-            response.json(  BASIC_KO  );
+            response.json( BASIC_KO );
         }
         
     }
@@ -1728,10 +1821,31 @@ const apiProjectsGet = async function( request, response )
  */
 const apiProjectsUpdate = async function( request, response )
 {
+    console.log("API_PROJECTS_UPDATE");
     try
     {
         const projectData = request.body;
         const update = await AXIAL_MONGO.setData( "projects", projectData ,"project" );
+        response.json( BASIC_OK );
+
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( BASIC_KO );
+    }
+};
+
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiProjectsDelete = async function( request, response )
+{
+    console.log("API_PROJECTS_DELETE");
+    try
+    {
         response.json( BASIC_OK );
 
     }
@@ -1785,6 +1899,78 @@ const apiSimulationUpdate = async function( request, response )
         console.log(simulationData);
         const update = await AXIAL_MONGO.setData( "projects", simulationData ,"simulation" );
         console.log(update);
+        response.json( BASIC_OK );
+        
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( BASIC_KO );
+    }
+};
+
+/**
+ * Clone the simulation and add it to its project. New _id
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiSimulationDelete = async function( request, response )
+{
+    console.log("API_SIMULATION_DEL");
+    try
+    {
+        const body = request.body;
+        const simulationId = body._id;
+        const simulation = await AXIAL_MONGO.getData("projects", { _id: simulationId }, "simulation" );
+
+        let project = await AXIAL_MONGO.getData("projects", { uuid: simulation.project_id }, "project" );
+        let projectSimulations = project.simulations;
+        const simIndex = projectSimulations.indexOf(simulationId);
+        projectSimulations.splice(simIndex, 1);
+        project.simulations = projectSimulations;
+        const projectUpdated = await AXIAL_MONGO.setData("projects", project, "project");
+        const simulationDeleted = await AXIAL_MONGO.delData("projects", simulationId);
+        console.log(simulationDeleted);
+        response.json( BASIC_OK );
+        
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( BASIC_KO );
+    }
+};
+
+/**
+ * Remove the simulation from the database and update its project.simulation array
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiSimulationClone = async function( request, response )
+{
+    console.log("API_SIMULATION_CLONE");
+    try
+    {
+        const body = request.body;
+        const simulationId = body._id;
+        
+        // get sim
+        const simulation = await AXIAL_MONGO.getData("projects", { _id: simulationId }, "simulation" );
+        
+        // clone it
+        let simClone = { ...simulation };
+        delete simClone._id;
+        delete simClone.creation_date;
+        delete simClone.uuid;
+        simClone.simulation_name = simClone.simulation_name + " (Copy)";
+
+        const simulationCloned = await AXIAL_MONGO.setData("projects", simClone, "simulation" );
+
+        let project = await AXIAL_MONGO.getData("projects", { uuid: simulation.project_id }, "project" );
+        project.simulations.push(simulationCloned.insertedId);
+
+        const projectUpdated = await AXIAL_MONGO.setData("projects", project, "project");
+
         response.json( BASIC_OK );
         
     }
@@ -2081,6 +2267,7 @@ AXIAL_SERVER_APPLICATION.use( authMiddleware );
 AXIAL_SERVER_APPLICATION.get( "/api/data/get", apiDataGet );
 AXIAL_SERVER_APPLICATION.post( "/api/data/set", apiDataSet );
 AXIAL_SERVER_APPLICATION.post( "/api/data/del", apiDataDel);
+AXIAL_SERVER_APPLICATION.post( "/api/data/archive", apiDataArchive);
 
 // HOME - KPI
 AXIAL_SERVER_APPLICATION.get( "/api/kpi/database/get", apiKpiGetDatabase );
@@ -2133,6 +2320,8 @@ AXIAL_SERVER_APPLICATION.post( "/api/projects/update", apiProjectsUpdate );
 // SIMULATIONS
 AXIAL_SERVER_APPLICATION.get( "/api/simulations/get", apiSimulationGet );
 AXIAL_SERVER_APPLICATION.post( "/api/simulations/update", apiSimulationUpdate );
+AXIAL_SERVER_APPLICATION.post( "/api/simulations/delete", apiSimulationDelete );
+AXIAL_SERVER_APPLICATION.post( "/api/simulations/clone", apiSimulationClone );
 
 // SUBSCRIPTIONS
 AXIAL_SERVER_APPLICATION.post( "/api/subscriptions/set", apiSubscriptionsSet );
@@ -2168,7 +2357,7 @@ AXIAL_SERVER_APPLICATION.use( finalMiddleware );
 
 const AXIAL_SERVER = http.createServer( AXIAL_SERVER_APPLICATION );
 //const PORT = process.env.PORT || 80;
-const PORT = 2383;
+const PORT = 8383;
 
 const SOCKETS_MAP = new Map();
 

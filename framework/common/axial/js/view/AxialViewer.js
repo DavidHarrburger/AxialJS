@@ -43,6 +43,12 @@ class AxialViewer extends AxialComponentBase
      */
     get views() { return this.#views }
 
+    /**
+     * @type { AxialView }
+     * @readonly
+     */
+    get currentView() { return this.#views[this.#currentIndex] }
+
     get defaultViewClass() { return this.#defaultViewClass; }
     set defaultViewClass( value )
     {
@@ -104,6 +110,11 @@ class AxialViewer extends AxialComponentBase
 
     gotoViewByIndex( index = 0 )
     {
+        if( index < 0 || index > (this.#views.length - 1) ) { return; }
+        if( index === this.#currentIndex ) { return; }
+        
+        const oldView = this.#views[this.#currentIndex];
+        const newView = this.#views[index];
         const viewsLength = this.#views.length;
         if( viewsLength > 0 )
         {
@@ -121,6 +132,8 @@ class AxialViewer extends AxialComponentBase
                 }
             }
         }
+        const viewerChangedEvent = new CustomEvent("viewerChanged", { detail: { oldView: oldView, newView: newView } } )
+        this.dispatchEvent(viewerChangedEvent);
     }
 
     nextView()

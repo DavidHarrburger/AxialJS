@@ -6,6 +6,7 @@ import { DomUtils } from "../utils/DomUtils.js";
 import { AxialButton } from "../button/AxialButton.js";
 import { AxialInputBase } from "../core/AxialInputBase.js";
 import { AxialListDivider } from "./AxialListDivider.js";
+import { AxialListAccordionElement } from "./AxialListAccordionElement.js";
 
 class AxialList extends AxialComponentBase
 {
@@ -13,7 +14,7 @@ class AxialList extends AxialComponentBase
     /** @type { Function } */
     #itemClass;
 
-    /** @type { Array.<AxialListItem> } */
+    /** @type { Array.<AxialListItem | AxialListAccordionElement> } */
     #items = new Array();
 
     ///elemets
@@ -38,14 +39,18 @@ class AxialList extends AxialComponentBase
     /** @type { String } */
     #dateFilter = "creation_date";
 
+    // list and llist items
     /** @type { Function } */
     #boundTrashHandler;
+
+    /** @type { Function } */
+    #boundClonedHandler;
 
     /** @type { Function } */
     #boundShortcutRequestedHandler;
 
     /// drag and drop
-    /** @type { AxialAdminListItem } */
+    /** @type { AxialListItem } */
     #currentDraggedItem;
 
     /** @type { Number } */
@@ -81,9 +86,12 @@ class AxialList extends AxialComponentBase
         super();
         this.classList.add("axial_list");
         this.template = "axial-list-template";
+
+        // list and list items
         this.#boundTrashHandler = this.#trashHandler.bind(this);
         this.#boundShortcutRequestedHandler = this.#shortcutRequestedHandler.bind(this);
-
+        this.#boundClonedHandler = this.#clonedHandler.bind(this);
+        
         // drag and drop
         this.#boundDragStartedHandler = this.#dragStartedHandler.bind(this);
         this.#boundDragEndedHandler = this.#dragEndedHandler.bind(this);
@@ -98,7 +106,7 @@ class AxialList extends AxialComponentBase
     }
 
     /**
-     * @type { Array.<AxialAdminListItem> }
+     * @type { Array.<AxialListItem> }
      * @readonly
      */
     get items() { return this.#items; }
@@ -124,7 +132,7 @@ class AxialList extends AxialComponentBase
     get itemClass() { return this.#itemClass; }
     set itemClass( value )
     {
-        if( typeof value === "function" && AxialAdminListItem.prototype.isPrototypeOf( new value() ) === true )
+        if( typeof value === "function" && AxialListItem.prototype.isPrototypeOf( new value() ) === true )
         {
             this.#itemClass = value;
         }
@@ -294,6 +302,13 @@ class AxialList extends AxialComponentBase
         this.removeItem( item );
     }
 
+    #clonedHandler( event )
+    {
+        console.log("cloned intercepted we dispatch listChangedFrom the list");
+        const listEvent = new CustomEvent( "listChanged");
+        this.dispatchEvent( listEvent );
+    }
+
     #shortcutRequestedHandler( event )
     {
         this.#applyShortcut( event.detail.key, event.detail.index, event.detail.input, event.target );
@@ -304,7 +319,7 @@ class AxialList extends AxialComponentBase
      * @param { String } key 
      * @param { Number } index 
      * @param { AxialInputBase } input 
-     * @param { AxialAdminListItem } dispatcher 
+     * @param { AxialListItem } dispatcher 
      */
     #applyShortcut( key, index, input, dispatcher )
     {
@@ -360,6 +375,7 @@ class AxialList extends AxialComponentBase
         {
             const item = new AxialListDivider();
             
+            item.addEventListener("listItemCloned", this.#boundClonedHandler);
             item.addEventListener("listItemTrash", this.#boundTrashHandler);
             item.addEventListener("listItemShortcutRequested", this.#boundShortcutRequestedHandler);
             item.addEventListener("listItemDragStarted", this.#boundDragStartedHandler);
@@ -376,9 +392,46 @@ class AxialList extends AxialComponentBase
         return null;
     }
 
+    addAccordion()
+    {
+        if( this.#content )
+        {
+            const acc = new AxialListAccordionElement();
+            this.#content.appendChild( acc );
+            //acc.open();
+            return acc;
+        }
+        return;
+    }
+
+    /**
+     * 
+     * @param { AxialListAccordionElement } acc 
+     * @returns 
+     */
+    addItemToAccordion( acc )
+    {
+        if( this.#content && acc)
+        {
+            const item = new this.#itemClass();
+            
+            item.addEventListener("listItemCloned", this.#boundClonedHandler);
+            item.addEventListener("listItemTrash", this.#boundTrashHandler);
+            item.addEventListener("listItemShortcutRequested", this.#boundShortcutRequestedHandler);
+            item.addEventListener("listItemDragStarted", this.#boundDragStartedHandler);
+            item.addEventListener("listItemDragEnded", this.#boundDragEndedHandler);
+            
+            acc.addElement( item );
+            this.#items.push( item );
+            
+            return item;
+        }
+        return;
+    }
+
     /**
      * Simply add a new item to the list if item is defined.
-     * @returns { AxialAdminListItem }
+     * @returns { AxialListItem }
      */
     addItem()
     {
@@ -386,6 +439,7 @@ class AxialList extends AxialComponentBase
         {
             const item = new this.#itemClass();
             
+            item.addEventListener("listItemCloned", this.#boundClonedHandler);
             item.addEventListener("listItemTrash", this.#boundTrashHandler);
             item.addEventListener("listItemShortcutRequested", this.#boundShortcutRequestedHandler);
             item.addEventListener("listItemDragStarted", this.#boundDragStartedHandler);
@@ -409,6 +463,7 @@ class AxialList extends AxialComponentBase
             console.log( "should happen something", defaultObject );
             const item = new this.#itemClass(defaultObject);
             
+            item.addEventListener("listItemCloned", this.#boundClonedHandler);
             item.addEventListener("listItemTrash", this.#boundTrashHandler);
             item.addEventListener("listItemShortcutRequested", this.#boundShortcutRequestedHandler);
             item.addEventListener("listItemDragStarted", this.#boundDragStartedHandler);
@@ -448,6 +503,7 @@ class AxialList extends AxialComponentBase
             }
             item.data = itemData;
 
+            item.addEventListener("listItemCloned", this.#boundClonedHandler);
             item.addEventListener("listItemTrash", this.#boundTrashHandler);
             item.addEventListener("listItemShortcutRequested", this.#boundShortcutRequestedHandler);
             item.addEventListener("listItemDragStarted", this.#boundDragStartedHandler);
@@ -464,11 +520,11 @@ class AxialList extends AxialComponentBase
     }
 
     /**
-     * @param { AxialAdminListItem } item 
+     * @param { AxialListItem } item 
      */
     removeItem( item )
     {
-        if( item instanceof AxialAdminListItem === false )
+        if( item instanceof AxialListItem === false )
         {
             throw new TypeError("AxialAdminListItem value required");
         }
@@ -685,5 +741,5 @@ class AxialList extends AxialComponentBase
     }
 }
 
-window.customElements.define("axial-admin-list", AxialAdminList);
-export { AxialAdminList }
+window.customElements.define("axial-list", AxialList);
+export { AxialList }

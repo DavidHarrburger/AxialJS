@@ -181,9 +181,10 @@ class AxialWebModuleApplicationBase extends AxialWebApplicationBase
     #moduleViewerChangedHandler( event )
     {
         const currentView = event.detail.newView;
-        console.log(currentView);
-        
-        //this._onApplicationViewChanged( currentView );
+        if( this._onApplicationViewChanged )
+        {
+            this._onApplicationViewChanged( currentView );
+        }
     }
 
     /**

@@ -3,6 +3,7 @@
 import { AxialOverlayBase } from "../overlay/AxialOverlayBase.js";
 import { AxialButton } from "../button/AxialButton.js";
 import { PathUtils } from "../utils/PathUtils.js";
+import { StringUtils } from "../utils/StringUtils.js";
 
 class AxialDeletionOverlay extends AxialOverlayBase
 {
@@ -11,10 +12,13 @@ class AxialDeletionOverlay extends AxialOverlayBase
     #_id;
 
     /** @type { String } */
-    #model;
+    #collection;
 
     /** @type { String } */
-    #deletionPath = "./api/data/del/";
+    #defaultDeletionPath = "./api/data/del/";
+
+    /** @type { String } */
+    #deletionPath;
 
     /// elements
     /** @type { AxialButton } */
@@ -37,7 +41,7 @@ class AxialDeletionOverlay extends AxialOverlayBase
         this.template = "axial-deletion-overlay-template";
 
         this.useObfuscator = true;
-        this.#deletionPath = PathUtils.getPathFromRelative(this.#deletionPath);
+        this.#defaultDeletionPath = PathUtils.getPathFromRelative(this.#defaultDeletionPath);
 
         this.#boundCancelClickHandler = this.#cancelClickHandler.bind(this);
         this.#boundConfirmClickHandler = this.#confirmClickHandler.bind(this);
@@ -53,14 +57,31 @@ class AxialDeletionOverlay extends AxialOverlayBase
         this.#_id = value;
     }
 
-    get model() { return this.#model; }
-    set model( value )
+    get collection() { return this.#collection; }
+    set collection( value )
     {
         if( typeof value !== "string" )
         {
             throw new TypeError("String value required");
         }
-        this.#model = value;
+        this.#collection = value;
+    }
+
+    get deletionPath() { return this.#deletionPath; }
+    set deletionPath( value )
+    {
+        if( StringUtils.isWhite(value) === true )
+        {
+            throw new Error("Not white String required");
+        }
+        if( PathUtils.isRelative(value) === true )
+        {
+            this.#deletionPath = PathUtils.getPathFromRelative(value);
+        }
+        else
+        {
+            this.#deletionPath = value;
+        }
     }
 
     _buildComponent()
@@ -98,7 +119,7 @@ class AxialDeletionOverlay extends AxialOverlayBase
 
         let deletionPossible = true;
         if( this.#_id === undefined ) { deletionPossible = false; }
-        if( this.#model === undefined ) { deletionPossible = false; }
+        if( this.#collection === undefined ) { deletionPossible = false; }
         if( deletionPossible === false )
         {
             // suppresion impossible
@@ -106,7 +127,7 @@ class AxialDeletionOverlay extends AxialOverlayBase
             this.dispatchEvent( deletionEvent );
 
             this.#_id = undefined;
-            this.#model = undefined;
+            this.#collection = undefined;
 
             window.AXIAL.notify("Une erreur s'est produite lors de la suppression des données. Les données n'ont pas été supprimées.");
 
@@ -127,9 +148,10 @@ class AxialDeletionOverlay extends AxialOverlayBase
             const deletionObject = 
             {
                 _id: this.#_id,
-                model: this.#model
+                collection: this.#collection
             }
-            const response = await fetch(this.#deletionPath, { method: "POST", body: JSON.stringify(deletionObject), headers: { "Content-Type":"application/json", "Cache-Control":"no-cache" } } );
+            const path = this.#deletionPath === undefined ? this.#defaultDeletionPath : this.#deletionPath
+            const response = await fetch(path, { method: "POST", body: JSON.stringify(deletionObject), headers: { "Content-Type":"application/json", "Cache-Control":"no-cache" } } );
             const json = await response.json();
             
             const deletionEvent = new CustomEvent("deletionSuccess");
@@ -151,7 +173,8 @@ class AxialDeletionOverlay extends AxialOverlayBase
             if( this.#cancel ) { this.#cancel.enabled = true; }
             if( this.#confirm ) { this.#cancel.enabled = true; }
             this.#_id = undefined;
-            this.#model = undefined;
+            this.#collection = undefined;
+            this.#deletionPath = undefined;
             this.hide();
         }
     }

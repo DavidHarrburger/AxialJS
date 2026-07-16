@@ -120,3 +120,29 @@
         <slot id="slot" name="axial-toggles"></slot>
     </div>
 </template>
+
+<!-- AxialIconButton -->
+<template id="axial-icon-button-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="background" class="axial_icon_button-background"></div>
+    <div id="foreground" class="axial_icon_button-foreground"></div>
+    <div id="content" class="axial_icon_button-content">
+        <div id="icon" class="axial_icon_button-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path id="path"></path></svg>
+        </div>
+    </div>
+</template>
+
+<!-- AxialIconFetchButton -->
+<template id="axial-icon-fetch-button-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="background" class="axial_icon_button-background">
+        <axial-progress-indicator id="indicator"></axial-progress-indicator>
+    </div>
+    <div id="foreground" class="axial_icon_button-foreground"></div>
+    <div id="content" class="axial_icon_button-content">
+        <div id="icon" class="axial_icon_button-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path id="path"></path></svg>
+        </div>
+    </div>
+</template>

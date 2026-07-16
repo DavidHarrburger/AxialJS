@@ -1,6 +1,6 @@
 "use strict";
 
-import { AxialComponentBase } from "../core/AxialComponentBase.js";
+import { AxialServiceComponentBase } from "../core/AxialServiceComponentBase.js";
 
 class AxialListItemBase extends AxialServiceComponentBase
 {

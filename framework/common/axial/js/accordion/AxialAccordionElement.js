@@ -32,7 +32,17 @@ class AxialAccordionElement extends AxialComponentBase
         return ["axial-text" ];
     }
 
-    //get toggle() { }
+    /**
+     * @type { AxialAccordionToggle }
+     * @readonly
+     */
+    get toggle() { return this.#toggle; }
+
+    /**
+     * @type { AxialAccordionContainer }
+     * @readonly
+     */
+    get container() { return this.#container; }
 
     get text() { return this.#text; }
     set text( value )
@@ -63,11 +73,6 @@ class AxialAccordionElement extends AxialComponentBase
         }
     }
 
-    _onDataChanged()
-    {
-        this.#updateComponent();
-    }
-
     _buildComponent()
     {
         super._buildComponent();
@@ -78,16 +83,6 @@ class AxialAccordionElement extends AxialComponentBase
         if( this.#text !== undefined )
         {
             this.#toggle.text = this.#text;
-        }
-        
-        //this.#updateComponent();
-    }
-
-    #updateComponent()
-    {
-        if( this.componentBuilt === true && this.data !== undefined )
-        {
-            if( this.#toggle ) { this.#toggle.text = this.data.name; } // WARNING not here move to admin file
         }
     }
 

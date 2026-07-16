@@ -82,6 +82,8 @@ class AxialOverlayBase extends AxialComponentBase
     {
         super();
         this.classList.add("axial_overlay_base");
+
+        this.isResizable = true;
         
         // HTMLElement
         this.#boundOverlayTargetOverHandler = this.#overlayTargetOverHandler.bind(this);
@@ -305,12 +307,22 @@ class AxialOverlayBase extends AxialComponentBase
      */
     #transitionEndHandler( event )
     {
-        if( this.#isShown === false && event.propertyName === "opacity" )
+        if( event.propertyName === "opacity" )
         {
-            this.style.visibility = "hidden";
-            this._onHidden();
-            const overlayEvent = new CustomEvent("overlayHidden");
-            this.dispatchEvent( overlayEvent );
+            if( this.#isShown === false )
+            {
+                console.log("hidden")
+                this.style.visibility = "hidden";
+                this._onHidden();
+                const overlayEvent = new CustomEvent("overlayHidden");
+                this.dispatchEvent( overlayEvent );
+            }
+            else
+            {
+                this._onShown();
+                const overlayEvent = new CustomEvent("overlayShown");
+                this.dispatchEvent( overlayEvent );
+            }
         }
     }
 
@@ -373,10 +385,18 @@ class AxialOverlayBase extends AxialComponentBase
         }
     }
 
+    _resize()
+    {
+        if( this.#isShown === false ) { return; }
+        this.#layoutOverlay();
+    }
+
     #layoutOverlay()
     {
         if( !this.#target && this.#displayMode === "target" ) { return; }
-        if( this.#isShown === true ) { return; }
+        //if( this.#isShown === true ) { return; }
+
+        console.log("layoutOverlay");
 
         const overlayBounds = this.getBoundingClientRect();
         let overlayX;
@@ -554,6 +574,8 @@ class AxialOverlayBase extends AxialComponentBase
         this.style.left = String(overlayX) + "px";
         this.style.top = String(overlayY) + "px";
 
+        if( this.#isShown === true ) { return; }
+
         if( this.#useTransitions === true )
         {
             let transformDirection = this.#position.split("-")[0];
@@ -715,6 +737,11 @@ class AxialOverlayBase extends AxialComponentBase
      * @abstract
      */
     _onShowing() {};
+
+    /**
+     * @abstract
+     */
+    _onShown() {};
 
     /**
      * @abstract

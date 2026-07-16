@@ -62,9 +62,24 @@ class StringUtils
         return ( s.match( new RegExp( c, "g" ) ) || [] ).length;
     }
 
-    static isWhiteString( s )
+    static isWhite( s )
     {
-        
+        if( typeof s !== "string" )
+        {
+            throw new TypeError("Strin value required");
+        }
+        s = s.trim();
+        if( s.length === 0 )
+        {
+            return true;
+        }
+
+        if( /\S/.test( s ) === false )
+        {
+            return true;
+        }
+
+        return false;
     }
 
     static formatPrice( price, digit = 2 )

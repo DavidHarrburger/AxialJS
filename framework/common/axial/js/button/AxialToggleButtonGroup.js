@@ -29,7 +29,7 @@ class AxialToggleButtonGroup extends AxialComponentBase
     #direction = "row"; // must be computed
 
     /** @type { Number } */
-    #gap = 20;
+    #gap = 8;
 
     /// elements
     /** @type { HTMLElement } */

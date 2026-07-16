@@ -174,6 +174,22 @@
 .axial_button-icon_holder  { display: flex; flex-direction: column; justify-content: center; align-items: center; width: 18px; height: 18px; }
 .axial_button_icon         { display: flex; flex-direction: column; justify-content: center; align-items: center; width: 18px; height: 18px; }
 
+/* AxialIconButton  */
+.axial_icon_button
+{
+    position: relative;
+    width: 40px;
+    height: 40px;
+}
+.axial_icon_button-background   { position: absolute; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+.axial_icon_button-foreground   { position: absolute; width: 100%; height: 100%; background-color:#dedede; 
+                                  opacity: 0; transition-property: opacity; transition-duration: 320ms; transition-timing-function: ease; border-radius: 3px; }
+
+.axial_icon_button-content { position: absolute; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+.axial_icon_button-icon { position: relative; width: 21px; height: 21px; }
+
+/* AxialIconProgressButton  */
+
 /* AxialToggleButton */
 .axial_toggle_button             { overflow: hidden; position: relative; width: auto; height: auto; border-radius: 3px; fill: #fff; border: 1px solid #111; }
 .axial_toggle_button-background  { position: absolute; width: 100%; height: 100%; background-color: #0d4472; }
@@ -270,8 +286,6 @@
 {
     overflow: hidden;
     position: relative;
-    margin-top: 8px;
-    margin-bottom: 8px;
 
     width: auto;
     height: auto;
@@ -691,10 +705,10 @@ input:not([type="checkbox"]):not([type="radio"]).axial_auth_register-input  { pa
 .axial_list-footer        { position: relative; width: 100%; height: 40px; display: flex; flex-direction: row;
                                   justify-content: flex-start; align-items: center; gap: 10px; padding-left: 10px; padding-right: 10px; 
                                   /*border-top-left-radius: 4px; border-top-right-radius: 4px; border: 1px solid #374049;*/}
-input:not([type="checkbox"]):not([type="radio"]).axial_admin_list-search        { width: 360px; }
+input:not([type="checkbox"]):not([type="radio"]).axial_list-search        { width: 360px; }
 
 /* AxialListItem */
-.axial_list_item               { position: relative; width: 100%; height: 64px; }
+.axial_list_item               { position: relative; width: 100%; height: 64px; font-size: 14px; font-weight: 500;}
 .axial_list_item-background    { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-bottom: 1px solid var(--adminBody___borderColor); }
 .axial_list_item-droptop       { transform: scaleX(0); position: absolute; top: 0; width: 0; height: 2px; background-color: #c00; 
                                  transition-property: none; transition-duration: 600ms; transition-timing-function: ease; }
@@ -702,7 +716,12 @@ input:not([type="checkbox"]):not([type="radio"]).axial_admin_list-search        
                                  transition-property: none; transition-duration: 600ms; transition-timing-function: ease; }
 .axial_list_item-content       { position: absolute; width: 100%; height: 100%; top: 0; left: 0; display: flex; 
                                  flex-direction: row; justify-content: flex-start; align-items: center; gap: 10px; }
-.axial_list_item-actions       { flex-shrink: 0; width: 164px; height: 100%; display: flex; flex-direction: row; justify-content: flex-end; align-items: center; gap: 6px; }
+.axial_list_item-actions       { flex-shrink: 0; width: 164px; height: 100%; display: flex; flex-direction: row; justify-content: flex-end; align-items: center; gap: 2px; }
+
+.axial_list_item-prop_name
+{
+    width: 200px;
+}
 
 /* AxialListDivider */
 .axial_list_divider            { position: relative; width: 100%; height: 42px; overflow: hidden; margin-top: 2px; margin-bottom: 2px; }
@@ -757,7 +776,7 @@ input:not([type="checkbox"]):not([type="radio"]).axial_admin_list-search        
                       transition-property: none; transition-duration: 400ms; transition-timing-function: ease;
                       padding-left: 9px; padding-right: 9px; padding-top: 5px; padding-bottom: 5px; 
                       border: 1px solid #000; background-color: #000; color: #fff;
-                      border-radius: 6px; font-size: 13px; font-weight: 600; }
+                      border-radius: 6px; font-size: 12px; font-weight: 600; }
 
 /**********
 ./popup/
@@ -1658,30 +1677,39 @@ input:not([type="checkbox"]):not([type="radio"]).axial_admin_list-search        
 /* AxialDeletionOverlay */
 .axial_deletion_overlay
 {
-    width: 300px;
+    width: 360px;
     height: auto;
-    padding: 20px;
     border-radius: 12px;
-    border: 1px solid #cc0000;
-    background-color: rgba(255, 255, 255, 0.83);
-    box-shadow: 0px 4px 10px -4px rgba(43, 2, 3, 0.3);
-    backdrop-filter: blur(10px);
+    background-color: #fff;
+    border: 1px solid rgb(232, 235, 237);
+    box-shadow: 0px 4px 10px -4px rgba(0, 30, 43, 0.3);
+    overflow: hidden;
 }
 .axial_deletion_overlay-holder
 {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    padding-left: 40px;
+    padding-right: 40px;
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 .axial_deletion_overlay-header
 {
+    position: relative;
+    width: 100%;
+    height: auto;
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
     gap: 10px;
 }
-.axial_deletion_overlay-cookie
+.axial_deletion_overlay-icon
 {
     flex-shrink: 0;
     width: 24px;
@@ -1693,9 +1721,8 @@ input:not([type="checkbox"]):not([type="radio"]).axial_admin_list-search        
 }
 .axial_deletion_overlay-title
 {
-    color: var(--body___textColor);
     font-weight: 600;
-    font-size: 18px;
+    font-size: 21px;
 }
 .axial_deletion_overlay-content
 {
@@ -1715,28 +1742,37 @@ input:not([type="checkbox"]):not([type="radio"]).axial_admin_list-search        
 {
     width: 420px;
     height: auto;
-    padding: 20px;
     border-radius: 12px;
-    border: 1px solid #cc0000;
-    background-color: rgba(255, 255, 255, 0.83);
-    box-shadow: 0px 4px 10px -4px rgba(43, 2, 3, 0.3);
-    backdrop-filter: blur(10px);
+    background-color: #fff;
+    border: 1px solid rgb(232, 235, 237);
+    box-shadow: 0px 4px 10px -4px rgba(0, 30, 43, 0.3);
+    overflow: hidden;
 }
 .axial_archive_overlay-holder
 {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    padding-left: 40px;
+    padding-right: 40px;
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 .axial_archive_overlay-header
 {
+    position: relative;
+    width: 100%;
+    height: auto;
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
     gap: 10px;
 }
-.axial_archive_overlay-cookie
+.axial_archive_overlay-icon
 {
     flex-shrink: 0;
     width: 24px;
@@ -1748,9 +1784,8 @@ input:not([type="checkbox"]):not([type="radio"]).axial_admin_list-search        
 }
 .axial_archive_overlay-title
 {
-    color: var(--body___textColor);
     font-weight: 600;
-    font-size: 18px;
+    font-size: 21px;
 }
 .axial_archive_overlay-content
 {

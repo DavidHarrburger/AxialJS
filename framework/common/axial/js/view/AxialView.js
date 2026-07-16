@@ -1,8 +1,8 @@
 "use strict";
 
-import { AxialServiceComponentBase } from "../core/AxialServiceComponentBase.js";
+import { AxialViewBase } from "./AxialViewBase.js";
 
-class AxialView extends AxialServiceComponentBase
+class AxialView extends AxialViewBase
 {
     constructor()
     {

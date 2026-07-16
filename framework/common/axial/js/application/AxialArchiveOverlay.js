@@ -11,7 +11,7 @@ class AxialArchiveOverlay extends AxialOverlayBase
     #_id;
 
     /** @type { String } */
-    #model;
+    #collection;
 
     /** @type { String } */
     #archivePath = "./api/data/archive/";
@@ -53,14 +53,14 @@ class AxialArchiveOverlay extends AxialOverlayBase
         this.#_id = value;
     }
 
-    get model() { return this.#model; }
-    set model( value )
+    get collection() { return this.#collection; }
+    set collection( value )
     {
         if( typeof value !== "string" )
         {
             throw new TypeError("String value required");
         }
-        this.#model = value;
+        this.#collection = value;
     }
 
     _buildComponent()
@@ -98,7 +98,7 @@ class AxialArchiveOverlay extends AxialOverlayBase
 
         let deletionPossible = true;
         if( this.#_id === undefined ) { deletionPossible = false; }
-        if( this.#model === undefined ) { deletionPossible = false; }
+        if( this.#collection === undefined ) { deletionPossible = false; }
         if( deletionPossible === false )
         {
             // suppresion impossible
@@ -106,7 +106,7 @@ class AxialArchiveOverlay extends AxialOverlayBase
             this.dispatchEvent( archiveEvent );
 
             this.#_id = undefined;
-            this.#model = undefined;
+            this.#collection = undefined;
 
             window.AXIAL.notify("Une erreur s'est produite lors de l'archivage des données. Les données n'ont pas été archivées.");
 
@@ -124,12 +124,12 @@ class AxialArchiveOverlay extends AxialOverlayBase
     {
         try
         {
-            const deletionObject = 
+            const archiveObject = 
             {
                 _id: this.#_id,
-                model: this.#model
+                collection: this.#collection
             }
-            const response = await fetch(this.#archivePath, { method: "POST", body: JSON.stringify(deletionObject), headers: { "Content-Type":"application/json", "Cache-Control":"no-cache" } } );
+            const response = await fetch(this.#archivePath, { method: "POST", body: JSON.stringify(archiveObject), headers: { "Content-Type":"application/json", "Cache-Control":"no-cache" } } );
             const json = await response.json();
             
             const archiveEvent = new CustomEvent("archiveSuccess");
@@ -151,7 +151,7 @@ class AxialArchiveOverlay extends AxialOverlayBase
             if( this.#cancel ) { this.#cancel.enabled = true; }
             if( this.#confirm ) { this.#cancel.enabled = true; }
             this.#_id = undefined;
-            this.#model = undefined;
+            this.#collection = undefined;
             this.hide();
         }
     }

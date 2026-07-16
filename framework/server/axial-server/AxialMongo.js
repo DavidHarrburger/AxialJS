@@ -116,7 +116,7 @@ class AxialMongo extends EventEmitter
 
     async getData( c = "", f = {}, m = "" )
     {
-        console.log("AxialMongo.getData");
+        //console.log("AxialMongo.getData");
 
         /// DANGER TEST
         if( f && f._id )
@@ -124,7 +124,7 @@ class AxialMongo extends EventEmitter
             f._id = new ObjectId( String(f._id ) );
         }
 
-        console.log( c, f, m );
+        //console.log( c, f, m );
         let result;
         try
         {
@@ -391,18 +391,18 @@ class AxialMongo extends EventEmitter
 
     /**
      * 
-     * @param { String } m 
+     * @param { String } c 
      * @param { String } _id 
      * @returns 
      */
-    async delData( m = "", _id = "" )
+    async delData( c = "", _id = "" )
     {
         let result;
         try
         {
-            if( m === undefined || m.trim() === "" )
+            if( c === undefined || c.trim() === "" )
             {
-                throw new Error("param 'm' model is missing");
+                throw new Error("param 'c' collection is missing");
             }
 
             if( _id === undefined || _id.trim() === "" )
@@ -412,11 +412,48 @@ class AxialMongo extends EventEmitter
 
             const mongo = await this.#mongo.connect();
             const db = mongo.db( this.#dbName );
-            const model = await this.getData("models", { name: m} );
-            const collection = db.collection( model.collection );
+            const collection = db.collection( c );
             const deletion = await collection.deleteOne( { _id: new ObjectId( String(_id) ) } );
             console.log( deletion );
             result = deletion;
+        }
+        catch(err)
+        {
+            console.log(err);
+        }
+        finally
+        {
+            return result;
+        }
+    }
+
+    /**
+     * 
+     * @param { String } c 
+     * @param { String } _id 
+     * @returns 
+     */
+    async archiveData( c = "", _id = "" )
+    {
+        let result;
+        try
+        {
+            if( c === undefined || c.trim() === "" )
+            {
+                throw new Error("param 'c' collection is missing");
+            }
+
+            if( _id === undefined || _id.trim() === "" )
+            {
+                throw new Error("param '_id' is missing");
+            }
+
+            const mongo = await this.#mongo.connect();
+            const db = mongo.db( this.#dbName );
+            const collection = db.collection( c );
+            const archive = await collection.findOneAndUpdate( { _id: new ObjectId( String(_id) ) }, [ { $set: { archived: true } } ] );
+            console.log( archive );
+            result = archive;
         }
         catch(err)
         {
