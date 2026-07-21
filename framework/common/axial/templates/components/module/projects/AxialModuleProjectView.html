@@ -1,0 +1,20 @@
+<!-- AxialModuleProjectView -->
+<template id="axial-module-project-view-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div class="axial_module_view-holder">
+        <div class="axial_module_view-header">
+            <div id="title" class="axial_module_view-title">Projets</div>
+            <div class="axial_spacer"></div>
+            <input id="searchInput" type="text" placeholder="Rechercher un projet" class="axial_list-search">
+                <axial-button id="addButton" axial-text="Créer un nouveau projet">
+                    <i slot="axial-icon" class="fa-color fa-regular fa-square-plus"></i>
+                </axial-button>
+        </div>
+        <div class="axial_module_view-content axial_module_view-content-transparent">
+            <slot id="contentSlot" name="axial-content"></slot>
+            <axial-list id="list">
+                <div slot="axial-header" class="axial_module_project_item-name">Nom du projet</div>
+            </axial-list>
+        </div>
+    </div>
+</template>

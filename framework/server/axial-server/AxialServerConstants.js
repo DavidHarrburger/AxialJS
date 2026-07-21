@@ -73,6 +73,7 @@ export const API_PRIVATE_PATHES =
 
     { path: "/api/message/get", verification: true },
     { path: "/api/message/create", verification: true },
+    { path: "/api/messaging/socket", verification: true },
 
     { path: "/api/files/get/all", verification: true },
 

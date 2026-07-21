@@ -1827,11 +1827,716 @@ input:not([type="checkbox"]):not([type="radio"]).axial_list-search        { widt
 }
 
 /***********
+./quotes/
+***********/
+/* AxialQuote */
+.axial_quote
+{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+    border-radius: 14px;
+    padding-top: 20px;
+    overflow: hidden;
+    filter: drop-shadow( 0 6px 12px rgba(26, 27, 29, 0.18));
+}
+.axial_quote-holder
+{
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 60px;
+    bottom: 0;
+    overflow-y: auto;
+}
+/* AxialQuoteHeader */
+.axial_quote_header
+{
+    position: relative;
+    width: 100%;
+    height: 40px;
+    padding-left: 20px;
+    padding-right: 20px;
+    border-bottom: 1px solid #ccc;
+}
+.axial_quote_header-holder
+{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 500;
+}
+/* AxialQuoteFooter */
+.axial_quote_footer
+{
+    position: relative;
+    width: 100%;
+    height: auto;
+    min-height: 120px;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+.axial_quote_footer-holder
+{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 500;
+    gap: 20px;
+}
+.axial_quote_footer-legal
+{
+    width: calc(50% - 20px);
+    flex-shrink: 0;
+}
+.axial_quote_footer-prices
+{
+    width: calc(50% - 20px);
+    flex-shrink: 0;
+    background-color: #f8f9fb;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #ccc;
+}
+.axial_quote_footer-price
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 10px;
+    padding-right: 10px;
+    height: 24px;
+}
+.axial_quote_footer-price_final
+{
+    background-color: #f8fbf8;
+    color: #02c902;
+}
+.axial_quote_footer-label
+{
+    font-size: 12px;
+    font-weight: 700;
+}
+.axial_quote_footer-label_final
+{
+    font-size: 13px;
+    font-weight: 800;
+}
+.axial_quote_footer-amount
+{
+    font-size: 12px;
+    font-weight: 700;
+}
+.axial_quote_footer-amount_final
+{
+    font-size: 13px;
+    font-weight: 800;
+}
+/* AxialQuoteSectionHeader */
+.axial_quote_section_header
+{
+    position: relative;
+    width: 100%;
+    height: 40px;
+    padding-left: 20px;
+    padding-right: 20px;
+    background-color: #f8f9fb;
+}
+.axial_quote_section_header-holder
+{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 500;
+}
+.axial_quote_section_header-num
+{
+    width: 40px;
+    flex-shrink: 0;
+    text-align: left;
+    font-weight: 700;
+}
+.axial_quote_section_header-designation
+{
+    width: auto;
+    flex-grow: 1;
+    font-weight: 700;
+}
+/* AxialQuoteSectionFooter */
+.axial_quote_section_footer
+{
+    position: relative;
+    width: 100%;
+    height: 40px;
+    padding-left: 20px;
+    padding-right: 20px;
+    background-color: #f8fbf8;
+    color: #02c902;
+}
+.axial_quote_section_footer-holder
+{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 500;
+}
+.axial_quote_section_footer-num
+{
+    width: 40px;
+    flex-shrink: 0;
+    text-align: left;
+    font-weight: 700;
+}
+.axial_quote_section_footer-designation
+{
+    width: auto;
+    flex-grow: 1;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+.axial_quote_section_footer-total_ht_text
+{
+    width: 90px;
+    flex-shrink: 0;
+    text-align: right;
+}
+.axial_quote_section_footer-total_ht
+{
+    width: 90px;
+    flex-shrink: 0;
+    text-align: right;
+    font-weight: 700;
+}
+.axial_quote_section_footer-total_tax_text
+{
+    width: 90px;
+    flex-shrink: 0;
+    text-align: right;
+}
+.axial_quote_section_footer-total_tax
+{
+    width: 80px;
+    flex-shrink: 0;
+    text-align: right;
+    font-weight: 700;
+}
+.axial_quote_section_footer-total_ttc_text
+{
+    width: 90px;
+    flex-shrink: 0;
+    text-align: right;
+}
+.axial_quote_section_footer-total_ttc
+{
+    width: 90px;
+    flex-shrink: 0;
+    text-align: right;
+    font-weight: 700;
+}
+/* AxialQuoteItem */
+.axial_quote_item
+{
+    position: relative;
+    width: 100%;
+    min-height: 36px;
+    height: auto;
+    font-size: 12px;
+    font-weight: 500;
+    padding-left: 20px;
+    padding-right: 20px;
+    border-bottom: 1px solid #f8f9fb;
+}
+.axial_quote_item-holder
+{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding-top: 10px;
+    padding-bottom: 6px;
+}
+.axial_quote_item-num
+{
+    width: 40px;
+    flex-shrink: 0;
+    text-align: left;
+}
+.axial_quote_item-designation
+{
+    width: auto;
+    flex-grow: 1;
+    padding-right: 20px;
+}
+.axial_quote_item-quantity
+{
+    width: 50px;
+    flex-shrink: 0;
+    text-align: center;
+}
+.axial_quote_item-unit
+{
+    width: 40px;
+    flex-shrink: 0;
+    text-align: center;
+}
+.axial_quote_item-price_unit
+{
+    width: 70px;
+    flex-shrink: 0;
+    text-align: right;
+}
+.axial_quote_item-price_total
+{
+    width: 90px;
+    flex-shrink: 0;
+    text-align: right;
+}
+.axial_quote_item-tax
+{
+    width: 80px;
+    flex-shrink: 0;
+    text-align: right;
+}
+.axial_quote_item-price_total_tax
+{
+    width: 90px;
+    flex-shrink: 0;
+    text-align: right;
+}
+
+/***********
+./simulators/
+***********/
+
+/* AxialSimulatorBlock */
+.axial_simulator_block
+{
+    width: 100%;
+    height: auto;
+    background-color: #fff;
+    border-radius: 14px;
+    overflow: hidden;
+    filter: drop-shadow( 0 6px 12px rgba(26, 27, 29, 0.18));
+    padding: 20px;
+    opacity: 1;
+
+    transition: opacity 500ms ease;
+}
+.axial_simulator_block-header
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 10px;
+}
+.axial_simulator_block-switch
+{
+    display: none;
+}
+.axial_simulator_block-add
+{
+    display: none;
+    flex-shrink: 0;
+}
+.axial_simulator_block-title
+{
+    text-align: left;
+    color: #434343;
+    font-size: 30px;
+    font-weight: 500;
+}
+.axial_simulator_block-holder
+{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+/* AxialSimulatorLine */
+.axial_simulator_line
+{
+    width: 100%;
+    height: auto;
+}
+.axial_simulator_line-holder
+{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+.axial_simulator_line-holder_column
+{
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 2px;
+}
+.axial_simulator_line-label
+{
+    width: 100%;
+    font-size: 16px;
+}
+.axial_simulator_line-input
+{
+    max-width: 60px;
+    font-size: 21px;
+    text-align: center;
+}
+/* AxialSimulatorLineRadio */
+.axial_simulator_line_radio-group
+{
+    flex-shrink: 0;
+}
+/* AxialSimulatorLineCheck */
+.axial_simulator_line_check-group
+{
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 20px;
+}
+/* AxialSimulatorLineDim */
+.axial_simulator_line_dim-inputs
+{
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 20px;
+}
+.axial_simulator_line_dim-delete
+{
+    width: 43px;
+    flex-shrink: 0;
+    display: none;
+}
+.axial_simulator_line_dim-block
+{
+    width: auto;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+}
+/* AxialSimulatorLineSelect */
+.axial_simulator_line_select
+{
+    width: 200px;
+}
+.axial_simulator_line_select-option
+{
+    font-size: 14px;
+}
+
+/***********
+./messaging/
+***********/
+
+/* AxialMessaging */
+.axial_messaging
+{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+.axial_messaging-main
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+}
+.axial_messaging-header
+{
+    height: 32px;
+    background: #fff;
+    padding-left: 20px;
+    padding-right: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    border-bottom: 1px solid #d1d2d4;
+}
+.axial_messaging-header_text
+{
+    font-weight: 500;
+    color: #4e4e4e;
+}
+.axial_messaging-header_reciepeints
+{   
+    font-weight: 700;
+}
+.axial_messaging-holder
+{
+    position: relative;
+    width: 100%;
+    flex-grow: 1;
+    overflow: hidden;
+}
+.axial_messaging-content
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    overflow: auto;
+}
+.axial_messaging-final
+{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+}
+.axial_messaging-write_holder
+{
+    height: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    justify-content: flex-start;
+    align-items: flex-end;
+    background-color: #fff;
+    border-top: 1px solid #d1d2d4;
+    transition: height 0.3s ease;
+}
+.axial_messaging-write_area
+{
+    border-radius: 3px;
+    flex-grow: 1;
+    field-sizing: content;
+    border-color: #aaa;
+    min-height: unset;
+    height: auto;
+    transition: height 0.3s ease;
+}
+.axial_messaging-send_button
+{
+    flex-shrink: 0;
+    height: 43px;
+}
+.axial_messaging-bubble_holder
+{
+    position: relative;
+    flex-shrink: 0;
+    width: 100%;
+    height: 0;
+    overflow: hidden;
+    transition-property: height;
+    transition-duration: 200ms;
+    transition-timing-function: linear;
+}
+.axial_messaging-bubble_anchor
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 56px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding-left: 20px;
+    padding-bottom: 20px;
+}
+.axial_messaging-panel
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    background-color: #fff;
+    display: block;
+}
+.axial_messaging-state
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.axial_messaging-state_holder
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.axial_messaging-state_content
+{
+    position: relative;
+    width: 420px;
+    height: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+}
+.axial_messaging-welcome_icon
+{
+    width: 280px;
+    height: 280px;
+    display: flex;
+    flex-direction: column;    
+}
+.axial_messaging-welcome_title
+{
+    color: #627183ff;
+    font-weight: 600;
+    font-size: 18px;
+}
+.axial_messaging-welcome_text
+{
+    color: #232323ff;
+    font-weight: 5400;
+    font-size: 16px;
+}
+/* AxialMessage */
+.axial_message
+{
+    width: auto;
+    height: auto;
+    max-width: 320px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-end;
+    align-self: flex-end;
+}
+
+.axial_message-holder
+{
+    display: flex;
+    flex-direction: row;
+}
+
+.axial_message-content
+{
+    border-radius: 6px;
+    text-align: right;
+    padding: 14px;
+    background-color: #ec2426;
+    color: #fff;
+}
+.axial_message-actions
+{
+    width: 0;
+    height: auto;
+}
+.axial_message-infos
+{
+    text-align: right;
+}
+
+/* AxialTypingBubble */
+.axial_typing_bubble
+{
+    position: relative;
+    height: 36px;
+    width: auto;
+    background-color: #e6e6e6;
+    border-radius: 6px;
+}
+
+.axial_typing_bubble-holder
+{
+    height: 100%;
+    width: auto;
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+}
+
+.axial_typing_bubble-dot
+{
+    width: 6px;
+    height: 6px;
+    background-color: #888;
+    border-radius: 50%;
+    animation-name: none;
+    animation-timing-function: ease;
+    animation-fill-mode: both;
+    animation-iteration-count: infinite;
+    animation-duration: 1.4s;
+}
+
+/***********
 ./animation/
 ***********/
 
 @keyframes axialServiceButtonIndicatorAnimation { from { transform: rotate(0deg); } to { transform: rotate(720deg); } }
 @keyframes axialProgressIndicatorAnimation      { from { transform: rotate(0deg); } to { transform: rotate(720deg); } }
+
+@keyframes axialTypingBubbleBlink
+{
+  0% { opacity: 0.2; transform: translateY(0); }
+  20% { opacity: 1; transform: translateY(-2px); }
+  100% { opacity: 0.2; transform: translateY(0); }
+}
 
 /* POPUPS ANIMATIONS */
 /* Obfuscator fader */

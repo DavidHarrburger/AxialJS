@@ -11,6 +11,10 @@ import { promisify } from "node:util";
 import os from "os";
 import { MongoClient, ObjectId, ServerApiVersion } from "mongodb";
 import { api as electronForge } from "@electron-forge/core";
+import dependencyTree from "dependency-tree";
+import * as fsp from "node:fs/promises";
+
+const HTML_COMPONENT_MARKER = "<!--$$$C-->";
 
 class AxialCommands extends EventEmitter
 {
@@ -25,7 +29,7 @@ class AxialCommands extends EventEmitter
     /**
      * @type { Set }
      */
-    #commands = new Set( [ "init", "newpage", "build", "config", "electron", "database", "sitemap", "keys", "version" ] );
+    #commands = new Set( [ "init", "newpage", "build", "config", "electron", "database", "sitemap", "keys", "version", "compile" ] );
 
     #paramsInit =     new Set( [ "-front", "-server", "-electron" ] );
     #paramsNewPage =  new Set( [ "-name", "-template", "-path" ] );
@@ -67,8 +71,6 @@ class AxialCommands extends EventEmitter
     /** @type { String } */
     #sitemapUrlsetCloser = '</urlset>';
 
-    
-
     constructor()
     {
         super();
@@ -96,7 +98,8 @@ class AxialCommands extends EventEmitter
             }
             */
 
-            const params = commandLineArguments.slice(3);
+            const params = commandLineArguments.slice(3) || [];
+
 
             switch( currentCommand )
             {
@@ -138,6 +141,10 @@ class AxialCommands extends EventEmitter
 
                 case "version":
                     this.#version();
+                break;
+
+                case "compile":
+                    this.#compile(params);
                 break;
 
                 default:
@@ -697,6 +704,100 @@ class AxialCommands extends EventEmitter
         }
     }
 
+    async #compile( params )
+    {
+        console.log("AXIAL COMPILE");
+        const startTime = Date.now();
+
+        try
+        {
+            // get config
+            const config = await this.#getAxialConfiguration();
+            let compileMode = "-dev";
+            
+            console.log(params);
+            const paramsLength = params.length;
+            for( let i = 0; i < paramsLength; i++ )
+            {
+                const param = params[i];
+                if( this.#paramsBuild.has(param) == false )
+                {
+                    console.log("[AXIAL_ERROR] unknown 'build' parameter");
+                    return;
+                }
+                compileMode = param;
+            }
+
+            const pages = config.pages;
+            const pagesLength = pages.length;
+
+            console.log( this.#currentDirectory );
+
+            for( const page of pages )
+            {
+                const htmlSource = path.resolve(this.#currentDirectory, config.project_directory, config.pages_directory, page.name, "index-template.html" );
+                const htmlExists = await this.#fileExists( htmlSource );
+                if( htmlExists === false ) { continue; } else { console.log("FILE TO WRITE FOUND"); }
+                const jsSource = path.resolve(this.#currentDirectory, config.project_directory, config.pages_directory, page.name, "js/Page.js");
+                const sources = dependencyTree.toList( { filename: jsSource, directory: this.#currentDirectory } ).sort();
+                console.log(sources);
+
+                const finalHtmlPath = path.resolve(this.#currentDirectory, config.project_directory, config.pages_directory, page.name, "index-compiled.html" );
+                const finalCompPath = path.resolve(this.#currentDirectory, config.project_directory, config.pages_directory, page.name, "components.html" );
+
+                let allTemplates = "";
+                for( const source of sources )
+                {
+                    const jsComponentPath = source.split( "axial\\js\\" )[1];
+                    //console.log("js path = ", jsComponentPath );
+                    
+                    if( jsComponentPath == undefined ) { continue; }
+                    const htmlTemplateName = jsComponentPath.replace(".js", ".html");
+                    const htmlTemplatePath = path.resolve( this.#currentDirectory, "axial/templates/components/", htmlTemplateName);
+
+                    const exists = await this.#fileExists( htmlTemplatePath );
+                    //console.log( htmlTemplatePath, exists );
+                    if( exists === true )
+                    {
+                        const templateString = await fsp.readFile( htmlTemplatePath, "utf8" );
+                        allTemplates = allTemplates + templateString + os.EOL + os.EOL;
+                    }
+                }
+
+                let htmlSourceString = await fsp.readFile(htmlSource, "utf8");
+                if( htmlSourceString.includes(HTML_COMPONENT_MARKER) === false )
+                {
+                    continue;
+                }
+                else
+                {
+                    console.log("we should be here");
+                    const sourceArray = htmlSourceString.split(HTML_COMPONENT_MARKER);
+                    //console.log(sourceArray.length);
+                    
+                    const finalHtmlString = sourceArray[0] + allTemplates + sourceArray[1];
+
+                    //console.log(finalHtmlString);
+                    const components = await fse.writeFile( finalCompPath, allTemplates );
+                    const compiled = await fse.writeFile( finalHtmlPath, finalHtmlString );
+                }
+                
+                await this.#build( [ compileMode ] );
+            }
+        }
+        catch(err)
+        {
+            console.log(err);
+        }
+        finally
+        {
+            const endTime = Date.now();
+            const deltaTime = endTime - startTime;
+            console.log("COMPILE DONE (ms) : ");
+            console.log( deltaTime );
+        }
+    }
+
     async #build( params )
     {
         console.log("AXIAL BUILD");
@@ -777,7 +878,14 @@ class AxialCommands extends EventEmitter
                 if( shouldBuildPage === false ) { continue; }
 
                 // html
-                const htmlSource = path.resolve(this.#currentDirectory, config.project_directory, config.pages_directory, pageModel.name, "index.html" );
+                let htmlSource = path.resolve(this.#currentDirectory, config.project_directory, config.pages_directory, pageModel.name, "index.html" );
+                const htmlCompiled = path.resolve(this.#currentDirectory, config.project_directory, config.pages_directory, pageModel.name, "index-compiled.html" );
+                
+                const compiledExists = await this.#fileExists(htmlCompiled);
+                if( compiledExists === true )
+                {
+                    htmlSource = htmlCompiled;
+                }
                 const htmlDest =  path.resolve(this.#currentDirectory, config.build_directory, pageModel.path, "index.html");
                 await fse.copy(htmlSource, htmlDest);
 
@@ -951,7 +1059,18 @@ class AxialCommands extends EventEmitter
         console.log(this.#commands);
     }
 
-    
+    async #fileExists( path )
+    {
+        try
+        {
+            await fse.access( path, fsp.constants.F_OK );
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
 }
 
 export default AxialCommands

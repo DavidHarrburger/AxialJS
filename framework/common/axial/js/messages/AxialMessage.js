@@ -1,6 +1,7 @@
 "use strict";
 
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
+import { ObjectUtils } from "../utils/ObjectUtils.js";
 
 class AxialMessage extends AxialComponentBase
 {
@@ -26,21 +27,35 @@ class AxialMessage extends AxialComponentBase
     /** @type { String } */
     #receivedTextColor = "#fff";
 
+    /** @type { Object } */
+    #messageObject;
 
     /// elements
     /** @type { HTMLElement } */
     #content;
 
 
-    constructor( message = "", type = "sent" )
+    /**
+     * 
+     * @param { Object } message 
+     * @param { String } type 
+     */
+    constructor( message, type )
     {
         super();
         this.classList.add("axial_message");
         this.template = "axial-message-template";
 
-        if( message.trim() !== "" )
+        if( ObjectUtils.isObject( message ) === false )
         {
-            this.#text = message;
+            throw new TypeError("Plain Object required");
+        }
+
+        this.#messageObject = message;
+
+        if( this.#messageObject.content.trim() !== "" )
+        {
+            this.#text = this.#messageObject.content;
         }
 
         if( type && typeof type === "string" && type !== "sent" && this.#MESSAGE_TYPES.has(type) === true )
@@ -67,7 +82,6 @@ class AxialMessage extends AxialComponentBase
         this.#messageType = value;
         this.#layoutMessage();
     }
-
 
 
     _buildComponent()

@@ -6,6 +6,12 @@ import { AxialServiceButton } from "../button/AxialServiceButton.js";
 import { AxialMessage } from "./AxialMessage.js";
 import { AxialTypingBubble } from "./AxialTypingBubble.js";
 import { AxialWebSocket } from "../websocket/AxialWebSocket.js";
+import { PathUtils } from "../utils/PathUtils.js";
+import { FetchUtils } from "../utils/FetchUtils.js";
+import { ObjectUtils } from "../utils/ObjectUtils.js";
+import { ArrayUtils } from "../utils/ArrayUtils.js";
+import { from } from "form-data";
+import { DomUtils } from "../utils/DomUtils.js";
 
 class AxialMessaging extends AxialComponentBase
 {
@@ -26,9 +32,50 @@ class AxialMessaging extends AxialComponentBase
     #userId;
 
     /** @type { String } */
+    #userRole;
+
+    /** @type { String } */
     #groupId;
 
+    /** @type { Array } */
+    #conversations;
+
+    /** @type { Array } */
+    #contacts;
+
+    /** @type { Object } */ // the current conversation
+    #currentConversation;
+
+    /** @type { Array<Object> } */
+    #currentMessages;
+
+    /** @type { Number } */
+    #conversationLimit = 40;
+
+    /** @type { Boolean } */
+    #initialized = false;
+
+    /// api pathes
+    /** @type { String } */
+    #apiConversationCreatePath = "./api/conversation/create"; // create a new conversation
+
+    /** @type { String } */
+    #apiConversationListPath = "./api/conversation/list"; // list all the conversation
+
+    /** @type { String } */
+    #apiConversationContactsPath = "./api/conversation/contacts"; // get all the authorized contacts
+
+    /** @type { String } */
+    #apiMessageGetPath = "./api/message/get"; // get all the messages from a conversation an rebuild it
+
+    /** @type { String } */
+    #apiMessageCreatePath = "./api/message/create"; // create and save a message
+
+    /** @type { String } */
+    #apiMessagingSocketPath = "./api/messaging/socket"; // get the web socket url from env vars
+
     /// elements
+    // messaging
     /** @type { HTMLElement } */
     #messages;
 
@@ -44,6 +91,31 @@ class AxialMessaging extends AxialComponentBase
     /** @type { AxialTypingBubble } */
     #typingBubble;
 
+    // main and panel
+    /** @type { HTMLElement } */
+    #main;
+
+    /** @type { HTMLElement } */
+    #recipients;
+
+    /** @type { HTMLElement } */
+    #panel;
+
+    /** @type { HTMLElement } */
+    #contactState;
+
+    /** @type { HTMLElement } */
+    #welcomeState;
+
+    /** @type { HTMLElement } */
+    #conversationState;
+
+    /** @type { HTMLElement } */
+    #errorState;
+
+    /** @type { AxialButton } */
+    #startButton;
+
     /// events
     /** @type { Function } */
     #boundKeydownHandler;
@@ -56,6 +128,9 @@ class AxialMessaging extends AxialComponentBase
 
     /** @type { Function } */
     #boundTypingTimeoutHandler;
+
+    /** @type { Function } */
+    #boundStartHandler;
 
     /// socket
     /** @type { Function } */
@@ -70,11 +145,24 @@ class AxialMessaging extends AxialComponentBase
     /** @type { Function } */
     #boundSocketCloseHandler;
 
+    /// axial
+    /** @type { Function } */
+    #boundAxialUserReadyHandler;
+
     constructor()
     {
         super();
         this.classList.add("axial_messaging");
         this.template = "axial-messaging-template";
+
+        this.#apiConversationListPath   = PathUtils.getPathFromRelative( this.#apiConversationListPath );
+        this.#apiConversationCreatePath   = PathUtils.getPathFromRelative( this.#apiConversationCreatePath );
+        this.#apiConversationContactsPath   = PathUtils.getPathFromRelative( this.#apiConversationContactsPath );
+
+        this.#apiMessageGetPath   = PathUtils.getPathFromRelative( this.#apiMessageGetPath );
+        this.#apiMessageCreatePath   = PathUtils.getPathFromRelative( this.#apiMessageCreatePath );
+
+        this.#apiMessagingSocketPath   = PathUtils.getPathFromRelative( this.#apiMessagingSocketPath );
 
         this.#boundSocketOpenHandler    = this.#socketOpenHandler.bind(this);
         this.#boundSocketMessageHandler = this.#socketMessageHandler.bind(this);
@@ -84,9 +172,21 @@ class AxialMessaging extends AxialComponentBase
         this.#boundKeydownHandler       = this.#keydownHandler.bind(this);
         this.#boundInputHandler         = this.#inputHandler.bind(this);
         this.#boundSendHandler          = this.#sendHandler.bind(this);
+        this.#boundStartHandler         = this.#startHandler.bind(this);
         this.#boundTypingTimeoutHandler = this.#typingTimeoutHandler.bind(this);
 
-        
+        this.#boundAxialUserReadyHandler = this.#axialUserReadyHandler.bind(this);
+
+        window.addEventListener( "axialUserReady", this.#boundAxialUserReadyHandler );
+    }
+
+    #axialUserReadyHandler( event )
+    {
+        console.log("axialUserReadyHandler", event);
+        this.#userId = event.detail.user.uuid;
+        this.#userRole = event.detail.user.role;
+
+        this.#initMessaging();
     }
 
     /**
@@ -95,50 +195,41 @@ class AxialMessaging extends AxialComponentBase
      */
     get websocket() { return this.#websocket; }
 
-    /**
-     * The websocket url. You can define it with the axial-socket attribute.
-     * That way the component can directly starts
-     * @type { String }
-     */
-    get socketUrl() { return this.#socketUrl; }
-    set socketUrl( value )
+    get currentConversation() { return this.#currentConversation; }
+    set currentConversation( value )
     {
-        if( typeof value !== "string" )
+        if( ObjectUtils.isObject( value ) === false )
         {
-            throw new TypeError("String value required");
+            throw new TypeError("Plain Object required");
         }
-
-        let isValid = value.trim().startsWith("wss://");
-        if( isValid === false )
+        this.#currentConversation = value;
+        for( const contact of this.#contacts )
         {
-            throw new TypeError("String must start with the wss:// protocol");
+            console.log("contact", contact);
+            const findContactName = ArrayUtils.ofStringEquals( value.to, contact.uuids );
+            console.log("findContactName", findContactName);
+            if( findContactName === true )
+            {
+                this.#recipients.innerHTML = contact.label;
+            }
         }
-
-        this.#socketUrl = value.trim();
-
-        if( this.#websocket === undefined )
-        {
-            this.#createSocket();
-        }
-    }
-
-    get userId() { return this.#userId; }
-    set userId( value )
-    {
-        if( typeof value !== "string" )
-        {
-            throw new TypeError(" String value required");
-        }
-        this.#userId = value;
     }
 
     _buildComponent()
     {
         super._buildComponent();
 
+        this.#main = this.shadowRoot.getElementById("main");
+        this.#panel = this.shadowRoot.getElementById("panel");
+        this.#contactState = this.shadowRoot.getElementById("contactState");
+        this.#conversationState = this.shadowRoot.getElementById("conversationState");
+        this.#errorState = this.shadowRoot.getElementById("errorState");
+        this.#welcomeState = this.shadowRoot.getElementById("welcomeState");
+
         this.#messages = this.shadowRoot.getElementById("messages");
         this.#writeArea = this.shadowRoot.getElementById("writeArea");
         this.#sendButton = this.shadowRoot.getElementById("sendButton");
+        this.#startButton = this.shadowRoot.getElementById("startButton");
 
         this.#writeArea.addEventListener("keydown", this.#boundKeydownHandler);
         this.#writeArea.addEventListener("input", this.#boundInputHandler);
@@ -146,14 +237,113 @@ class AxialMessaging extends AxialComponentBase
         this.#sendButton.addEventListener("click", this.#boundSendHandler);
         this.#sendButton.enabled = false;
 
+        this.#startButton.addEventListener("click", this.#boundStartHandler);
+
         this.#bubbleHolder = this.shadowRoot.getElementById("bubbleHolder");
         this.#typingBubble = this.shadowRoot.getElementById("typingBubble");
+        this.#recipients = this.shadowRoot.getElementById("recipients");
+        
+        //this.#initMessagingData();
+        console.log("end messaging buildComponent");
+    }
 
-        if( this.#socketUrl !== undefined )
+    async #initMessaging()
+    {
+        try
         {
+            const socketJson = await FetchUtils.GET( this.#apiMessagingSocketPath );
+            this.#socketUrl = `${socketJson.url}?u=${this.#userId}&r=${this.#userRole}`;
             this.#createSocket();
+            await this.#getConversationContacts();
+            await this.#getConversationList();
+
+        }
+        catch(err)
+        {
+
+        }
+        finally
+        {
+            if( this.#websocket !== undefined && Array.isArray(this.#conversations) === true && Array.isArray(this.#contacts) === true )
+            {
+                this.#initialized = true;
+            }
+            this.#initMesagingInterface();
         }
     }
+
+    async #initMesagingInterface()
+    {
+        console.log("initMessagingData", this.#initialized);
+
+        console.log("conversations : ", this.#conversations);
+        console.log("contacts : ", this.#contacts);
+        console.log("websock : ", this.#websocket);
+
+        // une erreur s'est produite, on ne peut pas utiliser la messagerie
+        if( this.#initialized === false )
+        {
+            this.#errorState.style.display = "block";
+
+            this.#welcomeState.style.display = "none";
+            this.#contactState.style.display = "none";
+            this.#conversationState.style.display = "none";
+        }
+        else
+        {
+            // c'est parti !
+
+            // encore aucune conversation (ni envoyée, ni reçue), on affiche l'état de bienvenue
+            if( this.#conversations.length === 0 )
+            {
+                this.#welcomeState.style.display = "block";
+
+                this.#errorState.style.display = "none";
+                this.#contactState.style.display = "none";
+                this.#conversationState.style.display = "none";
+            }
+            // on a moins une conversation
+            // -> l'utilisateur n'a qu'un seul contact : on affiche directement la conversation
+            // -> sinon on affiche la liste des conversations
+            else if( this.#conversations.length >= 1 )
+            {
+                if( this.#contacts.length === 1 )
+                {
+                    this.#main.style.display = "flex";
+                    this.#panel.style.display = "none";
+
+                    this.#conversationState.style.display = "none";
+                    this.#welcomeState.style.display = "none";
+                    this.#errorState.style.display = "none";
+                    this.#contactState.style.display = "none";
+
+                    const cc = this.#conversations[0];
+                    console.log( cc );
+                    this.currentConversation = cc;
+                    try
+                    {
+                        await this.#getCurrentMessages();
+                    }
+                    catch(err)
+                    {
+                        console.log(err);
+                    }
+                }
+                else
+                {
+                    console.warn("ON AFFICHE TOUTES LES CONVERSATIONS");
+                    this.#main.style.display = "none";
+                    this.#panel.style.display = "block";
+
+                    this.#conversationState.style.display = "block";
+                    this.#welcomeState.style.display = "none";
+                    this.#errorState.style.display = "none";
+                    this.#contactState.style.display = "none";
+                }
+            }
+        }
+    }
+
 
     /**
      * Create the AxialWebSocket and its listeners
@@ -164,9 +354,9 @@ class AxialMessaging extends AxialComponentBase
         if( this.#websocket ) { return; }
 
         // check again if #socketUrl isValid
-        if( this.#socketUrl === undefined || typeof this.#socketUrl !== "string" || this.#socketUrl.trim().startsWith("wss://") === false )
+        if( this.#socketUrl === undefined || typeof this.#socketUrl !== "string" )
         {
-            throw new Error("Can't initialize the socket. The 'socketUrl' must be a string which start with the 'wss://' protocol");
+            throw new Error("Can't initialize the socket. The 'socketUrl' must be a string which start with the 'ws://' protocol");
         }
 
         this.#websocket = new AxialWebSocket( this.#socketUrl );
@@ -175,7 +365,6 @@ class AxialMessaging extends AxialComponentBase
         this.#websocket.addEventListener( "socketMessage", this.#boundSocketMessageHandler );
         this.#websocket.addEventListener( "socketError", this.#boundSocketErrorHandler );
         this.#websocket.addEventListener( "socketClose", this.#boundSocketCloseHandler );
-
     }
 
     #socketOpenHandler( event )
@@ -186,8 +375,9 @@ class AxialMessaging extends AxialComponentBase
     #socketMessageHandler( event )
     {
         const object = JSON.parse( event.detail.message );
+        console.log("MESSAGE IN SOCKET", object);
 
-        if( object.id === this.#userId ) { return; }
+        if( object.from === this.#userId ) { return; }
 
         const type = object.type;
         switch( type )
@@ -255,7 +445,7 @@ class AxialMessaging extends AxialComponentBase
 
         const object =
         {
-            id: this.#userId,
+            from: this.#userId,
             type: "typing",
             value: true
         };
@@ -268,26 +458,90 @@ class AxialMessaging extends AxialComponentBase
         this.#sendMessage();
     }
 
-    #sendMessage()
+    async #startHandler( event )
     {
-        const message = this.#writeArea.value.trim();
-
-        const object = 
+        // si on a 1 seul contact on crée directement la conversation
+        // si on en a plusieurs on affiche l'écran de contact
+        try
         {
-            id: this.#userId,
-            type: "message",
-            value: message
-        };
-        const json = JSON.stringify( object );
+            if( this.#contacts.length === 1 )
+            {
+                
+                // afficher main
+                this.#main.style.display = "flex";
+                this.#panel.style.display = "none";
 
-        if( this.websocket )
-        {
-            this.websocket.send( json );
-            this.#addMessageSent( message );
+                this.#conversationState.style.display = "none";
+                this.#welcomeState.style.display = "none";
+                this.#errorState.style.display = "none";
+                this.#contactState.style.display = "none";
+
+                // créer la conversation
+                const from = this.#userId;
+                const contact = this.#contacts[0];
+                const to = contact.uuids
+                const subject = "";
+
+                this.#recipients.innerHTML = contact.label;
+
+                const conv = await this.#createConversation(from, to, subject);
+
+            }
+            else
+            {
+                this.#conversationState.style.display = "block";
+                this.#welcomeState.style.display = "none";
+                this.#errorState.style.display = "none";
+                this.#contactState.style.display = "none";
+                
+            }
         }
+        catch(err)
+        {
+            console.log(err);
+        }
+    }
 
-        this.#writeArea.value = "";
-        this.#sendButton.enabled = false;
+    /**
+     * Send the message, we register first the message in the database
+     * If success, we sen it to all the users throw the websockets
+     * This ensure for the user the messages is properly saved before distribution
+     */
+    async #sendMessage()
+    {
+        try
+        {
+            const message = this.#writeArea.value.trim();
+
+            const object = 
+            {
+                from: this.#userId,
+                type: "message",
+                content: message,
+                to: this.#currentConversation.uuids,
+                conversation_id: this.#currentConversation.uuid
+            };
+            
+            const inserted = await FetchUtils.POST( this.#apiMessageCreatePath, object);
+
+            if( this.websocket )
+            {
+                const messageString = JSON.stringify( object )
+                this.websocket.send( messageString );
+                this.#addMessageSent( object );
+            }
+        }
+        catch(err)
+        {
+            console.log(err);
+            // here we can toast the error
+        }
+        finally
+        {
+            // do not block the user and let it him rewrite
+            this.#writeArea.value = "";
+            this.#sendButton.enabled = false;
+        }
     }
 
     #addMessageSent( message )
@@ -325,6 +579,102 @@ class AxialMessaging extends AxialComponentBase
     {
         this.#typingBubble.stop();
         this.#bubbleHolder.style.height = "0";
+    }
+
+    /**
+     * 
+     * @param { String } from 
+     * @param { Array.<String> } to 
+     * @param { String } subject 
+     */
+    async #createConversation( from, to, subject )
+    {
+        try
+        {
+            // control todo
+            let canSend = true;
+            const obj = { from: from, to: to, subject: subject }
+            const json = await FetchUtils.POST( this.#apiConversationCreatePath, obj );
+            this.#currentConversation = json.content;
+        }
+        catch(err)
+        {
+            console.log(err);
+        }
+    }
+
+    async #getConversationList()
+    {
+        try
+        {
+            this.#conversations = new Array();
+            const list = await FetchUtils.GET( this.#apiConversationListPath );
+            console.log( "conversations", list );
+            if( list.content !== null && Array.isArray( list.content ) === true )
+            {
+                this.#conversations = list.content;
+            }
+        }
+        catch(err)
+        {
+
+        }
+    }
+
+    async #getConversationContacts()
+    {
+        try
+        {
+            this.#contacts = new Array();
+            const contacts = await FetchUtils.GET( this.#apiConversationContactsPath );
+            console.log("contacts", contacts );
+            if( contacts.content !== null && Array.isArray( contacts.content ) === true )
+            {
+                this.#contacts = contacts.content;
+            }
+        }
+        catch(err)
+        {
+
+        }
+    }
+
+    async #getCurrentMessages()
+    {
+        try
+        {
+            const query = `c=${this.#currentConversation.uuid}`;
+            const messages = await FetchUtils.GET( this.#apiMessageGetPath, query );
+            this.#currentMessages = messages.content;
+            this.#displayConversation();
+        }
+        catch(err)
+        {
+            console.log(err);
+        }
+        finally
+        {
+
+        }
+    }
+
+    #displayConversation()
+    {
+        console.log("this.#displayConversation")
+        DomUtils.cleanElement( this.#messages );
+        console.log( this.#currentMessages );
+        for( const mes of this.#currentMessages )
+        {
+            console.log( mes );
+            if( mes.from === this.#userId )
+            {
+                this.#addMessageSent( mes );
+            }
+            else
+            {
+                this.#addMessageReceived( mes );
+            }
+        }
     }
 
 }

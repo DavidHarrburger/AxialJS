@@ -199,7 +199,9 @@ class AxialWebApplicationBase extends AxialApplicationBase
     {
         if( this.#userObject )
         {
-            //document.title = this.#userObject.first_name;
+            const axialEvent = new CustomEvent("axialUserReady", { detail: { user:this.#userObject } } );
+            window.dispatchEvent( axialEvent );
+            
             console.log(this.#userObject);
             if( this.#authBox )
             {

@@ -90,6 +90,8 @@ const MESSAGING_RULES = new Map();
 MESSAGING_RULES.set( "user",  { allow_to: [ { role: "admin", view_as: "group", copy_to: [], display_as: "Name to display" } ] } );
 MESSAGING_RULES.set( "admin", { allow_to: [ { role: "user",  view_as: "single", copy_to: [ "admin" ], display_as:"user" } ] } );
 
+const MESSAGING_SOCKET_URL = process.env.MESSAGING_SOCKET_URL;
+
 const CORS_OPTIONS =
 {
     origin: [ "http://localhost", "https://localhost", "http://localhost:3000", "https://localhost:3000", "http://localhost:8080", "https://localhost:8080", "http://localhost:8081", "https://localhost:8081" ],
@@ -2231,6 +2233,26 @@ const apiMessageCreate = async function( request, response )
     }
 };
 
+/// UTILS PRIVATE
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiMessagingWebSocektUrlGet = function( request, response )
+{
+    try
+    {
+        const msu = process.env.MESSAGING_SOCKET_URL;
+        response.json( { status: "ok", url: msu } );
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( BASIC_KO );
+    }
+};
+
 ///
 /// SERVER ROUTES
 ///
@@ -2283,7 +2305,6 @@ AXIAL_SERVER_APPLICATION.post( "/api/params/infobar/set", apiParamsInfobarSet );
 
 AXIAL_SERVER_APPLICATION.get( "/api/params/weektime/get", apiParamsWeektimeGet );
 AXIAL_SERVER_APPLICATION.post( "/api/params/weektime/set", apiParamsWeektimeSet );
-
 
 // SERVICES
 AXIAL_SERVER_APPLICATION.post( "/api/services/qrcode/", apiServicesQRCode );
@@ -2345,6 +2366,9 @@ AXIAL_SERVER_APPLICATION.post( "/api/conversation/create", apiConversationCreate
 AXIAL_SERVER_APPLICATION.get( "/api/message/get", apiMessageGet );
 AXIAL_SERVER_APPLICATION.post( "/api/message/create", apiMessageCreate );
 
+// MESSAGING
+AXIAL_SERVER_APPLICATION.get( "/api/messaging/socket", apiMessagingWebSocektUrlGet );
+
 // STATIC
 AXIAL_SERVER_APPLICATION.use( "/", express.static( path.join( DIRNAME, "static" )) );
 // NO DEV FOLDER
@@ -2356,8 +2380,8 @@ AXIAL_SERVER_APPLICATION.use( "/pdf", express.static( path.join( "pdf" )) ); // 
 AXIAL_SERVER_APPLICATION.use( finalMiddleware );
 
 const AXIAL_SERVER = http.createServer( AXIAL_SERVER_APPLICATION );
-//const PORT = process.env.PORT || 80;
-const PORT = 8383;
+const PORT = process.env.PORT || 80;
+//const PORT = 8383;
 
 const SOCKETS_MAP = new Map();
 
@@ -2427,7 +2451,7 @@ const wssConnectionHandler = function ( ws, im )
 
     console.log(im.url);
 
-    const SURL = new URL( im.url, WEBSOCKET_URL );
+    const SURL = new URL( im.url, MESSAGING_SOCKET_URL );
     const userUuid = SURL.searchParams.get("u");
     const userRole = SURL.searchParams.get("r");
     

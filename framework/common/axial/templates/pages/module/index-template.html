@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <title>User</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="">
+    <link rel="icon" type="image/x-icon" href="../assets/favicon/favicon.ico">
+    <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body class="axial_module_body">
+
+<!--$$$C-->
+
+    <div id="axialBackgroundLayer" class="axial_layer_base axial_background_layer"></div>
+    <div id="axialMainLayer" class="axial_main_layer axial_main_layer-module">
+
+        <!-- MAIN -->
+        <main class="axial_module_main">
+            
+
+            <axial-viewer id="axialModuleViewer">
+                
+                <axial-module-view slot="axial-views" axial-title="View 1">
+                    <div slot="axial-content">1</div>
+                </axial-module-view>
+                
+                <axial-module-view slot="axial-views" axial-title="View 2">
+                    <div slot="axial-content">2</div>
+                </axial-module-view>
+
+                <axial-module-view slot="axial-views" axial-title="View 3">
+                    <div slot="axial-content">3</div>
+                </axial-module-view>
+
+            </axial-viewer>
+            
+        </main>
+
+        <!-- HEADER -->
+        <header class="axial_module_header">
+            <div class="axial_module_title">Dashboard</div>
+            <div class="axial_spacer axial_module_spacer"></div>
+            <axial-auth-box id="axialAuthBox"></axial-auth-box>
+            <axial-burger-button id="axialModuleMenuButton" class="axial_admin_burger"></axial-burger-button>
+        </header>
+
+        <!-- PANEL -->
+        <div class="axial_admin_panel" id="axialModulePanel">
+            <div class="axial_admin_panel-header">
+                <div class="axial_admin_panel-logo">
+                    <a class="axial_header_logo" href="../" target="_self">
+                        <img class="axial_header_logo_svg" alt="logo" src="../assets/logos/logo.svg">
+                    </a>
+                </div>
+            </div>
+            <div class="axial_admin_panel-scroller">
+
+                
+                <axial-toggle-button-group id="axialModuleToggles" class="axial_module_toggles" axial-direction="column">
+
+                    <axial-toggle-panel-button axial-text="View 1" slot="axial-toggles">
+                        <div slot="axial-icon" class="axial_toggle_button_helper-icon_holder">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+                                <path class="axial_button_icon_fill" d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"/>
+                            </svg>
+                        </div>
+                    </axial-toggle-panel-button>
+
+                    <axial-toggle-panel-button axial-text="View 2" slot="axial-toggles">
+                        <div slot="axial-icon" class="axial_toggle_button_helper-icon_holder">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                <path class="axial_button_icon_fill" d="M406.5 399.6C387.4 352.9 341.5 320 288 320l-64 0c-53.5 0-99.4 32.9-118.5 79.6C69.9 362.2 48 311.7 48 256C48 141.1 141.1 48 256 48s208 93.1 208 208c0 55.7-21.9 106.2-57.5 143.6zm-40.1 32.7C334.4 452.4 296.6 464 256 464s-78.4-11.6-110.5-31.7c7.3-36.7 39.7-64.3 78.5-64.3l64 0c38.8 0 71.2 27.6 78.5 64.3zM256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-272a40 40 0 1 1 0-80 40 40 0 1 1 0 80zm-88-40a88 88 0 1 0 176 0 88 88 0 1 0 -176 0z"/>
+                            </svg>
+                        </div>
+                    </axial-toggle-panel-button>
+
+                    <axial-toggle-panel-button axial-text="View 3" slot="axial-toggles">
+                        <div slot="axial-icon" class="axial_toggle_button_helper-icon_holder">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+                                <path class="axial_button_icon_fill" d="M144 0a80 80 0 1 1 0 160A80 80 0 1 1 144 0zM512 0a80 80 0 1 1 0 160A80 80 0 1 1 512 0zM0 298.7C0 239.8 47.8 192 106.7 192h42.7c15.9 0 31 3.5 44.6 9.7c-1.3 7.2-1.9 14.7-1.9 22.3c0 38.2 16.8 72.5 43.3 96c-.2 0-.4 0-.7 0H21.3C9.6 320 0 310.4 0 298.7zM405.3 320c-.2 0-.4 0-.7 0c26.6-23.5 43.3-57.8 43.3-96c0-7.6-.7-15-1.9-22.3c13.6-6.3 28.7-9.7 44.6-9.7h42.7C592.2 192 640 239.8 640 298.7c0 11.8-9.6 21.3-21.3 21.3H405.3zM224 224a96 96 0 1 1 192 0 96 96 0 1 1 -192 0zM128 485.3C128 411.7 187.7 352 261.3 352H378.7C452.3 352 512 411.7 512 485.3c0 14.7-11.9 26.7-26.7 26.7H154.7c-14.7 0-26.7-11.9-26.7-26.7z"/>
+                            </svg>
+                        </div>
+                    </axial-toggle-panel-button>
+
+                </axial-toggle-button-group>
+                
+                <div class="axial_spacer"></div>
+                <axial-signout-button id="signoutButton" axial-text="Deconnexion" axial-path="../api/auth/signout" axial-redirect="../">
+                    <div slot="axial-icon" class="axial_button-icon_holder">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                            <path d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 192 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l210.7 0-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l128-128zM160 96c17.7 0 32-14.3 32-32s-14.3-32-32-32L96 32C43 32 0 75 0 128L0 384c0 53 43 96 96 96l64 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-64 0c-17.7 0-32-14.3-32-32l0-256c0-17.7 14.3-32 32-32l64 0z"/>
+                        </svg>
+                    </div>
+                </axial-signout-button>
+
+            </div>
+        </div>
+        
+    </div>
+
+    <div id="axialIntroLayer" class="axial_layer_base axial_intro_layer"></div>
+    <div id="axialPopupLayer" class="axial_layer_base axial_popup_layer">
+        <div id="axialPopupObfuscator" class="axial_popup_obfuscator"></div>
+    </div>
+    <div id="axialMediasLayer" class="axial_layer_base axial_medias_layer"></div>
+    <div id="axialNotificationLayer" class="axial_layer_base axial_notification_layer">
+        <axial-notifier id="axialNotifier"></axial-notifier>
+    </div>
+    <div id="axialOverlayLayer" class="axial_layer_base axial_overlay_layer">
+        <div id="axialOverlayObfuscator" class="axial_overlay_obfuscator"></div>
+        <axial-deletion-overlay id="axialDeletionOverlay"></axial-deletion-overlay>
+        <axial-archive-overlay id="axialArchiveOverlay"></axial-archive-overlay>
+    </div>
+    <div id="axialTooltipLayer" class="axial_layer_base axial_tooltip_layer"></div>
+    <div id="axialTransitionLayer" class="axial_layer_base axial_transition_layer"></div>
+    <script src="./application.js" defer></script>
+    
+</body>
+</html>

@@ -4,8 +4,8 @@ class ArrayUtils
 {
     /**
      * 
-     * @param {Array} a 
-     * @returns {Array}
+     * @param { Array } a 
+     * @returns { Array }
      */
     static shuffle(a)
     {
@@ -19,6 +19,20 @@ class ArrayUtils
             b.push(e[0]);
         }
         return b;
+    }
+
+    static ofStringEquals( a, b )
+    {
+        if( Array.isArray(a) === false || Array.isArray(b) === false ) { return false; }
+        if( a.every( v => typeof v === "string" ) === false || b.every( v => typeof v === "string" ) === false ) { return false; }
+        if( a.length !== b.length ) { return false; }
+        const setA = new Set(a); const setB = new Set(b);
+        if( setA.size !== setB.size ) { return false };
+        for( const value of setA )
+        {
+            if( setB.has(value) === false ) { return false };
+        }
+        return true;
     }
 }
 
