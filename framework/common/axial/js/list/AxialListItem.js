@@ -13,6 +13,7 @@ import { AxialIconFetchButton } from "../button/AxialIconFetchButton.js";
 import { AxialIconListButtonArchive } from "./buttons/AxialIconListButtonArchive.js";
 import { AxialIconListButtonClone } from "./buttons/AxialIconListButtonClone.js";
 import { AxialIconListButtonDelete } from "./buttons/AxialIconListButtonDelete.js";
+import { AxialIconListButtonLock } from "./buttons/AxialIconListButtonLock.js";
 
 class AxialListItem extends AxialListItemBase
 {
@@ -66,6 +67,9 @@ class AxialListItem extends AxialListItemBase
     /** @type { AxialButton } */
     #gripButton;
 
+    /** @type { AxialIconListButtonLock } */
+    #lockButton;
+
     /** @type { AxialOverlayBase } */
     #contextOverlay;
 
@@ -106,6 +110,12 @@ class AxialListItem extends AxialListItemBase
     /** @type { Function } */
     #boundContextHandler;
 
+    /** @type { Function } */
+    #boundEnterHandler;
+
+    /** @type { Function } */
+    #boundLeaveHandler;
+
     /**
      * Create the item
      * @constructor
@@ -132,6 +142,9 @@ class AxialListItem extends AxialListItemBase
 
         this.#boundDragStartHandler = this.#dragStartHandler.bind(this);
         this.#boundDragEndHandler = this.#dragEndHandler.bind(this);
+
+        this.#boundEnterHandler = this.#enterHandler.bind(this);
+        this.#boundLeaveHandler = this.#leaveHandler.bind(this);
 
         // defaults
         if( Array.isArray( defaults ) === true )
@@ -175,6 +188,18 @@ class AxialListItem extends AxialListItemBase
      * @readonly
     */
     get deleteButton() { return this.#deleteButton; }
+
+    /** 
+     * @type { AxialIconButton }
+     * @readonly
+    */
+    get editButton() { return this.#editButton; }
+
+    /** 
+     * @type { AxialIconListButtonLock }
+     * @readonly
+    */
+    get lockButton() { return this.#lockButton; }
 
     /**
      * @type { String }
@@ -221,6 +246,7 @@ class AxialListItem extends AxialListItemBase
         this.#editButton = this.shadowRoot.getElementById("editButton");
         this.#copyButton = this.shadowRoot.getElementById("copyButton");
         this.#gripButton = this.shadowRoot.getElementById("gripButton");
+        this.#lockButton = this.shadowRoot.getElementById("lockButton");
 
         this.#droptop = this.shadowRoot.getElementById("droptop");
         if( this.#droptop )
@@ -235,6 +261,8 @@ class AxialListItem extends AxialListItemBase
         }
 
         this.addEventListener("contextmenu", this.#boundContextHandler);
+        this.addEventListener("pointerenter", this.#boundEnterHandler);
+        this.addEventListener("pointerleave", this.#boundLeaveHandler);
 
         if( this.#content )
         {
@@ -500,6 +528,26 @@ class AxialListItem extends AxialListItemBase
 
         const listItemEvent = new CustomEvent("listItemDragEnded", { bubbles: true } );
         this.dispatchEvent(listItemEvent);
+    }
+
+    /**
+     * 
+     * @param { PointerEvent } event 
+     */
+    #enterHandler( event )
+    {
+        this.#background.style.backgroundColor = "#ffffff";
+        
+    }
+
+    /**
+     * 
+     * @param { PointerEvent } event 
+     */
+    #leaveHandler( event )
+    {
+        this.#background.style.backgroundColor = "transparent";
+        
     }
 }
 window.customElements.define("axial-list-item", AxialListItem);

@@ -12,6 +12,9 @@ class AxialAuthLogin extends AxialComponentBase
     /** @type { String } */
     #path = "./api/auth/signin";
 
+    /** @type { String } */
+    #resetPagePath = "./account/password-reset";
+
     /// elements
     /** @type { HTMLInputElement } */
     #email;
@@ -31,6 +34,9 @@ class AxialAuthLogin extends AxialComponentBase
     /** @type { HTMLElement } */
     #message;
 
+    /** @type { HTMLAnchorElement } */
+    #resetAnchor;
+
     /// events
     /** @type { Function } */
     #boundButtonHandler;
@@ -44,6 +50,9 @@ class AxialAuthLogin extends AxialComponentBase
     /** @type { Function } */
     #boundMessageTimeoutHandler;
 
+    /** @type { Function } */
+    #boundResetAnchorClickHandler;
+
     constructor()
     {
         super();
@@ -51,11 +60,14 @@ class AxialAuthLogin extends AxialComponentBase
         this.template = "axial-auth-login-template";
 
         this.#path = PathUtils.getPathFromRelative( this.#path );
+        this.#resetPagePath = PathUtils.getPathFromRelative( this.#resetPagePath );
 
         this.#boundToggleHandler = this.#toggleHandler.bind(this);
         this.#boundInputChangeHandler = this.#inputChangeHandler.bind(this);
         this.#boundButtonHandler = this.#buttonHandler.bind(this);
         this.#boundMessageTimeoutHandler = this.#messageTimeoutHandler.bind(this);
+
+        this.#boundResetAnchorClickHandler = this.#resetAnchorClickHandler.bind(this);
     }
 
     _buildComponent()
@@ -69,6 +81,8 @@ class AxialAuthLogin extends AxialComponentBase
 
         this.#messageContainer = this.shadowRoot.getElementById("messageContainer");
         this.#message = this.shadowRoot.getElementById("message");
+
+        this.#resetAnchor = this.shadowRoot.getElementById("resetAnchor");
 
         if( this.#email )
         {
@@ -90,6 +104,12 @@ class AxialAuthLogin extends AxialComponentBase
             this.#connectButton.enabled = false;
             this.#connectButton.addEventListener("click", this.#boundButtonHandler);
         }
+
+        if( this.#resetAnchor )
+        {
+            this.#resetAnchor.addEventListener("click", this.#boundResetAnchorClickHandler);
+        }
+
     }
 
     #toggleHandler( event )
@@ -202,6 +222,19 @@ class AxialAuthLogin extends AxialComponentBase
     #messageTimeoutHandler()
     {
         this.#messageContainer.close();
+    }
+
+    #resetAnchorClickHandler( event )
+    {
+        event.preventDefault();
+        if( this.#email.validity.valid === true )
+        {
+            window.location.href = this.#resetPagePath + "?m=" + this.#email.value;
+        }
+        else
+        {
+            window.location.href = this.#resetPagePath;
+        }
     }
 }
 

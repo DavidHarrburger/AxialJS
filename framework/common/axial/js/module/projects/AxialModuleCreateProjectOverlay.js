@@ -7,6 +7,7 @@ import { AxialToggleCheck } from "../../button/AxialToggleCheck.js";
 
 import { PathUtils } from "../../utils/PathUtils.js";
 import { FetchUtils } from "../../utils/FetchUtils.js";
+import { StringUtils } from "../../utils/StringUtils.js";
 
 class AxialModuleCreateProjectOverlay extends AxialOverlayBase
 {
@@ -17,12 +18,15 @@ class AxialModuleCreateProjectOverlay extends AxialOverlayBase
     /** @type { String } */
     #projectPopupId = "projectPopup";
 
+    /** @type { String } */
+    #createdFor;
+
     /// elements
     /** @type { HTMLInputElement } */
     #projectNameInput;
 
     /** @type { HTMLInputElement } */
-    #simulationNameInput;
+    //#simulationNameInput;
 
     /** @type { AxialToggleCheck } */
     #toggleCheck;
@@ -59,7 +63,7 @@ class AxialModuleCreateProjectOverlay extends AxialOverlayBase
         this.useObfuscator = true;
 
         this.#boundProjectInputHandler = this.#projectInputHandler.bind(this);
-        this.#boundSimulationInputHandler = this.#simulationInputHandler.bind(this);
+        //this.#boundSimulationInputHandler = this.#simulationInputHandler.bind(this);
         this.#boundCancelHandler = this.#cancelHandler.bind(this);
         this.#boundCreateHandler = this.#createHandler.bind(this);
     }
@@ -70,11 +74,24 @@ class AxialModuleCreateProjectOverlay extends AxialOverlayBase
      */
     get openOnCreation()
     {
+        /*
         if( this.#toggleCheck )
         {
             return this.#toggleCheck.selected;
         }
-        return false;
+        */
+        return true;
+    }
+
+    get createdFor() { return this.#createdFor; }
+    set createdFor( value )
+    {
+        if( StringUtils.isWhite(value) === true )
+        {
+            throw new TypeError("String value required");
+        }
+
+        this.#createdFor = value;
     }
 
     _buildComponent()
@@ -87,11 +104,13 @@ class AxialModuleCreateProjectOverlay extends AxialOverlayBase
             this.#projectNameInput.addEventListener("input", this.#boundProjectInputHandler);
         }
 
+        /*
         this.#simulationNameInput = this.shadowRoot.getElementById("simulationNameInput");
         if( this.#simulationNameInput )
         {
             this.#simulationNameInput.addEventListener("input", this.#boundSimulationInputHandler);
         }
+        */
 
         this.#cancelButton = this.shadowRoot.getElementById("cancelButton");
         if( this.#cancelButton )
@@ -112,10 +131,10 @@ class AxialModuleCreateProjectOverlay extends AxialOverlayBase
     {
         let validity = true;
         const nameValid = this.#projectNameInput.validity.valid;
-        const simuValid = this.#simulationNameInput.validity.valid;
+        //const simuValid = this.#simulationNameInput.validity.valid;
 
         if( nameValid === false ) { validity = false; }
-        if( simuValid === false ) { validity = false; }
+        //if( simuValid === false ) { validity = false; }
         if( this.#createButton ) { this.#createButton.enabled = validity; }
     }
 
@@ -155,11 +174,13 @@ class AxialModuleCreateProjectOverlay extends AxialOverlayBase
             this.#projectNameInput.style.opacity = "0.5";
         }
 
+        /*
         if( this.#simulationNameInput )
         {
             this.#simulationNameInput.disabled = true;
             this.#simulationNameInput.style.opacity = "0.5";
         }
+        */
 
         // it's here because of the click ;)
         this.#createButton.enabled = false;
@@ -181,12 +202,14 @@ class AxialModuleCreateProjectOverlay extends AxialOverlayBase
             this.#projectNameInput.style.opacity = "1";
         }
 
+        /*
         if( this.#simulationNameInput )
         {
             this.#simulationNameInput.value = "";
             this.#simulationNameInput.disabled = false;
             this.#simulationNameInput.style.opacity = "1";
         }
+        */
 
         if( this.#createButton )
         {
@@ -204,9 +227,11 @@ class AxialModuleCreateProjectOverlay extends AxialOverlayBase
     {
         try
         {
+            if( this.#createdFor === undefined ) { throw new Error("createdFor popertie cannot be undefined"); }
             let projectData = {};
             projectData.project_name = this.#projectNameInput.value.trim();
-            projectData.simulation_name = this.#simulationNameInput.value.trim();
+            //projectData.simulation_name = this.#simulationNameInput.value.trim();
+            projectData.created_for = this.#createdFor;
             const json = await FetchUtils.POST(this.#apiCreateProjectPath, projectData );
             
             if( json.status && json.status === "ok" )

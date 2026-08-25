@@ -104,23 +104,24 @@ class AxialToggleButtonGroup extends AxialComponentBase
         for( const se of slotElements )
         {
             se.addEventListener("componentBuilt", this.#boundTogglesBuiltHandler);
-            /*
+            
             if( se instanceof AxialToggleButtonBase == true )
             {
-                console.log("se ok");
                 this.#maxCounter++;
-                se.addEventListener("componentBuilt", this.#boundTogglesBuiltHandler);
-                se.addEventListener("toggleChanged", this.#boundToggleChangedHandler);
+                //se.addEventListener("componentBuilt", this.#boundTogglesBuiltHandler);
+                //se.addEventListener("toggleChanged", this.#boundToggleChangedHandler);
                 this.addToggle( se );
             }
-            */
+            
         }
+        
         if( this.#selectedIndex !== -1 )
         {
             if( this.#selectedIndex < this.#toggles.length )
             {
                 const toggle = this.#toggles[this.#selectedIndex];
                 toggle.selected = true;
+                console.log( "shoulb be selected");
             }
         }
 

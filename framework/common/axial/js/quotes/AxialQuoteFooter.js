@@ -53,11 +53,11 @@ class AxialQuoteFooter extends AxialComponentBase
 
     #updateComponent()
     {
-        this.#totalHt.children[1].innerHTML = Number(this.data.tht).toLocaleString( undefined, {minimumFractionDigits:2, maximumFractionDigits:2 } );
-        this.#tax5.children[1].innerHTML = Number(this.data.t5).toLocaleString( undefined, {minimumFractionDigits:2, maximumFractionDigits:2 } );
-        this.#tax10.children[1].innerHTML = Number(this.data.t10).toLocaleString( undefined, {minimumFractionDigits:2, maximumFractionDigits:2 } );
-        this.#tax20.children[1].innerHTML = Number(this.data.t20).toLocaleString( undefined, {minimumFractionDigits:2, maximumFractionDigits:2 } );
-        this.#totalTtc.children[1].innerHTML = Number(this.data.ttc).toLocaleString( undefined, {minimumFractionDigits:2, maximumFractionDigits:2 } );
+        this.#totalHt.children[1].innerHTML = Number(this.data.tht).toLocaleString( undefined, {minimumFractionDigits:2, maximumFractionDigits:2 } ) + " €";
+        this.#tax5.children[1].innerHTML = Number(this.data.t5).toLocaleString( undefined, {minimumFractionDigits:2, maximumFractionDigits:2 } ) + " €";
+        this.#tax10.children[1].innerHTML = Number(this.data.t10).toLocaleString( undefined, {minimumFractionDigits:2, maximumFractionDigits:2 } ) + " €";
+        this.#tax20.children[1].innerHTML = Number(this.data.t20).toLocaleString( undefined, {minimumFractionDigits:2, maximumFractionDigits:2 } ) + " €";
+        this.#totalTtc.children[1].innerHTML = Number(this.data.ttc).toLocaleString( undefined, {minimumFractionDigits:2, maximumFractionDigits:2 } ) + " €";
 
         if( this.data.t5 === 0 )  { this.#tax5.style.display = "none"; }
         if( this.data.t10 === 0 ) { this.#tax10.style.display = "none"; }

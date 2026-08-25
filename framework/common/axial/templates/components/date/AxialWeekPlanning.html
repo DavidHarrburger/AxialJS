@@ -1,44 +1,98 @@
 <!-- AxialWeekPlanning -->
 <template id="axial-week-planning-template">
     <link rel="stylesheet" href="./styles.css">
-    <div id="grid" class="axial_week_planning-grid">
-        <div class="axial_week_planning-cell axial_week_planning-morning">Matin</div>
-        <div class="axial_week_planning-cell axial_week_planning-morning_start">Début</div>
-        <div class="axial_week_planning-cell axial_week_planning-morning_end">Fin</div>
-        <div class="axial_week_planning-cell axial_week_planning-morning_total">Total</div>
-        <div id="totalMorning" class="awp_total awp_morning_total">20:00</div>
+    <div class="axial_week_planning-mode">
+        <div class="axial_week_planning-mode_label">Mode: </div>
+        <div class="axial_spacer"></div>
+        <axial-toggle-button-group id="modeGroup">
+            <axial-toggle-radio id="halfRadio" axial-text="AM / PM" slot="axial-toggles"></axial-toggle-radio>
+            <axial-toggle-radio id="fullRadio" axial-text="Journée" slot="axial-toggles"></axial-toggle-radio>
+        </axial-toggle-button-group>
+    </div>
+    <div id="holder">
+        <div id="gridHalf" class="axial_week_planning-grid_half">
+            <div class="axial_week_planning-cell axial_week_planning-morning">Matin</div>
+            <div class="axial_week_planning-cell axial_week_planning-morning_start">Début</div>
+            <div class="axial_week_planning-cell axial_week_planning-morning_end">Fin</div>
+            <div class="axial_week_planning-cell axial_week_planning-morning_total">Total</div>
+            <div id="totalMorning" class="awp_total awp_morning_total">20:00</div>
 
-        <div class="axial_week_planning-cell axial_week_planning-noon">Après-midi</div>
-        <div class="axial_week_planning-cell axial_week_planning-noon_start">Début</div>
-        <div class="axial_week_planning-cell axial_week_planning-noon_end">Fin</div>
-        <div class="axial_week_planning-cell axial_week_planning-noon_total">Total</div>
-        <div id="totalNoon" class="awp_total awp_noon_total">15:00</div>
+            <div class="axial_week_planning-cell axial_week_planning-noon">Après-midi</div>
+            <div class="axial_week_planning-cell axial_week_planning-noon_start">Début</div>
+            <div class="axial_week_planning-cell axial_week_planning-noon_end">Fin</div>
+            <div class="axial_week_planning-cell axial_week_planning-noon_total">Total</div>
+            <div id="totalNoon" class="awp_total awp_noon_total">15:00</div>
 
-        <div id="totalWeek" class="awp_total awp_week_total">35:00</div>
+            <div id="totalWeek" class="awp_total awp_week_total">35:00</div>
 
-        <div class="axial_week_planning-cell axial_week_planning-day">Jour</div>
-        <div class="axial_week_planning-cell axial_week_planning-monday">Lundi</div>
-        <div class="axial_week_planning-cell axial_week_planning-tuesday">Mardi</div>
-        <div class="axial_week_planning-cell axial_week_planning-wednesday">Mercredi</div>
-        <div class="axial_week_planning-cell axial_week_planning-thursday">Jeudi</div>
-        <div class="axial_week_planning-cell axial_week_planning-friday">Vendredi</div>
-        <div class="axial_week_planning-cell axial_week_planning-saturday">Samedi</div>
-        <div class="axial_week_planning-cell axial_week_planning-sunday">Dimanche</div>
+            <div class="axial_week_planning-cell axial_week_planning-day"></div>
+            <div class="axial_week_planning-cell axial_week_planning-monday">Lundi</div>
+            <div class="axial_week_planning-cell axial_week_planning-tuesday">Mardi</div>
+            <div class="axial_week_planning-cell axial_week_planning-wednesday">Mercredi</div>
+            <div class="axial_week_planning-cell axial_week_planning-thursday">Jeudi</div>
+            <div class="axial_week_planning-cell axial_week_planning-friday">Vendredi</div>
+            <div class="axial_week_planning-cell axial_week_planning-saturday">Samedi</div>
+            <div class="axial_week_planning-cell axial_week_planning-sunday">Dimanche</div>
 
-        <input type="time" value="08:00" class="awp_input awp_morning_start-1"> <input type="time" value="12:00" class="awp_input awp_morning_end-1"> <div class="awp_subtotal awp_morning_subtotal-1">04:00</div>
-        <input type="time" value="08:00" class="awp_input awp_morning_start-2"> <input type="time" value="12:00" class="awp_input awp_morning_end-2"> <div class="awp_subtotal awp_morning_subtotal-2">04:00</div>
-        <input type="time" value="08:00" class="awp_input awp_morning_start-3"> <input type="time" value="12:00" class="awp_input awp_morning_end-3"> <div class="awp_subtotal awp_morning_subtotal-3">04:00</div>
-        <input type="time" value="08:00" class="awp_input awp_morning_start-4"> <input type="time" value="12:00" class="awp_input awp_morning_end-4"> <div class="awp_subtotal awp_morning_subtotal-4">04:00</div>
-        <input type="time" value="08:00" class="awp_input awp_morning_start-5"> <input type="time" value="12:00" class="awp_input awp_morning_end-5"> <div class="awp_subtotal awp_morning_subtotal-5">04:00</div>
-        <input type="time" value="00:00" class="awp_input awp_morning_start-6"> <input type="time" value="00:00" class="awp_input awp_morning_end-6"> <div class="awp_subtotal awp_morning_subtotal-6">00:00</div>
-        <input type="time" value="00:00" class="awp_input awp_morning_start-7"> <input type="time" value="00:00" class="awp_input awp_morning_end-7"> <div class="awp_subtotal awp_morning_subtotal-7">00:00</div>
+            <input type="time" value="08:00" class="awp_input awp_morning_start-1"> <input type="time" value="12:00" class="awp_input awp_morning_end-1"> <div class="awp_subtotal awp_morning_subtotal-1">04:00</div>
+            <input type="time" value="08:00" class="awp_input awp_morning_start-2"> <input type="time" value="12:00" class="awp_input awp_morning_end-2"> <div class="awp_subtotal awp_morning_subtotal-2">04:00</div>
+            <input type="time" value="08:00" class="awp_input awp_morning_start-3"> <input type="time" value="12:00" class="awp_input awp_morning_end-3"> <div class="awp_subtotal awp_morning_subtotal-3">04:00</div>
+            <input type="time" value="08:00" class="awp_input awp_morning_start-4"> <input type="time" value="12:00" class="awp_input awp_morning_end-4"> <div class="awp_subtotal awp_morning_subtotal-4">04:00</div>
+            <input type="time" value="08:00" class="awp_input awp_morning_start-5"> <input type="time" value="12:00" class="awp_input awp_morning_end-5"> <div class="awp_subtotal awp_morning_subtotal-5">04:00</div>
+            <input type="time" value="00:00" class="awp_input awp_morning_start-6"> <input type="time" value="00:00" class="awp_input awp_morning_end-6"> <div class="awp_subtotal awp_morning_subtotal-6">00:00</div>
+            <input type="time" value="00:00" class="awp_input awp_morning_start-7"> <input type="time" value="00:00" class="awp_input awp_morning_end-7"> <div class="awp_subtotal awp_morning_subtotal-7">00:00</div>
 
-        <input type="time" value="14:00" class="awp_input awp_noon_start-1"> <input type="time" value="17:00" class="awp_input awp_noon_end-1"> <div class="awp_subtotal awp_noon_subtotal-1">03:00</div>
-        <input type="time" value="14:00" class="awp_input awp_noon_start-2"> <input type="time" value="17:00" class="awp_input awp_noon_end-2"> <div class="awp_subtotal awp_noon_subtotal-2">03:00</div>
-        <input type="time" value="14:00" class="awp_input awp_noon_start-3"> <input type="time" value="17:00" class="awp_input awp_noon_end-3"> <div class="awp_subtotal awp_noon_subtotal-3">03:00</div>
-        <input type="time" value="14:00" class="awp_input awp_noon_start-4"> <input type="time" value="17:00" class="awp_input awp_noon_end-4"> <div class="awp_subtotal awp_noon_subtotal-4">03:00</div>
-        <input type="time" value="14:00" class="awp_input awp_noon_start-5"> <input type="time" value="17:00" class="awp_input awp_noon_end-5"> <div class="awp_subtotal awp_noon_subtotal-5">03:00</div>
-        <input type="time" value="00:00" class="awp_input awp_noon_start-6"> <input type="time" value="00:00" class="awp_input awp_noon_end-6"> <div class="awp_subtotal awp_noon_subtotal-6">00:00</div>
-        <input type="time" value="00:00" class="awp_input awp_noon_start-7"> <input type="time" value="00:00" class="awp_input awp_noon_end-7"> <div class="awp_subtotal awp_noon_subtotal-7">00:00</div>
+            <input type="time" value="14:00" class="awp_input awp_noon_start-1"> <input type="time" value="17:00" class="awp_input awp_noon_end-1"> <div class="awp_subtotal awp_noon_subtotal-1">03:00</div>
+            <input type="time" value="14:00" class="awp_input awp_noon_start-2"> <input type="time" value="17:00" class="awp_input awp_noon_end-2"> <div class="awp_subtotal awp_noon_subtotal-2">03:00</div>
+            <input type="time" value="14:00" class="awp_input awp_noon_start-3"> <input type="time" value="17:00" class="awp_input awp_noon_end-3"> <div class="awp_subtotal awp_noon_subtotal-3">03:00</div>
+            <input type="time" value="14:00" class="awp_input awp_noon_start-4"> <input type="time" value="17:00" class="awp_input awp_noon_end-4"> <div class="awp_subtotal awp_noon_subtotal-4">03:00</div>
+            <input type="time" value="14:00" class="awp_input awp_noon_start-5"> <input type="time" value="17:00" class="awp_input awp_noon_end-5"> <div class="awp_subtotal awp_noon_subtotal-5">03:00</div>
+            <input type="time" value="00:00" class="awp_input awp_noon_start-6"> <input type="time" value="00:00" class="awp_input awp_noon_end-6"> <div class="awp_subtotal awp_noon_subtotal-6">00:00</div>
+            <input type="time" value="00:00" class="awp_input awp_noon_start-7"> <input type="time" value="00:00" class="awp_input awp_noon_end-7"> <div class="awp_subtotal awp_noon_subtotal-7">00:00</div>
+
+            <div class="awp_check_half awp_check_half-h">O/F</div>
+            <div class="awp_check_half awp_check_half-1"> <axial-toggle-check></axial-toggle-check> </div>
+            <div class="awp_check_half awp_check_half-2"> <axial-toggle-check></axial-toggle-check> </div>
+            <div class="awp_check_half awp_check_half-3"> <axial-toggle-check></axial-toggle-check> </div>
+            <div class="awp_check_half awp_check_half-4"> <axial-toggle-check></axial-toggle-check> </div>
+            <div class="awp_check_half awp_check_half-5"> <axial-toggle-check></axial-toggle-check> </div>
+            <div class="awp_check_half awp_check_half-6"> <axial-toggle-check></axial-toggle-check> </div>
+            <div class="awp_check_half awp_check_half-7"> <axial-toggle-check></axial-toggle-check> </div>
+            
+        </div>
+        <div id="gridFull" class="axial_week_planning-grid_full">
+
+            <div class="axial_week_planning-cell axial_week_planning-monday_full">Lundi</div>
+            <div class="axial_week_planning-cell axial_week_planning-tuesday_full">Mardi</div>
+            <div class="axial_week_planning-cell axial_week_planning-wednesday_full">Mercredi</div>
+            <div class="axial_week_planning-cell axial_week_planning-thursday_full">Jeudi</div>
+            <div class="axial_week_planning-cell axial_week_planning-friday_full">Vendredi</div>
+            <div class="axial_week_planning-cell axial_week_planning-saturday_full">Samedi</div>
+            <div class="axial_week_planning-cell axial_week_planning-sunday_full">Dimanche</div>
+
+            <input type="time" value="09:00" class="awp_input awp_full_start-1"> <input type="time" value="16:00" class="awp_input awp_full_end-1"> <div class="awp_subtotal awp_full_subtotal-1">07:00</div>
+            <input type="time" value="09:00" class="awp_input awp_full_start-2"> <input type="time" value="16:00" class="awp_input awp_full_end-2"> <div class="awp_subtotal awp_full_subtotal-2">07:00</div>
+            <input type="time" value="09:00" class="awp_input awp_full_start-3"> <input type="time" value="16:00" class="awp_input awp_full_end-3"> <div class="awp_subtotal awp_full_subtotal-3">07:00</div>
+            <input type="time" value="09:00" class="awp_input awp_full_start-4"> <input type="time" value="16:00" class="awp_input awp_full_end-4"> <div class="awp_subtotal awp_full_subtotal-4">07:00</div>
+            <input type="time" value="09:00" class="awp_input awp_full_start-5"> <input type="time" value="16:00" class="awp_input awp_full_end-5"> <div class="awp_subtotal awp_full_subtotal-5">07:00</div>
+            <input type="time" value="00:00" class="awp_input awp_full_start-6"> <input type="time" value="00:00" class="awp_input awp_full_end-6"> <div class="awp_subtotal awp_full_subtotal-6">00:00</div>
+            <input type="time" value="00:00" class="awp_input awp_full_start-7"> <input type="time" value="00:00" class="awp_input awp_full_end-7"> <div class="awp_subtotal awp_full_subtotal-7">00:00</div>
+
+            <div class="awp_check_full awp_check_full-h">O/F</div>
+            <div class="awp_check_full awp_check_full-1"> <axial-toggle-check></axial-toggle-check> </div>
+            <div class="awp_check_full awp_check_full-2"> <axial-toggle-check></axial-toggle-check> </div>
+            <div class="awp_check_full awp_check_full-3"> <axial-toggle-check></axial-toggle-check> </div>
+            <div class="awp_check_full awp_check_full-4"> <axial-toggle-check></axial-toggle-check> </div>
+            <div class="awp_check_full awp_check_full-5"> <axial-toggle-check></axial-toggle-check> </div>
+            <div class="awp_check_full awp_check_full-6"> <axial-toggle-check></axial-toggle-check> </div>
+            <div class="awp_check_full awp_check_full-7"> <axial-toggle-check></axial-toggle-check> </div>
+
+            <div class="axial_week_planning-cell axial_week_planning-full">Journée</div>
+            <div class="axial_week_planning-cell axial_week_planning-full_start">Début</div>
+            <div class="axial_week_planning-cell axial_week_planning-full_end">Fin</div>
+            <div class="axial_week_planning-cell axial_week_planning-full_total">Total</div>
+            <div id="fullTotalWeek" class="awp_total awp_week_total awp_week_total_full">35:00</div>
+
+        </div>
     </div>
 </template>

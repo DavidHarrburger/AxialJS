@@ -2,6 +2,7 @@
 
 import EventEmitter from "node:events";
 import nodemailer from "nodemailer";
+import { EMAIL_USER } from "./AxialServerConstants.js";
 
 import { AxialMailTemplateBase } from "./mail/AxialMailTemplateBase.js";
 import { AxialMailTemplateSendCode } from "./mail/AxialMailTemplateSendCode.js";
@@ -10,7 +11,11 @@ import { AxialMailTemplateStripeWebhook } from "./mail/AxialMailTemplateStripeWe
 import { AxialMailTemplateSubscriptionCreated } from "./mail/AxialMailTemplateSubscriptionCreated.js";
 import { AxialMailTemplateSubscriptionDeleted } from "./mail/AxialMailTemplateSubscriptionDeleted.js";
 
-import { EMAIL_USER } from "./AxialServerConstants.js";
+
+import { AxialMailTemplateMeetingRequestUser } from "./mail/AxialMailTemplateMeetingRequestUser.js";
+import { AxialMailTemplateMeetingRequestAdmin } from "./mail/AxialMailTemplateMeetingRequestAdmin.js";
+
+import { AxialMailTemplatePasswordChangeRequest } from "./mail/AxialMailTemplatePasswordChangeRequest.js";
 
 class AxialMailer extends EventEmitter
 {
@@ -39,6 +44,9 @@ class AxialMailer extends EventEmitter
         this.#templates.push( new AxialMailTemplateStripeWebhook() );
         this.#templates.push( new AxialMailTemplateSubscriptionCreated() );
         this.#templates.push( new AxialMailTemplateSubscriptionDeleted() );
+        this.#templates.push( new AxialMailTemplateMeetingRequestUser() );
+        this.#templates.push( new AxialMailTemplateMeetingRequestAdmin() );
+        this.#templates.push( new AxialMailTemplatePasswordChangeRequest() );
     }
 
     #getTemplateByName( name )

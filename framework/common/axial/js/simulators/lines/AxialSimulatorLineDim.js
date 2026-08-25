@@ -2,11 +2,18 @@
 
 import { AxialSimulatorLine } from "../AxialSimulatorLine.js";
 import { AxialButton } from "../../button/AxialButton.js";
+import { UnitUtils } from "../../utils/UnitUtils.js";
 
 class AxialSimulatorLineDim extends AxialSimulatorLine
 {
     /** @type { HTMLInputElement } */
+    #lenLabel;
+
+    /** @type { HTMLInputElement } */
     #lenInput;
+
+    /** @type { HTMLElement } */
+    #widLabel;
 
     /** @type { HTMLInputElement } */
     #widInput;
@@ -48,6 +55,24 @@ class AxialSimulatorLineDim extends AxialSimulatorLine
         this.#lenInput = this.shadowRoot.getElementById("lenInput");
         this.#widInput = this.shadowRoot.getElementById("widInput");
 
+        this.#lenLabel = this.shadowRoot.getElementById("lenLabel");
+        this.#widLabel = this.shadowRoot.getElementById("widLabel");
+
+        let unitWord;
+        if( this.line.unit && UnitUtils.UNITS.has( this.line.unit ) === true )
+        {
+            unitWord = "<br>(en " + UnitUtils.UNITS.get( this.line.unit ).labels[1] + ")";
+        }
+
+        const dl = this.line.dimLabels;
+        if( dl && Array.isArray(dl) == true && dl.length == 2 )
+        {
+            const lenLabel = unitWord == undefined ? dl[0] : dl[0] + unitWord;
+            const widLabel = unitWord == undefined ? dl[1] : dl[1] + unitWord;
+            this.#lenLabel.innerHTML = lenLabel;
+            this.#widLabel.innerHTML = widLabel;
+        }
+
         this.#lenInput.addEventListener("focusout", this.#boundInputHandler);
         this.#widInput.addEventListener("focusout", this.#boundInputHandler);
     }
@@ -58,8 +83,8 @@ class AxialSimulatorLineDim extends AxialSimulatorLine
      */
     #inputHandler( event )
     {
-        const len = this.#lenInput.valueAsNumber;
-        const wid = this.#widInput.valueAsNumber;
+        const len = isNaN( this.#lenInput.valueAsNumber ) === true ? 0 : this.#lenInput.valueAsNumber;
+        const wid = isNaN( this.#widInput.valueAsNumber ) === true ? 0 : this.#widInput.valueAsNumber;
         let tempCompleted = false;
         if( len > 0 && wid > 0 )
         {
@@ -80,8 +105,8 @@ class AxialSimulatorLineDim extends AxialSimulatorLine
 
     _getCalculation()
     {
-        const len = this.#lenInput.valueAsNumber;
-        const wid = this.#widInput.valueAsNumber;
+        const len = isNaN( this.#lenInput.valueAsNumber ) === true ? 0 : this.#lenInput.valueAsNumber;
+        const wid = isNaN( this.#widInput.valueAsNumber ) === true ? 0 : this.#widInput.valueAsNumber;
         const sum = len + wid;
         const mul = len * wid;
         return [len, wid, sum, mul]; 
@@ -89,8 +114,8 @@ class AxialSimulatorLineDim extends AxialSimulatorLine
 
     _getAsObject()
     {
-        const len = this.#lenInput.valueAsNumber;
-        const wid = this.#widInput.valueAsNumber;
+        const len = isNaN( this.#lenInput.valueAsNumber ) === true ? 0 : this.#lenInput.valueAsNumber;
+        const wid = isNaN( this.#widInput.valueAsNumber ) === true ? 0 : this.#widInput.valueAsNumber;
 
         let obj = 
         {

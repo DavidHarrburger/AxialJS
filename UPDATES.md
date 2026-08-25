@@ -1,6 +1,14 @@
 # AxialJS UPDATES
 
 Find here what happened and when.
+## 2026 - 08 - 23
+FULLSTACK PRE UPDATE 7
+
+### commands
+* ```axial keys``` now generates the vapid public and private keys for the notifications service
+* ```axial database``` works now with some parameters :
+* * ```axial database -create``` 
+
 ## 2025 - 07 - 14
 FULLSTACK PRE UPDATE 5
 

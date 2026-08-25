@@ -192,6 +192,7 @@ class AxialTabViewer extends AxialComponentBase
         {
             const vl = this.#viewer.views.length;
             const tl = this.#tabs.toggles.length;
+            console.log(vl, tl)
             if( vl !== tl )
             {
                 throw new Error("Number of tabs and views in tab viewer must be the same at initialization");
@@ -214,6 +215,8 @@ class AxialTabViewer extends AxialComponentBase
         if( this.#viewer.views.length !== 0 )
         {
             this.#tabs.selectedIndex = 0;
+            const tabViewerEvent = new CustomEvent("indexChanged", { bubbles: true, detail: { index: 0 } } );
+            this.dispatchEvent(tabViewerEvent);
         }
     }
 

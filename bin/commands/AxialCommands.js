@@ -13,6 +13,7 @@ import { MongoClient, ObjectId, ServerApiVersion } from "mongodb";
 import { api as electronForge } from "@electron-forge/core";
 import dependencyTree from "dependency-tree";
 import * as fsp from "node:fs/promises";
+import webpush from "web-push";
 
 const HTML_COMPONENT_MARKER = "<!--$$$C-->";
 
@@ -31,10 +32,11 @@ class AxialCommands extends EventEmitter
      */
     #commands = new Set( [ "init", "newpage", "build", "config", "electron", "database", "sitemap", "keys", "version", "compile" ] );
 
-    #paramsInit =     new Set( [ "-front", "-server", "-electron" ] );
-    #paramsNewPage =  new Set( [ "-name", "-template", "-path" ] );
-    #paramsBuild =    new Set( [ "-dev", "-prod" ] );
-    #paramsElectron = new Set( [ "-start", "-package", "-make", "-publish" ] ); //etc "-publish"  move to start atm
+    #paramsInit =        new Set( [ "-front", "-server", "-electron" ] );
+    #paramsNewPage =     new Set( [ "-name", "-template", "-path" ] );
+    #paramsBuild =       new Set( [ "-dev", "-prod" ] );
+    #paramsElectron =    new Set( [ "-start", "-package", "-make", "-publish" ] ); //etc "-publish"  move to start atm
+    #paramsDatabase =    new Set( [ "-create", "-export", "-insert" ] );
 
     /**
      * @type { String }
@@ -100,7 +102,6 @@ class AxialCommands extends EventEmitter
 
             const params = commandLineArguments.slice(3) || [];
 
-
             switch( currentCommand )
             {
                 case "init":
@@ -132,7 +133,7 @@ class AxialCommands extends EventEmitter
                 break;
 
                 case "database":
-                    this.#database();
+                    this.#database(params);
                 break;
 
                 case "keys":
@@ -372,8 +373,13 @@ class AxialCommands extends EventEmitter
             const crypto_key = this.#generateKey(32);
             const crypto_iv = this.#generateKey(16);
             const jwt_secret_key = this.#generateKey(32);
+            const vapid_keys = webpush.generateVAPIDKeys();
 
-            const keysData = "crypto_key" + os.EOL + crypto_key + os.EOL + "crypto_iv" + os.EOL + crypto_iv + os.EOL + "jwt_secret_key" + os.EOL + jwt_secret_key;
+            const keysData =    "crypto_key" + os.EOL + crypto_key + os.EOL + 
+                                "crypto_iv" + os.EOL + crypto_iv + os.EOL + 
+                                "jwt_secret_key" + os.EOL + jwt_secret_key + os.EOL +
+                                "vapid_key_public" + os.EOL + vapid_keys.publicKey + os.EOL +
+                                "vapid_key_private" + os.EOL + vapid_keys.privateKey;
 
             await fse.outputFile(keysPath, keysData);
         }
@@ -383,21 +389,52 @@ class AxialCommands extends EventEmitter
         }
     }
 
-    async #database()
+    async #database( params )
     {
         console.log("AXIAL DATABASE");
+        console.log( params );
+        if( params == undefined || params == null || Array.isArray(params) == false )
+        {
+            console.warn("Invalid params for database command");
+            return;
+        }
+        const dbcom = params[0];
+        if( this.#paramsDatabase.has( dbcom ) === false )
+        {
+            console.warn("Invalid params for database command");
+            return;
+        }
+
+        switch( dbcom )
+        {
+            case "-create":
+                this.#databaseCreate();
+            break;
+
+            case "-export":
+                this.#databaseExport();
+            break;
+
+            case "-insert":
+                this.#databaseInsert();
+            break;
+
+            default:
+                console.log("nothing happen");
+            break;
+        }
+    }
+
+    async #databaseCreate()
+    {
         let MONGO_CLIENT;
         try
         {
             const databaseConfigPath = path.join( this.#currentDirectory, this.#databaseConfigurationFileName);
-            /*
-            const databaseConfigExist = fse.existsSync(databaseConfigPath);
-            if( databaseConfigExist === true )
-            {
-                
-                // SUPER CHECK TODO HERE
-            }
-            */
+            
+            //const databaseConfigExist = fse.existsSync(databaseConfigPath);
+            //if( databaseConfigExist === true ) { // SUPER CHECK TODO HERE }
+            
             const databaseConfig = await fse.readJSON(databaseConfigPath);
             //console.log(databaseConfig);
             
@@ -580,7 +617,9 @@ class AxialCommands extends EventEmitter
                     }
                     else
                     {
-                        const updatedModel = await currentModels.findOneAndUpdate( { name: localModelName }, { $set: {props: localModel.props } } );
+                        // to check
+                        const updatedModel = await currentModels.findOneAndUpdate( { name: localModelName }, { $set: { props: localModel.props } } );
+                        console.log(`Model ${localModelName} updated`);
                     }
                 }
             }
@@ -600,9 +639,111 @@ class AxialCommands extends EventEmitter
                 await MONGO_CLIENT.close();
                 console.log("MONGO_CLIENT closed");
             }
+        }
+    }
+
+    async #databaseExport()
+    {
+        let MONGO_CLIENT;
+        try
+        {
+            const databaseConfigPath = path.join( this.#currentDirectory, this.#databaseConfigurationFileName);
+            const databaseConfig = await fse.readJSON(databaseConfigPath);
+            
+            MONGO_CLIENT = new MongoClient( databaseConfig.path,
+            {
+                serverApi:
+                {
+                    version: ServerApiVersion.v1,
+                    strict: false,
+                    deprecationErrors: true,
+                }
+            });
+            
+            const client = await MONGO_CLIENT.connect();
+            const db = client.db();
+            const admin = db.admin();
+            const dbs = await admin.listDatabases();
+            let currentDbname;
+            for( const dbprops of dbs.databases )
+            {
+                if( dbprops.name === databaseConfig.dbname )
+                {
+                    currentDbname = databaseConfig.dbname;
+                    break;
+                }
+            }
+
+            if( currentDbname )
+            {
+                console.log( "starting export of " + currentDbname );
+                let exportObject = { name: currentDbname, collections: [] };
+                const currentDb = client.db( currentDbname );
+                //console.log( currentDb)
+                const collections = await currentDb.listCollections().toArray();
+                //console.log( collections );
+                for( const col of collections )
+                {
+                    const currentCollection = currentDb.collection( col.name );
+                    /*
+                    if( col.name == "models" )
+                    {
+                        console.log( currentCollection)
+                    }
+                    */
+                    //console.log( currentCollection)
+                    const docs = await currentCollection.find({}).toArray();
+                    console.log( docs.length );
+                    let collectionObject = { name: col.name, documents: docs }
+                    exportObject.collections.push( collectionObject );
+                }
+
+                const exportDirPath = path.join( this.#currentDirectory, "dbexp");
+                const exportDirExists = fse.existsSync(exportDirPath);
+                if( exportDirExists === false )
+                {
+                    const exportDir = await fsp.mkdir(exportDirPath);
+                }
+
+                const exportFileName = `${currentDbname}___${Date.now()}.json`;
+                const exportFilePath = path.join( exportDirPath, exportFileName);
+                const exportData = JSON.stringify( exportObject, null, 4);
+                const exportFile = await fsp.writeFile( exportFilePath, exportData );
+            }
             
         }
-        
+        catch(err)
+        {
+            console.log( err );
+        }
+        finally
+        {
+            if( MONGO_CLIENT )
+            {
+                await MONGO_CLIENT.close();
+                console.log("MONGO_CLIENT closed");
+            }
+        }
+    }
+
+    async #databaseInsert()
+    {
+        let MONGO_CLIENT;
+        try
+        {
+        }
+        catch(err)
+        {
+            console.log( err );
+        }
+        finally
+        {
+            if( MONGO_CLIENT )
+            {
+                await MONGO_CLIENT.close();
+                console.log("MONGO_CLIENT closed");
+            }
+        }
     }
 
     async #newpage( params )
@@ -771,19 +912,15 @@ class AxialCommands extends EventEmitter
                 }
                 else
                 {
-                    console.log("we should be here");
                     const sourceArray = htmlSourceString.split(HTML_COMPONENT_MARKER);
-                    //console.log(sourceArray.length);
-                    
                     const finalHtmlString = sourceArray[0] + allTemplates + sourceArray[1];
 
-                    //console.log(finalHtmlString);
-                    const components = await fse.writeFile( finalCompPath, allTemplates );
+                    // we don't really need the components.html file but keep t just in case (may be used in SSR)
+                    //const components = await fse.writeFile( finalCompPath, allTemplates );
                     const compiled = await fse.writeFile( finalHtmlPath, finalHtmlString );
                 }
-                
-                await this.#build( [ compileMode ] );
             }
+            await this.#build( [ compileMode ] );
         }
         catch(err)
         {

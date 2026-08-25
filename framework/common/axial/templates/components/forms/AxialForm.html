@@ -1,0 +1,10 @@
+<!-- AxialForm -->
+<template id="axial-form-template">
+    <link rel="stylesheet" href="./styles.css">
+    <form id="holder" class="axial_form-holder">
+        <slot id="slot" name="axial-items"></slot>
+    </form>
+    <div class="axial_form-footer">
+        <axial-service-button id="postButton" axial-text="Enregistrer"></axial-service-button>
+    </div>
+</template>

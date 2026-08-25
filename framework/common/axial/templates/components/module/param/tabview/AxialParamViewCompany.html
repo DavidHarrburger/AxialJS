@@ -1,0 +1,12 @@
+<!-- AxialParamViewCompany -->
+<template id="axial-param-view-company-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="holder" class="axial_view-holder">
+        <slot id="slot" name="axial-content"></slot>
+        <div class="axial_module_globals-grid">
+            <axial-card-base axial-grid-col="1 / span 2" axial-grid-row="1 / span 2">
+                <axial-company-param-week-planning id="companyWeekPlanning" axial-name="company_timeshift"></axial-company-param-week-planning>
+            </axial-card-base>
+        </div>
+    </div>
+</template>

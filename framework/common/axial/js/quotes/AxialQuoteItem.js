@@ -86,22 +86,26 @@ class AxialQuoteItem extends AxialComponentBase
     #updateComponent()
     {
         //console.log( this.data );
-        const article = this.data.article;
-        const qty = this.data.quantity;
+        const product = this.data.product;
 
-        const value = Number(article.value);
-        const price = Number( article.value * qty );
-        const tax = Number(article.tax);
-        const taxValue = price * tax / 100;
-        const ttc = price + taxValue;
+        const isQtyInt = Number.isInteger(this.data.quantity);
+        const qty = isQtyInt === false ? Number( Number(this.data.quantity).toFixed(2) ) : this.data.quantity;
 
-        this.#designation.innerHTML = article.quote_label;
+        const priceUnit = product.price
+        const priceTotal = priceUnit * qty;
+        const tax = product.tax;
+        const taxValue = priceTotal * tax / 100;
+        const ttc = priceTotal + taxValue;
+
+        this.#designation.innerHTML = product.quote_label;
         this.#quantity.innerHTML = qty;
-        this.#unit.innerHTML = article.unit;
-        this.#priceUnit.innerHTML = value.toFixed(2);
-        this.#priceTotal.innerHTML = price.toFixed(2);
-        this.#tax.innerHTML = article.tax + "%";
-        this.#priceTotalTax.innerHTML = ttc.toFixed(2);
+        this.#unit.innerHTML = product.unit;
+        
+        this.#priceUnit.innerHTML = priceUnit.toLocaleString( undefined, {minimumFractionDigits:2, maximumFractionDigits:2 } )
+        this.#priceTotal.innerHTML = priceTotal.toLocaleString( undefined, {minimumFractionDigits:2, maximumFractionDigits:2 } )
+        this.#tax.innerHTML = tax + "%";
+        
+        this.#priceTotalTax.innerHTML = ttc.toLocaleString( undefined, {minimumFractionDigits:2, maximumFractionDigits:2 } )
     }
 }
 

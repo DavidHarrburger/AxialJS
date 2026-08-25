@@ -1,6 +1,7 @@
 "use strict";
 
 import { AxialAccordionElement } from "../accordion/AxialAccordionElement.js";
+import { AxialListAccordionToggle } from "./AxialListAccordionToggle.js";
 
 class AxialListAccordionElement extends AxialAccordionElement
 {

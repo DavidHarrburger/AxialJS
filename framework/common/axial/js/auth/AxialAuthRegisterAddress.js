@@ -3,9 +3,11 @@
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
 import { PathUtils } from "../utils/PathUtils.js";
 import { CryptoUtils } from "../utils/CryptoUtils.js";
+import { FetchUtils } from "../utils/FetchUtils.js";
 import { AxialTogglePasswordButton } from "../button/AxialTogglePasswordButton.js";
 import { AxialServiceButton } from "../button/AxialServiceButton.js";
 import { AxialToggleCheck } from "../button/AxialToggleCheck.js";
+import { ColorUtils } from "../utils/ColorUtils.js";
 
 class AxialAuthRegisterAddress extends AxialComponentBase
 {
@@ -28,7 +30,13 @@ class AxialAuthRegisterAddress extends AxialComponentBase
     /** @type { RegExp } */
     #specialRegex = /[!@#$%&*()-_=+?]/;
 
+    /** @type { RegExp } */
+    #telReg = /^(?:\+33|0)[67]\d{8}$/;
+
+
     /// elements
+    /** @type { HTMLFormElement } */
+    #form;
 
     /** @type { HTMLInputElement } */
     #firstname;
@@ -81,6 +89,13 @@ class AxialAuthRegisterAddress extends AxialComponentBase
     /** @type { HTMLElement } */
     #countPass;
 
+    /// legends
+    /** @type { HTMLElement } */
+    #passwordLegend;
+
+    /** @type { HTMLElement } */
+    #emailLegend;
+
     /// events
     /** @type { Function } */
     #boundCreateButtonHandler;
@@ -103,6 +118,8 @@ class AxialAuthRegisterAddress extends AxialComponentBase
     /** @type { Function } */
     #boundLegalToggleHandler;
 
+    /** @type { Function } */
+    #boundFocusOutCheckHandler;
 
     constructor()
     {
@@ -120,6 +137,8 @@ class AxialAuthRegisterAddress extends AxialComponentBase
         this.#boundGenerateButtonHandler = this.#generateButtonHandler.bind(this);
         this.#boundEmailFocusOutHandler = this.#emailFocusOutHandler.bind(this);
         this.#boundLegalToggleHandler = this.#legalToggleHandler.bind(this);
+
+        this.#boundFocusOutCheckHandler = this.#focusOutCheckHandler.bind(this);
     }
 
     _buildComponent()
@@ -150,12 +169,12 @@ class AxialAuthRegisterAddress extends AxialComponentBase
         this.#specialPass = this.shadowRoot.getElementById("specialPass");
         this.#countPass = this.shadowRoot.getElementById("countPass");
 
-        if( this.#firstname ) { this.#firstname.addEventListener("change", this.#boundInputChangeHandler); }
-        if( this.#lastname ) { this.#lastname.addEventListener("change", this.#boundInputChangeHandler); }
-        if( this.#phone ) { this.#phone.addEventListener("change", this.#boundInputChangeHandler); }
-        if( this.#address ) { this.#address.addEventListener("change", this.#boundInputChangeHandler); }
-        if( this.#zip ) { this.#zip.addEventListener("change", this.#boundInputChangeHandler); }
-        if( this.#city ) { this.#city.addEventListener("change", this.#boundInputChangeHandler); }
+        if( this.#firstname ) { this.#firstname.addEventListener("input", this.#boundInputChangeHandler); }
+        if( this.#lastname )  { this.#lastname.addEventListener("input", this.#boundInputChangeHandler); }
+        if( this.#phone )     { this.#phone.addEventListener("input", this.#boundInputChangeHandler); }
+        if( this.#address )   { this.#address.addEventListener("input", this.#boundInputChangeHandler); }
+        if( this.#zip )       { this.#zip.addEventListener("input", this.#boundInputChangeHandler); }
+        if( this.#city )      { this.#city.addEventListener("input", this.#boundInputChangeHandler); }
 
         if( this.#email )
         {
@@ -189,6 +208,18 @@ class AxialAuthRegisterAddress extends AxialComponentBase
         {
             this.#generateButton.addEventListener("click", this.#boundGenerateButtonHandler);
         }
+
+        /// NEW 2026
+        this.#form = this.shadowRoot.getElementById("form");
+        const inputs = this.#form.getElementsByTagName("input");
+        for( const input of inputs )
+        {
+            input.addEventListener("focusout", this.#boundFocusOutCheckHandler);
+            //input.addEventListener("input", this.#boundFocusOutCheckHandler);
+        }
+
+        this.#emailLegend = this.shadowRoot.getElementById("emailLegend");
+        this.#passwordLegend = this.shadowRoot.getElementById("passwordLegend");
     }
 
     #passwordToggleHandler( event )
@@ -212,7 +243,7 @@ class AxialAuthRegisterAddress extends AxialComponentBase
     #checkPassword()
     {
         const tempPass = this.#password.value;
-        console.log( tempPass );
+        //console.log( tempPass );
 
         const lower = this.#lowerRegex.test(tempPass);
         const upper = this.#upperRegex.test(tempPass);
@@ -220,7 +251,7 @@ class AxialAuthRegisterAddress extends AxialComponentBase
         const special = this.#specialRegex.test(tempPass);
         const count = tempPass.length >= 12;
         
-        console.log(lower, upper, number, special, count);
+        //console.log(lower, upper, number, special, count);
 
         //this.#lowerPass.style.fontWeight = lower === true ? 500 : 400;
         //this.#upperPass.style.fontWeight = upper === true ? 500 : 400;
@@ -240,6 +271,7 @@ class AxialAuthRegisterAddress extends AxialComponentBase
 
     #checkValidity()
     {
+        
         const firstNameValid = this.#firstname.validity.valid;
         const lastNameValid = this.#lastname.validity.valid;
 
@@ -257,6 +289,7 @@ class AxialAuthRegisterAddress extends AxialComponentBase
 
         if( emailValid === true && 
             passValid === true && 
+            telValid === true && 
             firstNameValid === true && 
             lastNameValid === true && 
             addressValid === true &&
@@ -284,10 +317,17 @@ class AxialAuthRegisterAddress extends AxialComponentBase
         this.#passwordToggle.selected = true;
         this.#password.type = "text";
         this.#password.value = CryptoUtils.generatePassword(16);
+
+        this.#password.style.backgroundColor = "#fff";
+        this.#password.classList.remove("axial_auth_register_invalid");
+        this.#password.style.borderColor = "#232323";
+        
+        //this.#passwordLegend.style.display = "none";
     }
 
     #emailFocusOutHandler( event )
     {
+        console.log("focus out specific")
         if( this.#email.validity.valid === false ) { return; }
         this.#checkEmail();
     }
@@ -304,11 +344,26 @@ class AxialAuthRegisterAddress extends AxialComponentBase
         {
             const infos =
             {
-                email: this.#email.value
+                email: this.#email.value.trim()
             };
-            const response = await fetch( this.#emailCheckPath, { method: "POST", body: JSON.stringify(infos), headers: { "Content-Type":"application/json", "Cache-Control":"no-cache" } } );
-            const json = await response.json();
-            console.log(json);
+            console.log( infos )
+            const response = await FetchUtils.POST( this.#emailCheckPath, infos )
+            if( response.exists === true )
+            {
+                this.#emailLegend.innerHTML = "Cet email est déjà enregistré";
+                this.#emailLegend.style.display = "block";
+                this.#email.style.backgroundColor = ColorUtils.RED.light;
+                this.#email.style.borderColor = ColorUtils.RED.mid_dark;
+                this.#email.classList.add("axial_auth_register_invalid");
+            }
+            else
+            {
+                this.#emailLegend.innerHTML = "Cet email est valide";
+                this.#emailLegend.style.color = ColorUtils.GREEN.mid_dark;
+                this.#email.style.backgroundColor = "#fff";
+                this.#email.style.borderColor = "#232323";
+                this.#email.classList.remove("axial_auth_register_invalid");
+            }
 
         }
         catch( err )
@@ -316,11 +371,11 @@ class AxialAuthRegisterAddress extends AxialComponentBase
             console.log(err);
             
         }
-        finally
-        {
-            //this.#clearForm();
-            
-        }
+    }
+
+    #clearForm()
+    {
+
     }
 
     async #sendRegistration()
@@ -332,7 +387,12 @@ class AxialAuthRegisterAddress extends AxialComponentBase
                 first_name: this.#firstname.value,
                 last_name: this.#lastname.value,
                 email: this.#email.value,
-                password: this.#password.value
+                password: this.#password.value,
+                tel: this.#phone.value,
+                address_line_1: this.#address.value,
+                address_zip: this.#zip.value,
+                address_city: this.#city.value
+
             };
             const response = await fetch( this.#path, { method: "POST", body: JSON.stringify(infos), headers: { "Content-Type":"application/json", "Cache-Control":"no-cache" } } );
             const json = await response.json();
@@ -359,11 +419,37 @@ class AxialAuthRegisterAddress extends AxialComponentBase
             const registerErrorEvent = new CustomEvent("registerError");
             this.dispatchEvent(registerErrorEvent);
         }
-        finally
+    }
+
+    /**
+     * 
+     * @param { FocusEvent } event 
+     */
+    #focusOutCheckHandler( event )
+    {
+        /** @type { HTMLInputElement } */
+        const t = event.currentTarget;
+        const p = t.parentElement;
+        const l = p.getElementsByClassName("axial_input_legend")[0];
+        /** @type { HTMLElement} */
+        const f = l === undefined ? p.parentElement.getElementsByClassName("axial_input_legend")[0] : l;
+
+        console.log(f);
+
+        if( t.validity.valid === false )
         {
-            //this.#clearForm();
-            
+            t.style.backgroundColor = ColorUtils.RED.light;
+            t.style.borderColor = ColorUtils.RED.mid_dark;
+            t.classList.add("axial_auth_register_invalid");
+            f.style.display = "block";
         }
+        else
+        {
+            t.style.backgroundColor = "#fff";
+            t.classList.remove("axial_auth_register_invalid");
+            t.style.borderColor = "#232323";
+        }
+        
     }
 }
 

@@ -1,0 +1,19 @@
+<!-- .AxialModuleSimulatorEditorView -->
+<template id="axial-module-simulator-editor-view-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div class="axial_module_view-holder">
+        <div class="axial_module_view-header">
+            <div id="title" class="axial_module_view-title">Simulateurs</div>
+            <div class="axial_spacer"></div>
+            <axial-button id="addButton" axial-text="Créer un simulateur">
+                <i slot="axial-icon" class="fa-color fa-regular fa-square-plus"></i>
+            </axial-button>
+        </div>
+        <div class="axial_module_view-content axial_module_view-content-transparent">
+            <slot id="contentSlot" name="axial-content"></slot>
+            <axial-list id="list">
+                <div slot="axial-header" class="axial_list_item-prop_name">Simulateur</div>
+            </axial-list>
+        </div>
+    </div>
+</template>

@@ -1,0 +1,16 @@
+<!-- .AxialModuleHomeAdminView -->
+<template id="axial-module-home-admin-view-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div class="axial_module_view-holder">
+        <div class="axial_module_view-header">
+            <div id="title" class="axial_module_view-title">Accueil</div>
+            <div class="axial_spacer"></div>
+            <axial-button id="mainButton" axial-text="Contact express">
+                <i slot="axial-icon" class="fa-color fa-regular fa-paper-plane"></i>
+            </axial-button>
+        </div>
+        <div class="axial_module_view-content axial_module_view-content-transparent">
+            <slot id="contentSlot" name="axial-content"></slot>
+        </div>
+    </div>
+</template>

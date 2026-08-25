@@ -33,7 +33,16 @@ import { AxialViewBase } from "../view/AxialViewBase.js";
 import { AxialView } from "../view/AxialView.js";
 import { AxialModuleView } from "../view/AxialModuleView.js";
 
+///
+/// FORM
+///
 
+import { AxialForm } from "../forms/AxialForm.js";
+import { AxialFormDivider } from "../forms/AxialFormDivider.js";
+import { AxialFormItemBase } from "../forms/AxialFormItemBase.js";
+import { AxialFormItem } from "../forms/AxialFormItem.js";
+import { AxialFormItemInputs } from "../forms/AxialFormItemInputs.js";
+import { AxialFormItemWeekPlanning } from "../forms/AxialFormItemWeekPlanning.js";
 
 class AxialWebModuleApplicationBase extends AxialWebApplicationBase
 {
@@ -193,8 +202,8 @@ class AxialWebModuleApplicationBase extends AxialWebApplicationBase
      */
     #popupHiddenHandler( event )
     {
-        //const popup = event.currentTarget;
-        //this._onApplicationPopupHidden( popup );
+        const popup = event.currentTarget;
+        this._onApplicationPopupHidden( popup );
     }
 
     /**

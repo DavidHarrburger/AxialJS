@@ -19,6 +19,16 @@ import { AxialAuthBox } from "../auth/AxialAuthBox.js";
 import { AxialBurgerButton } from "../button/AxialBurgerButton.js";
 
 ///
+/// FORMS
+///
+
+import { AxialForm } from "../forms/AxialForm.js";
+import { AxialFormDivider } from "../forms/AxialFormDivider.js";
+import { AxialFormItemBase } from "../forms/AxialFormItemBase.js";
+import { AxialFormItem } from "../forms/AxialFormItem.js";
+import { AxialFormItemInputs } from "../forms/AxialFormItemInputs.js";
+
+///
 /// HELPERS
 ///
 
@@ -36,6 +46,7 @@ import { CryptoUtils } from "../utils/CryptoUtils.js";
 ///
 
 import { AxialWebSocket } from "../websocket/AxialWebSocket.js";
+import { FetchUtils } from "../utils/FetchUtils.js";
 
 class AxialWebApplicationBase extends AxialApplicationBase
 {
@@ -105,7 +116,7 @@ class AxialWebApplicationBase extends AxialApplicationBase
 
     /// WORKER
     /** @type { Boolean } */
-    #useServiceWorker = false;
+    #useServiceWorker = true;
 
     /** @type { String } */
     #serviceWorkerPath = "./service-worker.js";
@@ -116,12 +127,17 @@ class AxialWebApplicationBase extends AxialApplicationBase
     /** @type { String } */ // we will move it into an api
     #vapidPublicKey;
 
+    
+
     /** @type { Function } */
     #boundApplicationPageLoadedWorkerHandler;
 
     /// PUSH
     /** @type { String } */
     #pushSubscribePath = "./api/push/subscribe";
+
+    /** @type { String } */ // we will move it into an api
+    #pushVapiPath = "./api/push/vapid";
 
     constructor()
     {
@@ -136,11 +152,12 @@ class AxialWebApplicationBase extends AxialApplicationBase
 
         // pwa --> worker
         this.#serviceWorkerPath = PathUtils.getPathFromRelative(this.#serviceWorkerPath);
-        this.#boundApplicationPageLoadedWorkerHandler = this.#applicationPageLoadedWorkerHandler.bind(this);
-        window.addEventListener("load", this.#boundApplicationPageLoadedWorkerHandler);
+        //this.#boundApplicationPageLoadedWorkerHandler = this.#applicationPageLoadedWorkerHandler.bind(this);
+        //window.addEventListener("load", this.#boundApplicationPageLoadedWorkerHandler);
 
         // pwa --> push
         this.#pushSubscribePath = PathUtils.getPathFromRelative( this.#pushSubscribePath );
+        this.#pushVapiPath = PathUtils.getPathFromRelative( this.#pushVapiPath );
 
         // websocket
         this.#boundAppSocketOpenHandler = this.#appSocketOpenHandler.bind(this);
@@ -176,12 +193,15 @@ class AxialWebApplicationBase extends AxialApplicationBase
             const path = this.#userPath + "&f=uuid," + this.#userUuid;
             const response = await fetch( path, { method: "GET", headers: { "Content-Type":"application/json", "Cache-Control": "no-cache" } } );
             const json = await response.json();
-            console.log(json);
             if( json && json.content && Array.isArray(json.content) && json.content.length === 1 )
             {
                 this.#userObject = json.content[0];
-                
+                if( this.#useServiceWorker === true )
+                {
+                    await this.#initServiceWorker();
+                }
             }
+            
         }
         catch(err)
         {
@@ -191,7 +211,6 @@ class AxialWebApplicationBase extends AxialApplicationBase
         {
             this.#updateApplicationWithUser();
             this._onApplicationUserReady();
-            // dispatch
         }
     }
 
@@ -202,14 +221,13 @@ class AxialWebApplicationBase extends AxialApplicationBase
             const axialEvent = new CustomEvent("axialUserReady", { detail: { user:this.#userObject } } );
             window.dispatchEvent( axialEvent );
             
-            console.log(this.#userObject);
             if( this.#authBox )
             {
                 this.#authBox.user = this.#userObject;
                 this.#authBox.switchToState("connected");
             }
 
-            this.#initPushService(); // maybe move to ger user
+            //this.#initPushService(); // maybe move to ger user
         }
         else
         {
@@ -238,29 +256,12 @@ class AxialWebApplicationBase extends AxialApplicationBase
         }
         if( this.#useServiceWorker === value ) { return; }
         this.#useServiceWorker = value;
-        if( this.#useServiceWorker === true && this.applicationPageLoaded === true )
+        /*
+        if( this.#useServiceWorker === true && this.#userObject )
         {
             this.#initServiceWorker();
         }
-    }
-
-    get vapidPublicKey() { return this.#vapidPublicKey; }
-    set vapidPublicKey( value )
-    {
-        if( typeof value !== "string" )
-        {
-            throw new TypeError("String value required");
-        }
-        this.#vapidPublicKey = value;
-    }
-
-    async #applicationPageLoadedWorkerHandler( event )
-    {
-        console.log( "page loaded for worker");
-        if( this.#useServiceWorker === true )
-        {
-            await this.#initServiceWorker();
-        }
+        */
     }
 
     async #initServiceWorker()
@@ -295,50 +296,61 @@ class AxialWebApplicationBase extends AxialApplicationBase
         }
     }
 
+    async #getVapidPublicKey()
+    {
+        try
+        {
+            const json = await FetchUtils.GET(this.#pushVapiPath);
+            if( json.status === "ok" )
+            {
+                this.#vapidPublicKey = json.key;
+            }
+        }
+        catch(err) { console.log(err); }
+    }
+
     async #initPushService()
     {
-        console.log("initPushService");
-        if( Notification.permission === "granted" && this.vapidPublicKey !== undefined && this.#serviceWorkerRegistration && this.#userObject )
+        console.log("initPushService permission", Notification.permission);
+        try
         {
-            let pushSubscription = await this.#serviceWorkerRegistration.pushManager.getSubscription();
-            console.log("push registered", pushSubscription);
-            if( pushSubscription === null )
+            await this.#getVapidPublicKey();
+            if( Notification.permission === "granted" && this.#vapidPublicKey !== undefined && this.#serviceWorkerRegistration && this.#userObject )
             {
-                //console.log("entry point register for Push");
-                const pushSubscriptionOptions =
+                let pushSubscription = await this.#serviceWorkerRegistration.pushManager.getSubscription();
+                console.log("push registered", pushSubscription);
+                if( pushSubscription === null )
                 {
-                    userVisibleOnly: true,
-                    applicationServerKey: CryptoUtils.urlBase64ToUint8Array( this.vapidPublicKey )
+                    //console.log("entry point register for Push");
+                    const pushSubscriptionOptions =
+                    {
+                        userVisibleOnly: true,
+                        applicationServerKey: CryptoUtils.urlBase64ToUint8Array( this.#vapidPublicKey )
+                    }
+                    pushSubscription = await this.#serviceWorkerRegistration.pushManager.subscribe( pushSubscriptionOptions );
                 }
-                pushSubscription = await this.#serviceWorkerRegistration.pushManager.subscribe( pushSubscriptionOptions );
-            }
-            
-            console.log( pushSubscription );
-            console.log(JSON.stringify( pushSubscription) );
-            if( this.userObject && this.userObject._id )
-            {
-                console.log( "we are able to register the subscription on the server" );
-                const notifSubscription = 
+                
+                console.log( pushSubscription );
+                console.log(JSON.stringify( pushSubscription) );
+                if( this.userObject && this.userObject._id )
                 {
-                    user_id: this.userObject._id,
-                    subscription: JSON.stringify( pushSubscription )
-                }
-                try
-                {
+                    console.log( "we are able to register the subscription on the server" );
+                    const notifSubscription = 
+                    {
+                        user_id: this.userObject._id,
+                        subscription: JSON.stringify( pushSubscription )
+                    }
                     const response = await fetch(this.#pushSubscribePath, { method: "POST", body: JSON.stringify(notifSubscription), headers: { "Content-Type":"application/json", "Cache-Control":"no-cache" } } );
                     const json = await response.json();
                     console.log( json );
                 }
-                catch(err)
-                {
-                    console.log(err);
-                }
             }
             else
             {
-                console.log("user not logged in so notification impossible");
+                console.log("user not logged in so notification impossible // permission not done");
             }
         }
+        catch(err) { console.log(err); }
     }
 
     async initPushService() { await this.#initPushService(); }

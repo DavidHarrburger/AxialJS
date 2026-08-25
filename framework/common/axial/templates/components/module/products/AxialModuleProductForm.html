@@ -1,0 +1,48 @@
+<!-- AxialModuleProductForm -->
+<template id="axial-module-product-form-template">
+    <link rel="stylesheet" href="./styles.css">
+    <form id="holder" class="axial_form-holder">
+        <slot id="slot" name="axial-items"></slot>
+        <axial-form-divider axial-title="Informations obligatoires" ></axial-form-divider>
+        <div class="axial_form_item-row" >
+            <axial-form-item-inputs axial-label="Désignation" axial-field="fdesi" axial-direction="row" axial-required="">
+                <input type="text" slot="axial-content" name="product_name" placeholder="Nom du produit" minlength="3" maxlength="200" required autocomplete="off">
+            </axial-form-item-inputs>
+        </div>
+        
+        <div class="axial_form_item-row">
+            <axial-form-item-inputs axial-label="Prix de vente HT en €" axial-field="fprice" axial-direction="row" axial-required="">
+                <input type="number" slot="axial-content" name="price" min="0" required autocomplete="off">
+            </axial-form-item-inputs>
+            <axial-form-item-inputs axial-label="Unité du produit" axial-field="funit" axial-direction="row" axial-required="">
+                <select name="unit" required slot="axial-content">
+                    <button><selectedcontent></selectedcontent></button>
+                    <option disabled hidden selected value ="">Sélectionner</option>
+                    <option value="u">Unité</option>
+                    <option value="ml">Mètre linéaire</option>
+                    <option value="m²">Mètre carré</option>
+                </select>
+            </axial-form-item-inputs>
+            <axial-form-item-inputs axial-label="T.V.A. en %" axial-field="ftax" axial-direction="row" axial-required="">
+                <select name="tax" required slot="axial-content">
+                    <button><selectedcontent></selectedcontent></button>
+                    <option disabled hidden selected value ="">Sélectionner</option>
+                    <option value="5.5">5.5 %</option>
+                    <option value="10">10 %</option>
+                    <option value="20">20 %</option>
+                </select>
+            </axial-form-item-inputs>
+        </div>
+        <div class="axial_form_item-row" >
+            <axial-form-item-inputs axial-label="Description pour devis" axial-field="fquote" axial-direction="row" axial-required="">
+                <textarea name="quote_label" slot="axial-content" required minlength="8" maxlength="400" placeholder="Description complète du produit ou de la prestation figurant sur un devis"></textarea>
+            </axial-form-item-inputs>
+        </div>
+        <div class="axial_form_item-row" >
+            <div class="axial_form_item-textselect" id="productUuid"></div>
+        </div>
+    </form>
+    <div class="axial_form-footer">
+        <axial-service-button id="postButton" axial-text="Enregistrer"></axial-service-button>
+    </div>
+</template>

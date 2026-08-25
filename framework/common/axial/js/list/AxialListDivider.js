@@ -1,100 +1,82 @@
 "use strict";
 
 import { AxialInputBase } from "../core/AxialInputBase.js";
+import { StringUtils } from "../utils/StringUtils.js";
 import { AxialListItem } from "./AxialListItem.js";
 
 class AxialListDivider extends AxialListItem
 {
     /// vars
     /** @type { String } */
-    #title = "DIVIDER";
+    #titleText;
+
+    /** @type { String } */
+    #titleDataField;
 
     /// elements
-    /** @type { AxialInputBase } */
-    #titleInput;
-
-    /// events
-    /** @type { Function } */
-    #boundFinalValueChangedHandler;
+    /** @type { HTMLElement } */
+    #title;
 
     constructor()
     {
         super();
         this.classList.add("axial_list_divider");
         this.template = "axial-list-divider-template";
-        this.#boundFinalValueChangedHandler = this.#finalValueChangedHandler.bind(this);
     }
-
-    /**
-     * @type { AxialInputBase }
-     * @readonly
-     */
-    get titleInput() { return this.#titleInput; }
 
     /**
      * @type { String }
      */
-    get title() { return this.#title; }
-    set title( value )
+    get titleText() { return this.#titleText; }
+    set titleText( value )
     {
         if( typeof value !== "string" )
         {
             throw new TypeError("String value required");
         }
-        this.#title = value;
-        if( this.#titleInput )
+        this.#titleText = value;
+        this.#title.innerHTML = this.#titleText;
+    }
+
+    get titleDataField() { return this.#titleDataField; }
+    set titleDataField( value )
+    {
+        if( StringUtils.isWhite( value ) === true )
         {
-            this.#titleInput.value = this.#title;
+            throw new TypeError("No white string here");
         }
+        this.#titleDataField = value;
     }
 
     _buildComponent()
     {
+        this.#title = this.shadowRoot.getElementById("title");
         super._buildComponent();
-        this.#titleInput = this.shadowRoot.getElementById("titleInput");
-        if( this.#titleInput )
-        {
-            this.#titleInput.addEventListener("finalValueChanged", this.#boundFinalValueChangedHandler);
-        }
-
-        if( this.data )
-        {
-            this.#updateComponent();
-        }
     }
 
-    _onDataChanged()
-    {
-        super._onDataChanged();
-
-        if( this.componentBuilt === true )
+   _updateComponent()
+   {
+        super._updateComponent();
+        if( this.#titleDataField && this.#title )
         {
-            this.#updateComponent();
+            const tempText = this.data[this.#titleDataField];
+            console.log("divider should update", tempText)
+            if( tempText )
+            {
+                this.#titleText = tempText;
+                this.#title.innerHTML = this.#titleText;
+            }
         }
-    }
-
-    #updateComponent()
-    {
-        if(this.data.title )
-        {
-            this.title = this.data.title;
-        }
-    }
-
+   }
+   
     _getAsObject()
     {
         const dividerObject =
         {
-            title: this.#titleInput.value,
+            title: this.#titleText,
             itemType: "divider"
         }
         return dividerObject;
-    }
-
-    #finalValueChangedHandler( event )
-    {
-        const listItemEvent = new CustomEvent( "listDividerChanged", { bubbles: true } );
-        this.dispatchEvent( listItemEvent );
     }
 }
 

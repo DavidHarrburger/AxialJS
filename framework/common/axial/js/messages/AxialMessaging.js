@@ -10,8 +10,11 @@ import { PathUtils } from "../utils/PathUtils.js";
 import { FetchUtils } from "../utils/FetchUtils.js";
 import { ObjectUtils } from "../utils/ObjectUtils.js";
 import { ArrayUtils } from "../utils/ArrayUtils.js";
-import { from } from "form-data";
 import { DomUtils } from "../utils/DomUtils.js";
+
+import { AxialList } from "../list/AxialList.js";
+
+import { AxialMessagingContactItem } from "./AxialMessagingContactItem.js";
 
 class AxialMessaging extends AxialComponentBase
 {
@@ -27,6 +30,9 @@ class AxialMessaging extends AxialComponentBase
 
     /** @type { Number } */
     #typingTimeoutId;
+
+    /** @type { Boolean } */
+    #isTyping = false;
 
     /** @type { String } */
     #userId;
@@ -108,13 +114,13 @@ class AxialMessaging extends AxialComponentBase
     #welcomeState;
 
     /** @type { HTMLElement } */
-    #conversationState;
-
-    /** @type { HTMLElement } */
     #errorState;
 
     /** @type { AxialButton } */
     #startButton;
+
+    /** @type { AxialList } */
+    #contactList;
 
     /// events
     /** @type { Function } */
@@ -149,6 +155,9 @@ class AxialMessaging extends AxialComponentBase
     /** @type { Function } */
     #boundAxialUserReadyHandler;
 
+    /** @type { Function } */
+    #boundConversationStartHandler;
+
     constructor()
     {
         super();
@@ -178,11 +187,13 @@ class AxialMessaging extends AxialComponentBase
         this.#boundAxialUserReadyHandler = this.#axialUserReadyHandler.bind(this);
 
         window.addEventListener( "axialUserReady", this.#boundAxialUserReadyHandler );
+
+        this.#boundConversationStartHandler = this.#conversationStartHandler.bind(this);
     }
 
     #axialUserReadyHandler( event )
     {
-        console.log("axialUserReadyHandler", event);
+        //console.log("axialUserReadyHandler", event);
         this.#userId = event.detail.user.uuid;
         this.#userRole = event.detail.user.role;
 
@@ -203,14 +214,25 @@ class AxialMessaging extends AxialComponentBase
             throw new TypeError("Plain Object required");
         }
         this.#currentConversation = value;
-        for( const contact of this.#contacts )
+        
+        //console.log("currentConversation", this.#currentConversation);
+
+        /// SUPER WARNING Here the logic is fixed assuling that a user always have only one contact
+        /// BTW value.to or from will mathc uuids array
+        if( this.#userRole === "user" )
         {
-            console.log("contact", contact);
-            const findContactName = ArrayUtils.ofStringEquals( value.to, contact.uuids );
-            console.log("findContactName", findContactName);
-            if( findContactName === true )
+            const singleContact = this.#contacts[0];
+            this.#recipients.innerHTML = singleContact.label;
+        }
+        else if( this.#userRole === "admin" )
+        {
+            for( const contact of this.#contacts )
             {
-                this.#recipients.innerHTML = contact.label;
+                if( contact.uuids[0] === this.#currentConversation.users[0] )
+                {
+                    this.#recipients.innerHTML = contact.label;
+                    break;
+                }
             }
         }
     }
@@ -222,7 +244,6 @@ class AxialMessaging extends AxialComponentBase
         this.#main = this.shadowRoot.getElementById("main");
         this.#panel = this.shadowRoot.getElementById("panel");
         this.#contactState = this.shadowRoot.getElementById("contactState");
-        this.#conversationState = this.shadowRoot.getElementById("conversationState");
         this.#errorState = this.shadowRoot.getElementById("errorState");
         this.#welcomeState = this.shadowRoot.getElementById("welcomeState");
 
@@ -242,9 +263,27 @@ class AxialMessaging extends AxialComponentBase
         this.#bubbleHolder = this.shadowRoot.getElementById("bubbleHolder");
         this.#typingBubble = this.shadowRoot.getElementById("typingBubble");
         this.#recipients = this.shadowRoot.getElementById("recipients");
-        
-        //this.#initMessagingData();
-        console.log("end messaging buildComponent");
+
+        this.#contactList = this.shadowRoot.getElementById("contactList");
+        this.#contactList.itemClass = AxialMessagingContactItem;
+        //this.#contactList.addEventListener("conversationStart", this.#boundConversationStart)
+
+    }
+
+    async init()
+    { 
+        try
+        {
+            if( this.#userId === undefined || this.#userRole === undefined )
+            {
+                throw new Error("Can't init messaging");
+            }
+            await this.#initMessaging();
+        }
+        catch(err)
+        {
+            console.log(err);
+        }
     }
 
     async #initMessaging()
@@ -274,11 +313,11 @@ class AxialMessaging extends AxialComponentBase
 
     async #initMesagingInterface()
     {
-        console.log("initMessagingData", this.#initialized);
+        //console.log("initMessagingData", this.#initialized);
 
-        console.log("conversations : ", this.#conversations);
-        console.log("contacts : ", this.#contacts);
-        console.log("websock : ", this.#websocket);
+        //console.log("conversations : ", this.#conversations);
+        //console.log("contacts : ", this.#contacts);
+        //console.log("websock : ", this.#websocket);
 
         // une erreur s'est produite, on ne peut pas utiliser la messagerie
         if( this.#initialized === false )
@@ -287,7 +326,6 @@ class AxialMessaging extends AxialComponentBase
 
             this.#welcomeState.style.display = "none";
             this.#contactState.style.display = "none";
-            this.#conversationState.style.display = "none";
         }
         else
         {
@@ -300,7 +338,6 @@ class AxialMessaging extends AxialComponentBase
 
                 this.#errorState.style.display = "none";
                 this.#contactState.style.display = "none";
-                this.#conversationState.style.display = "none";
             }
             // on a moins une conversation
             // -> l'utilisateur n'a qu'un seul contact : on affiche directement la conversation
@@ -312,13 +349,12 @@ class AxialMessaging extends AxialComponentBase
                     this.#main.style.display = "flex";
                     this.#panel.style.display = "none";
 
-                    this.#conversationState.style.display = "none";
                     this.#welcomeState.style.display = "none";
                     this.#errorState.style.display = "none";
                     this.#contactState.style.display = "none";
 
                     const cc = this.#conversations[0];
-                    console.log( cc );
+                    //console.log( cc );
                     this.currentConversation = cc;
                     try
                     {
@@ -331,14 +367,14 @@ class AxialMessaging extends AxialComponentBase
                 }
                 else
                 {
-                    console.warn("ON AFFICHE TOUTES LES CONVERSATIONS");
+                    //console.warn("ON AFFICHE TOUTES LES CONVERSATIONS");
+                    /// temp fix on affiche tous les contacts et on sélectionne le contact
                     this.#main.style.display = "none";
                     this.#panel.style.display = "block";
 
-                    this.#conversationState.style.display = "block";
                     this.#welcomeState.style.display = "none";
                     this.#errorState.style.display = "none";
-                    this.#contactState.style.display = "none";
+                    this.#contactState.style.display = "block";
                 }
             }
         }
@@ -374,10 +410,12 @@ class AxialMessaging extends AxialComponentBase
 
     #socketMessageHandler( event )
     {
+        if( this.#currentConversation === undefined ) { return; }
         const object = JSON.parse( event.detail.message );
-        console.log("MESSAGE IN SOCKET", object);
+        //console.log("MESSAGE IN SOCKET", object);
 
         if( object.from === this.#userId ) { return; }
+        if( object.conversation_id !== this.#currentConversation.uuid ) { return; }
 
         const type = object.type;
         switch( type )
@@ -395,7 +433,7 @@ class AxialMessaging extends AxialComponentBase
 
             case "message":
                 this.#hideBubble();
-                this.#addMessageReceived( object.value );
+                this.#addMessageReceived( object );
             break;
 
             default:
@@ -443,14 +481,24 @@ class AxialMessaging extends AxialComponentBase
         window.clearTimeout( this.#typingTimeoutId );
         this.#typingTimeoutId = window.setTimeout( this.#boundTypingTimeoutHandler, this.#typingDelay);
 
-        const object =
+        
+
+        if( this.#isTyping === false )
         {
-            from: this.#userId,
-            type: "typing",
-            value: true
-        };
-        const json = JSON.stringify(object);
-        this.websocket.send( json );
+            const object =
+            {
+                conversation_id: this.#currentConversation.uuid,
+                from: this.#userId,
+                type: "typing",
+                value: true,
+                content: ""
+            };
+
+            this.#isTyping = true;
+            const json = JSON.stringify(object);
+            this.websocket.send( json );
+        }
+        
     }
 
     #sendHandler( event )
@@ -458,42 +506,52 @@ class AxialMessaging extends AxialComponentBase
         this.#sendMessage();
     }
 
+    /**
+     * Quand on clique sur le bouton "démarrer une nouvelle conversation"
+     * @param { PointerEvent } event 
+     */
     async #startHandler( event )
     {
+        await this.#getConversationContacts();
+        await this.#getConversationList();
         // si on a 1 seul contact on crée directement la conversation
         // si on en a plusieurs on affiche l'écran de contact
         try
         {
             if( this.#contacts.length === 1 )
             {
+                if( this.#conversations.length == 0 )
+                {
+                    // créer la conversation
+                    const from = this.#userId;
+                    const contact = this.#contacts[0];
+                    const to = contact.uuids
+                    const subject = "";
+
+                    this.#recipients.innerHTML = contact.label;
+
+                    const conv = await this.#createConversation(from, to, subject);
+                }
+                else // conversation = 1
+                {
+                    this.currentConversation = this.#conversations[0];
+                }
+
                 
                 // afficher main
                 this.#main.style.display = "flex";
                 this.#panel.style.display = "none";
 
-                this.#conversationState.style.display = "none";
                 this.#welcomeState.style.display = "none";
                 this.#errorState.style.display = "none";
                 this.#contactState.style.display = "none";
-
-                // créer la conversation
-                const from = this.#userId;
-                const contact = this.#contacts[0];
-                const to = contact.uuids
-                const subject = "";
-
-                this.#recipients.innerHTML = contact.label;
-
-                const conv = await this.#createConversation(from, to, subject);
 
             }
             else
             {
-                this.#conversationState.style.display = "block";
                 this.#welcomeState.style.display = "none";
                 this.#errorState.style.display = "none";
-                this.#contactState.style.display = "none";
-                
+                this.#contactState.style.display = "block";
             }
         }
         catch(err)
@@ -515,11 +573,12 @@ class AxialMessaging extends AxialComponentBase
 
             const object = 
             {
+                conversation_id: this.#currentConversation.uuid,
                 from: this.#userId,
                 type: "message",
                 content: message,
-                to: this.#currentConversation.uuids,
-                conversation_id: this.#currentConversation.uuid
+                to: this.#currentConversation.uuids
+                
             };
             
             const inserted = await FetchUtils.POST( this.#apiMessageCreatePath, object);
@@ -548,12 +607,15 @@ class AxialMessaging extends AxialComponentBase
     {
         const sentMessage = new AxialMessage( message, "sent" );
         this.#messages.appendChild( sentMessage );
+
+        this.#scrollDown();
     }
 
     #addMessageReceived( message )
     {
         const receivedMessage = new AxialMessage( message, "received" );
         this.#messages.appendChild( receivedMessage );
+        this.#messages.parentElement.scrollTop = this.#messages.parentElement.scrollHeight;
     }
     
     #typingTimeoutHandler()
@@ -561,12 +623,22 @@ class AxialMessaging extends AxialComponentBase
         window.clearTimeout( this.#typingTimeoutId );
         const object =
         {
-            id: this.#userId,
+            conversation_id: this.#currentConversation.uuid,
+            from: this.#userId,
             type: "typing",
             value: false
         };
         const json = JSON.stringify(object);
         this.websocket.send( json );
+        this.#isTyping = false;
+    }
+
+    #scrollDown()
+    {
+        const parentHeight = this.#messages.parentElement.offsetHeight;
+        const messageHeight = this.#messages.getBoundingClientRect().height;
+        const delta = messageHeight - parentHeight;
+        //console.log(parentHeight, messageHeight, delta);
     }
 
     #showBubble()
@@ -594,8 +666,19 @@ class AxialMessaging extends AxialComponentBase
             // control todo
             let canSend = true;
             const obj = { from: from, to: to, subject: subject }
+            console.log(obj);
+            
             const json = await FetchUtils.POST( this.#apiConversationCreatePath, obj );
-            this.#currentConversation = json.content;
+            this.currentConversation = json.content;
+
+            
+            this.#main.style.display = "flex";
+            this.#panel.style.display = "none";
+
+            this.#welcomeState.style.display = "none";
+            this.#errorState.style.display = "none";
+            this.#contactState.style.display = "none";
+            
         }
         catch(err)
         {
@@ -609,7 +692,7 @@ class AxialMessaging extends AxialComponentBase
         {
             this.#conversations = new Array();
             const list = await FetchUtils.GET( this.#apiConversationListPath );
-            console.log( "conversations", list );
+            //console.log( "conversations", list );
             if( list.content !== null && Array.isArray( list.content ) === true )
             {
                 this.#conversations = list.content;
@@ -627,10 +710,21 @@ class AxialMessaging extends AxialComponentBase
         {
             this.#contacts = new Array();
             const contacts = await FetchUtils.GET( this.#apiConversationContactsPath );
-            console.log("contacts", contacts );
+            //console.log("contacts", contacts );
             if( contacts.content !== null && Array.isArray( contacts.content ) === true )
             {
                 this.#contacts = contacts.content;
+                if( this.#contactList )
+                {
+                    this.#contactList.empty();
+                    const items = this.#contactList.addManyItems(this.#contacts);
+                    for( const contactItem of items )
+                    {
+                        contactItem.addEventListener("conversationStart", this.#boundConversationStartHandler);
+                    }
+                }
+                const messagingEvent = new CustomEvent("messagingContact", { detail: { contacts: this.#contacts } } );
+                this.dispatchEvent(messagingEvent);
             }
         }
         catch(err)
@@ -660,12 +754,12 @@ class AxialMessaging extends AxialComponentBase
 
     #displayConversation()
     {
-        console.log("this.#displayConversation")
+        //console.log("this.#displayConversation")
         DomUtils.cleanElement( this.#messages );
-        console.log( this.#currentMessages );
+        //console.log( this.#currentMessages );
         for( const mes of this.#currentMessages )
         {
-            console.log( mes );
+            //console.log( mes );
             if( mes.from === this.#userId )
             {
                 this.#addMessageSent( mes );
@@ -675,6 +769,79 @@ class AxialMessaging extends AxialComponentBase
                 this.#addMessageReceived( mes );
             }
         }
+
+        this.#main.style.display = "flex";
+        this.#panel.style.display = "none";
+
+        this.#welcomeState.style.display = "none";
+        this.#errorState.style.display = "none";
+        this.#contactState.style.display = "none";
+    }
+
+    /**
+     * Qd on click un item
+     * @param {CustomEvent} event 
+     */
+    async #conversationStartHandler( event )
+    {
+        console.log("conversation start");
+        try
+        {
+            await this.#getConversationList();
+            //console.log(event.detail)
+
+            const uuids = event.detail.uuids;
+            let hasConv = false;
+            let testConv;
+            for( const conv of this.#conversations )
+            {
+                const all = conv.users.concat( conv.admins );
+                const uuidsSet = new Set(uuids);
+                for( const a of all )
+                {
+                    if( uuidsSet.has(a) === true )
+                    {
+                        hasConv = true;
+                        testConv = conv;
+                        break;
+                    }
+                }
+            }
+
+            //console.log( testConv );
+            if( testConv )
+            {
+                this.currentConversation = testConv;
+                await this.#getCurrentMessages();
+            }
+            else
+            {
+                const newConv = this.#createConversation(this.#userId, uuids, "");
+            }
+        }
+        catch(err)
+        {
+
+        }
+    
+    }
+
+    async displayContact()
+    {
+        try
+        {
+            await this.#getConversationContacts();
+        }
+        catch(err)
+        {
+            console.log(err);
+        }
+        this.#main.style.display = "none";
+        this.#panel.style.display = "block";
+
+        this.#welcomeState.style.display = "none";
+        this.#errorState.style.display = "none";
+        this.#contactState.style.display = "block";
     }
 
 }

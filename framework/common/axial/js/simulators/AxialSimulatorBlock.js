@@ -234,7 +234,7 @@ class AxialSimulatorBlock extends AxialComponentBase
     {
         this.enabled = this.#switch.selected;
 
-        const simulatorStepEvent = new CustomEvent( "simulatorStepCompleted", { detail: { completed: this.#isCompleted }} );
+        const simulatorStepEvent = new CustomEvent( "simulatorBlockCompleted", { detail: { completed: this.#isCompleted }} );
         this.dispatchEvent( simulatorStepEvent );
     }
 
@@ -289,7 +289,7 @@ class AxialSimulatorBlock extends AxialComponentBase
         this.#isCompleted = tempCompleted;
         console.log("control step, isCompleted ", this.#isCompleted);
         
-        const simulatorStepEvent = new CustomEvent( "simulatorStepCompleted", { detail: { completed: this.#isCompleted }} );
+        const simulatorStepEvent = new CustomEvent( "simulatorBlockCompleted", { detail: { completed: this.#isCompleted }} );
         this.dispatchEvent( simulatorStepEvent );
     }
 
@@ -298,7 +298,8 @@ class AxialSimulatorBlock extends AxialComponentBase
         let obj =
         {
             id: this.#stepObject.id,
-            lines: []
+            lines: [],
+            switch: this.#enabled
         };
         
         for( const line of this.#lines )
@@ -314,9 +315,17 @@ class AxialSimulatorBlock extends AxialComponentBase
      */
     _onSavedData()
     {
-        const savedLines = this.savedData.lines;
+        //const savedLines = this.savedData.lines;
+        const savedLines = this.#savedData.lines;
         const sl = savedLines.length;
         const cl = this.#lines.length;
+
+        // switch was missing
+        if( this.#savedData.switch )
+        {
+            this.enabled = this.#savedData.switch;
+            this.#switch.selected = this.#savedData.switch;
+        }
 
         // cas où les lignes sont prédéfinies
         if( sl === cl )

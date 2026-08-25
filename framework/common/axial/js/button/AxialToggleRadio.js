@@ -52,6 +52,12 @@ class AxialToggleRadio extends AxialToggleButtonBase
                 this.#label.innerHTML = this.#text;
             }
         }
+        
+        if( this.selected === true && this.#circle )
+        {
+            this.#circle.style.transform = this.#selectedScale;
+        }
+            
     }
 
     /**

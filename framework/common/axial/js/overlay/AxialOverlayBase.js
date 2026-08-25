@@ -35,6 +35,9 @@ class AxialOverlayBase extends AxialComponentBase
     /** @type { String } */
     #position = "bottom-left";
 
+    /** @type { Boolean } */
+    #isPlaying = false;
+
     /** @type { String } */
     #showMode = "click";
 
@@ -44,14 +47,26 @@ class AxialOverlayBase extends AxialComponentBase
     /** @type { Number } */
     #offset = 10;
 
+    /** @type { Number } */
+    #offsetBounds = 40;
+
     /** @type { String } */
     #transform = "translate(0%, 0%)";
+
+    /** @type { Number } */
+    #transformDecay = 10;
 
     /** @type { Boolean } */
     #useTransitions = true;
 
     /** @type { Boolean } */
     #useObfuscator = false;
+
+    /** @type { Boolean } */
+    #useOpacity = true;
+
+    /** @type { Boolean } */
+    #allowStack = false;
 
     /** @type { String } */
     #obfuscatorId = "axialOverlayObfuscator";
@@ -112,6 +127,13 @@ class AxialOverlayBase extends AxialComponentBase
     get isShown() { return this.#isShown; }
 
     /**
+     * @type { Boolean }
+     * @public
+     * @readonly
+     */
+    get isPlaying() { return this.#isPlaying; }
+
+    /**
      * @type { HTMLElement }
      * @readonly
      */
@@ -135,6 +157,21 @@ class AxialOverlayBase extends AxialComponentBase
         this.#target = value;
         this.#layoutOverlay();
         this.#addOverlayHandlers();
+    }
+
+    get transformDecay() { return this.#transformDecay; }
+    set transformDecay( value )
+    {
+        if( isNaN( value) === true ) { throw new TypeError("Number value required"); }
+
+        this.#transformDecay = value;
+        this.#layoutOverlay();
+    }
+
+    removeTarget()
+    {
+        this.#removeOverlayHandlers();
+        this.#target = undefined;
     }
 
     get position() { return this.#position; }
@@ -191,6 +228,50 @@ class AxialOverlayBase extends AxialComponentBase
             this.#useObfuscator = value;
         }
     }
+
+    get useObfuscator() { return this.#useObfuscator; }
+    set useObfuscator( value )
+    {
+        if( this.#isShown === true ) { return; }
+        if( typeof value !== "boolean" )
+        {
+            throw new TypeError("Boolean value required");
+        }
+        if( value !== this.#useObfuscator )
+        {
+            this.#useObfuscator = value;
+        }
+    }
+
+    get useOpacity() { return this.#useOpacity; }
+    set useOpacity( value )
+    {
+        if( this.#isShown === true ) { return; }
+        if( typeof value !== "boolean" )
+        {
+            throw new TypeError("Boolean value required");
+        }
+        if( value !== this.#useOpacity )
+        {
+            this.#useOpacity = value;
+        }
+    }
+
+    get allowStack() { return this.#allowStack; }
+    set allowStack( value )
+    {
+        //if( this.#isShown === true ) { return; }
+        if( typeof value !== "boolean" )
+        {
+            throw new TypeError("Boolean value required");
+        }
+        if( value !== this.#allowStack )
+        {
+            this.#allowStack = value;
+        }
+    }
+
+
 
     get showMode() { return this.#showMode; }
     set showMode( value )
@@ -307,7 +388,8 @@ class AxialOverlayBase extends AxialComponentBase
      */
     #transitionEndHandler( event )
     {
-        if( event.propertyName === "opacity" )
+
+        if( event.propertyName === "transform" )
         {
             if( this.#isShown === false )
             {
@@ -324,6 +406,7 @@ class AxialOverlayBase extends AxialComponentBase
                 this.dispatchEvent( overlayEvent );
             }
         }
+        this.#isPlaying = false;
     }
 
     #addOverlayHandlers()
@@ -396,11 +479,12 @@ class AxialOverlayBase extends AxialComponentBase
         if( !this.#target && this.#displayMode === "target" ) { return; }
         //if( this.#isShown === true ) { return; }
 
-        console.log("layoutOverlay");
-
         const overlayBounds = this.getBoundingClientRect();
         let overlayX;
         let overlayY;
+
+        let ww = window.innerWidth;
+        let wh = window.innerHeight;
 
         switch( this.#displayMode )
         {
@@ -410,73 +494,224 @@ class AxialOverlayBase extends AxialComponentBase
                 {
                     // bottom
                     case "bottom-left":
-                        overlayY = targetBounds.bottom + this.#offset;
+                        // x
                         overlayX = targetBounds.left;
+                        if( (overlayX + overlayBounds.width) > (ww - this.#offsetBounds) )
+                        {
+                            overlayX = targetBounds.right - overlayBounds.width;
+                        }
+                        // y
+                        overlayY = targetBounds.bottom + this.#offset;
+                        if( (overlayY + overlayBounds.height) > (wh - this.#offsetBounds) )
+                        {
+                            overlayY = targetBounds.top - this.#offset - overlayBounds.height;
+                        }
+                        
                     break;
 
                     case "bottom-center":
-                        overlayY = targetBounds.bottom + this.#offset;
+                        // x
                         overlayX = targetBounds.left + (targetBounds.width / 2) - (overlayBounds.width / 2);
+                        if( overlayX < this.#offsetBounds )
+                        {
+                            overlayX = targetBounds.left;
+                        }
+                        else if( (overlayX + overlayBounds.width) > (ww - this.#offsetBounds) )
+                        {
+                            overlayX = targetBounds.right - overlayBounds.width;
+                        }
+
+                        // y
+                        overlayY = targetBounds.bottom + this.#offset;
+                        if( (overlayY + overlayBounds.height) > (wh - this.#offsetBounds) )
+                        {
+                            overlayY = targetBounds.top - this.#offset - overlayBounds.height;
+                        }
+                        
+
                     break;
 
                     case "bottom-right":
-                        overlayY = targetBounds.bottom + this.#offset;
+                        // x
                         overlayX = targetBounds.right - overlayBounds.width;
+                        if( overlayX < this.#offsetBounds )
+                        {
+                            overlayX = targetBounds.left;
+                        }
+
+                        // y
+                        overlayY = targetBounds.bottom + this.#offset;
+                        if( (overlayY + overlayBounds.height) > (wh - this.#offsetBounds) )
+                        {
+                            overlayY = targetBounds.top - this.#offset - overlayBounds.height;
+                        }
+                        
                     break;
 
                     // right
                     case "right-top":
+                        // x
                         overlayX = targetBounds.right + this.#offset;
+                        if( (overlayX + overlayBounds.width) > ( ww - this.#offsetBounds) )
+                        {
+                            overlayX = targetBounds.left - this.#offset - overlayBounds.width;
+                        }
+
+                        // y
                         overlayY = targetBounds.top;
+                        if( (overlayY + overlayBounds.height) > (wh - this.#offsetBounds) )
+                        {
+                            overlayY = targetBounds.bottom - overlayBounds.height;
+                        }
+                        
                     break;
 
                     case "right-center":
+                        // x
                         overlayX = targetBounds.right + this.#offset;
+                        if( (overlayX + overlayBounds.width) > ( ww - this.#offsetBounds) )
+                        {
+                            overlayX = targetBounds.left - this.#offset - overlayBounds.width;
+                        }
+
+                        // y
                         overlayY = targetBounds.top + (targetBounds.height / 2) - (overlayBounds.height / 2);
+                        if( overlayY < this.#offsetBounds )
+                        {
+                            overlayY = targetBounds.top;
+                        }
+                        else if( (overlayY + overlayBounds.height) > (wh - this.#offsetBounds) )
+                        {
+                            overlayY = targetBounds.bottom - overlayBounds.height;
+                        }
+
                     break;
 
                     case "right-bottom":
+                        // x
                         overlayX = targetBounds.right + this.#offset;
+                        if( (overlayX + overlayBounds.width) > ( ww - this.#offsetBounds) )
+                        {
+                            overlayX = targetBounds.left - this.#offset - overlayBounds.width;
+                        }
+                        // y
                         overlayY = targetBounds.bottom - overlayBounds.height;
+                        if( overlayY < this.#offsetBounds )
+                        {
+                            overlayY = targetBounds.top;
+                        }
+
                     break;
 
                     // top
                     case "top-left":
-                        overlayY = targetBounds.top - this.#offset - overlayBounds.height;
+                        // x
                         overlayX = targetBounds.left;
+                        if( (overlayX + overlayBounds.width) > (ww - this.#offsetBounds) )
+                        {
+                            overlayX = targetBounds.right - overlayBounds.width;
+                        }
+
+                        // y
+                        overlayY = targetBounds.top - this.#offset - overlayBounds.height;
+                        if( overlayY < this.#offsetBounds )
+                        {
+                            overlayY = targetBounds.bottom + this.#offset;
+                        }
                     break;
 
                     case "top-center":
-                        overlayY = targetBounds.top - this.#offset - overlayBounds.height;
+                        // x
                         overlayX = targetBounds.left + (targetBounds.width / 2)- (overlayBounds.width / 2);
+                        if( overlayX < this.#offsetBounds )
+                        {
+                            overlayX = targetBounds.left;
+                        }
+                        else if( (overlayX + overlayBounds.width) > (ww - this.#offsetBounds) )
+                        {
+                            overlayX = targetBounds.right - overlayBounds.width;
+                        }
+
+                        // y
+                        overlayY = targetBounds.top - this.#offset - overlayBounds.height;
+                        if( overlayY < this.#offsetBounds )
+                        {
+                            overlayY = targetBounds.bottom + this.#offset;
+                        }
+                        
                     break;
 
                     case "top-right":
-                        overlayY = targetBounds.top - this.#offset - overlayBounds.height;
+                        // x
                         overlayX = targetBounds.right - overlayBounds.width;
+                        if( overlayX < this.#offsetBounds )
+                        {
+                            overlayX = targetBounds.left;
+                        }
+
+                        // y
+                        overlayY = targetBounds.top - this.#offset - overlayBounds.height;
+                        if( overlayY < this.#offsetBounds )
+                        {
+                            overlayY = targetBounds.bottom + this.#offset;
+                        }
+                        
                     break;
 
                     // left
                     case "left-top":
+                        // x
                         overlayX = targetBounds.left - this.#offset - overlayBounds.width;
+                        if( overlayX < this.#offsetBounds )
+                        {
+                            overlayX = targetBounds.right + this.#offset;
+                        }
+                        // y
                         overlayY = targetBounds.top;
+                        if( (overlayY + overlayBounds.height) > (wh - this.#offsetBounds) )
+                        {
+                            overlayY = targetBounds.bottom - overlayBounds.height;
+                        }
                     break;
 
                     case "left-center":
+                        // x
                         overlayX = targetBounds.left - this.#offset - overlayBounds.width;
-                        overlayY = targetBounds.top + (targetBounds.height / 2)- (overlayBounds.height / 2);
+                        if( overlayX < this.#offsetBounds )
+                        {
+                            overlayX = targetBounds.right + this.#offset;
+                        }
+                        // y
+                        overlayY = targetBounds.top + (targetBounds.height / 2) - (overlayBounds.height / 2);
+                        if( overlayY < this.#offsetBounds )
+                        {
+                            overlayY = targetBounds.top;
+                        }
+                        else if( (overlayY + overlayBounds.height) > (wh - this.#offsetBounds) )
+                        {
+                            overlayY = targetBounds.bottom - overlayBounds.height;
+                        }
                     break;
 
                     case "left-bottom":
+                        // x
                         overlayX = targetBounds.left - this.#offset - overlayBounds.width;
+                        if( overlayX < this.#offsetBounds )
+                        {
+                            overlayX = targetBounds.right + this.#offset;
+                        }
+
+                        // y
                         overlayY = targetBounds.bottom - overlayBounds.height;
+                        if( overlayY < this.#offsetBounds )
+                        {
+                            overlayY = targetBounds.top;
+                        }
                     break;
                 }
             break;
 
             case "window":
-                const ww = window.innerWidth;
-                const wh = window.innerHeight;
                 switch( this.#position )
                 {
                     // bottom
@@ -581,14 +816,14 @@ class AxialOverlayBase extends AxialComponentBase
             let transformDirection = this.#position.split("-")[0];
             switch( transformDirection )
             {
-                case "bottom" : this.#transform = "translate(0%, 20%)";  break;
-                case "top" :    this.#transform = "translate(0%, -20%)"; break;
-                case "left" :   this.#transform = "translate(-20%, 0%)"; break;
-                case "right" :  this.#transform = "translate(20%, 0%)";  break;
+                case "bottom" : this.#transform = `translate(0%, ${this.#transformDecay}%)`;  break;
+                case "top" :    this.#transform = `translate(0%, -${this.#transformDecay}%)`; break;
+                case "left" :   this.#transform = `translate(-${this.#transformDecay}%, 0%)`; break;
+                case "right" :  this.#transform = `translate(${this.#transformDecay}%, 0%)`;  break;
                 default:        this.#transform = "translate(0%, 0%)";   break;
             }
 
-            this.style.opacity = "0";
+            this.style.opacity = this.#useOpacity === true ? "0" : "1";
             this.style.transform = this.#transform;
         }
         else
@@ -602,15 +837,19 @@ class AxialOverlayBase extends AxialComponentBase
 
     show()
     {
+        if( this.#isPlaying === true ) { return; }
         if( this.#isShown === true ) { return; }
         if( !this.#target && this.#displayMode === "target" ) { return; }
+        
         this._onShowing();
         this.#layoutOverlay();
         this.style.visibility = "visible";
         this.#isShown = true;
         if( this.useTransitions === true )
         {
-            this.style.transitionProperty = "opacity, transform";
+            this.#isPlaying = true;
+            const tp = this.#useOpacity === true ? "opacity, transform" : "transform";
+            this.style.transitionProperty = tp;
             this.style.opacity = "1";
             this.style.transform = "translate(0%, 0%)";
         }
@@ -627,17 +866,19 @@ class AxialOverlayBase extends AxialComponentBase
 
     hide()
     {
+        if( this.#isPlaying === true ) { return; }
         if( this.#isShown === false ) { return; }
+        
         this.#isShown = false;
         
         if( this.useTransitions === true )
         {
-            this.style.opacity = "0";
+            this.#isPlaying = true;
+            this.style.opacity = this.#useOpacity === true ? "0" : "1";
             this.style.transform = this.#transform;
         }
         else
         {
-            this.style.visibility = "hidden";
             this._onHidden();
             const overlayEvent = new CustomEvent("overlayHidden");
             this.dispatchEvent( overlayEvent );

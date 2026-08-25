@@ -10,7 +10,11 @@ class PathUtils
      */
     static getPathFromRelative( relative )
     {
-        return new URL( relative, window.location.origin ).href;
+        if( PathUtils.isRelative( relative ) === true  )
+        {
+            return new URL( relative, window.location.origin ).href;
+        }
+        return relative;
     }
 
     static isRelative( path )

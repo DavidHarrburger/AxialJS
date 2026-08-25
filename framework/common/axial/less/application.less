@@ -41,6 +41,8 @@ h1, h2, h3, h4, h5, h6
 }
 input:not([type="checkbox"]):not([type="radio"])
 {
+    -moz-appearance:textfield; /* Firefox */
+
     -webkit-user-select: text;   
     user-select: text;
 
@@ -69,6 +71,7 @@ label { font-size: 14px; }
 .axial_mandatory { color: #cc0000; font-weight: 600; }
 .axial_input_info { font-size: 12px; }
 .axial_input_legend { font-size: 12px; font-weight: 500; }
+.axial_input_legend-none { display: none; }
 
 input:focus:not([type="checkbox"]):not([type="radio"])
 {
@@ -84,8 +87,15 @@ input:autofill
 }
 input::placeholder
 {
+    color: #777;
     font-size:   var(--input___placeholderFontSize);
     font-weight: var(--input___placeholderFontWeight);
+}
+
+.axial_auth_register_invalid::placeholder
+{
+    color: #be1114;
+    opacity: 0.5;
 }
 
 input:disabled
@@ -95,11 +105,11 @@ input:disabled
 }
 input[type="file"]
 {
-    height: 42px;
-    min-height: 42px;
-    padding: unset;
+    height: 43px;
+    min-height: 43px;
+    padding: unset !important;
     background-color: unset;
-    border: none;
+    border: none !important;
     font-size: 14px;
 }
 input[type="file" i]
@@ -109,8 +119,8 @@ input[type="file" i]
 }
 input[type="file"]::file-selector-button
 {
-    height: 42px;
-    min-height: 42px;
+    height: 43px;
+    min-height: 43px;
 
     cursor: pointer;
 
@@ -130,7 +140,16 @@ input[type="file"]::file-selector-button
     color:              var(--AxialButton___textColor);
     background-color:   var(--AxialButton___backgroundColor);
 }
-
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button
+{
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type=number]
+{
+    -moz-appearance: textfield !important; /* Firefox */
+}
 input[type="color"]
 {
   -webkit-appearance: none;
@@ -154,24 +173,30 @@ textarea
 
     width: 100%;
     height: 100%;
-    min-height: 200px;
+    min-height: 83px;
     padding: 10px;
 
     font-family: var(--body___mainFont);
     font-size: var(--input___fontSize);
     font-weight: var(--input___fontWeight);
     border-radius: var(--component___borderRadius);
-    border: 2px solid var(--greyDark);
-    background-color: var(--whiteLight);
+    border: 1px solid var(--greyDark);
+    background-color: #fff;
+}
+textarea:focus
+{
+    outline: 2px solid var(--themeColorFocus);
 }
 select
 {
-    appearance: none;
+    appearance: base-select;
     outline: none;
 
-    display: block;
     width: 100%;
-    height: 42px;
+    height: 43px;
+
+    color: #777;
+    align-items: center;
     
     padding-left:  10px;
     padding-right: 10px;
@@ -182,9 +207,37 @@ select
     font-size: var(--input___fontSize);
     font-weight: var(--input___fontWeight);
     border-radius: var(--component___borderRadius);
-    border: 2px solid var(--greyDark);
+    border: 1px solid var(--greyDark);
     background-color: var(--white);
 }
+::picker(select)
+{
+    appearance: base-select;
+    border-radius: 3px;
+    top: calc(anchor(bottom) + 2px);
+}
+select:focus
+{
+    outline: 2px solid var(--themeColorFocus);
+}
+select::picker-icon
+{
+    transition: 0.4s rotate;
+}
+select:open
+{
+    /*margin-top: 4px;*/
+    outline: 2px solid var(--themeColorFocus);
+}
+select:open::picker-icon
+{
+  rotate: 180deg;
+}
+select:has(option:not([disabled]):checked)
+{
+    color: #000;
+}
+/*option { background-color: #cc0000;}*/
 .fa-color
 {
     color: #fff;
@@ -221,12 +274,12 @@ select
     min-height: 100vh;
     overflow: hidden;
 }
-.axial_intro_layer        { z-index: 200; }
-.axial_popup_layer        { z-index: 300; }
-.axial_medias_layer       { z-index: 400; }
-.axial_notification_layer { z-index: 500; }
-.axial_overlay_layer      { z-index: 600; }
-.axial_tooltip_layer      { z-index: 700; }
+.axial_intro_layer        { z-index: 2000; }
+.axial_popup_layer        { z-index: 3000; }
+.axial_medias_layer       { z-index: 4000; }
+.axial_notification_layer { z-index: 5000; }
+.axial_overlay_layer      { z-index: 6000; }
+.axial_tooltip_layer      { z-index: 7000; }
 .axial_transition_layer
 {
     z-index: 999999999;

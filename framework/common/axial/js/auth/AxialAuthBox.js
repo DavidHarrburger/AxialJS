@@ -4,6 +4,7 @@ import { AxialComponentBase } from "../core/AxialComponentBase.js";
 import { ObjectUtils } from "../utils/ObjectUtils.js";
 import { AxialProgressIndicator } from "../loader/AxialProgressIndicator.js";
 import { PathUtils } from "../utils/PathUtils.js";
+import { AxialAuthBoxOverlay } from "./AxialAuthBoxOverlay.js";
 
 class AxialAuthBox extends AxialComponentBase
 {
@@ -42,7 +43,13 @@ class AxialAuthBox extends AxialComponentBase
 
     /** @type { HTMLAnchorElement } */
     #signin;
+
+    /** @type { AxialAuthBoxOverlay } */
+    #authBoxOverlay = new AxialAuthBoxOverlay();
     
+    /// events
+    /** @type { Function } */
+    #boundConnectedClickedHandler;
 
     constructor()
     {
@@ -52,6 +59,7 @@ class AxialAuthBox extends AxialComponentBase
         this.addState("loading");
         this.addState("connected");
         this.addState("sign");
+        this.#boundConnectedClickedHandler = this.#connectedClickHandler.bind(this);
     }
 
     _buildComponent()
@@ -61,6 +69,8 @@ class AxialAuthBox extends AxialComponentBase
         this.#loadingState = this.shadowRoot.getElementById("loadingState");
         this.#connectedState = this.shadowRoot.getElementById("connectedState");
         this.#signState = this.shadowRoot.getElementById("signState");
+
+        this.#connectedState.addEventListener("click", this.#boundConnectedClickedHandler);
 
         // loading state
         this.#indicator = this.shadowRoot.getElementById("indicator");
@@ -107,6 +117,7 @@ class AxialAuthBox extends AxialComponentBase
                 this.#loadingState.style.display = "none";
                 this.#connectedState.style.display = "flex";
                 this.#signState.style.display = "none";
+                this.#authBoxOverlay.target = this;
             break;
 
             case "sign":
@@ -150,8 +161,26 @@ class AxialAuthBox extends AxialComponentBase
             if( this.#role )
             {
                 this.#role.innerHTML = `${this.#userObject?.role}`;
+                if( this.#authBoxOverlay )
+                {
+                    //console.log("ok authbox overlay ",this.#userObject?.role);
+                    this.#authBoxOverlay.dashboardPath = this.#userObject?.role;
+                }
             }
         }
+    }
+
+    #connectedClickHandler( event )
+    {
+        /*
+        const href = new URL( `./${this.#userObject.role}`, window.location.origin ).href + "/";
+        const cref = window.location.href;
+        if( cref !== href)
+        {
+            window.location.href = href;
+        }
+        */
+        
     }
 }
 

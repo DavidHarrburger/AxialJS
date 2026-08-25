@@ -1,0 +1,16 @@
+<!-- AxialModuleHomeUserView -->
+<template id="axial-module-home-user-view-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div class="axial_module_view-holder">
+        <div class="axial_module_view-header">
+            <div id="title" class="axial_module_view-title">Accueil</div>
+            <div class="axial_spacer"></div>
+        </div>
+        <div class="axial_module_view-content axial_module_view-content-transparent">
+            <slot id="contentSlot" name="axial-content"></slot>
+            <div class="axial_module_home_view-title">Bienvenue</div>
+            <p class="axial_module_home_view-infos">Nous attaquons les tests !</p>
+            <axial-notification-box id="notificationBox"></axial-notification-box>
+        </div>
+    </div>
+</template>

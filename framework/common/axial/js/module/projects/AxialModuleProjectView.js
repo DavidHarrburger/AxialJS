@@ -31,7 +31,7 @@ class AxialModuleProjectView extends AxialModuleView
     /** @type { AxialButton } */
     #addButton;
 
-    /** @type { AxialList} */
+    /** @type { AxialList } */
     #list;
 
     /** @type { AxialModuleCreateProjectOverlay } */
@@ -53,6 +53,10 @@ class AxialModuleProjectView extends AxialModuleView
     /** @type { Function } */
     #boundProjectErrorHandler;
 
+    /// axial
+    /** @type { Function } */
+    #boundAxialUserReadyHandler;
+
     constructor()
     {
         super();
@@ -62,8 +66,22 @@ class AxialModuleProjectView extends AxialModuleView
         this.#boundProjectCreatedHandler = this.#projectCreatedHandler.bind(this);
         this.#boundProjectErrorHandler = this.#projectErrorHandler.bind(this);
 
+        this.#boundAxialUserReadyHandler = this.#axialUserReadyHandler.bind(this);
+
+        window.addEventListener( "axialUserReady", this.#boundAxialUserReadyHandler );
+
         this.#apiProjectGetPath = PathUtils.getPathFromRelative( this.#apiProjectGetPath );
         this.getPath = this.#apiProjectGetPath;
+    }
+
+     #axialUserReadyHandler( event )
+    {
+        //console.log("axialUserReadyHandler in project view");
+        const user = event.detail.user;
+        if( user.role === "user" )
+        {
+            this.#createProjectOverlay.createdFor = user.uuid;
+        }
     }
 
     _buildComponent()
@@ -94,7 +112,7 @@ class AxialModuleProjectView extends AxialModuleView
         const uuid = window.AXIAL.userObject.uuid;
         if( uuid )
         {
-            this.getPath = this.#apiProjectGetPath + "?uuid=" + uuid;
+            this.getPath = this.#apiProjectGetPath + "?cf=" + uuid;
         }
         return this.getPath;
     }
@@ -109,19 +127,13 @@ class AxialModuleProjectView extends AxialModuleView
             this.#list.empty();
             for( const p of this.#projects )
             {
-                console.log( p );
-                const acc = this.#list.addAccordion();
-                acc.text = p.project_name;
                 const simulations = p?.simulations_data;
                 // check one
                 for( const sim of simulations )
                 {
-                    //const item = new AxialModuleProjectListItem();
-                    
-                    const item = this.#list.addItemToAccordion( acc );
+                    const item = this.#list.addItem();
                     item.data = sim;
                 }
-                //acc.open();
             }
         }
     }
@@ -157,6 +169,7 @@ class AxialModuleProjectView extends AxialModuleView
 
     async #updateAndOpen( projectId )
     {
+        console.log("should load");
         try
         {
             await this.loadGetData();

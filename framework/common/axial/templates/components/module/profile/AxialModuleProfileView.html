@@ -1,0 +1,42 @@
+<!-- AxialModuleProfileView -->
+<template id="axial-module-profile-view-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div class="axial_module_view-holder">
+        <div class="axial_module_view-header">
+            <div id="title" class="axial_module_view-title">Profil</div>
+        </div>
+        <div class="axial_module_view-content axial_module_view-content-transparent axial_module_view-content-nopad">
+            <axial-form id="profileForm">
+                <div class="axial_form_item-row" slot="axial-items">
+                    <axial-form-item-inputs axial-label="Prénom" axial-field="fname" axial-direction="row" axial-required="">
+                        <input type="text" slot="axial-content" name="first_name" placeholder="Jean" minlength="3" maxlength="32" required autocomplete="off">
+                    </axial-form-item-inputs>
+                    <axial-form-item-inputs axial-label="Nom" axial-field="lname" axial-direction="row" axial-required="">
+                        <input type="text" slot="axial-content" name="last_name" placeholder="Dupont" minlength="3" maxlength="32" required autocomplete="off">
+                    </axial-form-item-inputs>
+                </div>
+                <div class="axial_form_item-row" slot="axial-items">
+                    <axial-form-item-inputs axial-label="Email" axial-field="femail" axial-direction="row" axial-required="">
+                        <input type="email" slot="axial-content" name="email" placeholder="mon.nom@site.com" minlength="8" maxlength="60" required autocomplete="off">
+                    </axial-form-item-inputs>
+                    <axial-form-item-inputs axial-label="Mobile" axial-field="ftel" axial-direction="row" axial-required="">
+                        <input type="tel" slot="axial-content" name="tel" placeholder="0601234567" required minlength="9" maxlength="12" autocomplete="off" >
+                    </axial-form-item-inputs>
+                </div>
+                <div class="axial_form_item-row" slot="axial-items">
+                    <axial-form-item-inputs axial-label="Adresse" axial-field="faddress" axial-direction="row" axial-required="">
+                        <input type="text" slot="axial-content" name="address_line_1" placeholder="1, rue du Digital" minlength="9" maxlength="200" required autocomplete="off">
+                    </axial-form-item-inputs>
+                </div>
+                <div class="axial_form_item-row" slot="axial-items">
+                    <axial-form-item-inputs axial-label="Code postal" axial-field="fzip" axial-direction="row" axial-required="">
+                        <input type="text" slot="axial-content" name="address_zip" placeholder="30000" minlength="5" maxlength="5" required autocomplete="off">
+                    </axial-form-item-inputs>
+                    <axial-form-item-inputs axial-label="Ville" axial-field="fcity" axial-direction="row" axial-required="">
+                        <input type="text" slot="axial-content" name="address_city" placeholder="Nîmes" required minlength="2" maxlength="60" autocomplete="off" >
+                    </axial-form-item-inputs>
+                </div>
+            </axial-form>
+        </div>
+    </div>
+</template>

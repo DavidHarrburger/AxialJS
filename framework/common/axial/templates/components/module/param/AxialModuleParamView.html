@@ -1,0 +1,21 @@
+<!-- AxialModuleParamView -->
+<template id="axial-module-param-view-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div class="axial_module_view-holder">
+        <div class="axial_module_view-header">
+            <div id="title" class="axial_module_view-title">Paramètres</div>
+            <div class="axial_spacer"></div>
+            
+        </div>
+        <div class="axial_module_view-content axial_module_view-content-nopad axial_module_view-content-transparent">
+            <axial-tab-viewer id="tabViewer">
+                <!-- tabs -->
+                <axial-tab-toggle slot="axial-tab-toggles" axial-text="Estimations"></axial-tab-toggle>
+                <axial-tab-toggle slot="axial-tab-toggles" axial-text="Entreprise"></axial-tab-toggle>
+                <!-- views -->
+                <axial-param-view-quote slot="axial-tab-views"></axial-param-view-quote>
+                <axial-param-view-company slot="axial-tab-views"></axial-param-view-company>
+            </axial-tab-viewer>
+        </div>
+    </div>
+</template>

@@ -98,6 +98,7 @@ class AxialListOverlay extends AxialOverlayBase
 
     #buttonClickHandler( event )
     {
+        console.log( "button in overlay list click" )
         const button = event.target;
 
         const index = Array.from(this.#group.children).indexOf( button );

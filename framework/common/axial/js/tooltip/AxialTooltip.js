@@ -27,11 +27,13 @@ class AxialTooltip extends AxialTooltipBase
     _buildComponent()
     {
         super._buildComponent();
-        this.#textElement = this.shadowRoot.getElementById("text");
+        
+        this.#textElement = this.shadowRoot.getElementById("textElement");
         if( this.#textElement && this.#text !== undefined )
         {
             this.#textElement.innerText = this.#text;
         }
+        
     }
 }
 

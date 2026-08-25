@@ -3,6 +3,10 @@
     <link rel="stylesheet" href="./styles.css">
     <div id="holder" class="axial_simulator_line-holder">
         <div id="label" class="axial_simulator_line-label"></div>
-        <input id="numInput" type="number" value="0" min="0" class="axial_simulator_line-input">
+        <div class="axial_simulator_line_num-block">
+            <input id="numInput" type="number" min="0" class="axial_simulator_line-input" placeholder="0">
+            <label id="unitLabel" for="numInput" class="axial_simulator_line-desc"></label>
+        </div>
+        
     </div>
 </template>

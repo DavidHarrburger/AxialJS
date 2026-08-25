@@ -45,7 +45,7 @@ class AxialMailTemplateBase
         const footer = 
             `<div style='margin-top:20px;'>` +
             `<a href='${MAIL_TEMPLATE_SENDER_DOMAIN}' style='color:rgb(35, 41, 47); text-decoration:underline; font-size:12px; font-weight:bold; display:block; text-align:center;'>${MAIL_TEMPLATE_SENDER_NAME}</a>` +
-            `<div style='text-align:center; color:rgb(35, 41, 47); font-size:11px; margin-top:10px;'>This is an automated message. Please do not reply.</div>`+
+            `<div style='text-align:center; color:rgb(35, 41, 47); font-size:11px; margin-top:10px;'>Ce message vous été envoyé automatiquement. Merci de ne pas y répondre.</div>`+
             `</div>`;
         return footer;
     }

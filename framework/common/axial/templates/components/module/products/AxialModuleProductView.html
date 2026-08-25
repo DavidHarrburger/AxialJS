@@ -1,0 +1,30 @@
+<!-- .AxialModuleProductView -->
+<template id="axial-module-product-view-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div class="axial_module_view-holder">
+        <div class="axial_module_view-header">
+            <div id="title" class="axial_module_view-title">Produits</div>
+            <div class="axial_spacer"></div>
+            <div class="axial_module_view-actions">
+                <input id="searchInput" type="text" placeholder="Rechercher un produit" class="axial_list-search">
+                <axial-button id="addButton" axial-text="Créer un produit">
+                    <i slot="axial-icon" class="fa-color fa-regular fa-square-plus"></i>
+                </axial-button>
+            </div>
+            <axial-icon-button id="ellipsisButton" axial-icon-name="ellipsis" class="axial_module_view-ellipsis"></axial-icon-button>
+        </div>
+        <div class="axial_module_view-content axial_module_view-content-transparent">
+            <slot id="contentSlot" name="axial-content"></slot>
+            <axial-list id="list">
+                <div slot="axial-header" class="axial_list_item-prop_name">Désignation</div>
+                <!--<div slot="axial-header" class="axial_list_item-prop axial_list_item-prop_100">Réf.</div>-->
+                <!--<div slot="axial-header" class="axial_list_item-prop axial_list_item-prop_100" >Type</div>-->
+                <div slot="axial-header" class="axial_list_item-prop axial_list_item-prop_100">P.U.H.T.</div>
+                <div slot="axial-header" class="axial_list_item-prop axial_list_item-prop_100">Unité</div>
+                <div slot="axial-header" class="axial_list_item-prop axial_list_item-prop_100">T.V.A.</div>
+                <div slot="axial-header" class="axial_list_item-prop axial_list_item-prop_120">Créé le</div>
+                <div slot="axial-header" class="axial_list_item-prop axial_list_item-prop_120">Modifié le</div>
+            </axial-list>
+        </div>
+    </div>
+</template>

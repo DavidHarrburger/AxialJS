@@ -1,0 +1,17 @@
+<!-- AxialParamViewQuote -->
+<template id="axial-param-view-quote-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="holder" class="axial_view-holder">
+        <slot id="slot" name="axial-content"></slot>
+        <div class="axial_module_globals-grid">
+            <axial-card-base axial-grid-col="1 / span 2" axial-grid-row="1">
+                <axial-quote-param-legal id="quoteLegal" axial-name="estimation_legal"></axial-quote-param-legal>
+                
+            </axial-card-base>
+            <axial-card-base axial-grid-col="1" axial-grid-row="2">
+                <axial-quote-param-image id="quoteImage" axial-name="estimation_image"></axial-quote-param-image>
+            </axial-card-base>
+        </div>
+        
+    </div>
+</template>

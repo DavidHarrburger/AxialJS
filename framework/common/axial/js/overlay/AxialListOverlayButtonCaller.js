@@ -128,11 +128,14 @@ class AxialListOverlayButtonCaller extends AxialButton
     get values() { return this.#values; }
     set values( value )
     {
+        console.warn("AxialListOverlayButton CALLER SET VALUES");
         if( Array.isArray(value) === false ) { throw new TypeError("Array required"); }
         this.#values = value;
+        console.log( this.#listOverlay)
         if( this.#listOverlay )
         {
             this.#listOverlay.values = value;
+            console.warn("BUTTON VALUES OK")
         }
     }
 
@@ -142,7 +145,7 @@ class AxialListOverlayButtonCaller extends AxialButton
         this.#listOverlay = new AxialListOverlay();
         this.#listOverlay.target = this;
         this.#listOverlay.position = this.#overlayPosition;
-        this.#listOverlay.addEventListener("listChanged", this.#boundListChangedHandler);
+        this.#listOverlay.addEventListener("listOverlayChanged", this.#boundListChangedHandler);
         this.#listOverlay.addEventListener("overlayHidden", this.#boundOverlayHiddenHandler);
         if( this.#values )
         {

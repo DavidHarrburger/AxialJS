@@ -1,6 +1,9 @@
 "use strict";
 
+import { AxialIconButton } from "../button/AxialIconButton.js";
 import { AxialView } from "./AxialView.js";
+import { AxialOverlayBase } from "../overlay/AxialOverlayBase.js";
+import { StringUtils } from "../utils/StringUtils.js";
 
 class AxialModuleView extends AxialView
 {
@@ -10,15 +13,28 @@ class AxialModuleView extends AxialView
     /** @type { HTMLElement } */
     #titleElement;
 
+    /** @type { AxialIconButton } */
+    #ellipsisButton;
+
+    /** @type { String } */
+    #overlayId;
+
+    /** @type { AxialOverlayBase } */
+    #overlay;
+
+    /** @type { Function } */
+    #boundEllipsisHandler;
+
     constructor()
     {
         super();
         this.template = "axial-module-view-template";
+        this.#boundEllipsisHandler = this.#ellipsisHandler.bind(this);
     }
 
     static get observedAttributes()
     {
-        return [ "axial-title" ];
+        return [ "axial-title", "axial-overlay"];
     }
 
     get title() { return this.#title; }
@@ -35,6 +51,12 @@ class AxialModuleView extends AxialView
         }
     }
 
+    /** 
+     * @type { AxialIconButton } 
+     * @readonly
+    */
+    get ellipsisButton() { return this.#ellipsisButton; }
+
     _buildComponent()
     {
         super._buildComponent();
@@ -43,6 +65,17 @@ class AxialModuleView extends AxialView
         if( this.#titleElement && this.#title !== undefined )
         {
             this.#titleElement.innerHTML = this.#title;
+        }
+
+        this.#ellipsisButton = this.shadowRoot.getElementById("ellipsisButton");
+        if( this.#overlayId )
+        {
+            this.#overlay = document.getElementById(this.#overlayId);
+            console.log( this.#overlay);
+        }
+        if( this.#ellipsisButton )
+        {
+            this.#ellipsisButton.addEventListener("click", this.#boundEllipsisHandler);
         }
     }
 
@@ -53,6 +86,24 @@ class AxialModuleView extends AxialView
         {
             this.title = newValue;
         }
+
+        if( name === "axial-overlay" )
+        {
+            if( StringUtils.isWhite( newValue ) === false )
+            {
+                this.#overlayId = newValue;
+            }
+        }
+    }
+
+    #ellipsisHandler( event )
+    {
+        if( this.#overlay )
+        {
+            this.#overlay.show();
+            console.log("ellipsiiiiiiiiiiiis");
+        }
+        
     }
 
 }

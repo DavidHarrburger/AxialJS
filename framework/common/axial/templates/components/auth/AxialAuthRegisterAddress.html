@@ -6,36 +6,36 @@
         <div class="axial_auth_register-row">
             <div class="axial_auth_register-formitem">
                 <label class="axial_auth_register-label" for="firstname">Prénom :</label>
-                <input class="axial_auth_register-input" type="text" id="firstname" value="" required minlength="3" maxlength="60" autocomplete="name" placeholder="Jean">
-                <accordion-container></accordion-container>
+                <input class="axial_auth_register-input" type="text" id="firstname" required minlength="3" maxlength="32" autocomplete="name" placeholder="Jean">
+                <div class="axial_input_legend axial_input_legend-none">Entre 3 et 32 caractères</div>
             </div>
 
             <div class="axial_auth_register-formitem">
                 <label class="axial_auth_register-label" for="lastname">Nom :</label>
-                <input class="axial_auth_register-input" type="text" id="lastname"  required minlength="3" maxlength="60" autocomplete="family-name" placeholder="Dupont">
-                <accordion-container></accordion-container>
+                <input class="axial_auth_register-input" type="text" id="lastname" required minlength="3" maxlength="32" autocomplete="family-name" placeholder="Dupont">
+                <div class="axial_input_legend axial_input_legend-none">Entre 3 et 32 caractères</div>
             </div>
         </div>
         
         <div class="axial_auth_register-row">
             <div class="axial_auth_register-formitem">
                 <label class="axial_auth_register-label" for="email">Email :</label>
-                <input class="axial_auth_register-input" type="email" id="email" value="" required minlength="8" maxlength="60" autocomplete="email" placeholder="mon.nom@site.com">
-                <accordion-container></accordion-container>
+                <input class="axial_auth_register-input" type="email" id="email" required minlength="8" maxlength="60" autocomplete="email" placeholder="mon.nom@site.com">
+                <div id="emailLegend" class="axial_input_legend axial_input_legend-none">Entre 8 et 60 caractères</div>
             </div>
 
             <div class="axial_auth_register-formitem">
                 <label class="axial_auth_register-label" for="phone">Mobile :</label>
-                <input class="axial_auth_register-input" type="tel" id="phone" value="" required minlength="9" maxlength="12" autocomplete="tel" placeholder="0601234567">
-                <accordion-container></accordion-container>
+                <input class="axial_auth_register-input" type="tel" id="phone" required minlength="10" maxlength="10" autocomplete="tel" placeholder="0601234567" pattern="(?:\+33|0)[67]\d{8}">
+                <div class="axial_input_legend axial_input_legend-none">10 chiffres commençant par 06 ou 07</div>
             </div>
 
         </div>
 
         <div class="axial_auth_register-formitem">
             <label class="axial_auth_register-label" for="address">Adresse :</label>
-            <input class="axial_auth_register-input" type="text" id="address" required minlength="9" maxlength="200" autocomplete="address-line1" placeholder="1, rue de la Rénovation">
-            <accordion-container></accordion-container>
+            <input class="axial_auth_register-input" type="text" id="address" required minlength="5" maxlength="200" autocomplete="address-line1" placeholder="1, rue de la Rénovation">
+            <div class="axial_input_legend axial_input_legend-none">10 chiffres commençant par 06 ou 07</div>
         </div>
 
         <div class="axial_auth_register-row">
@@ -43,19 +43,18 @@
             <div class="axial_auth_register-formitem">
                 <label class="axial_auth_register-label" for="zip">Code postal :</label>
                 <input class="axial_auth_register-input" type="text" id="zip" required minlength="4" maxlength="5" autocomplete="postal-code" placeholder="30000">
-                <accordion-container></accordion-container>
+                <div class="axial_input_legend axial_input_legend-none">4 à 5 chiffres</div>
             </div>
 
             <div class="axial_auth_register-formitem">
                 <label class="axial_auth_register-label" for="city">Ville :</label>
-                <input class="axial_auth_register-input" type="text" id="city" required minlength="3" maxlength="60" autocomplete="" placeholder="Nîmes">
-                <accordion-container></accordion-container>
+                <input class="axial_auth_register-input" type="text" id="city" required minlength="1" maxlength="60" autocomplete="" placeholder="Nîmes">
+                <div class="axial_input_legend axial_input_legend-none">Entre 1 et 60 caractères</div>
             </div>
         </div>
         
         <div class="axial_auth_register-formitem">
-            <label class="axial_auth_register-label"  for="password">Mot de passe :</label>
-            
+            <label class="axial_auth_register-label" for="password">Mot de passe :</label>
             <div class="axial_auth_register-passrow">
                 <div class="axial_auth_register-passholder">
                     <input class="axial_auth_register-password" type="password"  id="password" required minlength="12" autocomplete="new-password">
@@ -74,6 +73,7 @@
                 </div>
                 <axial-button id="generateButton" axial-text="Générer" class="axial_auth_register-generate"></axial-button>
             </div>
+            <div id="passwordLegend" class="axial_input_legend">12 caractères minimum, au moins 1 minuscule, 1 majuscule, 1 chiffre et 1 caractère spécial parmi ! @ # $ % & * ( ) - _ = + ?</div>
         </div>
         
         <div class="axial_auth_register-formitem">

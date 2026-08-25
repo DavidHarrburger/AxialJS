@@ -116,17 +116,17 @@ class AxialQuoteSectionFooter extends AxialComponentBase
 
         if( this.#totalHt && this.#HT !== undefined )
         {
-            this.#totalHt.innerHTML = this.#HT;
+            this.#totalHt.innerHTML = Number(this.#HT).toLocaleString( undefined, {minimumFractionDigits:2, maximumFractionDigits:2 } );;
         }
 
         if( this.#totalTax && this.#TVA !== undefined )
         {
-            this.#totalTax.innerHTML = this.#TVA;
+            this.#totalTax.innerHTML = Number(this.#TVA).toLocaleString( undefined, {minimumFractionDigits:2, maximumFractionDigits:2 } );
         }
         
         if( this.#totalTtc && this.#TTC !== undefined )
         {
-            this.#totalTtc.innerHTML = this.#TTC;
+            this.#totalTtc.innerHTML = Number(this.#TTC).toLocaleString( undefined, {minimumFractionDigits:2, maximumFractionDigits:2 } );;
         }
     }
 }

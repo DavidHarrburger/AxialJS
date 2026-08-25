@@ -1,0 +1,15 @@
+<!-- AxialModuleProjectPopupSimulator -->
+<template id="axial-module-project-popup-simulator-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div class="axial_module_popup-holder">
+        <div class="axial_module_popup-header">
+            <div id="title" class="axial_module_popup-title"></div>
+            <div class="axial_spacer"></div>
+            <axial-button id="closer" axial-text="Fermer"></axial-button>
+        </div>
+        <div class="axial_module_popup-content axial_module_popup-content_nopad">
+            <slot id="contentSlot" name="axial-content"></slot>
+            <axial-simulator id="simulator"></axial-simulator>
+        </div>
+    </div>
+</template>

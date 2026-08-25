@@ -8,6 +8,9 @@ class AxialSimulatorLineNum extends AxialSimulatorLine
     /** @type { HTMLInputElement } */
     #numInput;
 
+    /** @type { HTMLElement } */
+    #unitLabel;
+
     /// events
     /** @type { Function } */
     #boundInputHandler;
@@ -27,6 +30,13 @@ class AxialSimulatorLineNum extends AxialSimulatorLine
     _buildLine()
     {
         super._buildLine();
+
+        this.#unitLabel = this.shadowRoot.getElementById("unitLabel");
+        if( this.line.unit && this.line.unit !== "" )
+        {
+            this.#unitLabel.innerHTML = this.line.unit;
+        }
+
         this.#numInput = this.shadowRoot.getElementById("numInput");
         this.#numInput.addEventListener("focusout", this.#boundInputHandler);
     }
@@ -43,14 +53,13 @@ class AxialSimulatorLineNum extends AxialSimulatorLine
 
     _getCalculation()
     {
-        return this.#numInput.valueAsNumber;
+        const n = isNaN( this.#numInput.valueAsNumber ) === true ? 0 : this.#numInput.valueAsNumber;
+        return n;
     }
 
     #inputHandler( event )
     {
-        console.log( "num focus out");
-        const n = this.#numInput.valueAsNumber;
-        console.log( n )
+        const n = isNaN( this.#numInput.valueAsNumber ) === true ? 0 : this.#numInput.valueAsNumber;
         let tempCompleted = false;
         if( n >  0 )
         {
@@ -64,14 +73,13 @@ class AxialSimulatorLineNum extends AxialSimulatorLine
     {
         let obj =
         {
-            num: this.#numInput.valueAsNumber
+            num: isNaN( this.#numInput.valueAsNumber ) === true ? 0 : this.#numInput.valueAsNumber
         }
         return obj;
     }
 
     _onSavedData()
     {
-        console.log( "saved data in num line", this.savedData );
         if( this.savedData && this.savedData.num && this.#numInput && this.savedData.num > 0 )
         {
             this.#numInput.valueAsNumber = this.savedData.num;

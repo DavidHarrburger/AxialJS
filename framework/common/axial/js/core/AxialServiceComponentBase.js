@@ -106,6 +106,7 @@ class AxialServiceComponentBase extends AxialComponentBase
      */
     async #loadGetData()
     {
+        console.log("loadgetdata")
         if( this.#getPath === undefined || this.#getPath === null ) { return; }
         if( this.#isFetching === true ) { return; }
         this.#isFetching = true;

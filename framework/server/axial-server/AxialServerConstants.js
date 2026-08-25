@@ -51,6 +51,17 @@ export const API_PRIVATE_PATHES =
     { path: "/api/data/del", verification: true },
     { path: "/api/data/archive", verification: true },
 
+    { path: "/api/user/get", verification: true },
+    { path: "/api/user/list", verification: true },
+    { path: "/api/user/create", verification: true },
+    { path: "/api/user/update", verification: true },
+
+    { path: "/api/push/subscribe", verification: true },
+    { path: "/api/user/send", verification: true },
+    { path: "/api/user/vapid", verification: true },
+
+    { path: "/api/onboarding/contact", verification: true },
+
     { path: "/api/auth/code/send", verification: false },
     { path: "/api/auth/code/verify", verification: false },
 
@@ -59,6 +70,13 @@ export const API_PRIVATE_PATHES =
 
     { path: "/api/params/infobar/set", verification: true },
     { path: "/api/params/weektime/set", verification: true },
+
+    { path: "/api/params/estimation/legal/set", verification: true },
+    { path: "/api/params/estimation/legal/get", verification: true },
+    { path: "/api/params/estimation/image/set", verification: true },
+    { path: "/api/params/estimation/image/get", verification: true },
+    { path: "/api/params/company/timeshift/set", verification: true },
+    { path: "/api/params/company/timeshift/get", verification: true },
 
     { path: "/api/services/qrcode", verification: true },
 
@@ -77,19 +95,25 @@ export const API_PRIVATE_PATHES =
 
     { path: "/api/files/get/all", verification: true },
 
-    { path: "/api/products/set", verification: true },
+    { path: "/api/products/set", verification: true }, // deprecated
+
+    { path: "/api/product/list", verification: true },
+    { path: "/api/product/create", verification: true },
+    { path: "/api/product/update", verification: true },
 
     { path: "/api/projects/create", verification: true },
     { path: "/api/projects/get", verification: true },
     { path: "/api/projects/update", verification: true },
 
-    { path: "/api/simulations/get", verification: true },
-    { path: "/api/simulations/update", verification: true },
-    { path: "/api/simulations/delete", verification: true },
-    { path: "/api/simulations/clone", verification: true },
+    { path: "/api/simulation/get", verification: true },
+    { path: "/api/simulation/update", verification: true },
+    { path: "/api/simulation/delete", verification: true },
+    { path: "/api/simulation/clone", verification: true },
 
     { path: "/api/subscriptions/set", verification: true },
     { path: "/api/subscriptions/get", verification: true },
+
+    { path: "/api/meeting/request", verification: true },
 
     { path: "/api/checkout/session/create", verification: true }, // create the session
     { path: "/api/checkout/session/status", verification: true }, // check the session

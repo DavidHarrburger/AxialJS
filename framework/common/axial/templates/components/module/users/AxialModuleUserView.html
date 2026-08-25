@@ -1,0 +1,24 @@
+<!-- .AxialModuleUserView -->
+<template id="axial-module-user-view-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div class="axial_module_view-holder">
+        <div class="axial_module_view-header">
+            <div id="title" class="axial_module_view-title">Clients</div>
+            <div class="axial_spacer"></div>
+            <input id="searchInput" type="text" placeholder="Rechercher un client" class="axial_list-search">
+            <axial-button id="addButton" axial-text="Ajouter un client">
+                <i slot="axial-icon" class="fa-color fa-regular fa-square-plus"></i>
+            </axial-button>
+        </div>
+        <div class="axial_module_view-content axial_module_view-content-transparent">
+            <slot id="contentSlot" name="axial-content"></slot>
+            <axial-list id="list">
+                <div slot="axial-header" class="axial_list_item-prop_name">Nom</div>
+                <div slot="axial-header" class="axial_list_item-prop_email">Email</div>
+                <div slot="axial-header" class="axial_list_item-prop_tel">Téléphone</div>
+                <div slot="axial-header" class="axial_list_item-prop_creation">Création</div>
+                <div slot="axial-header" class="axial_list_item-prop_item">Projets</div>
+            </axial-list>
+        </div>
+    </div>
+</template>

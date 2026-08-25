@@ -1,0 +1,20 @@
+<!-- AxialAuthBox -->
+<template id="axial-auth-box-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="loadingState" class="axial_auth_box-loading">
+        <axial-progress-indicator id="indicator"></axial-progress-indicator>
+    </div>
+    <div id="connectedState" class="axial_auth_box-connected">
+        <div class="axial_auth_box-texts">
+            <div id="name" class="axial_auth_box-name">Name</div>
+            <div id="role" class="axial_auth_box-role">role</div>
+        </div>
+        <div id="photo" class="axial_auth_box-photo"></div>
+    </div>
+    <div id="signState" class="axial_auth_box-sign">
+        <a id="signup" target="_self" class="axial_auth_box-signup" href="./account/register/">S'inscrire</a>
+        <a id="signin" target="_self" href="./account/login/">
+            <axial-button axial-text="Se connecter"></axial-button>
+        </a>
+    </div>
+</template>

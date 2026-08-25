@@ -9,12 +9,30 @@ class AxialOverlayManager
     
     /** @type { Set.<AxialOverlayBase> } */
     static #OVERLAYS = new Set();
+
+    /** @type { Set.<AxialOverlayBase> } */
+    static #STACK = new Set();
+
+    /** @type { Number } */
+    static #Z_INDEX = 6000;
     
     /**
      * @type { Set.<AxialOverlayBase> }
      * @readonly
      */
     static get OVERLAYS() { return AxialOverlayManager.#OVERLAYS; }
+
+    /**
+     * @type { Set.<AxialOverlayBase> }
+     * @readonly
+     */
+    static get STACK() { return AxialOverlayManager.#STACK; }
+
+    /**
+     * @type { Number }
+     * @readonly
+     */
+    static get Z_INDEX() { return AxialOverlayManager.#Z_INDEX; }
 
     /**
      * @type { HTMLElement }
@@ -33,9 +51,10 @@ class AxialOverlayManager
     {
         for( const overlay of AxialOverlayManager.#OVERLAYS )
         {
-            if( overlay.hideMode === "click" && overlay.isModal === false && overlay.isShown === true )
+            if( overlay.hideMode === "click" && overlay.isModal === false && overlay.isShown === true && overlay.isPlaying === false )
             {
                 overlay.hide();
+                console.log("called")
             }
         }
     }

@@ -5,8 +5,11 @@ class UnitUtils
     static #UNITS = Object.freeze( new Map(
         [
             [ "m",    { type: "length", base: 1 ,     default: "mètre",      labels: [ "mètre", "mètres", "m", "m." ] } ],
+            [ "ml",   { type: "length", base: 1 ,     default: "mètre linéaire",      labels: [ "mètre linéaire", "mètres linéaires", "ml", "ml." ] } ],
             [ "cm",   { type: "length", base: 0.01 ,  default: "centimètre", labels: [ "centimètre", "centimètre", "cm", "cm." ] } ],
             [ "mm",   { type: "length", base: 0.001 , default: "millimètre", labels: [ "millimètre", "millimètres", "mm", "mm." ] } ],
+
+            [ "m²",   { type: "surface", base: 1 , default: "mètre carré", labels: [ "mètre carré", "mètres carrés", "m²" ] } ],
 
             [ "sec",  { type: "time",   base: 1 ,     default: "seconde",    labels: [ "seconde", "secondes", "sec", "s", "s." ] } ],
             [ "min",  { type: "time",   base: 60 ,    default: "minute",     labels: [ "minute", "minutes", "min", "m", "m." ] } ],

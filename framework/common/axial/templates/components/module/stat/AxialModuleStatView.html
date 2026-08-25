@@ -1,0 +1,18 @@
+<!-- AxialModuleStatView -->
+<template id="axial-module-stat-view-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div class="axial_admin_view-holder">
+        <div class="axial_module_view-header">
+            <div id="title" class="axial_module_view-title">Statistiques</div>
+            <div class="axial_spacer"></div>
+            <axial-calendar-button id="dateStartButton" axial-text="date start"></axial-calendar-button>
+            <axial-calendar-button id="dateEndButton" axial-text="date end"></axial-calendar-button>
+            <axial-list-overlay-button-caller id="listButton" axial-text="Période"></axial-list-overlay-button-caller>
+        </div>
+        <div class="axial_module_view-content">
+            <div class="axial_module_stat_view-grid">
+                <axial-chart-traffic id="trafficChart" class="axial_module_stat_view-traffic"></axial-chart-traffic>
+            </div>
+        </div>
+    </div>
+</template>

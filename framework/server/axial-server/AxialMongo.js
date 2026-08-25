@@ -278,6 +278,8 @@ class AxialMongo extends EventEmitter
             // le document existe on ne mettra à jour que les champs concernés
             if( actualDocument ) { update = true; } else { update = false; }
 
+            //console.log("update = ", update);
+
             if( tempModel )
             {
                 // le modèle existe et un document existe avec un _id
@@ -291,6 +293,7 @@ class AxialMongo extends EventEmitter
 
                     // on recherche la propriété au niveau 1 de l'objet
                     testValue = d[propertyName];
+                    //if( propertyName == "model" ) { console.log("model = ", d[propertyName])}
                     // propriété non trouvée, on cherche
                     if( testValue === undefined )
                     {
@@ -300,6 +303,8 @@ class AxialMongo extends EventEmitter
                             testValue = testObject.value;
                         }
                     }
+
+                    //console.log( testValue)
                     
                     if( testValue === undefined )
                     {
@@ -349,7 +354,8 @@ class AxialMongo extends EventEmitter
             else
             {
                 delete final._id; // there is probably a mongo flag for that
-                result = await collection.updateOne({ _id: new ObjectId( String(_id) ) }, { $set: final } ); // use set / update instead of replace here important
+                // use set / update instead of replace here important
+                result = await collection.updateOne( { _id: new ObjectId( String(_id) ) }, { $set: final, $currentDate: { last_modified: true } } );
             }            
         }
         catch(err)
@@ -482,7 +488,7 @@ class AxialMongo extends EventEmitter
             {
                 timeid: new Date(),
                 timecode: code,
-                timechecker: checker
+                timechecker: checker,
             };
             const result = await collection.insertOne(timedoc);
             return result;
@@ -491,6 +497,17 @@ class AxialMongo extends EventEmitter
         catch(err)
         {
             console.log(err);
+        }
+    }
+
+    async export()
+    {
+        try
+        {
+        }
+        catch( err )
+        {
+            console.log( err );
         }
     }
 }

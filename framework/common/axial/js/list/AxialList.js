@@ -367,7 +367,7 @@ class AxialList extends AxialComponentBase
 
     /**
      * Add a draggable divider to have a better vision of the data
-     * @returns { AxialAdminListDivider }
+     * @returns { AxialListDivider }
      */
     addDivider()
     {
@@ -480,6 +480,10 @@ class AxialList extends AxialComponentBase
         return null;
     }
 
+    /**
+     * 
+     * @param { Array } array 
+     */
     addManyItems( array )
     {
         if( Array.isArray( array ) === false )
@@ -517,6 +521,8 @@ class AxialList extends AxialComponentBase
         /// HERE ADD ITEMS with s ADDED -> better perf everywhere
         const listEvent = new CustomEvent( "listManyItemsAdded", { bubbles: true, detail: { items: this.#items } } );
         this.dispatchEvent( listEvent );
+
+        return this.#items;
     }
 
     /**

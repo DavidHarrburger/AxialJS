@@ -39,21 +39,18 @@ class AxialQuote extends AxialComponentBase
     {
         if( this.componentBuilt === true )
         {
-            this.#clearQuote();
+            this.#buildQuote();
         }
     }
 
     #clearQuote()
     {
         DomUtils.cleanElement( this.#holder );
-        if( this.data !== undefined )
-        {
-            this.#buildQuote();
-        }
     }
 
     #buildQuote()
     {
+        DomUtils.cleanElement( this.#holder );
         console.log("QUOTE DATA ENTRY POINT");
         console.log( this.data );
         const A = this.data;
@@ -62,15 +59,20 @@ class AxialQuote extends AxialComponentBase
         let T5 = 0; let T10 = 0; let T20 = 0;
         let THT = 0; let TTC = 0;
 
+        let quantityChecker = 0;
+
         for( const a of A )
         {
+            const map = Array.from(a.map);
+            const mapQuantityTotal = map.reduce( (sum, item ) => sum + item[1].quantity, 0 );
+            if( mapQuantityTotal == 0 ) { continue; }
+
             N++;
             const sh = new AxialQuoteSectionHeader();
             sh.sectionNum = String(N);
             sh.sectionTitle = a.sectionTitle;
             this.#holder.appendChild(sh);
 
-            const map = Array.from(a.map);
             let SN = 0;
 
             let ST5 = 0; let ST10 = 0; let ST20 = 0;
@@ -78,43 +80,52 @@ class AxialQuote extends AxialComponentBase
             for( const item of map )
             {
                 const p = item[1];
+                console.log(p);
                 // exclusion
-                if( p.quantity == undefined || p.quantity <= 0 ) { continue; }
-                SN++;
-                const itemNum = `${N}.${SN}`;
-
-                const quoteItem = new AxialQuoteItem();
-                quoteItem.itemNum = itemNum;
-                quoteItem.data = p;
-
-                // global amount calculation
-                const article = p.article;
-                const qty = p.quantity;
-                const tax = article.tax;
-                const pu = article.value;
-                const atht = qty * pu;
-                const tva = tax / 100 * atht;
-                const attc = atht + tva;
-
-                switch( tax )
+                if( p.quantity == undefined || p.quantity <= 0 ) { continue; } // does not work
+                if( p.quantity > 0 )
                 {
-                    case 5.5: ST5 = ST5 + tva; break;
-                    case 10: ST10 = ST10 + tva; break;
-                    case 20: ST20 = ST20 + tva; break;
-                    default: break;
+                    SN++;
+                    const itemNum = `${N}.${SN}`;
+
+                    const quoteItem = new AxialQuoteItem();
+                    quoteItem.itemNum = itemNum;
+                    quoteItem.data = p;
+
+                    // global amount calculation
+                    const product = p.product;
+
+                    // quantity decimals fixed
+                    const isQtyInt = Number.isInteger(p.quantity);
+                    const qty = isQtyInt === false ? Number( Number(p.quantity).toFixed(2) ) : p.quantity;
+                    
+                    const tax = product.tax;
+                    const pu = product.price;
+                    const atht = qty * pu;
+                    const tva = tax / 100 * atht;
+                    const attc = atht + tva;
+
+                    switch( tax )
+                    {
+                        case 5.5: ST5 = ST5 + tva; break;
+                        case 10: ST10 = ST10 + tva; break;
+                        case 20: ST20 = ST20 + tva; break;
+                        default: break;
+                    }
+
+                    // total section
+                    STHT = STHT + atht;
+                    STTC = STTC + attc;
+
+                    this.#holder.appendChild(quoteItem);
                 }
-
-                // total section
-                STHT = STHT + atht;
-                STTC = STTC + attc;
-
-                this.#holder.appendChild(quoteItem);
             }
 
             // add section footer
             const sectionFooter = new AxialQuoteSectionFooter();
             sectionFooter.sectionTitle = "Totaux " + a.sectionTitle;
             const tempTax = ST5 + ST10 + ST20; 
+            // check here
             sectionFooter.HT = String( STHT.toFixed(2) );
             sectionFooter.TVA = String( tempTax.toFixed(2) );
             sectionFooter.TTC = String( STTC.toFixed(2) );
@@ -137,6 +148,8 @@ class AxialQuote extends AxialComponentBase
 
         // dispatch
         console.log( "THT = ", THT, " TTC = ", TTC );
+        const quoteEvent = new CustomEvent("quoteComputed", { bubbles:true, detail: { totalHT: THT, totalTTC: TTC}});
+        this.dispatchEvent(quoteEvent);
     }
 }
 

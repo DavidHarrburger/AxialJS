@@ -33,10 +33,18 @@
 
 @media screen and ( min-width: 992px )
 {
+    :root
+    {
+        /* view */
+        --axial___view___actionsDisplay: flex;
+        --axial___view___ellipsisDisplay: none;
+    }
     .axial_header_nav
     {
         display: flex;
     }
+
+
 }
 
 @media screen and ( min-width: 1200px )
@@ -77,21 +85,46 @@
         --axial___authBox___connectedJustify: flex-end;
         --axial___authBox___connectedAlign: right;
 
-        .axial_admin_burger
-        {
-            display: none;
-        }
+        --axial___auth___itemDirection: row;
 
-        .axial_web_menu_button_holder
-        {
-            display: none;
-        }
+        /* simulator */
+        --axial___simulator___contentPadding: 20%;
 
-        .axial_web_desktop_nav
-        {
-            display: flex;
-        }
+        --axial___simulator___lineHolderDirection: row;
+        --axial___simulator___lineHolderAlign: center;
+        --axial___simulator___lineHolderGap: 20px;
+
+        
     }
+
+    .axial_form_item-row
+    {
+        flex-direction: row;
+    }
+
+    .axial_admin_burger
+    {
+        display: none;
+    }
+
+    .axial_web_menu_button_holder
+    {
+        display: none;
+    }
+
+    .axial_web_desktop_nav
+    {
+        display: flex;
+    }
+
+    .axial_module_product_create_popup
+    {
+        width: 50%;
+        height: 100%;
+        background-color: #fff;
+        filter: drop-shadow(-2px 0 4px #000);
+    }
+    
 }
 
 @media screen and ( min-width: 1400px )

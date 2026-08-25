@@ -254,6 +254,34 @@
             }
         },
         {
+            "name": "product",
+            "collection": "products",
+            "props":
+            {
+                "model":             { "type": "string",  "crypted": false, "default": "product" },
+                "user_uuid":         { "type": "string",  "crypted": false, "default": "" },
+                "image_main":        { "type": "string",  "crypted": false, "default": "" },
+
+                "product_name":      { "type": "string",  "crypted": false, "default": "" },
+                "product_ref":       { "type": "string",  "crypted": false, "default": "" },
+                "kind":              { "type": "string",  "crypted": false, "default": "", "list": [ "service", "physical", "digital", "ticket", "subscription" ] },
+
+                "price":      { "type": "number",  "crypted": false, "default": 0 },
+                "unit":       { "type": "string",  "crypted": false, "default": "u" },
+                "tax":        { "type": "number",  "crypted": false, "default": 20 },
+
+                "description":       { "type": "string",  "crypted": false, "default": "" },
+                "quote_label":       { "type": "string",  "crypted": false, "default": "" },
+                "active":            { "type": "boolean", "crypted": false, "default": true },
+                
+                "is_recurring":      { "type": "boolean", "crypted": false, "default": false },
+                "recurrence":        { "type": "string",  "crypted": false, "default": "", "list": ["day", "week", "month", "year" ] },
+
+                "stripe_product_id": { "type": "string",  "crypted": false, "default": "" },
+                "stripe_price_id":   { "type": "string",  "crypted": false, "default": "" }
+            }
+        },
+        {
             "name": "product_internal",
             "collection": "products",
             "props":
@@ -308,6 +336,7 @@
             {
                 "model":           { "type": "string",  "crypted": false, "default": "project" },
                 "user_uuid":       { "type": "string",  "crypted": false, "default": "" },
+                "created_for":     { "type": "string",  "crypted": false, "default": "" },
                 "state":           { "type": "string",  "crypted": false, "default": "creation", "list":["creation", "estimation", "validation", "planification", "realisation", "finalisation"] },
 
                 "published":       { "type": "boolean", "crypted": false, "default": false },
@@ -326,7 +355,10 @@
                 "address_line_2":       { "type": "string",  "crypted": false, "default": "" },
                 "address_zip":          { "type": "string",  "crypted": false, "default": "" },
                 "address_city":         { "type": "string",  "crypted": false, "default": "" },
-                "address_country":      { "type": "string",  "crypted": false, "default": "" }
+                "address_country":      { "type": "string",  "crypted": false, "default": "" },
+
+                "archived":        { "type": "boolean",  "crypted": false, "default": false },
+                "uuid":            { "type": "string",  "crypted": false, "default": "" }
             }
         },
         {
@@ -337,31 +369,10 @@
                 "model":           { "type": "string",  "crypted": false, "default": "simulation" },
                 "project_id":      { "type": "string",  "crypted": false, "default": "" },
                 "user_uuid":       { "type": "string",  "crypted": false, "default": "" },
+                "created_for":     { "type": "string",  "crypted": false, "default": "" },
                 "simulation_name": { "type": "string",  "crypted": false, "default": "" },
-                "data":            { "type": "array",  "crypted": false, "default": [] }
-            }
-        },
-        {
-            "name": "product",
-            "collection": "products",
-            "props":
-            {
-                "model":             { "type": "string",  "crypted": false, "default": "product" },
-                "user_uuid":         { "type": "string",  "crypted": false, "default": "" },
-
-                "product_name":      { "type": "string",  "crypted": false, "default": "" },
-                "product_ref":       { "type": "string",  "crypted": false, "default": "" },
-                "description":       { "type": "string",  "crypted": false, "default": "" },
-                "active":            { "type": "boolean", "crypted": false, "default": false },
-                "type":              { "type": "string",  "crypted": false, "default": "", "list": ["physical", "digital", "ticket", "subscription"] },
-                "image_main":        { "type": "string",  "crypted": false, "default": "" },
-                
-                "price":             { "type": "number",  "crypted": false, "default": 1 },
-                "is_recurring":      { "type": "boolean", "crypted": false, "default": false },
-                "recurrence":        { "type": "string",  "crypted": false, "default": "", "list": ["day", "week", "month", "year" ] },
-
-                "stripe_product_id": { "type": "string",  "crypted": false, "default": "" },
-                "stripe_price_id":   { "type": "string",  "crypted": false, "default": "" }
+                "data":            { "type": "array",  "crypted": false, "default": [] },
+                "archived":        { "type": "boolean",  "crypted": false, "default": false }
             }
         },
         {
@@ -396,7 +407,9 @@
                 "model":              { "type": "string", "crypted": false, "default": "conversation" },
                 "subject":            { "type": "string", "crypted": false, "default": "" }, 
                 "from":              { "type": "string", "crypted": false, "default": "" },
-                "to":              { "type": "array", "crypted": false, "default": [] }
+                "to":              { "type": "array", "crypted": false, "default": [] },
+                "users":              { "type": "array", "crypted": false, "default": [] },
+                "admins":              { "type": "array", "crypted": false, "default": [] }
             }
         },
         {

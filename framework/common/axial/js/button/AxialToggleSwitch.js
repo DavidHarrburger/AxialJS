@@ -6,10 +6,10 @@ class AxialToggleSwitch extends AxialToggleButtonBase
 {
     /// vars
     /** @type { String } */
-    #unselectedLeft = "0";
+    #unselectedLeft = "translateX(0)";
 
     /** @type { String } */
-    #selectedLeft = "16px";
+    #selectedLeft = "translateX(14px)";
 
     /** @type { String } */
     #unselectedScale = "scale(0)";
@@ -29,7 +29,7 @@ class AxialToggleSwitch extends AxialToggleButtonBase
     #circle;
 
     /** @type { HTMLElement } */
-    #inner;
+    //#inner;
 
     constructor()
     {
@@ -50,20 +50,20 @@ class AxialToggleSwitch extends AxialToggleButtonBase
         if( name === "axial-theme" )
         {
             this.#themeColor = newValue;
-            if( this.#inner ) { this.#inner.style.backgroundColor = this.#themeColor; }
+            //if( this.#inner ) { this.#inner.style.backgroundColor = this.#themeColor; }
         }
 
         if( name === "axial-border" )
         {
             this.#borderColor = newValue;
-            if( this.#inner ) { this.#inner.style.color = this.#borderColor; }
+            //if( this.#inner ) { this.#inner.style.color = this.#borderColor; }
         }
     }
 
     _buildComponent()
     {
         this.#circle = this.shadowRoot.getElementById("circle");
-        this.#inner = this.shadowRoot.getElementById("inner");
+        //this.#inner = this.shadowRoot.getElementById("inner");
 
         if( this.#themeColor === "" )
         {
@@ -79,11 +79,11 @@ class AxialToggleSwitch extends AxialToggleButtonBase
         {
             if( this.selected === true )
             {
-                this.#circle.style.left = this.#selectedLeft;
+                this.#circle.style.transform = this.#selectedLeft;
             }
             else
             {
-                this.#circle.style.left = this.#unselectedLeft;
+                this.#circle.style.transform = this.#unselectedLeft;
             }
         }
 
@@ -96,6 +96,7 @@ class AxialToggleSwitch extends AxialToggleButtonBase
             this.style.backgroundColor = "#fff";
         }
 
+        /*
         if( this.#inner )
         {
             if( this.selected === true )
@@ -107,6 +108,7 @@ class AxialToggleSwitch extends AxialToggleButtonBase
                 this.#inner.style.transform = this.#unselectedScale;
             }
         }
+        */
     }
 }
 

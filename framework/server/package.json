@@ -10,22 +10,22 @@
   "author": "David Harrburger aka Daven Andreas",
   "license": "MIT",
   "dependencies": {
-    "@prelude.so/sdk": "^0.12.0",
-    "axios": "1.18.0",
+    "@prelude.so/sdk": "0.13.0",
+    "axios": "1.19.0",
     "cookie-parser": "1.4.7",
     "cors": "2.8.6",
     "dotenv": "17.4.2",
     "express": "5.2.1",
     "form-data": "4.0.6",
-    "fs-extra": "11.3.5",
+    "fs-extra": "11.4.0",
     "jsonwebtoken": "9.0.3",
-    "mongodb": "7.3.0",
+    "mongodb": "7.5.0",
     "multer": "2.2.0",
-    "nodemailer": "9.0.1",
+    "nodemailer": "9.0.5",
     "pdf-lib": "1.17.1",
     "qrcode": "1.5.4",
-    "stripe": "22.2.2",
+    "stripe": "22.5.0",
     "web-push": "3.6.7",
-    "ws": "8.21.0"
+    "ws": "8.21.3"
   }
 }

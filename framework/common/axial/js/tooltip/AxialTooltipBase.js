@@ -24,6 +24,9 @@ class AxialTooltipBase extends AxialComponentBase
     #offset = 4;
 
     /** @type { Number } */
+    #offsetBounds = 40;
+
+    /** @type { Number } */
     #initWidth = 0;
 
     /** @type { Number } */
@@ -53,31 +56,9 @@ class AxialTooltipBase extends AxialComponentBase
         this.classList.add("axial_tooltip_base");
         this.#boundTooltipTargetOverHandler = this.#tooltipTargetOverHandler.bind(this);
         this.#boundTooltipTargetOutHandler = this.#tooltipTargetOutHandler.bind(this);
+        this.#boundTooltipTargetClickHandler = this.#tooltipTargetClickHandler.bind(this);
         
         this.#boundTransitionEndHandler = this.#transitionEndHandler.bind(this);
-
-        /*
-        AxialTooltipManager.TOOLTIPS.add(this);
-
-        console.log(AxialTooltipManager.LAYER)
-
-        const tooltipLayer = AxialTooltipManager.LAYER;
-        console.log("tooltipLayer = " + tooltipLayer);
-        if( tooltipLayer && tooltipLayer.contains(this) === false )
-        {
-            tooltipLayer.appendChild(this) ;
-        }
-        */
-    }
-
-    addTooltip()
-    {
-        AxialTooltipManager.TOOLTIPS.add(this);
-        const tooltipLayer = AxialTooltipManager.LAYER;
-        if( tooltipLayer && tooltipLayer.contains(this) === false )
-        {
-            tooltipLayer.appendChild(this) ;
-        }
     }
 
     /**
@@ -105,7 +86,6 @@ class AxialTooltipBase extends AxialComponentBase
         this.#initWidth = initBounds.width;
         this.#initHeight = initBounds.height;
 
-        this.style.transform = "scale(0)";
         
         this.#layoutTooltip();
         this.#addTooltipHandlers();
@@ -124,7 +104,7 @@ class AxialTooltipBase extends AxialComponentBase
             this.#position = value;
         }
         
-        this.#layoutTooltip();
+        //this.#layoutTooltip();
     }
 
     get useTransitions() { return this.#useTransitions; }
@@ -202,12 +182,14 @@ class AxialTooltipBase extends AxialComponentBase
     {
         this.#target.addEventListener("pointerenter", this.#boundTooltipTargetOverHandler);
         this.#target.addEventListener("pointerleave", this.#boundTooltipTargetOutHandler);
+        this.#target.addEventListener("click", this.#boundTooltipTargetClickHandler);
     }
 
     #removeTooltipHandlers()
     {
         this.#target.removeEventListener("pointerenter", this.#boundTooltipTargetOverHandler);
         this.#target.removeEventListener("pointerleave", this.#boundTooltipTargetOutHandler);
+        this.#target.removeEventListener("click", this.#boundTooltipTargetClickHandler);
     }
 
     /**
@@ -215,7 +197,10 @@ class AxialTooltipBase extends AxialComponentBase
      */
     #tooltipTargetOverHandler( event )
     {
-        this.show();
+        if( event.pointerType === "mouse" )
+        {
+            this.show();
+        }
     }
 
     /**
@@ -223,7 +208,21 @@ class AxialTooltipBase extends AxialComponentBase
      */
     #tooltipTargetOutHandler( event )
     {
-        this.hide();
+        if( event.pointerType === "mouse" )
+        {
+            this.hide();
+        }
+    }
+
+    /**
+     * @param { PointerEvent } event 
+     */
+    #tooltipTargetClickHandler( event )
+    {
+        if( event.pointerType === "mouse" )
+        {
+            this.hide();
+        }
     }
 
     #layoutTooltip()
@@ -233,85 +232,299 @@ class AxialTooltipBase extends AxialComponentBase
         const tooltipBounds = this.getBoundingClientRect();
         const targetBounds = this.#target.getBoundingClientRect();
 
-        let tooltipX;
-        let tooltipY;
+        let tooltipX; let tox;
+        let tooltipY; let toy;
+
+        let ww = window.innerWidth;
+        let wh = window.innerHeight;
 
         switch( this.#position )
         {
             // bottom
             case "bottom-left":
-                tooltipY = targetBounds.bottom + this.#offset;
+                // x
                 tooltipX = targetBounds.left;
-                this.#transformOrigin = "left top";
+                tox = "left";
+                if( (tooltipX + this.#initWidth) > (ww - this.#offsetBounds) )
+                {
+                    tooltipX = targetBounds.right - this.#initWidth;
+                    tox = "right";
+                }
+                
+                // y
+                tooltipY = targetBounds.bottom + this.#offset;
+                toy = "top";
+                if( (tooltipY + this.#initHeight) > (wh - this.#offsetBounds) )
+                {
+                    tooltipY = targetBounds.top - this.#offset - this.#initHeight;
+                    toy = "bottom";
+                }
+                
+                this.#transformOrigin = `${tox} ${toy}`; //"left top";
             break;
 
             case "bottom-center":
-                tooltipY = targetBounds.bottom + this.#offset;
+                // x
                 tooltipX = targetBounds.left + (targetBounds.width / 2) - (this.#initWidth / 2);
-                this.#transformOrigin = "center top";
+                tox = "center";
+                if( tooltipX < this.#offsetBounds )
+                {
+                    tooltipX = targetBounds.left;
+                    tox = "left";
+                }
+                else if( (tooltipX + this.#initWidth) > (ww - this.#offsetBounds) )
+                {
+                    tooltipX = targetBounds.right - this.#initWidth;
+                    tox = "right";
+                }
+                
+                // y
+                tooltipY = targetBounds.bottom + this.#offset;
+                toy = "top";
+                if( (tooltipY + this.#initHeight) > (wh - this.#offsetBounds) )
+                {
+                    tooltipY = targetBounds.top - this.#offset - this.#initHeight;
+                    toy = "bottom";
+                }
+                
+                this.#transformOrigin = `${tox} ${toy}`; //"center top";
             break;
 
             case "bottom-right":
-                tooltipY = targetBounds.bottom + this.#offset;
+                // x
                 tooltipX = targetBounds.right - this.#initWidth;
-                this.#transformOrigin = "right top";
+                tox = "right";
+                if( tooltipX < this.#offsetBounds )
+                {
+                    tooltipX = targetBounds.left;
+                    tox = "left";
+                }
+                
+                // y
+                tooltipY = targetBounds.bottom + this.#offset;
+                toy = "top";
+                if( (tooltipY + this.#initHeight) > (wh - this.#offsetBounds) )
+                {
+                    tooltipY = targetBounds.top - this.#offset - this.#initHeight;
+                    toy = "bottom";
+                }
+                
+                this.#transformOrigin = `${tox} ${toy}`; //"right top";
             break;
 
             // right
             case "right-top":
+                // x
                 tooltipX = targetBounds.right + this.#offset;
+                tox = "left";
+                if( (tooltipX + this.#initWidth) > ( ww - this.#offsetBounds) )
+                {
+                    tooltipX = targetBounds.left - this.#offset - this.#initWidth;
+                    tox = "right";
+                }
+
+                // y
                 tooltipY = targetBounds.top;
-                this.#transformOrigin = "left top";
+                toy = "top";
+                if( (tooltipY + this.#initHeight) > (wh - this.#offsetBounds) )
+                {
+                    tooltipY = targetBounds.bottom - this.#initHeight;
+                    toy = "bottom";
+                }
+
+                this.#transformOrigin = `${tox} ${toy}`; // "left top";
             break;
 
             case "right-center":
                 tooltipX = targetBounds.right + this.#offset;
+                tox = "left";
+                if( (tooltipX + this.#initWidth) > ( ww - this.#offsetBounds) )
+                {
+                    tooltipX = targetBounds.left - this.#offset - this.#initWidth;
+                    tox = "right";
+                }
+
+                // y
                 tooltipY = targetBounds.top + (targetBounds.height / 2) - (this.#initHeight / 2);
-                this.#transformOrigin = "left center";
+                toy = "center";
+                if( tooltipY < this.#offsetBounds )
+                {
+                    tooltipY = targetBounds.top;
+                    toy = "top";
+                }
+                else if( (tooltipY + this.#initHeight) > (wh - this.#offsetBounds) )
+                {
+                    tooltipY = targetBounds.bottom - this.#initHeight;
+                    toy = "bottom";
+                }
+
+                this.#transformOrigin = `${tox} ${toy}`; //"left center";
             break;
 
             case "right-bottom":
+                // x
                 tooltipX = targetBounds.right + this.#offset;
+                tox = "left";
+                if( (tooltipX + this.#initWidth) > ( ww - this.#offsetBounds) )
+                {
+                    tooltipX = targetBounds.left - this.#offset - this.#initWidth;
+                    tox = "right";
+                }
+
+                // y
                 tooltipY = targetBounds.bottom - this.#initHeight;
-                this.#transformOrigin = "left bottom";
+                toy = "bottom";
+                if( tooltipY < this.#offsetBounds )
+                {
+                    tooltipY = targetBounds.top;
+                    toy = "top";
+                }
+
+                this.#transformOrigin = `${tox} ${toy}`; // "left bottom";
             break;
 
             // top
             case "top-left":
-                tooltipY = targetBounds.top - this.#offset - this.#initHeight;
+                // x
                 tooltipX = targetBounds.left;
-                this.#transformOrigin = "left bottom";
+                tox = "left";
+                if( (tooltipX + this.#initWidth) > (ww - this.#offsetBounds) )
+                {
+                    tooltipX = targetBounds.right - this.#initWidth;
+                    tox = "right";
+                }
+
+                // y
+                tooltipY = targetBounds.top - this.#offset - this.#initHeight;
+                toy = "bottom";
+                if( tooltipY < this.#offsetBounds )
+                {
+                    tooltipY = targetBounds.bottom + this.#offset;
+                    toy = "top";
+                }
+                
+                this.#transformOrigin = `${tox} ${toy}`; // "left bottom";
             break;
 
             case "top-center":
-                tooltipY = targetBounds.top - this.#offset - this.#initHeight;
+                // x
                 tooltipX = targetBounds.left + (targetBounds.width / 2) - (this.#initWidth / 2);
-                this.#transformOrigin = "center bottom";
+                tox = "center";
+                if( tooltipX < this.#offsetBounds )
+                {
+                    tooltipX = targetBounds.left;
+                    tox = "left";
+                }
+                else if( (tooltipX + this.#initWidth) > (ww - this.#offsetBounds) )
+                {
+                    tooltipX = targetBounds.right - this.#initWidth;
+                    tox = "right";
+                }
+
+                // y
+                tooltipY = targetBounds.top - this.#offset - this.#initHeight;
+                toy = "bottom";
+                if( tooltipY < this.#offsetBounds )
+                {
+                    tooltipY = targetBounds.bottom + this.#offset;
+                    toy = "top";
+                }
+                
+                this.#transformOrigin = `${tox} ${toy}`; // "center bottom";
             break;
 
             case "top-right":
-                tooltipY = targetBounds.top - this.#offset - this.#initHeight;
+                // x
                 tooltipX = targetBounds.right - this.#initWidth;
-                this.#transformOrigin = "right bottom";
+                tox = "right";
+                if( tooltipX < this.#offsetBounds )
+                {
+                    tooltipX = targetBounds.left;
+                    tox = "left";
+                }
+
+                // y
+                tooltipY = targetBounds.top - this.#offset - this.#initHeight;
+                toy = "bottom";
+                if( tooltipY < this.#offsetBounds )
+                {
+                    tooltipY = targetBounds.bottom + this.#offset;
+                    toy = "top";
+                }
+                
+                this.#transformOrigin = `${tox} ${toy}`; // "right bottom";
             break;
 
             // left
             case "left-top":
+                // x
                 tooltipX = targetBounds.left - this.#offset - this.#initWidth;
+                tox = "right";
+                if( tooltipX < this.#offsetBounds )
+                {
+                    tooltipX = targetBounds.right + this.#offset;
+                    tox = "left";
+                }
+
+                // y
                 tooltipY = targetBounds.top;
-                this.#transformOrigin = "right top";
+                toy = "top";
+                if( (tooltipY + this.#initHeight) > (wh - this.#offsetBounds) )
+                {
+                    tooltipY = targetBounds.bottom - this.#initHeight;
+                    toy = "bottom";
+                }
+
+                this.#transformOrigin = `${tox} ${toy}`; // "right top";
             break;
 
             case "left-center":
+                // x
                 tooltipX = targetBounds.left - this.#offset - this.#initWidth;
+                tox = "right";
+                if( tooltipX < this.#offsetBounds )
+                {
+                    tooltipX = targetBounds.right + this.#offset;
+                    tox = "left";
+                }
+
+                // y
                 tooltipY = targetBounds.top + (targetBounds.height / 2) - (this.#initHeight / 2);
-                this.#transformOrigin = "right center";
+                toy = "center";
+                if( tooltipY < this.#offsetBounds )
+                {
+                    tooltipY = targetBounds.top;
+                    toy = "top";
+                }
+                else if( (tooltipY + this.#initHeight) > (wh - this.#offsetBounds) )
+                {
+                    tooltipY = targetBounds.bottom - this.#initHeight;
+                    toy = "bottom";
+                }
+
+                this.#transformOrigin = `${tox} ${toy}`; // "right center";
             break;
 
             case "left-bottom":
+                // x
                 tooltipX = targetBounds.left - this.#offset - this.#initWidth;
+                tox = "right";
+                if( tooltipX < this.#offsetBounds )
+                {
+                    tooltipX = targetBounds.right + this.#offset;
+                    tox = "left";
+                }
+
+                // y
                 tooltipY = targetBounds.bottom - this.#initHeight;
-                this.#transformOrigin = "right bottom";
+                toy = "bottom";
+                if( tooltipY < this.#offsetBounds )
+                {
+                    tooltipY = targetBounds.top;
+                    toy = "top";
+                }
+
+                this.#transformOrigin = `${tox} ${toy}`; // "right bottom";
             break;
         }
 
@@ -320,18 +533,7 @@ class AxialTooltipBase extends AxialComponentBase
 
         if( this.#useTransitions === true )
         {
-            /*
-            const transformDirection = this.#position.split("-")[0];
-            switch( transformDirection )
-            {
-                case "bottom" : this.#transform = "translate(0%, 20%)";  break;
-                case "top" :    this.#transform = "translate(0%, -20%)"; break;
-                case "left" :   this.#transform = "translate(-20%, 0%)"; break;
-                case "right" :  this.#transform = "translate(20%, 0%)";  break;
-                default:        this.#transform = "translate(0%, 0%)";   break;
-            }
-            */
-
+            this.style.transform = "scale(0)";
             this.style.opacity = "0";
             this.style.transformOrigin = this.#transformOrigin;
         }
