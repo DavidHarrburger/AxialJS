@@ -43,11 +43,13 @@ class AxialSimulatorLineCheck extends AxialSimulatorLine
         let selectedToggles = [];
         for( const t of toggles )
         {
-            if( t.selected ) { selectedToggles.push(t.data); }
+            if( t.selected == true ) { selectedToggles.push(t.data); }
         }
-
+        
         let obj =
         {
+            key: this.line.key,
+            wasAdded: this.useTrash,
             selected: selectedToggles
         };
 
@@ -58,34 +60,29 @@ class AxialSimulatorLineCheck extends AxialSimulatorLine
     {
         super._buildLine();
 
-        const cvs = this.line?.check_values
-        if( cvs && Array.isArray( cvs ) )
+        const keys = this.line.articles;
+        const len = keys.length;
+        for( let i = 0; i < len; i++ )
         {
-            for( const cv of cvs )
-            {
-                const check = new AxialToggleCheck();
-                check.addEventListener("toggleChanged", this.#boundToggleHandler);
-                check.text = cv.text;
-                check.data = cv.name;
-                this.#group.appendChild(check);
-            }
+            const check = new AxialToggleCheck();
+            check.addEventListener("toggleChanged", this.#boundToggleHandler);
+            check.text = "";//this.line.nameOverrides[i] ?? "";
+            check.data = keys[i];
+            this.#group.appendChild(check);
         }
     }
 
     _onSavedData()
     {
-        console.log("radio saved data", this.savedData);
-        if( this.savedData && this.savedData.selected )
+        //console.warn("CHECKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK", this.savedData);
+        if( this.savedData != undefined && this.savedData.selected != undefined )
         {
             const checks = Array.from( this.#group.children );
-            for( const toggle of checks )
+            const check = checks[0];
+            if( check && this.savedData.selected.length >0)
             {
-                console.log( toggle)
-                if( this.savedData.selected.indexOf( toggle.data ) >= 0  )
-                {
-                    toggle.selected = true;
-                    this.isCompleted = true;
-                }
+                check.selected = true;
+                this.isCompleted = true;
             }
         }
     }
@@ -97,6 +94,12 @@ class AxialSimulatorLineCheck extends AxialSimulatorLine
     _setEnabled( value )
     {
         super._setEnabled( value );
+        const checks = Array.from( this.#group.children );
+        for( const toggle of checks )
+         {
+            toggle.enabled = value;
+        }
+                
     }
 
     /**

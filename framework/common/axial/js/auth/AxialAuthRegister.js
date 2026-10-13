@@ -206,7 +206,7 @@ class AxialAuthRegister extends AxialComponentBase
             {
                 first_name: this.#firstName.value,
                 last_name: this.#lastName.value,
-                email: this.#email.value,
+                email: this.#email.value.toLowerCase(),
                 password: this.#password.value
             };
             const response = await fetch( this.#path, { method: "POST", body: JSON.stringify(infos), headers: { "Content-Type":"application/json", "Cache-Control":"no-cache" } } );

@@ -1,14 +1,24 @@
 <!-- AxialQuoteHeader -->
 <template id="axial-quote-header-template">
     <link rel="stylesheet" href="./styles.css">
+    <div id="main" class="axial_quote_header-main">
+        <div id="content" class="axial_quote_header-content">
+            <img id="logo" alt="logo" class="axial_quote_header-image">
+            <div id="address" class="axial_quote_header-address"></div>
+        </div>
+    </div>
     <div id="holder" class="axial_quote_header-holder">
-        <div class="axial_quote_item-num">N°</div>
-        <div class="axial_quote_item-designation">Désignation</div>
-        <div class="axial_quote_item-quantity">Qté</div>
-        <div class="axial_quote_item-unit">U</div>
-        <div class="axial_quote_item-price_unit">P.U.H.T.</div>
-        <div class="axial_quote_item-price_total">Total H.T.</div>
-        <div class="axial_quote_item-tax">T.V.A.</div>
-        <div class="axial_quote_item-price_total_tax">Total T.T.C.</div>
+        <div class="axial_quote_header-left">
+            <div class="axial_quote_item-num">N°</div>
+            <div class="axial_quote_item-designation">Désignation</div>
+        </div>
+        <div class="axial_quote_header-right">
+            <div class="axial_quote_item-quantity">Qté</div>
+            <div class="axial_quote_item-unit">U</div>
+            <div class="axial_quote_item-price_unit">P.U.H.T.</div>
+            <div class="axial_quote_item-price_total">Total H.T.</div>
+            <div class="axial_quote_item-tax">T.V.A.</div>
+            <div class="axial_quote_item-price_total_tax">Total T.T.C.</div>
+        </div>
     </div>
 </template>

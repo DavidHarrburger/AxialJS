@@ -5,12 +5,17 @@
         <div class="axial_module_view-header">
             <div id="title" class="axial_module_view-title">Accueil</div>
             <div class="axial_spacer"></div>
+            <div slot="axial-card">Un problème ? <a href="../bug-reports" style="color:var(--colAccent); font-weight: 600; text-decoration-line: underline;">Rapportez-le</a>.</div>
         </div>
         <div class="axial_module_view-content axial_module_view-content-transparent">
             <slot id="contentSlot" name="axial-content"></slot>
-            <div class="axial_module_home_view-title">Bienvenue</div>
-            <p class="axial_module_home_view-infos">Nous attaquons les tests !</p>
-            <axial-notification-box id="notificationBox"></axial-notification-box>
+            <test-component></test-component>
+            <sub-test-component></sub-test-component>
+            <axial-card-displayer id="cardDisplayer">
+                <axial-card-welcome-user slot="axial-grid" axial-grid-row="1 / span 3" axial-grid-col="1 / span 4">
+                </axial-card-welcome-user>
+                <axial-card-booking slot="axial-grid" axial-grid-row="1" axial-grid-col="5 / span 2"></axial-card-booking>
+            </axial-card-displayer>
         </div>
     </div>
 </template>

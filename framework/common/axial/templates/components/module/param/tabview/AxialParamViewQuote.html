@@ -4,14 +4,23 @@
     <div id="holder" class="axial_view-holder">
         <slot id="slot" name="axial-content"></slot>
         <div class="axial_module_globals-grid">
-            <axial-card-base axial-grid-col="1 / span 2" axial-grid-row="1">
-                <axial-quote-param-legal id="quoteLegal" axial-name="estimation_legal"></axial-quote-param-legal>
-                
-            </axial-card-base>
-            <axial-card-base axial-grid-col="1" axial-grid-row="2">
-                <axial-quote-param-image id="quoteImage" axial-name="estimation_image"></axial-quote-param-image>
-            </axial-card-base>
-        </div>
+
+            <axial-card axial-grid-col="1 / span 2" axial-grid-row="1" axial-title="Mentions légales">
+                <axial-quote-param-legal slot="axial-card" id="quoteLegal" axial-name="estimation_legal"></axial-quote-param-legal>
+            </axial-card>
+            
+            <axial-card axial-grid-col="1" axial-grid-row="2" axial-title="Image">
+                <axial-quote-param-image slot="axial-card" id="quoteImage" axial-name="estimation_image"></axial-quote-param-image>
+            </axial-card>
+            
+            <axial-card axial-grid-col="2" axial-grid-row="2" axial-title="Emails de destination">
+                <axial-quote-param-mail slot="axial-card" id="quoteMail" axial-name="estimation_mail"></axial-quote-param-mail>
+            </axial-card>
         
+            <axial-card axial-grid-col="3 / span 2" axial-grid-row="1 / span 2" axial-title="Adresse à faire figurer sur l'estimation">
+                <axial-quote-param-address slot="axial-card" id="quoteAddress" axial-name="estimation_address"></axial-quote-param-address>
+            </axial-card>
+
+        </div>
     </div>
 </template>

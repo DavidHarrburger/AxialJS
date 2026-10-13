@@ -2,7 +2,12 @@
 <template id="axial-simulator-line-radio-template">
     <link rel="stylesheet" href="./styles.css">
     <div id="holder" class="axial_simulator_line-holder">
-        <div id="label" class="axial_simulator_line-label"></div>
+        <div class="axial_simulator_line-left">
+            <div id="label" class="axial_simulator_line-label"></div>
+            <div id="info" class="axial_simulator_line-info">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info preview-icon"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            </div>
+        </div>
         <axial-toggle-button-group id="group" class="axial_simulator_line_radio-group"></axial-toggle-button-group>
     </div>
 </template>

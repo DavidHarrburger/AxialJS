@@ -61,7 +61,7 @@ class AxialSimulatorLineNum extends AxialSimulatorLine
     {
         const n = isNaN( this.#numInput.valueAsNumber ) === true ? 0 : this.#numInput.valueAsNumber;
         let tempCompleted = false;
-        if( n >  0 )
+        if( n >=  0 )
         {
             tempCompleted = true;
         }
@@ -73,6 +73,8 @@ class AxialSimulatorLineNum extends AxialSimulatorLine
     {
         let obj =
         {
+            key: this.line.key,
+            wasAdded: this.useTrash,
             num: isNaN( this.#numInput.valueAsNumber ) === true ? 0 : this.#numInput.valueAsNumber
         }
         return obj;
@@ -80,8 +82,10 @@ class AxialSimulatorLineNum extends AxialSimulatorLine
 
     _onSavedData()
     {
-        if( this.savedData && this.savedData.num && this.#numInput && this.savedData.num > 0 )
+        //console.log("saved data NUM, ", this.savedData )
+        if( this.savedData && this.savedData.num != undefined && this.#numInput && this.savedData.num >= 0 )
         {
+            //console.log("num ok" );
             this.#numInput.valueAsNumber = this.savedData.num;
             this.isCompleted = true;
         }

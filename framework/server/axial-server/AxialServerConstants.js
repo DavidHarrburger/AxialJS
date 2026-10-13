@@ -52,13 +52,17 @@ export const API_PRIVATE_PATHES =
     { path: "/api/data/archive", verification: true },
 
     { path: "/api/user/get", verification: true },
+    { path: "/api/user/info", verification: true },
     { path: "/api/user/list", verification: true },
     { path: "/api/user/create", verification: true },
     { path: "/api/user/update", verification: true },
 
+    { path: "/api/search/list", verification: true },
+
     { path: "/api/push/subscribe", verification: true },
-    { path: "/api/user/send", verification: true },
-    { path: "/api/user/vapid", verification: true },
+    { path: "/api/push/unsubscribe", verification: true },
+    { path: "/api/push/send", verification: true },
+    { path: "/api/push/vapid", verification: true },
 
     { path: "/api/onboarding/contact", verification: true },
 
@@ -72,11 +76,19 @@ export const API_PRIVATE_PATHES =
     { path: "/api/params/weektime/set", verification: true },
 
     { path: "/api/params/estimation/legal/set", verification: true },
-    { path: "/api/params/estimation/legal/get", verification: true },
+    //{ path: "/api/params/estimation/legal/get", verification: true },
+
+    { path: "/api/params/estimation/mail/set", verification: true },
+    //{ path: "/api/params/estimation/mail/get", verification: true },
+    
     { path: "/api/params/estimation/image/set", verification: true },
-    { path: "/api/params/estimation/image/get", verification: true },
+    //{ path: "/api/params/estimation/image/get", verification: true },
+
+    { path: "/api/params/estimation/address/set", verification: true },
+    //{ path: "/api/params/estimation/address/get", verification: true },
+    
     { path: "/api/params/company/timeshift/set", verification: true },
-    { path: "/api/params/company/timeshift/get", verification: true },
+    //{ path: "/api/params/company/timeshift/get", verification: true },
 
     { path: "/api/services/qrcode", verification: true },
 
@@ -104,6 +116,17 @@ export const API_PRIVATE_PATHES =
     { path: "/api/projects/create", verification: true },
     { path: "/api/projects/get", verification: true },
     { path: "/api/projects/update", verification: true },
+    { path: "/api/projects/has", verification: true },
+
+    { path: "/api/booking/get", verification: true },
+    { path: "/api/booking/data", verification: true },
+    { path: "/api/booking/create", verification: true },
+    { path: "/api/booking/update", verification: true },
+    { path: "/api/booking/list", verification: true },
+    { path: "/api/booking/cancel", verification: true },
+
+    { path: "/api/booking/param/set", verification: true },
+    { path: "/api/booking/param/get", verification: true },
 
     { path: "/api/simulation/get", verification: true },
     { path: "/api/simulation/update", verification: true },

@@ -87,6 +87,9 @@ class AxialAuthResetter extends AxialComponentBase
     #boundInputHandler;
 
     /** @type { Function } */
+    #boundKeyDownHandler;
+
+    /** @type { Function } */
     #boundGenerateHandler;
 
     /** @type { Function } */
@@ -119,6 +122,7 @@ class AxialAuthResetter extends AxialComponentBase
 
         this.#boundPasteHandler = this.#pasteHandler.bind(this);
         this.#boundInputHandler = this.#inputHandler.bind(this);
+        this.#boundKeyDownHandler = this.#keyDownHandler.bind(this);
 
         this.#boundPasswordFocusOutHandler = this.#passwordFocusOutHandler.bind(this);
         this.#boundPasswordInputHandler = this.#passwordInputHandler.bind(this);
@@ -127,8 +131,6 @@ class AxialAuthResetter extends AxialComponentBase
     _buildComponent()
     {
         super._buildComponent();
-
-        
 
         this.#emailInput = this.shadowRoot.getElementById("emailInput");
         this.#password = this.shadowRoot.getElementById("password");
@@ -162,6 +164,7 @@ class AxialAuthResetter extends AxialComponentBase
             {
                 input.addEventListener("paste", this.#boundPasteHandler);
                 input.addEventListener("input", this.#boundInputHandler);
+                input.addEventListener("keydown", this.#boundKeyDownHandler);
             }
         }
 
@@ -191,7 +194,7 @@ class AxialAuthResetter extends AxialComponentBase
     {
         if( this.#emailInput.validity.valid === true )
         {
-            this.#checkEmail(this.#emailInput.value);
+            this.#checkEmail(this.#emailInput.value, true);
         }
         else
         {
@@ -199,25 +202,34 @@ class AxialAuthResetter extends AxialComponentBase
         }
     }
 
-    async #checkEmail( email )
+    /**
+     * 
+     * @param { String } email 
+     * @param { Boolean } displayMessage 
+     */
+    async #checkEmail( email, displayMessage = false )
     {
         try
         {
-            const infos = { email: email };
+            const lowerEmail = email.toLowerCase();
+            const infos = { email: lowerEmail };
             const json = await FetchUtils.POST( this.#emailCheckPath, infos );
             console.log(json);
             if( json && json.status && json.status ==="ok" && json.exists && json.exists === true )
             {
-                if( this.#emailInput.value !== email )
+                if( this.#emailInput.value !== lowerEmail )
                 {
-                    this.#emailInput.value = email;
+                    this.#emailInput.value = lowerEmail;
                 }
                 this.#sendCodeButton.enabled = true;
             }
             else
             {
-                this.#message.innerHTML = "Cet email n'est pas enregistré. Vérifiez le mail entré ci-dessous."
-                this.#messageContainer.open();
+                if( displayMessage === true )
+                {
+                    this.#message.innerHTML = "Cet email n'est pas enregistré. Vérifiez le mail entré ci-dessous."
+                    this.#messageContainer.open();
+                }
             }
         }
         catch(err)
@@ -240,7 +252,7 @@ class AxialAuthResetter extends AxialComponentBase
     {
         try
         {
-            const infos = { email: this.#emailInput.value }
+            const infos = { email: this.#emailInput.value.toLowerCase() }
             const json = await FetchUtils.POST( this.#passwordRequestPath, infos );
             console.log(json);
             if( json.status && json.status === "ok" )
@@ -290,6 +302,32 @@ class AxialAuthResetter extends AxialComponentBase
             }
         }
         this.#checkNumAndPass();
+    }
+
+    /**
+     * 
+     * @param { KeyboardEvent } event 
+     */
+    #keyDownHandler( event )
+    {
+        if( event.key === "Backspace" || event.key === "ArrowLeft" || event.key === "ArrowRight" )
+        {
+            const input = event.target;
+            const index = this.#inputs.indexOf(input);
+            if( (event.key === "Backspace" || event.key === "ArrowLeft") && index >= 1 )
+            {
+                const newInput = this.#inputs[index-1];
+                newInput.select();
+                newInput.focus();
+                
+            }
+            else if( ( event.key === "ArrowRight" ) && index < this.#inputs.length-1 )
+            {
+                const newInput = this.#inputs[index+1];
+                newInput.select();
+                newInput.focus();
+            }
+        }
     }
 
     /**
@@ -396,7 +434,7 @@ class AxialAuthResetter extends AxialComponentBase
                 const input = this.#inputs[i];
                 tempCode += input.value;
             }
-            const email = this.#emailInput.value;
+            const email = this.#emailInput.value.toLowerCase();
             const newPass = this.#password.value;
 
             const infos =
@@ -414,7 +452,7 @@ class AxialAuthResetter extends AxialComponentBase
 
                 if( json.status === "ok" )
                 {
-
+                    window.location.href = window.location.origin;
                 }
                 else
                 {
@@ -425,7 +463,7 @@ class AxialAuthResetter extends AxialComponentBase
         }
         catch(err)
         {
-            
+            console.log( err );
         }
         finally
         {

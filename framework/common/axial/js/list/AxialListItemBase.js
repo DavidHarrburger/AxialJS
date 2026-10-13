@@ -7,7 +7,7 @@ class AxialListItemBase extends AxialServiceComponentBase
     constructor()
     {
         super();
-        this.classList.add("axial_list_item");
+        //this.classList.add("axial_list_item");
     }
 }
 

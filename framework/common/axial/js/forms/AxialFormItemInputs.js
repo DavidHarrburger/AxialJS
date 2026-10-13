@@ -50,12 +50,17 @@ class AxialFormItemInputs extends AxialFormItem
                 }
                 else
                 {
-                    const possibleInputs = element.getElementsByTagName("input");
+                    
+                    const inputs = Array.from( element.getElementsByTagName("input") );
+                    const areas = Array.from( element.getElementsByTagName("textarea") );
+                    const selects = Array.from( element.getElementsByTagName("select") );
+
+                    const possibleInputs = new Array().concat(inputs).concat(areas).concat(selects);
                     // BUGGY HERE -> miss the textarea and select elements
                     for( const possibleInput of possibleInputs )
                     {
                         possibleInput.addEventListener("focusout", this.#boundFocusOutHandler);
-                        possibleInput.value = ""; // hack the browser
+                        //possibleInput.value = ""; // hack the browser
                         this.#inputs.push( possibleInput );
                     }
                 }
@@ -69,6 +74,7 @@ class AxialFormItemInputs extends AxialFormItem
         let finalValid = true;
         for( const input of this.#inputs )
         {
+            //console.log(input);
             //console.log(input.validity.valid);
             if( input.validity.valid === false )
             {
@@ -91,7 +97,6 @@ class AxialFormItemInputs extends AxialFormItem
             const inputValue =  input.type === "number" ? input.valueAsNumber : input.value;
             itemObject.value.push( { field: input.name, value: inputValue } );
         }
-
         return itemObject;
     }
 
@@ -107,15 +112,6 @@ class AxialFormItemInputs extends AxialFormItem
      */
     #fillItem( object )
     {
-        /*
-        if( object === undefined )
-        {
-            return; // KEEP TO TRACK ERRORS
-        }
-        */
-        //console.log("#fill item inputs");
-        //console.log(object);
-
         for( const input of this.#inputs )
         {
             const name = input.name;
@@ -127,7 +123,6 @@ class AxialFormItemInputs extends AxialFormItem
             else
             {
                 const fillObject = ObjectUtils.getObjectByField( object, "field", name);
-                console.log( fillObject );
                 if( fillObject )
                 {
                     input.value = fillObject.value;

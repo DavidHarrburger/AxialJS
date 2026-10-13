@@ -1,0 +1,42 @@
+<!-- AxialBookingPanelUser -->
+<template id="axial-booking-panel-user-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="requestState" class="axial_booking_panel-request">
+        <div class="axial_booking_panel-header">Vos informations</div>
+        <div class="axial_booking_panel-divider">Date et heure du rendez-vous</div>
+        <div class="axial_booking_panel-label">Cliquez sur une cellule dans l'agenda ci-contre.</div>
+        <div id="datetime" class="axial_booking_panel-datetime"></div>
+        <div class="axial_booking_panel-divider">Lieu du rendez-vous</div>
+        <div class="axial_booking_panel-label">Prenez bien soin de vérifier l'adresse que vous nous communiquez.</div>
+        <div class="axial_booking_panel-row">
+            <div class="axial_booking_panel-item">
+                <label for="address" class="axial_booking_panel-label">Adresse</label>
+                <input id="address" name="address" required autocomplete="address-line1" minlength="8" maxlength="256">
+            </div>
+        </div>
+        <div class="axial_booking_panel-row">
+            <div class="axial_booking_panel-item">
+                <label for="zip" class="axial_booking_panel-label">Code postal</label>
+                <input id="zip" required autocomplete="postal-code" minlength="4" maxlength="5">
+            </div>
+            <div class="axial_booking_panel-item">
+                <label for="city" class="axial_booking_panel-label">Ville</label>
+                <input id="city" required autocomplete="address-level2" minlength="3" maxlength="64">
+            </div>
+        </div>
+        <div class="axial_booking_panel-row">
+            <div class="axial_booking_panel-item">
+                <label for="accessMessage" class="axial_booking_panel-label">Précisions</label>
+                <textarea id="accessMessage" placeholder="N'hésitez pas à nous laisser un petit mot !"></textarea>
+            </div>
+        </div>
+        <!--<div class="axial_spacer"></div>-->
+        <axial-service-button id="saveButton" axial-text="Confirmer le RDV"></axial-service-button>
+    </div>
+    <div id="confirmedState" class="axial_booking_panel-confirmed">
+        <div class="axial_booking_panel-header">Votre rendez-vous</div>
+        <div class="axial_booking_panel-label">Merci d'avoir pris rendez-vous avec nous !</div>
+        <div id="datetimeConfirmed" class="axial_booking_panel-booking_confirmed"></div>
+        <div class="axial_booking_panel-label"></div>
+    </div>
+</template>

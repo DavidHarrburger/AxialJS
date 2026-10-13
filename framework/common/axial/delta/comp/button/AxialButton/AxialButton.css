@@ -1,0 +1,22 @@
+.background
+{
+    background-color: #000;
+}
+.foreground
+{
+    background-color: rgba(255, 255, 255, 0.5);
+}
+.content
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.label
+{
+    font-weight: 600;
+    color: #fff;
+    font-size: 14px;
+}

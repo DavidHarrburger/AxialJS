@@ -77,8 +77,6 @@ class AxialSimulator extends AxialComponentBase
 
         this.#boundStepCreateHandler = this.#stepCreateHandler.bind(this);
 
-        //this.#boundProjectNameEdited = this.#projectNameEdited.bind(this);
-        //this.#boundProjectNameChanged = this.#projectNameChanged.bind(this);
         this.#boundProjectSaveHandler = this.#projectSaveHandler.bind(this);
         this.#boundAxialUserReadyHandler = this.#axialUserReadyHandler.bind(this);
         window.addEventListener( "axialUserReady", this.#boundAxialUserReadyHandler );
@@ -89,10 +87,6 @@ class AxialSimulator extends AxialComponentBase
         if( this.#simulators === undefined )
         {
             this.#fetchSimulators();
-        }
-        else
-        {
-            // reinitView();
         }
     }
 
@@ -108,10 +102,6 @@ class AxialSimulator extends AxialComponentBase
         {
             step.addEventListener("stepNext", this.#boundNextStepHandler);
             step.addEventListener("stepPrevious", this.#boundPreviousStepHandler);
-
-            //step.addEventListener("projectNameEdited", this.#boundProjectNameEdited);
-            //step.addEventListener("projectNameChanged", this.#boundProjectNameChanged);
-
             step.addEventListener("projectSave", this.#boundProjectSaveHandler);
         }
 
@@ -119,17 +109,6 @@ class AxialSimulator extends AxialComponentBase
         {
             this.#steps[0].style.display = "block";
         }
-
-        /*
-        if( this.#simulators === undefined )
-        {
-            this.#fetchSimulators();
-        }
-        else
-        {
-            // reinitView();
-        }
-        */
     }
 
     async #fetchSimulators()
@@ -255,21 +234,7 @@ class AxialSimulator extends AxialComponentBase
             this.#holder.insertBefore(simulatorStep, lastStep);
             this.#steps.splice( (lastStepIndex), 0, simulatorStep );
         }
-
         console.log(this.#steps);
-        /*
-        const currentStep = this.#steps[0];
-        currentStep.style.display = "none";
-        
-        
-        const nextStep = this.#steps[1];
-        nextStep.style.display = "block";
-        if( nextStep.previousButton )
-        {
-            nextStep.previousButton.remove();
-            //nextStep.nextButton.style.width = "100%";
-        }
-        */
     }
 
     /**

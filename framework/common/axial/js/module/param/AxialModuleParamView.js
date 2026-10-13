@@ -50,7 +50,7 @@ class AxialModuleParamView extends AxialModuleView
         const cv = this.#tabViewer.viewer.currentView;
         console.log( cv.holder );
         if( cv.holder === undefined ) { return; }
-        const cards = cv.holder.getElementsByTagName("axial-card-base");
+        const cards = cv.holder.getElementsByTagName("axial-card");
         console.log( cards );
         for( const card of cards )
         {

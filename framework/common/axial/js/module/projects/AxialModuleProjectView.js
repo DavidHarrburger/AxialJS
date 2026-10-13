@@ -93,7 +93,7 @@ class AxialModuleProjectView extends AxialModuleView
         this.#list = this.shadowRoot.getElementById("list");
         this.#list.itemClass = AxialModuleProjectListItem;
         this.#list.searchInput = this.#searchInput;
-        this.#list.searchDataKeys.add("project_name");
+        this.#list.searchDataKeys.add("simulation_name");
         this.#list.addEventListener("listChanged", this.#boundListChangedHandler);
 
         this.#addButton = this.shadowRoot.getElementById("addButton");
@@ -105,6 +105,8 @@ class AxialModuleProjectView extends AxialModuleView
             this.#createProjectOverlay.addEventListener("projectCreated", this.#boundProjectCreatedHandler);
             this.#createProjectOverlay.addEventListener("projectError", this.#boundProjectErrorHandler);
         }
+
+        this.overlayId = "projectViewOverlay";
     }
 
     _prepareGetData()
@@ -119,6 +121,11 @@ class AxialModuleProjectView extends AxialModuleView
 
     _onGetResponse()
     {
+        if( this.getData == undefined )
+        {
+            window.AXIAL.notify("Une erreur sur le réseau s'est produite. Veuillez réessayer ultérieurement");
+            return;
+        }
         this.#projects = this.getData.content === null ? [] : this.getData.content;
 
         if( this.#projects.length === 0 ) { console.warn("display no project screen"); }

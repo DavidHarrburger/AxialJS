@@ -34,6 +34,9 @@ class AxialMessaging extends AxialComponentBase
     /** @type { Boolean } */
     #isTyping = false;
 
+    /** @type { Number } */
+    #scrollDownTimeoutId;
+
     /** @type { String } */
     #userId;
 
@@ -138,6 +141,9 @@ class AxialMessaging extends AxialComponentBase
     /** @type { Function } */
     #boundStartHandler;
 
+    /** @type { Function } */
+    #boundScrollDownTimeoutHandler;
+
     /// socket
     /** @type { Function } */
     #boundSocketOpenHandler;
@@ -178,11 +184,12 @@ class AxialMessaging extends AxialComponentBase
         this.#boundSocketErrorHandler   = this.#socketErrorHandler.bind(this);
         this.#boundSocketCloseHandler   = this.#socketCloseHandler.bind(this);
 
-        this.#boundKeydownHandler       = this.#keydownHandler.bind(this);
-        this.#boundInputHandler         = this.#inputHandler.bind(this);
-        this.#boundSendHandler          = this.#sendHandler.bind(this);
-        this.#boundStartHandler         = this.#startHandler.bind(this);
-        this.#boundTypingTimeoutHandler = this.#typingTimeoutHandler.bind(this);
+        this.#boundKeydownHandler           = this.#keydownHandler.bind(this);
+        this.#boundInputHandler             = this.#inputHandler.bind(this);
+        this.#boundSendHandler              = this.#sendHandler.bind(this);
+        this.#boundStartHandler             = this.#startHandler.bind(this);
+        this.#boundTypingTimeoutHandler     = this.#typingTimeoutHandler.bind(this);
+        this.#boundScrollDownTimeoutHandler = this.#scrollDownTimeoutHandler.bind(this);
 
         this.#boundAxialUserReadyHandler = this.#axialUserReadyHandler.bind(this);
 
@@ -457,9 +464,22 @@ class AxialMessaging extends AxialComponentBase
      */
     #keydownHandler( event )
     {
-        if( event.key === "Enter" && event.getModifierState("Control") === true )
+        const desktop = window.AXIAL.isDesktop;
+        
+        if( event.key === "Enter" )
         {
-            console.log("send the message on ctrl + enter");
+            if( desktop === true )
+            {
+                if( event.getModifierState("Control") === true )
+                {
+                    console.log( this.#writeArea.selectionStart, this.#writeArea.selectionEnd, this.#writeArea.selectionDirection)
+                }
+                else
+                {
+                    event.preventDefault();
+                    if( this.#writeArea.value.trim() !== "" ) { this.#sendMessage(); }
+                }
+            }
         }
     }
 
@@ -481,8 +501,6 @@ class AxialMessaging extends AxialComponentBase
         window.clearTimeout( this.#typingTimeoutId );
         this.#typingTimeoutId = window.setTimeout( this.#boundTypingTimeoutHandler, this.#typingDelay);
 
-        
-
         if( this.#isTyping === false )
         {
             const object =
@@ -503,6 +521,9 @@ class AxialMessaging extends AxialComponentBase
 
     #sendHandler( event )
     {
+        this.#sendButton.enabled = false;
+        this.#sendButton.loading = true;
+        this.#sendButton.text = "Envoi en cours";
         this.#sendMessage();
     }
 
@@ -600,6 +621,8 @@ class AxialMessaging extends AxialComponentBase
             // do not block the user and let it him rewrite
             this.#writeArea.value = "";
             this.#sendButton.enabled = false;
+            this.#sendButton.loading = false;
+            this.#sendButton.text = "Envoyer";
         }
     }
 
@@ -607,15 +630,22 @@ class AxialMessaging extends AxialComponentBase
     {
         const sentMessage = new AxialMessage( message, "sent" );
         this.#messages.appendChild( sentMessage );
-
-        this.#scrollDown();
+        if( this.#scrollDownTimeoutId )
+        {
+            window.clearTimeout( this.#scrollDownTimeoutId );
+        }
+        this.#scrollDownTimeoutId = window.setTimeout( this.#boundScrollDownTimeoutHandler, 40 );
     }
 
     #addMessageReceived( message )
     {
         const receivedMessage = new AxialMessage( message, "received" );
         this.#messages.appendChild( receivedMessage );
-        this.#messages.parentElement.scrollTop = this.#messages.parentElement.scrollHeight;
+        if( this.#scrollDownTimeoutId )
+        {
+            window.clearTimeout( this.#scrollDownTimeoutId );
+        }
+        this.#scrollDownTimeoutId = window.setTimeout( this.#boundScrollDownTimeoutHandler, 40 );
     }
     
     #typingTimeoutHandler()
@@ -636,9 +666,14 @@ class AxialMessaging extends AxialComponentBase
     #scrollDown()
     {
         const parentHeight = this.#messages.parentElement.offsetHeight;
-        const messageHeight = this.#messages.getBoundingClientRect().height;
+        const messageHeight = this.#messages.offsetHeight;
         const delta = messageHeight - parentHeight;
-        //console.log(parentHeight, messageHeight, delta);
+        this.#messages.parentElement.scrollTo( { top: delta, behavior: "smooth" } );
+    }
+
+    #scrollDownTimeoutHandler()
+    {
+        this.#scrollDown();
     }
 
     #showBubble()
@@ -700,7 +735,7 @@ class AxialMessaging extends AxialComponentBase
         }
         catch(err)
         {
-
+            console.log(err);
         }
     }
 
@@ -776,7 +811,15 @@ class AxialMessaging extends AxialComponentBase
         this.#welcomeState.style.display = "none";
         this.#errorState.style.display = "none";
         this.#contactState.style.display = "none";
+
+        if( this.#scrollDownTimeoutId )
+        {
+            window.clearTimeout( this.#scrollDownTimeoutId );
+        }
+        this.#scrollDownTimeoutId = window.setTimeout( this.#boundScrollDownTimeoutHandler, 40 );
     }
+
+
 
     /**
      * Qd on click un item

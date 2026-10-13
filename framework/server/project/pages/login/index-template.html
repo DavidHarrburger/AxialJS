@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <title>Se connecter | </title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Connectez-vous à votre compte gratuit.">
+
+    <meta property="og:url"                 content="https://mysite.fr/account/login/" />
+    <meta property="og:type"                content="website" />
+    <meta property="og:title"               content="Se connecter | " />
+    <meta property="og:description"         content="Connectez-vous à votre compte gratuit." />
+    <meta property="og:image"               content="" />
+    <meta property="og:image:width"         content="" />
+    <meta property="og:image:height"        content="" />
+    
+    <link rel="icon" type="image/x-icon" href="../../assets/favicon/favicon.ico">
+
+    <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body>
+
+<!--$$$C-->
+    
+    <div id="axialBackgroundLayer" class="axial_layer_base axial_background_layer">
+        <div class="axial_login_page-background"></div>
+    </div>
+    
+    <div id="axialMainLayer" class="axial_main_layer">
+        <main class="axial_main">
+            <section class="axial_section">
+                <div class="axial_section_content">
+                    <div class="axial_login_content">
+                        <div class="axial_login_content-left">
+                            <a class="axial_login_logo-link axial_login_logo-left" href="../../" target="_self">
+                                <img class="axial_login_logo-img" alt="logo" src="../../assets/logos/logo.png">
+                            </a>
+                        </div>
+                        <div class="axial_login_content-right">
+                            <div class="axial_login_holder">
+                                <a class="axial_login_logo-link axial_login_logo-right" href="../../" target="_self">
+                                    <img class="axial_login_logo-img" alt="logo" src="../../assets/logos/logo.png">
+                                </a>
+                                <h1>Se connecter</h1>
+                                <p class="axial_login_content-p">Accédez à vos services, suivez votre dossier.</p>
+                                <axial-auth-login id="login"></axial-auth-login>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="axialIntroLayer" class="axial_layer_base axial_intro_layer"></div>
+    <div id="axialPopupLayer" class="axial_layer_base axial_popup_layer">
+        <div id="axialPopupObfuscator" class="axial_popup_obfuscator"></div>
+    </div>
+    <div id="axialMediasLayer" class="axial_layer_base axial_medias_layer"></div>
+    <div id="axialNotificationLayer" class="axial_layer_base axial_notification_layer">
+        <axial-notifier id="axialNotifier"></axial-notifier>
+    </div>
+    <div id="axialOverlayLayer" class="axial_layer_base axial_overlay_layer">
+        <div id="axialOverlayObfuscator" class="axial_overlay_obfuscator"></div>
+        <axial-consent-overlay id="axialConsentOverlay"></axial-consent-overlay>
+        <axial-deletion-overlay id="axialDeletionOverlay"></axial-deletion-overlay>
+        <axial-archive-overlay id="axialArchiveOverlay"></axial-archive-overlay>
+    </div>
+    <div id="axialTooltipLayer" class="axial_layer_base axial_tooltip_layer"></div>
+    <div id="axialTransitionLayer" class="axial_layer_base axial_transition_layer"></div>
+
+    <script src="./application.js" defer></script>
+    
+</body>
+</html>

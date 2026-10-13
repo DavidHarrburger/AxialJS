@@ -32,37 +32,47 @@ class AxialSimulatorLineSelect extends AxialSimulatorLine
         this.#select = this.shadowRoot.getElementById("select");
         this.#select.addEventListener("change", this.#boundSelectHandler);
 
+        /*
         this.#deleteButton = this.shadowRoot.getElementById("deleteButton");
-        this.#deleteButton.addEventListener("click", this.#boundDeleteHandler);
+        if( this.#deleteButton )
+        {
+            this.#deleteButton.addEventListener("click", this.#boundDeleteHandler);
+        }
+        */
         super._buildComponent();
     }
 
     _buildLine()
     {
         super._buildLine();
-        const optValues = this.line?.select_values;
-        if( optValues && Array.isArray( optValues ) )
+        //console.warn("BUILD LINE SELECT");
+        const articles = this.line.articles;
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.innerHTML = "Sélectionner";
+        defaultOption.disabled = true;
+        defaultOption.selected = true;
+        defaultOption.hidden = true;
+        this.#select.add(defaultOption);
+        for( let i = 0; i < articles.length; i++ )
         {
-            const defaultOption = document.createElement("option");
-            defaultOption.value = "";
-            defaultOption.innerHTML = "Choisir les dimensions";
-            defaultOption.disabled = true;
-            defaultOption.selected = true;
-            defaultOption.hidden = true;
-            this.#select.add(defaultOption);
-            for( const optv of optValues )
-            {
-                const option = document.createElement("option");
-                option.innerHTML = optv.text;
-                option.value = optv.name;
-                this.#select.add(option);
-            }
+            const option = document.createElement("option");
+            const article = articles[i];
+            const product = this.line.products[i];
+            const override = this.line.nameOverrides[i];
+
+            const text = override == "*" ? product.name : override;
+
+            option.value = article;
+            option.innerHTML = text;
+            
+            this.#select.add(option);
         }
     }
 
     _getCalculation()
     {
-        console.log("getCalculation from select", this.#select.value);
+        //console.log("getCalculation from select", this.#select.value);
         return this.#select.value;
     }
 
@@ -70,6 +80,8 @@ class AxialSimulatorLineSelect extends AxialSimulatorLine
     {
         let obj = 
         {
+            key: this.line.key,
+            wasAdded: this.useTrash,
             value: this.#select.value
         }
         return obj;
@@ -77,6 +89,8 @@ class AxialSimulatorLineSelect extends AxialSimulatorLine
 
     _onSavedData()
     {
+        super._onSavedData();
+        //console.log( this.savedData );
         if( this.#select && this.savedData && this.savedData.value )
         {
             this.#select.value = this.savedData.value;
@@ -104,7 +118,7 @@ class AxialSimulatorLineSelect extends AxialSimulatorLine
 
     #selectHandler( event )
     {
-        console.log( "select" );
+        //console.log( "select" );
         const lineEvent = new CustomEvent("lineChanged", { bubbles: true, detail: { completed: true } } );
         this.dispatchEvent(lineEvent);
     }

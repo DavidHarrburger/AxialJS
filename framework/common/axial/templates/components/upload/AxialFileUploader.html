@@ -1,0 +1,18 @@
+<!-- AxialFileUploader -->
+<template id="axial-file-uploader-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="holder" class="axial_file_uploader-holder">
+        <div class="axial_file_uploader-header">
+            <input type="file" id="fileButton" accept="image/png, image/jpeg, image/webp">
+        </div>
+        
+        <div class="axial_file_uploader-content">
+            <div id="dropInfo">Déposer votre image ici (png, jpg, webp, max 5 Mb)</div>
+            <div id="dropZone" class="axial_file_uploader-dropzone"></div>
+            <img id="dropImage" class="axial_file_uploader-image">
+        </div>
+        <div class="axial_file_uploader-actions">
+            <axial-service-button class="axial_file_uploader-save" id="saveButton" axial-text="Enregistrer"></axial-service-button>
+        </div>
+    </div>
+</template>

@@ -139,7 +139,19 @@ class AxialTooltipBase extends AxialComponentBase
         {
             this.position = newValue;
         }
-        
+    }
+
+    disconnectedCallback()
+    {
+        super.disconnectedCallback();
+        console.log( "tooltip disconnected callback");
+        if( this.#target )
+        {
+            this.removeEventListener( "transitionend", this.#boundTransitionEndHandler );
+            this.#removeTooltipHandlers();
+            this.#target = null;
+        }
+        //this = null;
     }
 
     _buildComponent()

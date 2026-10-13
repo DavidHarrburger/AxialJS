@@ -69,6 +69,8 @@ class AxialSimulatorStep extends AxialComponentBase
         this.#productsMap = new Map();
         for( const p of this.#products )
         {
+            if( p === undefined ) { continue; } //
+            //console.log( "products setter", p );
             const uuid = p.uuid;
             this.#productsMap.set( uuid, p );
         }

@@ -1,4 +1,4 @@
-<!-- ./auth/AxialAuthVerifyer -->
+<!-- AxialAuthVerifyer -->
 <template id="axial-auth-verifyer-template">
     <link rel="stylesheet" href="./styles.css">
     <form id="form" class="axial_auth_verifyer-form" autocomplete="off">
@@ -20,6 +20,8 @@
             <input class="axial_auth_verifyer-numinput" type="text" pattern="[0-9]" id="num_5" value="" required minlength="1" maxlength="1" autocomplete="off">
             <input class="axial_auth_verifyer-numinput" type="text" pattern="[0-9]" id="num_6" value="" required minlength="1" maxlength="1" autocomplete="off">
         </div>
+
+        <axial-toggle-check id="stayConnectedCheck" axial-text="Rester connecté 14 jours"></axial-toggle-check>
         
         <div class="axial_auth_verifyer-divider"></div>
         

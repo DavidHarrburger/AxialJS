@@ -27,6 +27,7 @@ class AxialAuthBoxOverlay extends AxialOverlayBase
 
     /** @type { Function } */
     #boundDashboardHandler;
+
     
     constructor()
     {
@@ -84,17 +85,36 @@ class AxialAuthBoxOverlay extends AxialOverlayBase
         this.#signout();
     }
 
+    // async #signout()
+    // {
+    //     try
+    //     {
+    //         localStorage.removeItem("axial_auth_uuid");
+    //         const json = FetchUtils.POST( this.#signoutPath, {} );
+
+    //         if( json )
+    //         {
+    //             const url = new URL(window.location.href);
+    //             window.location.href = url.origin;
+    //         }
+    //     }
+    //     catch(err)
+    //     {
+
+    //     }
+    // }
+
     async #signout()
     {
         try
         {
             localStorage.removeItem("axial_auth_uuid");
-            const json = FetchUtils.POST( this.#signoutPath, {} );
+            const response = await fetch( this.#signoutPath, { method: "POST", credentials: "same-origin" } );
+            const json = response.json();
 
             if( json )
             {
-                const url = new URL(window.location.href);
-                window.location.href = url.origin;
+                window.location.href = "../";
             }
         }
         catch(err)

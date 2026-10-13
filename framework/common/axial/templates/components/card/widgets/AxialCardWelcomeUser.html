@@ -1,0 +1,38 @@
+<!-- AxialCardWelcomeUser -->
+<template id="axial-card-welcome-user-template">
+    <link rel="stylesheet" href="./styles.css">
+    <style>
+        *
+        {
+            color: var(--colTextDark);
+        }
+
+        #bugreports, #support
+        {
+            font-weight: 600;
+            color: var(--colTextDarker);
+            text-decoration-line: underline;
+        }
+    </style>
+    <div id="holder" class="axial_card-holder">
+        <div class="axial_card-header">
+            <div class="axial_card-title">Bienvenue</div>
+        </div>
+        <slot id="cardSlot" name="axial-card"></slot>
+        <div class="axial_card-content">
+            <p id="intro" class="axial_card_welcome_user-text">Vous pouvez dans cet espace estimer vos travaux de rénovation et vous faire une idée précise de votre budget.</p>
+            <p id="names" class="axial_card_welcome_user-text">Ci-dessous, la liste des estimations que vous pouvez effectuer. D'autres seront très bientôt disponibles !</p>
+            <ul id="sims">
+
+            </ul>
+            <p class="ax_frow ax_wrap ax_fg20">
+                <div class="axial_card_welcome_user-text">Cliquez sur le bouton 'Projets' ci-contre et laissez-vous guider.</div>
+                <axial-button id="projectButton" axial-text="Accéder à mes projets"></axial-button>
+            </p>
+            <!-- <p class="axial_card_welcome_user-text">En quelques secondes, découvrez en vidéo comment faire :</p> TODO ADD VIDEO
+            <div>VIDEO</div> -->
+            <p class="axial_card_welcome_user-text">Et si vous avez une idée à nous suggérer ou que vous pensez avoir rencontré un problème, rendez-vous sur notre page dédiée de <a id="support" href="../support">support</a> ou <a id=bugreports href="../bug-reports">rapportez le problème rencontré</a>.</div>
+        </div>
+        <div></div>
+    </div>
+</template>

@@ -22,6 +22,9 @@ class AxialToggleCheck extends AxialToggleButtonBase
     /** @type { Number } */
     #radius;
 
+    /** @type { String } */
+    #value;
+
     /** @type { Number } */
     #gap = 12;
 
@@ -41,7 +44,7 @@ class AxialToggleCheck extends AxialToggleButtonBase
 
     static get observedAttributes()
     {
-        return ["axial-text", "axial-check-position", "axial-theme", "axial-color", "axial-size", "axial-weight", "axial-style", "axial-gap", "axial-radius" ];
+        return ["axial-text", "axial-check-position", "axial-theme", "axial-color", "axial-size", "axial-weight", "axial-style", "axial-gap", "axial-radius", , "axial-value" ];
     }
 
     _buildComponent()
@@ -73,6 +76,8 @@ class AxialToggleCheck extends AxialToggleButtonBase
         }
     }
 
+    get value() { return this.#value; }
+
     attributeChangedCallback(name, oldValue, newValue)
     {
         super.attributeChangedCallback(name, oldValue, newValue);
@@ -84,6 +89,11 @@ class AxialToggleCheck extends AxialToggleButtonBase
                 this.#label.innerHTML = this.#text;
                 this.#label.style.display = this.#text === "" ? "none" : "block";
             }
+        }
+
+        if( name === "axial-value" )
+        {
+            this.#value = newValue;
         }
     }
     

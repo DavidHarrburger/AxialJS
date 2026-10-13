@@ -356,16 +356,21 @@ class AxialMongo extends EventEmitter
                 delete final._id; // there is probably a mongo flag for that
                 // use set / update instead of replace here important
                 result = await collection.updateOne( { _id: new ObjectId( String(_id) ) }, { $set: final, $currentDate: { last_modified: true } } );
-            }            
+            }
+            return result;
         }
         catch(err)
         {
+            console.log("set data error");
             console.log(err);
+            throw err;
         }
+        /*
         finally
         {
             return result;
         }
+            */
     }
 
     /**

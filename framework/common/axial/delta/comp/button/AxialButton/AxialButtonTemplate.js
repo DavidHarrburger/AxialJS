@@ -1,0 +1,1 @@
+export const AxialButtonTemplate = "<div>template</div>";

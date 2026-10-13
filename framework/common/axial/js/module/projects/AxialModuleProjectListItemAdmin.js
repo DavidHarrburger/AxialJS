@@ -37,7 +37,7 @@ class AxialModuleProjectListItemAdmin extends AxialModuleProjectListItem
 
     #visualizeHandler( event )
     {
-        const popup = AxialPopupManager.getPopupById("simulatorQuotePopup");
+        const popup = AxialPopupManager.getPopupById("quotePopup");
         popup.data = this.data;
         popup.show();
     }

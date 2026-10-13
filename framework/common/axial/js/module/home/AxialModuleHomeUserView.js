@@ -5,6 +5,14 @@ import { AxialButton } from "../../button/AxialButton.js";
 import { PathUtils } from "../../utils/PathUtils.js";
 import { AxialNotificationBox } from "../../notification/AxialNotificationBox.js";
 
+import { AxialCardDisplayer } from "../../card/AxialCardDisplayer.js";
+import { AxialCardBooking } from "../../card/widgets/AxialCardBooking.js";
+import { AxialCardWelcomeUser } from "../../card/widgets/AxialCardWelcomeUser.js";
+import { AxialCard } from "../../card/AxialCard.js";
+
+import { TestComponent } from "../../aaaa/TestComponent.js";
+import { SubTestComponent } from "../../aaaa/SubTestComponent.js";
+
 class AxialModuleHomeUserView extends AxialModuleView
 {
     /// vars
@@ -12,6 +20,9 @@ class AxialModuleHomeUserView extends AxialModuleView
     /// elements
     /** @type { AxialButton } */
     #mainButton;
+
+    /** @type { AxialCardDisplayer } */
+    #cardDisplayer;
 
     /// events
     /** @type { Function } */
@@ -27,11 +38,17 @@ class AxialModuleHomeUserView extends AxialModuleView
     _buildComponent()
     {
         super._buildComponent();
+        this.#cardDisplayer = this.shadowRoot.getElementById("cardDisplayer");
     }
 
     #mainHandler( event )
     {
         
+    }
+
+    loadGetData()
+    {
+        this.#cardDisplayer.refreshCards();
     }
 
     

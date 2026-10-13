@@ -64,6 +64,7 @@ class AxialQuote extends AxialComponentBase
         for( const a of A )
         {
             const map = Array.from(a.map);
+            //console.log(map);
             const mapQuantityTotal = map.reduce( (sum, item ) => sum + item[1].quantity, 0 );
             if( mapQuantityTotal == 0 ) { continue; }
 
@@ -77,6 +78,8 @@ class AxialQuote extends AxialComponentBase
 
             let ST5 = 0; let ST10 = 0; let ST20 = 0;
             let STHT = 0; let STTC = 0;
+
+            let itemCount = -1;
             for( const item of map )
             {
                 const p = item[1];
@@ -88,19 +91,27 @@ class AxialQuote extends AxialComponentBase
                     SN++;
                     const itemNum = `${N}.${SN}`;
 
+                    itemCount++;
+                    const isAlt = itemCount % 2 !== 0;
+
                     const quoteItem = new AxialQuoteItem();
                     quoteItem.itemNum = itemNum;
                     quoteItem.data = p;
+                    if( isAlt === true ) { quoteItem.backgroundColor = "#f8f9fb"; }
 
                     // global amount calculation
                     const product = p.product;
 
                     // quantity decimals fixed
                     const isQtyInt = Number.isInteger(p.quantity);
-                    const qty = isQtyInt === false ? Number( Number(p.quantity).toFixed(2) ) : p.quantity;
+                    let qty = isQtyInt === false ? Number( Number(p.quantity).toFixed(2) ) : p.quantity;
+                    if( product.unit.toLowerCase() == "forf" )
+                    {
+                        qty = 1;
+                    }
                     
                     const tax = product.tax;
-                    const pu = product.price;
+                    const pu = product.price ?? product.puht;
                     const atht = qty * pu;
                     const tva = tax / 100 * atht;
                     const attc = atht + tva;
@@ -123,7 +134,7 @@ class AxialQuote extends AxialComponentBase
 
             // add section footer
             const sectionFooter = new AxialQuoteSectionFooter();
-            sectionFooter.sectionTitle = "Totaux " + a.sectionTitle;
+            sectionFooter.sectionTitle = "Total " + a.sectionTitle;
             const tempTax = ST5 + ST10 + ST20; 
             // check here
             sectionFooter.HT = String( STHT.toFixed(2) );
@@ -147,7 +158,7 @@ class AxialQuote extends AxialComponentBase
         this.#holder.appendChild(quoteFooter);
 
         // dispatch
-        console.log( "THT = ", THT, " TTC = ", TTC );
+        //console.log( "THT = ", THT, " TTC = ", TTC );
         const quoteEvent = new CustomEvent("quoteComputed", { bubbles:true, detail: { totalHT: THT, totalTTC: TTC}});
         this.dispatchEvent(quoteEvent);
     }

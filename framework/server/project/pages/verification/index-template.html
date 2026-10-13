@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <title>Vérification de votre identité</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <link rel="icon" type="image/x-icon" href="../../assets/favicon/favicon.ico">
+    <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body>
+
+<!--$$$C-->
+    
+    <div id="axialBackgroundLayer" class="axial_layer_base axial_background_layer">
+        <div class="axial_verification_page-background"></div>
+    </div>
+    
+    <div id="axialMainLayer" class="axial_main_layer">
+        <main class="axial_main">
+            <section class="axial_section">
+                <div class="axial_section_content">
+                    <div class="axial_verification_content">
+                        <div class="axial_verification_content-left">
+                            <a class="axial_verification_logo-link axial_verification_logo-left" href="../../" target="_self">
+                                <img class="axial_verification_logo-img" alt="logo" src="../../assets/logos/logo.png">
+                            </a>
+                        </div>
+                        <div class="axial_verification_content-right">
+                            <div class="axial_verification_holder">
+                                <a class="axial_verification_logo-link axial_verification_logo-right" href="../../" target="_self">
+                                    <img class="axial_verification_logo-img" alt="logo" src="../../assets/logos/logo.png">
+                                </a>
+                                <h1>Vérifier votre identité</h1>
+                                <p class="axial_verification_content-p">Pour votre sécurité, l'authentification à 2 facteurs est obligatoire sur ce site.</p>
+                                <axial-auth-verifyer id="verifyer"></axial-auth-verifyer>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="axialIntroLayer" class="axial_layer_base axial_intro_layer"></div>
+    <div id="axialPopupLayer" class="axial_layer_base axial_popup_layer">
+        <div id="axialPopupObfuscator" class="axial_popup_obfuscator"></div>
+    </div>
+    <div id="axialMediasLayer" class="axial_layer_base axial_medias_layer"></div>
+    <div id="axialNotificationLayer" class="axial_layer_base axial_notification_layer">
+        <axial-notifier id="axialNotifier"></axial-notifier>
+    </div>
+    <div id="axialOverlayLayer" class="axial_layer_base axial_overlay_layer">
+        <div id="axialOverlayObfuscator" class="axial_overlay_obfuscator"></div>
+        <axial-consent-overlay id="axialConsentOverlay"></axial-consent-overlay>
+        <axial-deletion-overlay id="axialDeletionOverlay"></axial-deletion-overlay>
+        <axial-archive-overlay id="axialArchiveOverlay"></axial-archive-overlay>
+    </div>
+    <div id="axialTooltipLayer" class="axial_layer_base axial_tooltip_layer"></div>
+    <div id="axialTransitionLayer" class="axial_layer_base axial_transition_layer"></div>
+    
+    <script src="./application.js" defer></script>
+    
+</body>
+</html>

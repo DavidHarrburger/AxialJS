@@ -1,11 +1,7 @@
 <!-- AxialSimulatorStepFinal -->
 <template id="axial-simulator-step-final-template">
     <link rel="stylesheet" href="./styles.css">
-    <div class="axial_simulator_step-holder">
-        <div class="axial_simulator_step_final-quote">
-            <axial-quote id="quote"></axial-quote>
-        </div>
-
+    <div class="axial_simulator_step_final-holder">
         <div class="axial_simulator_step_final-content">
             <div id="title" class="axial_simulator_step-title axial_simulator_step_final-title">C'est terminé !</div>
             <p class="axial_simulator_step-p axial_simulator_step_final-p"> Et voici le tarif global de votre estimation :</p>
@@ -17,6 +13,8 @@
                 <axial-service-button id="finalButton" axial-text="Planifier un RDV"></axial-service-button>
             </div>
         </div>
-        
+        <div class="axial_simulator_step_final-quote">
+            <axial-quote id="quote"></axial-quote>
+        </div>
     </div>
 </template>

@@ -1,0 +1,18 @@
+<!-- AxialQuoteParamMail -->
+<template id="axial-quote-param-mail-template">
+    <link rel="stylesheet" href="./styles.css">
+    <form id="holder" class="axial_form-holder">
+        <slot id="slot" name="axial-items"></slot>
+        <!--<axial-form-divider axial-title="Emails de destination" ></axial-form-divider>-->
+        <div class="axial_form_item-column axial_form_item-full">
+            <axial-form-item-inputs axial-field="fdestmail" axial-label="Seul le premier email est obligatoire" axial-required>
+                <input slot="axial-content" name="destmail1" placeholder="contact_1@mon-entreprise.com" minlength="8" maxlength="200" required autocomplete="off">
+                <input slot="axial-content" name="destmail2" placeholder="contact_2@mon-entreprise.com" minlength="8" maxlength="200" autocomplete="off">
+                <input slot="axial-content" name="destmail3" placeholder="contact_3@mon-entreprise.com" minlength="8" maxlength="200" autocomplete="off">
+            </axial-form-item-inputs>
+        </div>
+    </form>
+    <div class="axial_form-footer">
+        <axial-service-button id="postButton" axial-text="Enregistrer"></axial-service-button>
+    </div>
+</template>

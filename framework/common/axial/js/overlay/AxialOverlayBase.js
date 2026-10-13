@@ -393,7 +393,6 @@ class AxialOverlayBase extends AxialComponentBase
         {
             if( this.#isShown === false )
             {
-                console.log("hidden")
                 this.style.visibility = "hidden";
                 this._onHidden();
                 const overlayEvent = new CustomEvent("overlayHidden");

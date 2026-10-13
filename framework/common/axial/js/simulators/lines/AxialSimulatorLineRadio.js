@@ -33,6 +33,7 @@ class AxialSimulatorLineRadio extends AxialSimulatorLine
     {
         super._buildLine();
 
+        /*
         const rvs = this.line?.radio_values;
         if( rvs && Array.isArray( rvs ) )
         {
@@ -43,6 +44,16 @@ class AxialSimulatorLineRadio extends AxialSimulatorLine
                 radio.data = rv.name;
                 this.#group.appendToggle(radio);
             }
+        }
+        */
+        const radioKeys = this.line.articles;
+        const len = radioKeys.length;
+        for( let i = 0; i < len; i++ )
+        {
+            const radio = new AxialToggleRadio();
+            radio.text = this.line.nameOverrides[i];
+            radio.data = radioKeys[i];
+            this.#group.appendToggle(radio);
         }
     }
 
@@ -55,15 +66,22 @@ class AxialSimulatorLineRadio extends AxialSimulatorLine
     {
         let obj =
         {
-            selected: this.#group.getSelectedToggle()?.data
+            key: this.line.key,
+            wasAdded: this.useTrash,
+            selected: this.#group.getSelectedToggle()?.data,
+            index: this.#group.selectedIndex
         }
         return obj;
     }
 
     _onSavedData()
     {
-        if( this.savedData && this.savedData.selected != undefined )
+        if( this.savedData != undefined && this.savedData.index != undefined )
         {
+            this.#group.selectedIndex = this.savedData.index;
+            this.isCompleted = true;
+            //const toggle = this.#group.toggles[this.#group.selectedIndex];
+            /*
             const toggles = this.#group.toggles;
             const tl = toggles.length;
             for( let i = 0; i < tl; i++ )
@@ -75,6 +93,7 @@ class AxialSimulatorLineRadio extends AxialSimulatorLine
                     this.isCompleted = true;
                 }
             }
+            */
         }
         else
         {
@@ -89,6 +108,10 @@ class AxialSimulatorLineRadio extends AxialSimulatorLine
     _setEnabled( value )
     {
         super._setEnabled( value );
+        for( const toggle of this.#group.toggles )
+        {
+            toggle.enabled = value;
+        }
     }
 
     /**

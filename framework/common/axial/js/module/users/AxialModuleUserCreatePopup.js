@@ -74,8 +74,23 @@ class AxialModuleUserCreatePopup extends AxialModulePopup
      */
     #formSuccesHandler( event )
     {
-        window.AXIAL.notify("Utilisateur enregistré avec succès");
-        //this.hide();
+        console.log( event );
+        if( event.detail.data.status === "ok" )
+        {
+            window.AXIAL.notify("Utilisateur enregistré avec succès");
+            this.hide();
+        }
+        else if( event.detail.data.status === "ko" )
+        {
+            this.#form.clearForm();
+            window.AXIAL.notify("L'email de cet utilisateur est déjà enregistré");
+        }
+        else
+        {
+            console.warn("unhandled");
+        }
+        
+        
     }
 }
 

@@ -14,6 +14,7 @@ import { api as electronForge } from "@electron-forge/core";
 import dependencyTree from "dependency-tree";
 import * as fsp from "node:fs/promises";
 import webpush from "web-push";
+import { execSync } from "node:child_process";
 
 const HTML_COMPONENT_MARKER = "<!--$$$C-->";
 
@@ -30,13 +31,14 @@ class AxialCommands extends EventEmitter
     /**
      * @type { Set }
      */
-    #commands = new Set( [ "init", "newpage", "build", "config", "electron", "database", "sitemap", "keys", "version", "compile" ] );
+    #commands = new Set( [ "init", "newpage", "build", "config", "electron", "database", "sitemap", "keys", "version", "compile", "component" ] );
 
     #paramsInit =        new Set( [ "-front", "-server", "-electron" ] );
     #paramsNewPage =     new Set( [ "-name", "-template", "-path" ] );
     #paramsBuild =       new Set( [ "-dev", "-prod" ] );
     #paramsElectron =    new Set( [ "-start", "-package", "-make", "-publish" ] ); //etc "-publish"  move to start atm
-    #paramsDatabase =    new Set( [ "-create", "-export", "-insert" ] );
+    #paramsDatabase =    new Set( [ "-create", "-export", "-insert", "-check", "-unique" ] );
+    #paramsComponent =   new Set( [ "-name", "-path", "-html", "-extends" ] );
 
     /**
      * @type { String }
@@ -146,6 +148,14 @@ class AxialCommands extends EventEmitter
 
                 case "compile":
                     this.#compile(params);
+                break;
+
+                case "component":
+                    this.#component(params);
+                break;
+
+                case "make":
+                    this.#make();
                 break;
 
                 default:
@@ -419,6 +429,14 @@ class AxialCommands extends EventEmitter
                 this.#databaseInsert();
             break;
 
+            case "-check":
+                this.#databaseCheck();
+            break;
+
+            case "-unique":
+                this.#databaseUnique();
+            break;
+
             default:
                 console.log("nothing happen");
             break;
@@ -480,7 +498,6 @@ class AxialCommands extends EventEmitter
                         const collection = await newDb.createCollection( collectionName, collectionOptions );
 
                         if( collectionName === "models" ) { modelsCollection = collection; }
-
                     }
                 }
 
@@ -743,6 +760,192 @@ class AxialCommands extends EventEmitter
                 await MONGO_CLIENT.close();
                 console.log("MONGO_CLIENT closed");
             }
+        }
+    }
+
+    async #databaseCheck()
+    {
+        let MONGO_CLIENT;
+        try
+        {
+            const databaseConfigPath = path.join( this.#currentDirectory, this.#databaseConfigurationFileName);
+            const databaseConfig = await fse.readJSON(databaseConfigPath);
+            
+            MONGO_CLIENT = new MongoClient( databaseConfig.path,
+            {
+                serverApi:
+                {
+                    version: ServerApiVersion.v1,
+                    strict: false,
+                    deprecationErrors: true,
+                }
+            });
+
+            const db = MONGO_CLIENT.db( databaseConfig.dbname );
+            
+            const hello = await db.command( { hello: 1} );
+            console.log(" PRIMARY:", hello.isWritablePrimary);
+            console.log(" Set Name:", hello.setName);
+            console.log(" Cluster Time:", hello.clusterTime);
+
+        }
+        catch(err)
+        {
+            console.log( err );
+        }
+        finally
+        {
+            if( MONGO_CLIENT )
+            {
+                await MONGO_CLIENT.close();
+                console.log("MONGO_CLIENT closed");
+            }
+        }
+    }
+
+    async #databaseUnique()
+    {
+        let MONGO_CLIENT;
+        try
+        {
+            const databaseConfigPath = path.join( this.#currentDirectory, this.#databaseConfigurationFileName);
+            const databaseConfig = await fse.readJSON(databaseConfigPath);
+            
+            MONGO_CLIENT = new MongoClient( databaseConfig.path,
+            {
+                serverApi:
+                {
+                    version: ServerApiVersion.v1,
+                    strict: false,
+                    deprecationErrors: true,
+                }
+            });
+
+            const db = MONGO_CLIENT.db( databaseConfig.dbname );
+            const users = db.collection("users");
+            users.createIndex({ email: 1 }, { unique: true });
+        }
+        catch(err)
+        {
+            console.log( err );
+        }
+        finally
+        {
+            if( MONGO_CLIENT )
+            {
+                await MONGO_CLIENT.close();
+                console.log("MONGO_CLIENT closed");
+            }
+        }
+    }
+
+    async #component( params )
+    {
+        let finalJsFile = "";
+        let finalHtmlFile = "";
+        try
+        {
+            // get config
+            const config = await this.#getAxialConfiguration();
+            if( config === undefined )
+            {
+                console.log("[AXIAL_ERROR] 'axial-config.json' file not found. Use 'axial init' to init your project.");
+                return;
+            }
+            console.log( params );
+            const l = params.length;
+            if( l < 2 )
+            {
+                console.warn("Please use at least the '-name' param with the name of the new comonent");
+            }
+            else
+            {
+                let compName;
+                let compPath;
+                let compHtml = false;
+
+                for( let i = 0; i < l; i++ )
+                {
+                    /** @type { String } */
+                    const p = params[i];
+                    if( this.#paramsComponent.has(p) === false )
+                    {
+                        console.log("[AXIAL_ERROR]" );
+                        return;
+                    }
+                    switch( p )
+                    {
+                        case "-name":
+                            compName = params[i+1];
+                            i++;
+                        break;
+
+                        case "-path":
+                            compPath = params[i+1];
+                            i++;
+                        break;
+
+                        case "-html":
+                            compHtml = true;
+                        break;
+
+                        default:
+                        break;
+                    }
+                }
+                console.log( "parse ok : ", compName, compPath, compHtml);
+
+                const jsFileSource = path.resolve(this.#currentDirectory, "sources/component/js/AxialComponentTemplate.js");
+                const jsDirDest = path.resolve(this.#currentDirectory, "axial/js/custom/");
+                const jsFileDest = path.resolve(this.#currentDirectory, "axial/js/custom/", `${compName}.js`);
+
+                const compExists = await this.#fileExists( jsFileDest );
+                if( compExists === true )
+                {
+                    console.log( `The component '${compName}' already exists in the directory '${jsDirDest}'` );
+                    return;
+                }
+
+                let jsString = await fsp.readFile(jsFileSource, "utf-8");
+                const jsDir = await fsp.mkdir(jsDirDest, { recursive: true } );
+
+                const htmlKebab = this.#toHtmlName( compName );
+                let jsFinal = jsString.replaceAll("$$$JS_NAME$$$", compName ).replaceAll("$$$html_name$$$", htmlKebab );
+
+                const jsFile = await fsp.writeFile( jsFileDest, jsFinal );
+                finalJsFile = jsFileDest;
+
+                if( compHtml === true )
+                {
+                    const htmlTemplateSource = path.resolve(this.#currentDirectory, "sources/component/html/AxialComponentTemplate.html");
+                    const htmlTemplateDir = path.resolve(this.#currentDirectory, "axial/templates/components/custom/");
+                    const htmlTemplateFile = path.resolve(this.#currentDirectory, "axial/templates/components/custom/", `${compName}.html`);
+
+                    let htmlString = await fsp.readFile(htmlTemplateSource, "utf-8");
+                    let htmlFinal = htmlString.replaceAll("$$$JS_NAME$$$", compName ).replaceAll("$$$html_name$$$", htmlKebab );
+
+                    const htmlDir = await fsp.mkdir(htmlTemplateDir, { recursive: true } );
+                    const htmlFile = await fsp.writeFile( htmlTemplateFile, htmlFinal );
+                    finalHtmlFile = htmlTemplateFile;
+                }
+            }
+        }
+        catch(err)
+        {
+            console.log(err);
+        }
+        finally
+        {
+            let openCommand = "";
+            if( finalJsFile !== "" )
+            {
+                openCommand = `code ${finalJsFile} `;
+                if( finalHtmlFile !== "" )
+                {
+                    openCommand = openCommand + finalHtmlFile;
+                }
+            }
+            execSync(openCommand);
         }
     }
 
@@ -1187,6 +1390,31 @@ class AxialCommands extends EventEmitter
     {
         
     }
+
+    async #make()
+    {
+        const config = await this.#getAxialConfiguration();
+        const pages = config.pages;
+
+        // get vars for the process
+        const buildDirectoryPath = path.resolve(this.#currentDirectory, config.build_directory);
+
+        // clean
+        const clean = config.clean_on_build;
+        if( clean == true )
+        {
+            // clean build
+            await fse.emptyDir(buildDirectoryPath);
+        }
+
+        for( const page of pages )
+        {
+            const htmlSource = path.resolve(this.#currentDirectory, config.project_directory, config.pages_directory, page.name, "index-template.html" );
+            const htmlExists = await this.#fileExists( htmlSource );
+            if( htmlExists === false ) { continue; } else { console.log("FILE TO WRITE FOUND"); }
+        }
+        
+    }
     
     test()
     {
@@ -1200,7 +1428,7 @@ class AxialCommands extends EventEmitter
     {
         try
         {
-            await fse.access( path, fsp.constants.F_OK );
+            await fsp.access( path, fsp.constants.F_OK );
             return true;
         }
         catch
@@ -1208,6 +1436,43 @@ class AxialCommands extends EventEmitter
             return false;
         }
     }
+
+    #toHtmlName( s )
+    {
+        if( typeof s !== "string" )
+        {
+            throw new TypeError("String value required")
+        }
+        const cleaned = s.replace(/\p{White_Space}+/gu, "");
+        const kebab = cleaned.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
+        return kebab;
+    }
+
+    async #listJsFiles( dir )
+    {
+        const entries = await fsp.readdir(dir, { withFileTypes: true });
+        const files = [];
+
+        for (const entry of entries)
+        {
+            const fullPath = path.join(dir, entry.name);
+            if (entry.isDirectory() )
+            {
+                files.push(...await listJsFiles(fullPath));
+            }
+            else if( entry.isFile() && fullPath.endsWith(".js") )
+            {
+                files.push(fullPath);
+            }
+        }
+        return files;
+    }
+
+    #createJavascriptComponent( n, e, l )
+    {
+
+    }
+
 }
 
 export default AxialCommands

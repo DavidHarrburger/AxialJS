@@ -1,8 +1,8 @@
 "use strict";
 
-import { AxialComponentBase } from "../core/AxialComponentBase.js";
+import { AxialServiceComponentBase } from "../core/AxialServiceComponentBase.js";
 
-class AxialCardBase extends AxialComponentBase
+class AxialCardBase extends AxialServiceComponentBase
 {
     constructor()
     {
@@ -12,7 +12,7 @@ class AxialCardBase extends AxialComponentBase
 
     static get observedAttributes()
     {
-        return ["axial-grid-col", "axial-grid-row" ];
+        return [ "axial-grid-col", "axial-grid-row" ];
     }
 
     attributeChangedCallback(name, oldValue, newValue)

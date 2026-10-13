@@ -106,12 +106,13 @@ class AxialServiceComponentBase extends AxialComponentBase
      */
     async #loadGetData()
     {
-        console.log("loadgetdata")
+        //console.log("loadgetdata", this)
         if( this.#getPath === undefined || this.#getPath === null ) { return; }
         if( this.#isFetching === true ) { return; }
         this.#isFetching = true;
         try
         {
+            //console.log("tetetetetetetetetete")
             const path = this._prepareGetData();
             const response = await fetch( path, { method: "GET", headers: { "Content-Type":"application/json", "Cache-Control":"no-cache" } } );
             const json = await response.json();
@@ -139,7 +140,7 @@ class AxialServiceComponentBase extends AxialComponentBase
 
     async #loadPostData()
     {
-        console.log(this.#postPath)
+        //console.log(this.#postPath)
         if( this.#postPath === undefined || this.#postPath === null ) { return; }
         if( this.#isFetching === true ) { return; }
         this.#isFetching = true;

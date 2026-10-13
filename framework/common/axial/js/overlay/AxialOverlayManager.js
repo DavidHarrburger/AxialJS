@@ -54,7 +54,6 @@ class AxialOverlayManager
             if( overlay.hideMode === "click" && overlay.isModal === false && overlay.isShown === true && overlay.isPlaying === false )
             {
                 overlay.hide();
-                console.log("called")
             }
         }
     }

@@ -435,6 +435,43 @@ class AxialWeekPlanning extends AxialComponentBase
             }
             input.value = full[arrayIndex][valueIndex];
         }
+
+        for( let i = 0; i < 7; i++ )
+        {
+            const checkHalf = this.#checksHalf[i];
+            const checkFull = this.#checksFull[i];
+
+            const halfSelected = half[i][4];
+            const fullSelected = full[i][2];
+
+            checkHalf.selected = halfSelected;
+            checkFull.selected = fullSelected;
+
+            if( halfSelected == true )
+            {
+                const morningStartName = "awp_morning_start-" + (i+1);
+                this.#gridHalf.getElementsByClassName(morningStartName)[0].disabled = true;
+
+                const morningEndName = "awp_morning_end-" + (i+1);
+                this.#gridHalf.getElementsByClassName(morningEndName)[0].disabled = true;
+
+                const noonStartName = "awp_noon_start-" + (i+1);
+                this.#gridHalf.getElementsByClassName(noonStartName)[0].disabled = true;
+
+                const noonEndName = "awp_noon_end-" + (i+1);
+                this.#gridHalf.getElementsByClassName(noonEndName)[0].disabled = true;
+            }
+
+            if( fullSelected == true )
+            {
+                const fullStartName = "awp_full_start-" + (i+1);
+                this.#gridFull.getElementsByClassName(fullStartName)[0].disabled = true;
+
+                const fullEndName = "awp_full_end-" + (i+1);
+                this.#gridFull.getElementsByClassName(fullEndName)[0].disabled = true;
+            }
+        }
+
         this.#updateAllInputs();
     }
 

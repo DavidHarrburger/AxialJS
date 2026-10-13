@@ -1,10 +1,10 @@
 "use strict";
 
-import { AxialServiceFormItem } from "./AxialServiceFormItem.js";
+import { AxialFormItem } from "./AxialFormItem.js";
 import { AxialToggleRadio } from "../button/AxialToggleRadio.js";
 import { AxialToggleButtonGroup } from "../button/AxialToggleButtonGroup.js";
 
-class AxialServiceFormItemToggles extends AxialServiceFormItem
+class AxialFormItemToggles extends AxialFormItem
 {
     /// elements
     /** @type { AxialToggleButtonGroup } */
@@ -17,7 +17,7 @@ class AxialServiceFormItemToggles extends AxialServiceFormItem
     constructor()
     {
         super();
-        this.template = "axial-service-form-item-toggles-template";
+        this.template = "axial-form-item-toggles-template";
         this.#boundIndexChangedHandler = this.#indexChangedHandler.bind(this);
     }
 
@@ -38,7 +38,7 @@ class AxialServiceFormItemToggles extends AxialServiceFormItem
         this.#toggles = this.shadowRoot.getElementById("toggles");
         if( this.#toggles )
         {
-            this.#toggles.forceSelection = true;
+            //this.#toggles.forceSelection = true;
             this.#toggles.addEventListener("indexChanged", this.#boundIndexChangedHandler);
         }
     }
@@ -92,5 +92,5 @@ class AxialServiceFormItemToggles extends AxialServiceFormItem
     }
 }
 
-window.customElements.define("axial-service-form-item-toggles", AxialServiceFormItemToggles);
-export { AxialServiceFormItemToggles }
+window.customElements.define("axial-form-item-toggles", AxialFormItemToggles);
+export { AxialFormItemToggles }

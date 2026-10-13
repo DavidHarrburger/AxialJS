@@ -5,12 +5,22 @@
 ///
 
 import { AxialApplicationBase } from "./AxialApplicationBase.js";
+import { AxialErrorManager} from "../error/AxialErrorManager.js"
 
 ///
 /// AUTH
 ///
 
 import { AxialAuthBox } from "../auth/AxialAuthBox.js";
+import { AxialAuthManager } from "../auth/AxialAuthManager.js";
+
+///
+/// NOTIFICATION
+///
+
+import { AxialNotificationManager } from "../notification/AxialNotificationManager.js";
+import { AxialNotificationIconButton } from "../notification/AxialNotificationIconButton.js";
+import { AxialNotificationOverlay } from "../notification/AxialNotificationOverlay.js";
 
 ///
 /// BUTTON
@@ -27,6 +37,8 @@ import { AxialFormDivider } from "../forms/AxialFormDivider.js";
 import { AxialFormItemBase } from "../forms/AxialFormItemBase.js";
 import { AxialFormItem } from "../forms/AxialFormItem.js";
 import { AxialFormItemInputs } from "../forms/AxialFormItemInputs.js";
+import { AxialFormItemToggles } from "../forms/AxialFormItemToggles.js";
+import { AxialFormItemChecks } from "../forms/AxialFormItemChecks.js";
 
 ///
 /// HELPERS
@@ -47,6 +59,7 @@ import { CryptoUtils } from "../utils/CryptoUtils.js";
 
 import { AxialWebSocket } from "../websocket/AxialWebSocket.js";
 import { FetchUtils } from "../utils/FetchUtils.js";
+
 
 class AxialWebApplicationBase extends AxialApplicationBase
 {
@@ -76,6 +89,9 @@ class AxialWebApplicationBase extends AxialApplicationBase
     /// authbox
     /** @type { AxialAuthBox } */
     #authBox;
+
+    /** @type { AxialAuthManager } */
+    #authManager;
 
     /// events
     /** @type { Function } */
@@ -116,7 +132,7 @@ class AxialWebApplicationBase extends AxialApplicationBase
 
     /// WORKER
     /** @type { Boolean } */
-    #useServiceWorker = true;
+    #useServiceWorker = false;
 
     /** @type { String } */
     #serviceWorkerPath = "./service-worker.js";
@@ -126,8 +142,6 @@ class AxialWebApplicationBase extends AxialApplicationBase
 
     /** @type { String } */ // we will move it into an api
     #vapidPublicKey;
-
-    
 
     /** @type { Function } */
     #boundApplicationPageLoadedWorkerHandler;
@@ -139,9 +153,16 @@ class AxialWebApplicationBase extends AxialApplicationBase
     /** @type { String } */ // we will move it into an api
     #pushVapiPath = "./api/push/vapid";
 
+    /** @type { AxialNotificationManager } */
+    #notificationManager;
+
     constructor()
     {
         super();
+
+        const errorManager = AxialErrorManager.getInstance();
+
+        this.#notificationManager = new AxialNotificationManager();
 
         // auth
         this.#userPath = PathUtils.getPathFromRelative(this.#userPath);
@@ -187,7 +208,7 @@ class AxialWebApplicationBase extends AxialApplicationBase
      */
     async #getUser()
     {
-        console.log("get user");
+        //console.log("get user");
         try
         {
             const path = this.#userPath + "&f=uuid," + this.#userUuid;
@@ -196,10 +217,12 @@ class AxialWebApplicationBase extends AxialApplicationBase
             if( json && json.content && Array.isArray(json.content) && json.content.length === 1 )
             {
                 this.#userObject = json.content[0];
+                console.log(this.#userObject)
                 if( this.#useServiceWorker === true )
                 {
                     await this.#initServiceWorker();
                 }
+                const smtg = await this.#notificationManager.init( this.#userObject._id );
             }
             
         }
@@ -227,7 +250,7 @@ class AxialWebApplicationBase extends AxialApplicationBase
                 this.#authBox.switchToState("connected");
             }
 
-            //this.#initPushService(); // maybe move to ger user
+            
         }
         else
         {
@@ -266,14 +289,14 @@ class AxialWebApplicationBase extends AxialApplicationBase
 
     async #initServiceWorker()
     {
-        console.log("init service worker");
+        //console.log("init service worker");
         if( "serviceWorker" in navigator )
         {
             try
             {
                 const registrations = await navigator.serviceWorker.getRegistrations();
                 const tempRegistration = registrations.find( reg => reg.scope === `${location.origin}/` );
-                console.log( tempRegistration )
+                //console.log( tempRegistration )
                 
                 if( tempRegistration === undefined )
                 {
@@ -286,7 +309,7 @@ class AxialWebApplicationBase extends AxialApplicationBase
                     this.#serviceWorkerRegistration = readyRegistration;
                 }
 
-                console.log("SW READY");
+                //console.log("SW READY");
                 await this.#initPushService();
             }
             catch(err)
@@ -311,14 +334,14 @@ class AxialWebApplicationBase extends AxialApplicationBase
 
     async #initPushService()
     {
-        console.log("initPushService permission", Notification.permission);
+        //console.log("initPushService permission", Notification.permission);
         try
         {
             await this.#getVapidPublicKey();
             if( Notification.permission === "granted" && this.#vapidPublicKey !== undefined && this.#serviceWorkerRegistration && this.#userObject )
             {
                 let pushSubscription = await this.#serviceWorkerRegistration.pushManager.getSubscription();
-                console.log("push registered", pushSubscription);
+                //console.log("push registered", pushSubscription);
                 if( pushSubscription === null )
                 {
                     //console.log("entry point register for Push");
@@ -330,11 +353,11 @@ class AxialWebApplicationBase extends AxialApplicationBase
                     pushSubscription = await this.#serviceWorkerRegistration.pushManager.subscribe( pushSubscriptionOptions );
                 }
                 
-                console.log( pushSubscription );
-                console.log(JSON.stringify( pushSubscription) );
+                //console.log( pushSubscription );
+                //console.log(JSON.stringify( pushSubscription) );
                 if( this.userObject && this.userObject._id )
                 {
-                    console.log( "we are able to register the subscription on the server" );
+                    //console.log( "we are able to register the subscription on the server" );
                     const notifSubscription = 
                     {
                         user_id: this.userObject._id,
@@ -342,7 +365,7 @@ class AxialWebApplicationBase extends AxialApplicationBase
                     }
                     const response = await fetch(this.#pushSubscribePath, { method: "POST", body: JSON.stringify(notifSubscription), headers: { "Content-Type":"application/json", "Cache-Control":"no-cache" } } );
                     const json = await response.json();
-                    console.log( json );
+                    //console.log( json );
                 }
             }
             else
@@ -460,7 +483,10 @@ class AxialWebApplicationBase extends AxialApplicationBase
     {
         super._onApplicationPageLoaded( event );
 
+        //this.#authManager = new AxialAuthManager();
+
         const uuid = localStorage.getItem("axial_auth_uuid");
+        //console.log(uuid)
         if( uuid )
         {
             this.#userUuid = uuid;

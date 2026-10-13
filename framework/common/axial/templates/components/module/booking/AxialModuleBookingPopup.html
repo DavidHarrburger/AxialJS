@@ -1,0 +1,15 @@
+<!-- AxialModuleBookingPopup -->
+<template id="axial-module-booking-popup-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div class="axial_module_popup-holder">
+        <div class="axial_module_popup-header">
+            <div id="title" class="axial_module_popup-title">Rendez-vous</div>
+            <div class="axial_spacer"></div>
+            <axial-button id="closer" axial-text="Fermer"></axial-button>
+        </div>
+        <div class="axial_module_popup-content axial_module_booking_popup-content">
+            <slot id="contentSlot" name="axial-content"></slot>
+            <axial-booking-agenda id="bookingAgenda"></axial-booking-agenda>
+        </div>
+    </div>
+</template>

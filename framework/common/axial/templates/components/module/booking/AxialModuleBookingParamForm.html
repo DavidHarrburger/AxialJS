@@ -1,0 +1,45 @@
+<!-- AxialModuleBookingParamForm -->
+<template id="axial-module-booking-param-form-template">
+    <link rel="stylesheet" href="./styles.css">
+    <form id="holder" class="axial_form-holder">
+        <slot id="slot" name="axial-items"></slot>
+        <axial-form-divider axial-title="Plage horaire des RDV"></axial-form-divider>
+        <div class="axial_form_item-row" >
+            <axial-form-item-inputs axial-label="Heure d'ouverture" axial-field="ftime_open" axial-direction="row" axial-required="">
+                <input type="time" slot="axial-content" name="time_open" value="08:00" required autocomplete="off">
+            </axial-form-item-inputs>
+            <axial-form-item-inputs axial-label="Heure de fermeture" axial-field="ftime_close" axial-direction="row" axial-required="">
+                <input type="time" slot="axial-content" name="time_close" value="17:00" required autocomplete="off">
+            </axial-form-item-inputs>
+        </div>
+        
+        <axial-form-divider axial-title="Destinataires internes des emails"></axial-form-divider>
+        <div class="axial_form_item-row">
+            <axial-form-item-inputs axial-label="Destinataire n°1" axial-field="fdesti_1" axial-direction="row" axial-required="">
+                <input type="email" slot="axial-content" name="desti_1" required autocomplete="off">
+            </axial-form-item-inputs>
+            <axial-form-item-inputs axial-label="Destinataire n°2" axial-field="fdesti_2" axial-direction="row" >
+                <input type="email" slot="axial-content" name="desti_2"  autocomplete="off">
+            </axial-form-item-inputs>
+            <axial-form-item-inputs axial-label="Destinataire n°3" axial-field="fdesti_3" axial-direction="row" >
+                <input type="email" slot="axial-content" name="desti_3"  autocomplete="off">
+            </axial-form-item-inputs>
+        </div>
+        <axial-form-divider axial-title="Mail de confirmation pour le client"></axial-form-divider>
+        <div class="axial_form_item-row" >
+            <axial-form-item-inputs axial-label="Texte à afficher dans le mail" axial-field="fmail_perso" axial-direction="row">
+                <textarea name="mail_message" slot="axial-content" minlength="8" maxlength="400" placeholder="Un petit mot de remerciement fait toujours plaisir !"></textarea>
+            </axial-form-item-inputs>
+        </div>
+        <axial-form-divider axial-title="Rappel de RDV"></axial-form-divider>
+        <div class="axial_form_item-row" >
+            <axial-form-item-checks axial-field="frappels" axial-direction="row">
+                <axial-toggle-check axial-text="Rappel par mail" axial-value="reminder_mail" slot="axial-content"></axial-toggle-check>
+                <axial-toggle-check axial-text="Rappel par SMS" axial-value="reminder_sms" slot="axial-content"></axial-toggle-check>
+            </axial-form-item-checks>
+        </div>
+    </form>
+    <div class="axial_form-footer">
+        <axial-service-button id="postButton" axial-text="Enregistrer"></axial-service-button>
+    </div>
+</template>

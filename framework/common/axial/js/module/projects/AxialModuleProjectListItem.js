@@ -47,6 +47,8 @@ class AxialModuleProjectListItem extends AxialListItem
     {
         super._updateComponent();
         this.#name.innerHTML = this.data?.simulation_name;
+
+        const savedData = this.data.data;
         
         if( this.deleteButton )
         {
@@ -68,7 +70,7 @@ class AxialModuleProjectListItem extends AxialListItem
             this.cloneButton._id = this.data._id;
         }
 
-        console.log("project item", this.data.user_uuid )
+        //console.log("project item", this.data.user_uuid )
         if( this.data.user_uuid != window.AXIAL.userUuid )
         {
             if( this.archiveButton) { this.archiveButton.remove(); }
@@ -77,7 +79,7 @@ class AxialModuleProjectListItem extends AxialListItem
         }
         else
         {
-            if( this.lockButton) { this.lockButton.remove(); }
+            if( this.lockButton ) { this.lockButton.remove(); }
         }
     }
 

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <title>Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="">
+    <link rel="icon" type="image/x-icon" href="../assets/favicon/favicon.ico">
+    <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body class="axial_module_body">
+
+<!--$$$C-->
+
+    <div id="axialBackgroundLayer" class="axial_layer_base axial_background_layer"></div>
+    <div id="axialMainLayer" class="axial_main_layer axial_main_layer-module">
+
+        <!-- MAIN -->
+        <main class="axial_module_main">
+            
+            <axial-viewer id="axialModuleViewer">
+                <axial-module-home-admin-view slot="axial-views"></axial-module-home-admin-view>
+                <axial-module-profile-view slot="axial-views"></axial-module-profile-view>
+                <axial-module-messaging-view slot="axial-views"></axial-module-messaging-view>
+                <axial-module-stat-view slot="axial-views"></axial-module-stat-view>
+                <axial-module-param-view slot="axial-views"></axial-module-param-view>
+            </axial-viewer>
+            
+        </main>
+
+        <!-- HEADER -->
+        <header class="axial_module_header">
+            <div class="axial_module_title">Dashboard</div>
+            <div class="axial_spacer axial_module_spacer"></div>
+            <axial-auth-box id="axialAuthBox"></axial-auth-box>
+            <axial-burger-button id="axialModuleMenuButton" class="axial_admin_burger"></axial-burger-button>
+        </header>
+
+        <!-- PANEL -->
+        <div class="axial_admin_panel" id="axialModulePanel">
+            <div class="axial_admin_panel-header">
+                <div class="axial_admin_panel-logo">
+                    <a class="axial_header_logo" href="../" target="_self">
+                        <img class="axial_header_logo_svg" alt="logo" src="../assets/logos/logo.svg">
+                    </a>
+                </div>
+            </div>
+            <div class="axial_admin_panel-scroller">
+
+                <axial-toggle-button-group id="axialModuleToggles" class="axial_module_toggles" axial-direction="column">
+
+                    <axial-toggle-panel-button axial-text="Accueil" slot="axial-toggles">
+                        <div slot="axial-icon" class="axial_toggle_button_helper-icon_holder">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                <path d="M304 70.1C313.1 61.9 326.9 61.9 336 70.1L568 278.1C577.9 286.9 578.7 302.1 569.8 312C560.9 321.9 545.8 322.7 535.9 313.8L527.9 306.6L527.9 511.9C527.9 547.2 499.2 575.9 463.9 575.9L175.9 575.9C140.6 575.9 111.9 547.2 111.9 511.9L111.9 306.6L103.9 313.8C94 322.6 78.9 321.8 70 312C61.1 302.2 62 287 71.8 278.1L304 70.1zM320 120.2L160 263.7L160 512C160 520.8 167.2 528 176 528L224 528L224 424C224 384.2 256.2 352 296 352L344 352C383.8 352 416 384.2 416 424L416 528L464 528C472.8 528 480 520.8 480 512L480 263.7L320 120.3zM272 528L368 528L368 424C368 410.7 357.3 400 344 400L296 400C282.7 400 272 410.7 272 424L272 528z"/>
+                            </svg>
+                        </div>
+                    </axial-toggle-panel-button>
+
+                    <axial-toggle-panel-button axial-text="Profil" slot="axial-toggles">
+                        <div slot="axial-icon" class="axial_toggle_button_helper-icon_holder">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                <path d="M470.5 463.6C451.4 416.9 405.5 384 352 384L288 384C234.5 384 188.6 416.9 169.5 463.6C133.9 426.3 112 375.7 112 320C112 205.1 205.1 112 320 112C434.9 112 528 205.1 528 320C528 375.7 506.1 426.2 470.5 463.6zM430.4 496.3C398.4 516.4 360.6 528 320 528C279.4 528 241.6 516.4 209.5 496.3C216.8 459.6 249.2 432 288 432L352 432C390.8 432 423.2 459.6 430.5 496.3zM320 576C461.4 576 576 461.4 576 320C576 178.6 461.4 64 320 64C178.6 64 64 178.6 64 320C64 461.4 178.6 576 320 576zM320 304C297.9 304 280 286.1 280 264C280 241.9 297.9 224 320 224C342.1 224 360 241.9 360 264C360 286.1 342.1 304 320 304zM232 264C232 312.6 271.4 352 320 352C368.6 352 408 312.6 408 264C408 215.4 368.6 176 320 176C271.4 176 232 215.4 232 264z"/>
+                            </svg>
+                        </div>
+                    </axial-toggle-panel-button>
+
+                    <axial-toggle-panel-button axial-text="Messagerie" slot="axial-toggles">
+                        <div slot="axial-icon" class="axial_toggle_button_helper-icon_holder">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                <path d="M108.2 322.7C114.3 307.5 112.2 290.1 102.6 276.8C88.1 256.7 80 233.1 80 208C80 141.2 140.5 80 224 80C307.5 80 368 141.2 368 208C368 274.8 307.5 336 224 336C208.1 336 192.9 333.7 178.7 329.5C168.4 326.4 157.3 327 147.3 331L96.9 351.2L108.3 322.7zM32 208C32 243.8 43.6 277.1 63.7 304.8L33.9 379.2C32.6 382.4 32 385.8 32 389.2C32 404 44 416 58.8 416C62.2 416 65.6 415.3 68.8 414.1L165.1 375.6C183.7 381.1 203.5 384 224 384C330 384 416 305.2 416 208C416 110.8 330 32 224 32C118 32 32 110.8 32 208zM416 576C436.6 576 456.3 573 474.9 567.6L571.2 606.1C574.4 607.4 577.8 608 581.2 608C596 608 608 596 608 581.2C608 577.8 607.3 574.4 606.1 571.2L576.4 496.8C596.4 469 608.1 435.7 608.1 400C608.1 317.6 546.4 248.5 463.1 229.3C461.5 245.6 458 261.2 453 276.2C516.9 291 560.2 343.5 560.2 400.1C560.2 425.2 552.1 448.8 537.6 468.9C528 482.2 525.9 499.5 532 514.8L543.4 543.3L493 523.1C483 519.1 471.9 518.6 461.6 521.6C447.4 525.8 432.2 528.1 416.3 528.1C344.1 528.1 289.2 482.4 275.6 426.9C260 430.1 243.9 431.9 227.5 432.1C243.9 514 322.2 576.1 416.3 576.1z"/>
+                            </svg>
+                        </div>
+                    </axial-toggle-panel-button>
+
+                    <axial-toggle-panel-button axial-text="Statistiques" slot="axial-toggles">
+                        <div slot="axial-icon" class="axial_toggle_button_helper-icon_holder">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                <path d="M128 128C128 110.3 113.7 96 96 96C78.3 96 64 110.3 64 128L64 464C64 508.2 99.8 544 144 544L544 544C561.7 544 576 529.7 576 512C576 494.3 561.7 480 544 480L144 480C135.2 480 128 472.8 128 464L128 128zM534.6 214.6C547.1 202.1 547.1 181.8 534.6 169.3C522.1 156.8 501.8 156.8 489.3 169.3L384 274.7L326.6 217.4C314.1 204.9 293.8 204.9 281.3 217.4L185.3 313.4C172.8 325.9 172.8 346.2 185.3 358.7C197.8 371.2 218.1 371.2 230.6 358.7L304 285.3L361.4 342.7C373.9 355.2 394.2 355.2 406.7 342.7L534.7 214.7z"/>
+                            </svg>
+                        </div>
+                    </axial-toggle-panel-button>
+
+                    <axial-toggle-panel-button axial-text="Paramètres" slot="axial-toggles">
+                        <div slot="axial-icon" class="axial_toggle_button_helper-icon_holder">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                <path d="M259.1 73.5C262.1 58.7 275.2 48 290.4 48L350.2 48C365.4 48 378.5 58.7 381.5 73.5L396 143.5C410.1 149.5 423.3 157.2 435.3 166.3L503.1 143.8C517.5 139 533.3 145 540.9 158.2L570.8 210C578.4 223.2 575.7 239.8 564.3 249.9L511 297.3C511.9 304.7 512.3 312.3 512.3 320C512.3 327.7 511.8 335.3 511 342.7L564.4 390.2C575.8 400.3 578.4 417 570.9 430.1L541 481.9C533.4 495 517.6 501.1 503.2 496.3L435.4 473.8C423.3 482.9 410.1 490.5 396.1 496.6L381.7 566.5C378.6 581.4 365.5 592 350.4 592L290.6 592C275.4 592 262.3 581.3 259.3 566.5L244.9 496.6C230.8 490.6 217.7 482.9 205.6 473.8L137.5 496.3C123.1 501.1 107.3 495.1 99.7 481.9L69.8 430.1C62.2 416.9 64.9 400.3 76.3 390.2L129.7 342.7C128.8 335.3 128.4 327.7 128.4 320C128.4 312.3 128.9 304.7 129.7 297.3L76.3 249.8C64.9 239.7 62.3 223 69.8 209.9L99.7 158.1C107.3 144.9 123.1 138.9 137.5 143.7L205.3 166.2C217.4 157.1 230.6 149.5 244.6 143.4L259.1 73.5zM320.3 400C364.5 399.8 400.2 363.9 400 319.7C399.8 275.5 363.9 239.8 319.7 240C275.5 240.2 239.8 276.1 240 320.3C240.2 364.5 276.1 400.2 320.3 400z"/>
+                            </svg>
+                        </div>
+                    </axial-toggle-panel-button>
+
+                </axial-toggle-button-group>
+                
+                <div class="axial_spacer"></div>
+                <axial-signout-button id="signoutButton" axial-text="Deconnexion" axial-path="../api/auth/signout" axial-redirect="../">
+                    <div slot="axial-icon" class="axial_button-icon_holder">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                            <path d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 192 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l210.7 0-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l128-128zM160 96c17.7 0 32-14.3 32-32s-14.3-32-32-32L96 32C43 32 0 75 0 128L0 384c0 53 43 96 96 96l64 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-64 0c-17.7 0-32-14.3-32-32l0-256c0-17.7 14.3-32 32-32l64 0z"/>
+                        </svg>
+                    </div>
+                </axial-signout-button>
+
+            </div>
+        </div>
+        
+    </div>
+
+    <div id="axialIntroLayer" class="axial_layer_base axial_intro_layer"></div>
+    <div id="axialPopupLayer" class="axial_layer_base axial_popup_layer">
+        <div id="axialPopupObfuscator" class="axial_popup_obfuscator"></div>
+    </div>
+    <div id="axialMediasLayer" class="axial_layer_base axial_medias_layer"></div>
+    <div id="axialNotificationLayer" class="axial_layer_base axial_notification_layer">
+        <axial-notifier id="axialNotifier"></axial-notifier>
+    </div>
+    <div id="axialOverlayLayer" class="axial_layer_base axial_overlay_layer">
+        <div id="axialOverlayObfuscator" class="axial_overlay_obfuscator"></div>
+        <axial-consent-overlay id="axialConsentOverlay"></axial-consent-overlay>
+        <axial-deletion-overlay id="axialDeletionOverlay"></axial-deletion-overlay>
+        <axial-archive-overlay id="axialArchiveOverlay"></axial-archive-overlay>
+    </div>
+    <div id="axialTooltipLayer" class="axial_layer_base axial_tooltip_layer"></div>
+    <div id="axialTransitionLayer" class="axial_layer_base axial_transition_layer"></div>
+    <script src="./application.js" defer></script>
+    
+</body>
+</html>

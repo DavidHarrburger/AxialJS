@@ -150,7 +150,7 @@ class AxialAuthLogin extends AxialComponentBase
     {
         try
         {
-            const infos = { email: this.#email.value, password: this.#password.value };
+            const infos = { email: this.#email.value.toLowerCase(), password: this.#password.value };
             const response = await fetch( this.#path, { method: "POST", body: JSON.stringify(infos), headers: { "Content-Type":"application/json", "Cache-Control":"no-cache" } } );
             const json = await response.json();
             console.log(json);
@@ -229,7 +229,7 @@ class AxialAuthLogin extends AxialComponentBase
         event.preventDefault();
         if( this.#email.validity.valid === true )
         {
-            window.location.href = this.#resetPagePath + "?m=" + this.#email.value;
+            window.location.href = this.#resetPagePath + "?m=" + this.#email.value.toLowerCase();
         }
         else
         {

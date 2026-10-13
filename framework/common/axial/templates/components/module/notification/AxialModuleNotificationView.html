@@ -1,0 +1,28 @@
+<!-- AxialModuleNotificationView -->
+<template id="axial-module-notification-view-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div class="axial_module_view-holder">
+        <div class="axial_module_view-header">
+            <div id="title" class="axial_module_view-title">Notifications</div>
+            <div class="axial_spacer"></div>
+        </div>
+        <div class="axial_module_view-content axial_module_view-content-transparent">
+            <slot id="contentSlot" name="axial-content"></slot>
+
+            <div class="axial_module_notification_view-holder">
+                
+                <div class="axial_module_notification_view-part">
+                    <input id="titleInput" type="text" maxlength="40" placeholder="Titre de la notification">
+                    <div id="titleLegend" class="axial_module_notification_view-legend">0 / 40 caractères</div>
+                </div>
+                
+                <div class="axial_module_notification_view-part">
+                    <textarea id="messageArea" maxlength="200" placeholder="Votre message à distribuer"></textarea>
+                    <div id="messageLegend" class="axial_module_notification_view-legend">0 / 200 caractères</div>
+                </div>
+                
+                <axial-service-button id="sendButton" axial-text="Envoyer une notification"></axial-service-button>
+            </div>
+        </div>
+    </div>
+</template>

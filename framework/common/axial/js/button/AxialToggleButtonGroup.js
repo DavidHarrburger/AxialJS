@@ -79,7 +79,7 @@ class AxialToggleButtonGroup extends AxialComponentBase
             const testGap = Number( newValue );
             if( isNaN( Number( testGap ) ) === false )
             {
-                this.#gap = testGap
+                this.#gap = testGap;
             }
             if( this.#holder )
             {
@@ -121,7 +121,6 @@ class AxialToggleButtonGroup extends AxialComponentBase
             {
                 const toggle = this.#toggles[this.#selectedIndex];
                 toggle.selected = true;
-                console.log( "shoulb be selected");
             }
         }
 

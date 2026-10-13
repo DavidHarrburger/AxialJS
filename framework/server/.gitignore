@@ -6,3 +6,4 @@ axial-database.json
 keys.txt
 .env
 ./axial-server/AxialServerConstants.js
+**/index-compiled.html

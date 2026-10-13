@@ -1,6 +1,5 @@
 "use strict";
 
-import { AxialForm } from "../../forms/AxialForm.js";
 import { AxialModuleProductForm } from "./AxialModuleProductForm.js";
 import { AxialModulePopup } from "../../popup/AxialModulePopup.js";
 import { PathUtils } from "../../utils/PathUtils.js";

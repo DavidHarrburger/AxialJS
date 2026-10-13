@@ -3,10 +3,10 @@
     <link rel="stylesheet" href="./styles.css">
     <form id="holder" class="axial_form-holder">
         <slot id="slot" name="axial-items"></slot>
-        <axial-form-divider axial-title="Mentions légales" ></axial-form-divider>
+        <!--<axial-form-divider axial-title="Mentions légales" ></axial-form-divider>-->
         <div class="axial_form_item-row axial_form_item-full">
             <axial-form-item-inputs axial-field="flegal" axial-direction="row">
-                <textarea class="axial_form_item_inputs-textarea-full" slot="axial-content" name="legal" placeholder="Toutes les mentions légales à faire figurer à côté de l'encart prix d'une estimation" minlength="3" maxlength="200" required autocomplete="off"></textarea>
+                <textarea class="axial_form_item_inputs-textarea" slot="axial-content" name="legal" placeholder="Toutes les mentions légales à faire figurer à côté de l'encart prix d'une estimation" minlength="3" maxlength="200" required autocomplete="off"></textarea>
             </axial-form-item-inputs>
         </div>
     </form>

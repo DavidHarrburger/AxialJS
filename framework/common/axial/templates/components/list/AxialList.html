@@ -5,8 +5,10 @@
         <div id="header" class="axial_list-header">
             <slot id="headerSlot" name="axial-header"></slot>
         </div>
-        <div id="content" class="axial_list-content">
+        <div id="empty" class="axial_list-empty">
+            <slot id="emptySlot" name="axial-empty"></slot>
         </div>
+        <div id="content" class="axial_list-content"></div>
         <div id="footer" class="axial_list-footer">
             <slot id="footerSlot" name="axial-footer"></slot>
         </div>

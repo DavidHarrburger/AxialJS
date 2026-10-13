@@ -4,6 +4,7 @@ import { AxialIconButton } from "../button/AxialIconButton.js";
 import { AxialView } from "./AxialView.js";
 import { AxialOverlayBase } from "../overlay/AxialOverlayBase.js";
 import { StringUtils } from "../utils/StringUtils.js";
+import { AxialModuleOverlay } from "../overlay/AxialModuleOverlay.js";
 
 class AxialModuleView extends AxialView
 {
@@ -19,7 +20,7 @@ class AxialModuleView extends AxialView
     /** @type { String } */
     #overlayId;
 
-    /** @type { AxialOverlayBase } */
+    /** @type { AxialModuleOverlay } */
     #overlay;
 
     /** @type { Function } */
@@ -51,6 +52,17 @@ class AxialModuleView extends AxialView
         }
     }
 
+    get overlayId() { return this.#overlayId; }
+    set overlayId( value )
+    {
+        if( typeof value !== "string" )
+        {
+            throw new TypeError("String value required");
+        }
+        this.#overlayId = value;
+        this.#overlay = document.getElementById( this.#overlayId );
+    }
+
     /** 
      * @type { AxialIconButton } 
      * @readonly
@@ -71,7 +83,7 @@ class AxialModuleView extends AxialView
         if( this.#overlayId )
         {
             this.#overlay = document.getElementById(this.#overlayId);
-            console.log( this.#overlay);
+            
         }
         if( this.#ellipsisButton )
         {
@@ -101,9 +113,8 @@ class AxialModuleView extends AxialView
         if( this.#overlay )
         {
             this.#overlay.show();
-            console.log("ellipsiiiiiiiiiiiis");
+            //console.log("ellipsiiiiiiiiiiiis");
         }
-        
     }
 
 }

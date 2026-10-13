@@ -5,6 +5,7 @@ import { AxialServiceButton } from "../button/AxialServiceButton.js";
 import { AxialToggleRadio } from "../button/AxialToggleRadio.js";
 import { AxialToggleButtonGroup } from "../button/AxialToggleButtonGroup.js";
 import { PathUtils } from "../utils/PathUtils.js";
+import { AxialToggleCheck } from "../button/AxialToggleCheck.js";
 
 class AxialAuthVerifyer extends AxialComponentBase
 {
@@ -28,11 +29,14 @@ class AxialAuthVerifyer extends AxialComponentBase
     /** @type { HTMLElement} */
     #recipient;
 
-    /** @type { Array } */
+    /** @type { Array<HTMLInputElement> } */
     #inputs;
 
     /** @type { AxialServiceButton } */
     #sendButton;
+
+    /** @type { AxialToggleCheck } */
+    #stayConnectedCheck;
     
     /// events
     /** @type { Function } */
@@ -46,6 +50,9 @@ class AxialAuthVerifyer extends AxialComponentBase
 
     /** @type { Function } */
     #boundInputHandler;
+
+    /** @type { Function } */
+    #boundKeyDownHandler;
 
     /** @type { Function } */
     #boundFocusHandler;
@@ -64,6 +71,7 @@ class AxialAuthVerifyer extends AxialComponentBase
 
         this.#boundPasteHandler = this.#pasteHandler.bind(this);
         this.#boundInputHandler = this.#inputHandler.bind(this);
+        this.#boundKeyDownHandler = this.#keyDownHandler.bind(this);
         this.#boundFocusHandler = this.#focusHandler.bind(this);
     }
 
@@ -79,6 +87,8 @@ class AxialAuthVerifyer extends AxialComponentBase
         this.#sendButton = this.shadowRoot.getElementById("sendButton");
         this.#sendButton.enabled = false;
         this.#sendButton.addEventListener("click", this.#boundSendButtonHandler);
+
+        this.#stayConnectedCheck = this.shadowRoot.getElementById("stayConnectedCheck");
         
         this.#recipient = this.shadowRoot.getElementById("recipient");
         
@@ -90,7 +100,8 @@ class AxialAuthVerifyer extends AxialComponentBase
             {
                 input.addEventListener("paste", this.#boundPasteHandler);
                 input.addEventListener("input", this.#boundInputHandler);
-                //input.addEventListener("focus", this.#boundFocusHandler);
+                input.addEventListener("keydown", this.#boundKeyDownHandler);
+                input.addEventListener("focus", this.#boundFocusHandler);
             }
         }
         //this.#inputs[0].focus();
@@ -100,8 +111,7 @@ class AxialAuthVerifyer extends AxialComponentBase
     #groupChangedHandler( event )
     {
         /** @type { AxialToggleRadio } */
-        const toggle = this.#group.getSelectedToggle();
-        console.log( toggle.value );
+        //const toggle = this.#group.getSelectedToggle();
 
         this.#sendButton.enabled = true;
     }
@@ -130,9 +140,7 @@ class AxialAuthVerifyer extends AxialComponentBase
             }; 
             const response = await fetch( this.#sendPath, { method: "POST", body: JSON.stringify(infos), headers: { "Content-Type":"application/json", "Cache-Control":"no-cache" } } );
             const json = await response.json();
-            console.log(json);
 
-            
             if( json && json.recipient )
             {
                 this.#recipient.innerHTML = json.recipient;
@@ -168,7 +176,7 @@ class AxialAuthVerifyer extends AxialComponentBase
         {
             /** @type { AxialToggleRadio } */
             const toggle = this.#group.getSelectedToggle();
-            const infos = { code: code, method: toggle.value }; // we will see
+            const infos = { code: code, method: toggle.value, check: this.#stayConnectedCheck.selected }; // we will see
             const response = await fetch( this.#verificationPath, { method: "POST", body: JSON.stringify(infos), headers: { "Content-Type":"application/json", "Cache-Control":"no-cache" } } );
             const json = await response.json();
             if( json )
@@ -199,7 +207,9 @@ class AxialAuthVerifyer extends AxialComponentBase
 
     #focusHandler( event )
     {
-        event.preventDefault();
+        //event.preventDefault();
+        console.log("focus");
+        event.target.select();
     }
 
     /**
@@ -208,7 +218,6 @@ class AxialAuthVerifyer extends AxialComponentBase
      */
     #inputHandler( event )
     {
-        console.log( event );
         event.preventDefault();
         const input = event.target;
         const data = event.data;
@@ -228,6 +237,33 @@ class AxialAuthVerifyer extends AxialComponentBase
             }
         }
         this.#checkInputs();
+    }
+
+    /**
+     * 
+     * @param { KeyboardEvent } event 
+     */
+    #keyDownHandler( event )
+    {
+        if( event.key === "Backspace" || event.key === "ArrowLeft" || event.key === "ArrowRight" )
+        {
+            const input = event.target;
+            const index = this.#inputs.indexOf(input);
+            if( (event.key === "Backspace" || event.key === "ArrowLeft") && index >= 1 )
+            {
+                const newInput = this.#inputs[index-1];
+                newInput.select();
+                newInput.focus()
+                
+            }
+            else if( ( event.key === "ArrowRight" ) && index < this.#inputs.length-1 )
+            {
+                const newInput = this.#inputs[index+1];
+                newInput.select();
+                newInput.focus()
+                
+            }
+        }
     }
 
     /**

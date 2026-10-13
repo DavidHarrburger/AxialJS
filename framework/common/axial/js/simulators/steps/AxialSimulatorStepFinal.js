@@ -117,10 +117,14 @@ class AxialSimulatorStepFinal extends AxialSimulatorStep
 
     #finalHandler( event )
     {
+        /*
         this.#backButton.enabled = false;
         this.#finalButton.enabled = false;
         this.#finalButton.loading = true;
         this.#sendMeetingRequest();
+        */
+        const popup = AxialPopupManager.getPopupById("bookingPopup");
+        popup.show();
     }
 
     async #sendMeetingRequest()

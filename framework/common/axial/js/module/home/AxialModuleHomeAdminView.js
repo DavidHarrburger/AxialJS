@@ -7,6 +7,10 @@ import { PathUtils } from "../../utils/PathUtils.js";
 
 import { AxialModuleOnboardingContactOverlay } from "../onboarding/AxialModuleOnboardingContactOverlay.js";
 
+import { AxialCardDisplayer } from "../../card/AxialCardDisplayer.js";
+import { AxialCardUploader } from "../../card/widgets/AxialCardUploader.js";
+import { AxialCard } from "../../card/AxialCard.js";
+
 class AxialModuleHomeAdminView extends AxialModuleView
 {
     /// vars
@@ -20,6 +24,9 @@ class AxialModuleHomeAdminView extends AxialModuleView
 
     /** @type { AxialModuleOnboardingContactOverlay } */
     #onboardingContactOverlay;
+
+    /** @type { AxialCardDisplayer } */
+    #cardDisplayer;
 
     /// events
     /** @type { Function } */

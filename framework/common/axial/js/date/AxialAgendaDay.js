@@ -11,12 +11,14 @@ class AxialAgendaDay extends AxialComponentBase
     /** @type { Array.<String> } */
     #daysNames = [ "Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi" ];
 
-
     /** @type { Date } */
     #date = undefined;
 
     /** @type { Set } */
     #daysExclusions = new Set([ 0, 6 ]);
+
+    /** @type { Boolean } */
+    #enabled = true;
 
     /// elements
     /** @type { HTMLElement } */
@@ -43,6 +45,30 @@ class AxialAgendaDay extends AxialComponentBase
         {
             this.#dayName.innerHTML = this.#daysNames[ this.#date.getDay() ];
             this.#dateNum.innerHTML = this.#date.getDate();
+        }
+
+        if( this.#enabled == false )
+        {
+            this.style.opacity = "0.5";
+        }
+    }
+
+    get enabled() { return this.#enabled; }
+    set enabled( value )
+    {
+        if( typeof value !== "boolean" )
+        {
+            throw new TypeError("Boolean value required");
+        }
+        if( this.#enabled == value ) { return; }
+        this.#enabled = value;
+        if( this.#enabled == true )
+        {
+            this.style.opacity = "1";
+        }
+        else
+        {
+            this.style.opacity = "0.5";
         }
     }
 

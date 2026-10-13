@@ -14,6 +14,7 @@ import { AxialBurgerButton } from "../button/AxialBurgerButton.js";
 import { AxialToggleButtonGroup } from "../button/AxialToggleButtonGroup.js";
 import { AxialSignoutButton } from "../button/AxialSignoutButton.js";
 import { AxialTogglePanelButton } from "../button/AxialTogglePanelButton.js";
+import { AxialToggleButtonBase } from "../button/AxialToggleButtonBase.js";
 
 ///
 /// POPUP
@@ -43,6 +44,7 @@ import { AxialFormItemBase } from "../forms/AxialFormItemBase.js";
 import { AxialFormItem } from "../forms/AxialFormItem.js";
 import { AxialFormItemInputs } from "../forms/AxialFormItemInputs.js";
 import { AxialFormItemWeekPlanning } from "../forms/AxialFormItemWeekPlanning.js";
+
 
 class AxialWebModuleApplicationBase extends AxialWebApplicationBase
 {
@@ -87,6 +89,12 @@ class AxialWebModuleApplicationBase extends AxialWebApplicationBase
      * @readonly
      */
     get moduleViewer() { return this.#moduleViewer; }
+
+    /**
+     * @type { AxialToggleButtonGroup }
+     * @readonly
+     */
+    get moduleToggles() { return this.#moduleToggles; }
 
     _onApplicationDomLoaded( event )
     {
@@ -228,6 +236,27 @@ class AxialWebModuleApplicationBase extends AxialWebApplicationBase
         if( this.#modulePanel )
         {
             this.#modulePanel.style.transform = this.#moduleMenuButton.selected === true ? "translateX(0)" : "translateX(-100%)";
+        }
+    }
+
+    /**
+     * 
+     * @param { AxialToggleButtonBase } toggleId 
+     */
+    gotoView( toggleId )
+    {
+        const toggles = this.#moduleToggles.toggles;
+        const tl = toggles.length;
+        for( let i = 0; i < tl; i++ )
+        {
+            const toggle = toggles[i];
+            const tid = toggle.id;
+            if( tid && toggleId && tid == toggleId )
+            {
+                this.#moduleToggles.selectedIndex = i;
+                this.#moduleViewer.gotoViewByIndex(i);
+                return;
+            }
         }
     }
 

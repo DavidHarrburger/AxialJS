@@ -64,7 +64,7 @@ class AxialSimulatorLineDim extends AxialSimulatorLine
             unitWord = "<br>(en " + UnitUtils.UNITS.get( this.line.unit ).labels[1] + ")";
         }
 
-        const dl = this.line.dimLabels;
+        const dl = this.line.dimLabels || this.line.nameOverrides;
         if( dl && Array.isArray(dl) == true && dl.length == 2 )
         {
             const lenLabel = unitWord == undefined ? dl[0] : dl[0] + unitWord;
@@ -101,6 +101,8 @@ class AxialSimulatorLineDim extends AxialSimulatorLine
     _setEnabled( value )
     {
         super._setEnabled( value );
+        this.#lenInput.disabled = !value;
+        this.#widInput.disabled = !value;
     }
 
     _getCalculation()
@@ -109,7 +111,8 @@ class AxialSimulatorLineDim extends AxialSimulatorLine
         const wid = isNaN( this.#widInput.valueAsNumber ) === true ? 0 : this.#widInput.valueAsNumber;
         const sum = len + wid;
         const mul = len * wid;
-        return [len, wid, sum, mul]; 
+        const quo = len / wid;
+        return [len, wid, sum, mul, quo]; 
     }
 
     _getAsObject()
@@ -119,6 +122,8 @@ class AxialSimulatorLineDim extends AxialSimulatorLine
 
         let obj = 
         {
+            key: this.line.key,
+            wasAdded: this.useTrash,
             len: len,
             wid: wid
         }
@@ -139,6 +144,7 @@ class AxialSimulatorLineDim extends AxialSimulatorLine
         {
             this.isCompleted = false;
         }
+        //console.log("dim on saved data", this.isCompleted);
     }
 
     #deleteHandler( event )

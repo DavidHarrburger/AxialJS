@@ -257,7 +257,6 @@ class AxialModuleCreateProjectOverlay extends AxialOverlayBase
             this.hide();
         }
     }
-
 }
 
 window.customElements.define("axial-module-create-project-overlay", AxialModuleCreateProjectOverlay);

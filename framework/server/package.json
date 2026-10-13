@@ -11,21 +11,21 @@
   "license": "MIT",
   "dependencies": {
     "@prelude.so/sdk": "0.13.0",
-    "axios": "1.19.0",
+    "axios": "1.20.0",
     "cookie-parser": "1.4.7",
     "cors": "2.8.6",
-    "dotenv": "17.4.2",
-    "express": "5.2.1",
+    "dotenv": "18.0.7",
+    "express": "5.3.0",
     "form-data": "4.0.6",
-    "fs-extra": "11.4.0",
+    "fs-extra": "11.4.1",
     "jsonwebtoken": "9.0.3",
-    "mongodb": "7.5.0",
-    "multer": "2.2.0",
-    "nodemailer": "9.0.5",
+    "mongodb": "7.7.0",
+    "multer": "2.4.0",
+    "nodemailer": "10.1.0",
     "pdf-lib": "1.17.1",
     "qrcode": "1.5.4",
-    "stripe": "22.5.0",
+    "stripe": "23.0.0",
     "web-push": "3.6.7",
-    "ws": "8.21.3"
+    "ws": "8.22.0"
   }
 }

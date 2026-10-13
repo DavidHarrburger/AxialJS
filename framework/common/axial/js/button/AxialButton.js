@@ -298,7 +298,7 @@ class AxialButton extends AxialButtonBase
     #layoutComponent()
     {
         const slotElements = this.#iconSlot.assignedElements( { flatten: true } );
-        this.#icon.style.display = slotElements.length === 0 ? "none" : "block";
+        this.#icon.style.display = slotElements.length === 0 ? "none" : "flex";
 
         if( slotElements.length > 0 )
         {

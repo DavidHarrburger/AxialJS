@@ -18,6 +18,7 @@ class NumberUtils
      * @param { Number } number The number you want to round.
      * @param { Number } decimals The number of decimal places to round up to.
      * @returns { Number }
+     * @author Nathanix
      */
     static roundFixed(number, decimals)
     {

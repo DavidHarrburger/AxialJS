@@ -50,6 +50,8 @@ class AxialModuleUserView extends AxialModuleView
 
         this.#apiUserGetPath = PathUtils.getPathFromRelative( this.#apiUserGetPath );
         this.getPath = this.#apiUserGetPath;
+
+        this.overlayId = "userViewOverlay";
     }
 
     _buildComponent()

@@ -9,7 +9,7 @@ class AxialBurgerButton extends AxialToggleButtonBase
     #topPosition = 13;
 
     /** @type { Number } */
-    #middlePosition = 20.5;
+    #middlePosition = 20;
 
     /** @type { Number } */
     #bottomPosition = 27;

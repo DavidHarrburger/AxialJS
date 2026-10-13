@@ -6,6 +6,7 @@ import { AxialFormItemBase } from "./AxialFormItemBase.js";
 import { ObjectUtils } from "../utils/ObjectUtils.js";
 import { StringUtils } from "../utils/StringUtils.js";
 import { AxialFormItemImage } from "./AxialFormItemImage.js";
+import { AxialFormItemToggles } from "./AxialFormItemToggles.js";
 
 class AxialForm extends AxialServiceComponentBase
 {
@@ -289,7 +290,7 @@ class AxialForm extends AxialServiceComponentBase
         }
         */
         const formModel = this.getData.content;
-        console.log(formModel);
+        //console.log(formModel);
 
         if( formModel )
         {
@@ -324,7 +325,7 @@ class AxialForm extends AxialServiceComponentBase
             formObject.items.push( item._getItemAsObject() );
         }
 
-        console.log(formObject);
+        //console.log(formObject);
         return formObject;
     }
 
@@ -343,7 +344,7 @@ class AxialForm extends AxialServiceComponentBase
         
         for( const item of this.#items )
         {
-            console.log(item);
+            //console.log(item);
             item._fillItem(object);
         }
     }

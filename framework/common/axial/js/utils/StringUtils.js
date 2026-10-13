@@ -66,7 +66,7 @@ class StringUtils
     {
         if( typeof s !== "string" )
         {
-            throw new TypeError("Strin value required");
+            throw new TypeError("String value required");
         }
         s = s.trim();
         if( s.length === 0 )

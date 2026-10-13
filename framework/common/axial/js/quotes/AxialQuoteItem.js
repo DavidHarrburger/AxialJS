@@ -8,6 +8,9 @@ class AxialQuoteItem extends AxialComponentBase
     /** @type {String } */
     #itemNum;
 
+    /** @type { String } */
+    #backgroundColor; // transparent | f8f9fb
+
     /// elements
     /** @type { HTMLElement } */
     #num;
@@ -50,6 +53,20 @@ class AxialQuoteItem extends AxialComponentBase
         }
     }
 
+    get backgroundColor() { return this.#backgroundColor; }
+    set backgroundColor( value )
+    {
+        if( CSS.supports( "background-color", value ) === false )
+        {
+            throw new Error("CSS value not supported")
+        }
+        this.#backgroundColor = value;
+        if( this.componentBuilt === true )
+        {
+            this.style.backgroundColor = this.#backgroundColor;
+        }
+    }
+
     _buildComponent()
     {
         super._buildComponent();
@@ -86,18 +103,26 @@ class AxialQuoteItem extends AxialComponentBase
     #updateComponent()
     {
         //console.log( this.data );
+        if( this.#backgroundColor !==  undefined )
+        {
+            this.style.backgroundColor = this.#backgroundColor;
+        }
         const product = this.data.product;
 
         const isQtyInt = Number.isInteger(this.data.quantity);
-        const qty = isQtyInt === false ? Number( Number(this.data.quantity).toFixed(2) ) : this.data.quantity;
+        let qty = isQtyInt === false ? Number( Number(this.data.quantity).toFixed(2) ) : this.data.quantity;
+        if( product.unit.toLowerCase() == "forf" )
+        {
+            qty = 1;
+        }
 
-        const priceUnit = product.price
+        const priceUnit = product.price ?? product.puht;
         const priceTotal = priceUnit * qty;
         const tax = product.tax;
         const taxValue = priceTotal * tax / 100;
         const ttc = priceTotal + taxValue;
 
-        this.#designation.innerHTML = product.quote_label;
+        this.#designation.innerHTML = product.quote_label ?? product.designation;
         this.#quantity.innerHTML = qty;
         this.#unit.innerHTML = product.unit;
         

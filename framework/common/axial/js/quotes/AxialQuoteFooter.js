@@ -1,9 +1,16 @@
 "use strict";
 
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
+import { FetchUtils } from "../utils/FetchUtils.js";
+import { PathUtils } from "../utils/PathUtils.js";
 
 class AxialQuoteFooter extends AxialComponentBase
 {
+    /// vars
+    /** @type { String } */
+    #legalPath = "./api/params/estimation/legal/get";
+
+    /// elements
     /** @type { HTMLElement } */
     #totalHt;
 
@@ -19,12 +26,15 @@ class AxialQuoteFooter extends AxialComponentBase
     /** @type { HTMLElement } */
     #totalTtc;
 
+    /** @type { HTMLElement } */
+    #legal;
 
     constructor()
     {
         super();
         this.classList.add("axial_quote_footer");
         this.template = "axial-quote-footer-template";
+        this.#legalPath = PathUtils.getPathFromRelative(this.#legalPath);
     }
 
     _buildComponent()
@@ -36,6 +46,7 @@ class AxialQuoteFooter extends AxialComponentBase
         this.#tax10 = this.shadowRoot.getElementById("tax10");
         this.#tax20 = this.shadowRoot.getElementById("tax20");
         this.#totalTtc = this.shadowRoot.getElementById("totalTtc");
+        this.#legal = this.shadowRoot.getElementById("legal");
 
         if( this.data !== undefined )
         {
@@ -62,6 +73,24 @@ class AxialQuoteFooter extends AxialComponentBase
         if( this.data.t5 === 0 )  { this.#tax5.style.display = "none"; }
         if( this.data.t10 === 0 ) { this.#tax10.style.display = "none"; }
         if( this.data.t20 === 0 ) { this.#tax20.style.display = "none"; }
+
+        this.#fetchLegal();
+    }
+
+    async #fetchLegal()
+    {
+        try
+        {
+            const legalJson = await FetchUtils.GET(this.#legalPath);
+            if( this.#legal )
+            {
+                this.#legal.innerHTML = legalJson.content.items[0].value[0].value;
+            }
+        }
+        catch(err)
+        {
+            console.log(err);
+        }
     }
 }
 

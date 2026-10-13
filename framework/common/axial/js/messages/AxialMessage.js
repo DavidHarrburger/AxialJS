@@ -19,13 +19,13 @@ class AxialMessage extends AxialComponentBase
     #sentBackgroundColor = "#ec2426";
 
     /** @type { String } */
-    #receivedBackgroundColor = "#232323";
+    #receivedBackgroundColor = "var(--colDark)";
 
     /** @type { String } */
     #sentTextColor = "#fff";
 
     /** @type { String } */
-    #receivedTextColor = "#fff";
+    #receivedTextColor = "var(--colTextLight)";
 
     /** @type { Object } */
     #messageObject;
@@ -99,6 +99,7 @@ class AxialMessage extends AxialComponentBase
             this.style.alignItems = "flex-start";
             this.style.alignSelf = "flex-start";
             this.#content.style.backgroundColor = this.#receivedBackgroundColor;
+            this.#content.style.color = this.#receivedTextColor;
         }
     }
 

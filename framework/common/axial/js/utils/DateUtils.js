@@ -22,6 +22,38 @@ class DateUtils
         return DateUtils.#DAY_NAMES[n];
     }
 
+    static isSameDay( a, b )
+    {
+        const dateA = new Date(a);
+        const dateB = new Date(b);
+
+        if( isNaN(dateA) || isNaN(dateB) )
+        {
+            return false;
+        }
+
+        return dateA.getFullYear() === dateB.getFullYear()
+                && dateA.getMonth() === dateB.getMonth()
+                && dateA.getDate() === dateB.getDate();
+    }
+
+    /**
+     * 
+     * @param { Number } year The Year we need to check
+     * @param { Number } month The month 
+     * @param { Number } day The day
+     */
+    static getWeekNumber( year, month, day )
+    {
+        const date = new Date( Date.UTC( year, month , day ) );
+        date.setUTCDate( date.getUTCDate() + 4 - ( date.getUTCDay() || 7) );
+
+        const yearStart = new Date( Date.UTC( date.getUTCFullYear(), 0, 1) );
+        const weekNumber = Math.ceil( ( ( (date - yearStart ) / 86400000 ) + 1 ) / 7 );
+
+        return weekNumber;
+    }
+
     /**
      * Check if the current day i.e. new Date is between a Date Start and a Date End, assuming Date Start < Date End
      * @static
@@ -183,6 +215,23 @@ class DateUtils
         const num = d.getDate();
         const s = `${day} ${num}`;
         return s;
+    }
+
+    /**
+     * 
+     * @param { Date } d 
+     * @returns { String }
+     */
+    static toLocale( d )
+    {
+        const options =
+        {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+        };
+        return d.toLocaleString( "fr-FR", options );
     }
 
     /**

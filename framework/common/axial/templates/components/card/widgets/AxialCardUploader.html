@@ -1,0 +1,11 @@
+<!-- AxialCardUploader -->
+<template id="axial-card-uploader-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="holder" class="axial_card-holder">
+        <div class="axial_card-header">
+            <div class="axial_card-title">Upload</div>
+        </div>
+        <slot id="cardSlot" name="axial-card"></slot>
+        <axial-file-uploader id="fileUploader" axial-use-save=""></axial-file-uploader>
+    </div>
+</template>

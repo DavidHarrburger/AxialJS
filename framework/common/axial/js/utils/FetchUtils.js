@@ -2,6 +2,7 @@
 
 class FetchUtils
 {
+    static HEADERS = { "Content-Type":"application/json", "Cache-Control":"no-cache" }
     static async GET( path , query )
     {
         try
@@ -17,12 +18,18 @@ class FetchUtils
         }
     }
 
-    static async POST( path , body )
+    static async POST( path , body, headers )
     {
         // control
         try
         {
-            const response = await fetch( path, { method: "POST", body: JSON.stringify(body), headers: { "Content-Type":"application/json", "Cache-Control":"no-cache" } } );
+            if( headers == undefined )
+            {
+                headers = FetchUtils.HEADERS;
+                body = JSON.stringify(body);
+            }
+            
+            const response = await fetch( path, { method: "POST", body: body, headers: headers } );
             const json = await response.json();
             return json;
         }

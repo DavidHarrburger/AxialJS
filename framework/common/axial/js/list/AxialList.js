@@ -7,6 +7,7 @@ import { AxialButton } from "../button/AxialButton.js";
 import { AxialInputBase } from "../core/AxialInputBase.js";
 import { AxialListDivider } from "./AxialListDivider.js";
 import { AxialListAccordionElement } from "./AxialListAccordionElement.js";
+import { AxialProgressIndicator } from "../loader/AxialProgressIndicator.js";
 
 class AxialList extends AxialComponentBase
 {
@@ -23,6 +24,15 @@ class AxialList extends AxialComponentBase
 
     /** @type { HTMLSlotElement } */
     #headerSlot;
+
+    /** @type { HTMLElement } */
+    #empty;
+
+    /** @type { HTMLSlotElement } */
+    #emptySlot;
+
+    /** @type { AxialProgressIndicator } */
+    #indicator;
 
     /** @type { HTMLElement } */
     #content;
@@ -150,6 +160,8 @@ class AxialList extends AxialComponentBase
 
         this.#header = this.shadowRoot.getElementById("header");
         this.#headerSlot = this.shadowRoot.getElementById("headerSlot");
+        this.#empty = this.shadowRoot.getElementById("empty");
+        this.#indicator = this.shadowRoot.getElementById("indicator");
         this.#content = this.shadowRoot.getElementById("content");
         this.#footer = this.shadowRoot.getElementById("footer");
         this.#footerSlot = this.shadowRoot.getElementById("footerSlot");
@@ -456,6 +468,35 @@ class AxialList extends AxialComponentBase
         return null;
     }
 
+    
+    /**
+     * 
+     * @param { AxialListItem } listItem 
+     * @returns 
+     */
+    addListItem( listItem )
+    {
+        if( listItem instanceof AxialListItem === false ) { throw new TypeError("AxialListItem required"); }
+        if( this.#content && this.#itemClass )
+        {
+            
+            listItem.addEventListener("listItemCloned", this.#boundClonedHandler);
+            listItem.addEventListener("listItemTrash", this.#boundTrashHandler);
+            listItem.addEventListener("listItemShortcutRequested", this.#boundShortcutRequestedHandler);
+            listItem.addEventListener("listItemDragStarted", this.#boundDragStartedHandler);
+            listItem.addEventListener("listItemDragEnded", this.#boundDragEndedHandler);
+            
+            this.#content.appendChild( listItem );
+            this.#items.push( listItem );
+            
+            const listItemAddedEvent = new CustomEvent( "listItemAdded", { bubbles: true, detail: { item: listItem } } );
+            this.dispatchEvent( listItemAddedEvent );
+
+            return listItem;
+        }
+        return null;
+    }
+
     addItemWidthDefaults( defaultObject )
     {
         if( this.#content && this.#itemClass )
@@ -605,7 +646,7 @@ class AxialList extends AxialComponentBase
 
         event.dataTransfer.dropEffect = "move";
 
-        /** @type { AxialAdminListItem } */
+        /** @type { AxialListItem } */
         const enterItem = event.target;
         const enterIndex = this.#items.indexOf( enterItem );
 
@@ -627,7 +668,7 @@ class AxialList extends AxialComponentBase
         //console.log("DRAG LEAVE");
         //console.log( event.target );
 
-        /** @type { AxialAdminListItem } */
+        /** @type { AxialListItem } */
         const leaveItem = event.target;
         const leaveIndex = this.#items.indexOf( leaveItem );
 
@@ -649,7 +690,7 @@ class AxialList extends AxialComponentBase
         console.log("DROP OK");
         //console.log( event.target);
 
-        /** @type { AxialAdminListItem } */
+        /** @type { AxialListItem } */
         const dropItem = event.target;
         const dropIndex = this.#items.indexOf( dropItem );
 
@@ -722,6 +763,7 @@ class AxialList extends AxialComponentBase
     /// SEARCH
     #searchHandler( event )
     {
+        
         const pattern = new RegExp( this.#searchInput.value.toLocaleLowerCase() );
         for( const item of this.#items )
         {

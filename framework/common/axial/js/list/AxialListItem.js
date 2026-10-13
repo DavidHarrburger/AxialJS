@@ -15,6 +15,55 @@ import { AxialIconListButtonClone } from "./buttons/AxialIconListButtonClone.js"
 import { AxialIconListButtonDelete } from "./buttons/AxialIconListButtonDelete.js";
 import { AxialIconListButtonLock } from "./buttons/AxialIconListButtonLock.js";
 
+const axialListItemSheet = new CSSStyleSheet();
+axialListItemSheet.replace
+(`
+    :host               { position: relative; width: 100%; height: 64px; font-size: 14px; font-weight: 500;}
+    .axial_list_item-background    { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: transparent; border-bottom: 1px solid var(--adminBody___borderColor); }
+    .axial_list_item-droptop       { transform: scaleX(0); position: absolute; top: 0; width: 0; height: 2px; background-color: #c00; 
+                                transition-property: none; transition-duration: 600ms; transition-timing-function: ease; }
+    .axial_list_item-dropbottom    { transform: scaleX(0); position: absolute; bottom: 0; width: 0; height: 2px; background-color: #c00;
+                                transition-property: none; transition-duration: 600ms; transition-timing-function: ease; }
+    .axial_list_item-content       { position: absolute; width: 100%; height: 100%; top: 0; left: 0; display: flex; 
+                                flex-direction: row; justify-content: flex-start; align-items: center; gap: 10px; }
+    .axial_list_item-actions       { flex-shrink: 0; width: auto; height: 100%; display: flex; flex-direction: row; justify-content: flex-end; align-items: center; gap: 2px; }
+
+    .axial_list_item-prop_name
+    {
+    width: 240px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    }
+
+    .axial_list_item-prop_email
+    {
+    width: 280px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    }
+
+    .axial_list_item-prop_tel
+    {
+    width: 120px;
+    }
+
+    .axial_list_item-prop_creation
+    {
+    width: 120px;
+    }
+    .axial_list_item-prop_item
+    {
+    width: 120px;
+    }
+    .axial_list_item-prop { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .axial_list_item-prop_60 { width: 60px; }
+    .axial_list_item-prop_80 { width: 80px; }
+    .axial_list_item-prop_100 { width: 100px; }
+    .axial_list_item-prop_120 { width: 100px; }
+`);
+
 class AxialListItem extends AxialListItemBase
 {
     /// vars
@@ -116,6 +165,12 @@ class AxialListItem extends AxialListItemBase
     /** @type { Function } */
     #boundLeaveHandler;
 
+    /** @type { Function } */
+    #boundOutHandler;
+
+    /** @type { Function } */
+    #boundCancelHandler;
+
     /**
      * Create the item
      * @constructor
@@ -126,6 +181,7 @@ class AxialListItem extends AxialListItemBase
         super();
         this.classList.add("axial_list_item");
         this.template = "axial-list-item-template";
+        //this.shadowRoot.adoptedStyleSheets = [axialListItemSheet];
         
         this.#boundCloneSuccessHandler = this.#cloneSuccessHandler.bind(this);
         
@@ -145,6 +201,9 @@ class AxialListItem extends AxialListItemBase
 
         this.#boundEnterHandler = this.#enterHandler.bind(this);
         this.#boundLeaveHandler = this.#leaveHandler.bind(this);
+
+        this.#boundOutHandler = this.#outHandler.bind(this);
+        this.#boundCancelHandler = this.#cancelHandler.bind(this);
 
         // defaults
         if( Array.isArray( defaults ) === true )
@@ -261,8 +320,11 @@ class AxialListItem extends AxialListItemBase
         }
 
         this.addEventListener("contextmenu", this.#boundContextHandler);
+
         this.addEventListener("pointerenter", this.#boundEnterHandler);
         this.addEventListener("pointerleave", this.#boundLeaveHandler);
+        this.addEventListener("pointerout", this.#boundOutHandler);
+        this.addEventListener("pointercancel", this.#boundCancelHandler);
 
         if( this.#content )
         {
@@ -362,14 +424,11 @@ class AxialListItem extends AxialListItemBase
 
     #editHandler( event )
     {
-        console.log("edit clicked");
         if( this.#popupId !== undefined )
         {
-            console.log(this.#popupId);
             const popup = AxialPopupManager.getPopupById( this.#popupId )
             if( popup )
             {
-                console.log("popup should show");
                 this._onItemEdit( popup );
                 popup.data = this.data;
                 popup.show();
@@ -421,7 +480,7 @@ class AxialListItem extends AxialListItemBase
      * @param { String } key 
      * @param { Number } index 
      * @param { AxialInputBase } input 
-     * @param { AxialAdminListItem } dispatcher 
+     * @param { AxialListItem } dispatcher 
      */
     _applyShortcut( key, index, input, dispatcher )
     {
@@ -537,7 +596,6 @@ class AxialListItem extends AxialListItemBase
     #enterHandler( event )
     {
         this.#background.style.backgroundColor = "#ffffff";
-        
     }
 
     /**
@@ -545,6 +603,22 @@ class AxialListItem extends AxialListItemBase
      * @param { PointerEvent } event 
      */
     #leaveHandler( event )
+    {
+        this.#background.style.backgroundColor = "transparent";
+        
+    }
+
+    /**
+     * 
+     * @param { PointerEvent } event 
+     */
+    #outHandler( event )
+    {
+        this.#background.style.backgroundColor = "transparent";
+        
+    }
+
+    #cancelHandler( event )
     {
         this.#background.style.backgroundColor = "transparent";
         

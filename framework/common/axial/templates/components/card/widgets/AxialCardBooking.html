@@ -1,0 +1,18 @@
+<!-- AxialCardBooking -->
+<template id="axial-card-booking-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="holder" class="axial_card-holder">
+        <div class="axial_card-header">
+            <div class="axial_card-title">Rendez-vous</div>
+        </div>
+        <slot id="cardSlot" name="axial-card"></slot>
+        <div id="requestState" class="axial_card_booking-request">
+            <div>Vous n'avez pas de rendez-vous prévu</div>
+            <axial-button id="bookingButton" axial-text="Prendre un rendez-vous"></axial-button>
+        </div>
+        <div id="confirmedState" class="axial_card_booking-confirmed">
+            <div id="datetime" class="axial_card_booking-datetime"></div>
+            <axial-button id="cancelButton" axial-text="Annuler mon rendez-vous"></axial-button>
+        </div>
+    </div>
+</template>

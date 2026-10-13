@@ -1,7 +1,29 @@
 <!-- AxialAuthBox -->
 <template id="axial-notification-box-template">
     <link rel="stylesheet" href="./styles.css">
-    <div id="permissionState" class="axial_notification_box-permission">
-        <axial-button id="permissionButton" axial-text="Request permission"></axial-button>
+    <div id="notSupportedState" class="axial_notification_box-state">
+        <div>Les notifications ne sont pas disponibles dans votre navigateur.</div>
     </div>
+    <div id="subscribedState" class="axial_notification_box-state">
+        <div>liste notif + unsuscribe</div>
+        <axial-service-button id="unsubscribeButton" class="axial_notification_box-button" axial-text="Désactiver les notifications"></axial-service-button>
+        
+    </div>
+    
+    <div id="authorizedState" class="axial_notification_box-state">
+        <div>autoriser mais pas enregistrer</div>
+        <axial-service-button id="subscribeButton" class="axial_notification_box-button" axial-text="Activer les notifications"></axial-service-button>
+    </div>
+
+    <div id="pendingState" class="axial_notification_box-state">
+        <div>Pour recevoir des notifications en temps réél, cliquez sur le bouton ci-dessous puis cliquez sur le bouton "Autoriser"</div>
+        <axial-service-button id="permissionButton" class="axial_notification_box-button" axial-text="Activer les notifications"></axial-service-button>
+    </div>
+    
+    
+    <div id="blockedState" class="axial_notification_box-state">
+        <div>Vous avez bloqué les notifications sur ce navigateur.</div>
+        <div>Pour les débloquer, consulter la rubrique d'aide de votre navigateur.</div>
+    </div>
+    
 </template>
