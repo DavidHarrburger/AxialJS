@@ -1,70 +1,58 @@
-"use strict"
+"use strict";
 
-class InputUtils extends EventTarget
+class InputUtils
 {
-    /** @type { HTMLInputElement } */
-    #inputTarget;
-
-    /** @type { CSSStyleDeclaration} */
-    #initComputedStyle;
-
-    /** @type { Function } */
-    #boundInputChangedHandler;
-
-    /** @type { RegExp} */
-    #regexp = /[A-Za-z]/;
+    /** @type { Set } */
+    static #inputs = new Set();
 
     /**
-     * @constructor
-     * @param { HTMLInputElement } input 
+     * 
+     * @param { HTMLInputElement } target 
      */
-    constructor( inputTarget )
+    static formatPhone( target )
     {
-        super();
-        this.#boundInputChangedHandler = this.#inputChangedHandler.bind(this);
-
-        if( inputTarget instanceof HTMLInputElement === false )
-        {
-            throw new TypeError("HTMLInputElement value required");
-        }
-
-        this.#inputTarget = inputTarget;
-        this.#initComputedStyle = window.getComputedStyle(this.#inputTarget);
-        console.log(this.#initComputedStyle);
-        this.#inputTarget.addEventListener("input", this.#boundInputChangedHandler);
-    }
-
-    get inputTarget() { return this.#inputTarget; }
-    set inputTarget( value )
-    {
-        if( value instanceof HTMLInputElement === false )
-        {
-            throw new TypeError("HTMLInputElement value required");
-        }
-        if( this.#inputTarget != undefined )
-        {
-            // restore init styles ??
-            this.#inputTarget.removeEventListener("input", this.#boundInputChangedHandler);
-        }
-        this.#inputTarget = value;
-        this.#initComputedStyle = window.getComputedStyle(this.#inputTarget); // warning not necessarly the init styles...
-        this.#inputTarget.addEventListener("input", this.#boundInputChangedHandler);
+        target.addEventListener("input", InputUtils.#phoneHandler )
+        InputUtils.#inputs.add( target );
     }
 
     /**
      * 
      * @param { InputEvent } event 
      */
-    #inputChangedHandler( event )
+    static #phoneHandler( event )
     {
-        const char = event.data;
-        //const test = this.#regexp.test(char);
+        console.log(event);
+        const input = event.target;
+        const start = input.selectionStart;
 
-        //const isValid = this.#inputTarget.validity.valid
-        
-        console.log( this.#inputTarget.validity.valid );
+        // Nombre de chiffres avant le curseur
+        const digitsBeforeCaret = input.value
+            .slice(0, start)
+            .replace(/\D/g, '').length;
+
+        // Formatage
+        const formatted = input.value
+            .replace(/\D/g, '')
+            .slice(0, 10)
+            .replace(/(\d{2})(?=\d)/g, '$1 ')
+            .trim();
+
+        input.value = formatted;
+
+        // Recalcule la position du curseur
+        let newPos = 0;
+        let digitCount = 0;
+
+        while (newPos < formatted.length && digitCount < digitsBeforeCaret) {
+            if (/\d/.test(formatted[newPos])) {
+                digitCount++;
+            }
+            newPos++;
+        }
+
+        input.setSelectionRange(newPos, newPos);
     }
-
+    
 }
 
 export { InputUtils }

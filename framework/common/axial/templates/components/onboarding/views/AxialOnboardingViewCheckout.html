@@ -1,0 +1,16 @@
+<!-- AxialOnboardingViewCheckout -->
+<template id="axial-onboarding-view-checkout-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="holder" class="axial_view-holder">
+        <div class="axial_onboarding_view-holder">
+            <div class="axial_onboarding-title">Paiement</div>
+            <div id="formState" class="axial_onboarding_checkout-form"></div>
+            <div id="nextState" class="axial_onboarding_checkout-next">
+                <axial-service-button id="nextButton" axial-text="Accéder à mon espace"></axial-service-button>
+            </div>
+            <div id="loadingState" class="axial_onboarding_checkout-loading">
+                <axial-progress-indicator id="indicator"></axial-progress-indicator>
+            </div>
+        </div>
+    </div>
+</template>

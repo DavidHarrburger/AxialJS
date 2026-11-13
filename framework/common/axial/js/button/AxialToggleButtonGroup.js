@@ -200,6 +200,8 @@ class AxialToggleButtonGroup extends AxialComponentBase
                 currentToggle.selected = false;
             }
         }
+
+        this._onIndexChanged( value );
     }
 
     getSelectedToggle()
@@ -371,6 +373,8 @@ class AxialToggleButtonGroup extends AxialComponentBase
             }
         }
 
+        this._onIndexChanged( indexChanged );
+
         const indexChangedEvent = new CustomEvent("indexChanged", { detail: { selectedIndex: indexChanged } });
         this.dispatchEvent(indexChangedEvent);
     }
@@ -384,6 +388,13 @@ class AxialToggleButtonGroup extends AxialComponentBase
     {
         return toggle.addEventListener("toggleChanged", this.#boundToggleChangedHandler);
     }
+
+    /**
+     * 
+     * @param { Number } newIndex 
+     */
+    _onIndexChanged( newIndex ) {}
+
 }
 
 window.customElements.define("axial-toggle-button-group", AxialToggleButtonGroup);

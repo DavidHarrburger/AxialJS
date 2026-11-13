@@ -1,0 +1,27 @@
+<!-- AxialOnboardingViewPhone -->
+<template id="axial-onboarding-view-phone-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="holder" class="axial_view-holder">
+        <div class="axial_onboarding_view-holder">
+            <div class="axial_onboarding-title">Téléphone</div>
+            <div class="axial_onboarding-text">Sécurisons votre compte avec votre téléphone</div>
+    
+            <div class="axial_onboarding-group">
+                <div class="axial_onboarding-item">
+                    <label for="phoneInput">Votre numéro de mobile :</label>
+                    <div class="axial_onboarding-phoneholder">
+                        <input name="phoneInput" id="phoneInput" inputmode="numeric" type="text" autocomplete="off" class="axial_onboarding-phone" placeholder="06 00 00 00 00">
+                        <div class="axial_onboarding-phoneflag">
+                            <div class="axial_onboarding-flag"></div>
+                        </div>
+                    </div>
+                    <div id="phoneLegend" class="axial_input_legend axial_input_legend-none"></div>
+                </div>
+            </div>
+            <div class="axial_spacer"></div>
+            <div class="axial_onboarding_actions-row">
+                <axial-service-button id="nextButton" axial-text="Continuer" class="axial_onboarding-next"></axial-service-button>
+            </div>
+        </div>
+    </div>
+</template>

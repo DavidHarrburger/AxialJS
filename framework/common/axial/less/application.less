@@ -4,6 +4,45 @@ html
     -webkit-tap-highlight-color: transparent;
     text-shadow: none;
 }
+html[data-theme="dark"]
+{
+    --background-primary: #181818;
+    --background-secondary: #1f1f1f;
+    --background-tertiary: #2b2b2b;
+
+    --surface-primary: #1e293b;
+    --surface-secondary: #293548;
+
+    --text-primary: #ffffff;
+    --text-secondary: #f1f1f1;
+    --text-muted: #94a3b8;
+
+    --border-color: #000;
+
+    --shadow-color: rgba(0,0,0,.35);
+
+    --text-button: #ffffff;
+}
+
+html[data-theme="light"]
+{
+    --background-primary: #ffffff;
+    --background-secondary: #f8f9fb;
+    --background-tertiary: #f1f1f1;
+
+    --surface-primary: #ffffff;
+    --surface-secondary: #f1f1f1;
+
+    --text-primary: #111111;
+    --text-secondary: #232323;
+    --text-muted: #9ca3af;
+
+    --border-color: #232323;
+
+    --shadow-color: rgba(0,0,0,.08);
+
+    --text-button: #ffffff;
+}
 body
 {
     width: 100%;
@@ -14,8 +53,8 @@ body
     overflow-y: auto;
 
     font-family:      var(--body___mainFont);
-    background-color: var(--body___backgroundColor);
-    color:            var(--body___textColor);
+    background-color: var(--background-primary);
+    color:            var(--text-primary);
     
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
@@ -28,16 +67,16 @@ body
 a
 {
     text-decoration: none;
-    color: var(--body___textColor);
+    color: var(--text-primary);
 }
 a:visited
 {
     text-decoration: none;
-    color: var(--body___textColor);
+    color: var(--text-primary);
 }
 h1, h2, h3, h4, h5, h6
 {
-    color: var(--body___textColor);
+    color: var(--text-primary);
 }
 input:not([type="checkbox"]):not([type="radio"])
 {
@@ -64,7 +103,7 @@ input:not([type="checkbox"]):not([type="radio"])
     font-weight: var(--input___fontWeight);
     border-radius: 3px;
     border: 1px solid var(--greyDark);
-    background-color: rgba(255, 255, 255, 0.83);
+    background-color: rgba(255, 255, 255, 0.93);
 }
 
 label { font-size: 14px; }
@@ -91,13 +130,16 @@ input::placeholder
     font-size:   var(--input___placeholderFontSize);
     font-weight: var(--input___placeholderFontWeight);
 }
-
 .axial_auth_register_invalid::placeholder
 {
     color: #be1114;
     opacity: 0.5;
 }
-
+.axial_input_invalid::placeholder
+{
+    color: #be1114;
+    opacity: 0.5;
+}
 input:disabled
 {
     opacity: 1;
@@ -245,6 +287,7 @@ select:has(option:not([disabled]):checked)
 .ax_le { text-align: left; }
 .ax_ce { text-align: center; }
 .ax_ri { text-align: right; }
+
 /* layers */
 .axial_layer_base
 {
@@ -513,8 +556,8 @@ select:has(option:not([disabled]):checked)
     position: relative;
     display: block;
     width: 100%;
-    min-height: 100vh;
-    background-color: var(--main___backgroundColor);
+    min-height: 100svh;
+    background-color: var(--background-primary);
 }
 /* section */
 .axial_section

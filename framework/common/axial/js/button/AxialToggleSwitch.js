@@ -1,6 +1,7 @@
 "use strict";
 
 import { AxialToggleButtonBase } from "./AxialToggleButtonBase.js";
+import { ColorUtils } from "../utils/ColorUtils.js";
 
 class AxialToggleSwitch extends AxialToggleButtonBase
 {
@@ -11,18 +12,12 @@ class AxialToggleSwitch extends AxialToggleButtonBase
     /** @type { String } */
     #selectedLeft = "translateX(14px)";
 
-    /** @type { String } */
-    #unselectedScale = "scale(0)";
-
-    /** @type { String } */
-    #selectedScale = "scale(1.1)";
-
     /// styles
     /** @type { String } */
-    #themeColor = "";
+    #themeColor = ColorUtils.GREEN.mid_dark;
     
     /** @type { String } */
-    #borderColor = "";
+    #borderColor = "#000";
 
     /// elements
     /** @type { HTMLElement } */
@@ -49,26 +44,23 @@ class AxialToggleSwitch extends AxialToggleButtonBase
 
         if( name === "axial-theme" )
         {
-            this.#themeColor = newValue;
-            //if( this.#inner ) { this.#inner.style.backgroundColor = this.#themeColor; }
+            if( CSS.supports( "color", newValue) === true )
+            {
+                this.#themeColor = newValue;
+                this.style.backgroundColor = this.#themeColor;
+            }
         }
 
         if( name === "axial-border" )
         {
             this.#borderColor = newValue;
-            //if( this.#inner ) { this.#inner.style.color = this.#borderColor; }
         }
     }
 
     _buildComponent()
     {
         this.#circle = this.shadowRoot.getElementById("circle");
-        //this.#inner = this.shadowRoot.getElementById("inner");
-
-        if( this.#themeColor === "" )
-        {
-            this.#themeColor = window.getComputedStyle( this ).color;
-        }
+        this._onToggleChanged();
     }
 
     _onToggleChanged()
@@ -95,20 +87,6 @@ class AxialToggleSwitch extends AxialToggleButtonBase
         {
             this.style.backgroundColor = "#fff";
         }
-
-        /*
-        if( this.#inner )
-        {
-            if( this.selected === true )
-            {
-                this.#inner.style.transform = this.#selectedScale;
-            }
-            else
-            {
-                this.#inner.style.transform = this.#unselectedScale;
-            }
-        }
-        */
     }
 }
 

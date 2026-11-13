@@ -49,6 +49,9 @@ class AxialFileUploader extends AxialComponentBase
     /** @type { Number } */
     #timeoutId;
 
+    /** @type { Boolean } */
+    #canUpload = false;
+
     /// elements
     /** @type { HTMLInputElement } */
     #fileButton;
@@ -108,6 +111,12 @@ class AxialFileUploader extends AxialComponentBase
     {
         return ["axial-use-save" ];
     }
+
+    /**
+     * @type { Boolean } 
+     * @readonly
+     */
+    get canUpload() { return this.#canUpload; }
 
     get useSave() { return this.#useSave; }
     set useSave( value )
@@ -247,6 +256,11 @@ class AxialFileUploader extends AxialComponentBase
         }
     }
 
+    /**
+     * 
+     * @param { File } file 
+     * @returns 
+     */
     #checkFile( file )
     {
         if( file == undefined ) { return; }
@@ -280,7 +294,13 @@ class AxialFileUploader extends AxialComponentBase
         this.#dropImage.style.display = "block";
         this.#dropImage.src = this.#objectUrl;
 
-        this.#saveButton.enabled = true;
+        this.#canUpload = true;
+        if( this.#saveButton )
+        {
+            this.#saveButton.enabled = true; // to check
+        }
+        const axialEvent = new CustomEvent( "uploadReady" );
+        this.dispatchEvent( axialEvent );
     }
 
     #displayInfo( key )
@@ -329,6 +349,7 @@ class AxialFileUploader extends AxialComponentBase
 
     async #uploadFile()
     {
+        if( this.#canUpload === false ) { throw new Error("Incorrect call, a valid must be selected"); }
         try
         {
             const formData = new FormData();
@@ -345,10 +366,10 @@ class AxialFileUploader extends AxialComponentBase
                 this.#_id = json.id;
             }
 
-            const axialEvent = new CustomEvent( "", { bubbles: true, composed: true, detail: { id: this.#_id } } );
+            const axialEvent = new CustomEvent( "axialFileUploaded", { bubbles: true, composed: true, detail: { id: this.#_id } } );
             this.dispatchEvent( axialEvent );
 
-            window.AXIAL.notify("Votre fichier a bien été enregistré");
+            //window.AXIAL.notify("Votre fichier a bien été enregistré");
         }
         catch(err)
         {
@@ -377,6 +398,8 @@ class AxialFileUploader extends AxialComponentBase
         this.#dropImage.style.display = "none";
         this.#dropImage.src = "";
 
+        this.#canUpload = false;
+
         this.#saveButton.enabled = false;
         this.#saveButton.loading = false;
 
@@ -400,6 +423,7 @@ class AxialFileUploader extends AxialComponentBase
             // silent fail here
             return;
         }
+        // TODO IMPORTANT
     }
 
 }

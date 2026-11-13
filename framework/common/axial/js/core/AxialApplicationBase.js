@@ -30,6 +30,10 @@ import { AxialOverlayManager } from "../overlay/AxialOverlayManager.js";
 
 import { AxialDropdownManager } from "../dropdown/AxialDropdownManager.js";
 
+/// THEME
+
+import { AxialThemeManager } from "../theme/AxialThemeManager.js";
+
 
 /**
  * The main base class for your application.
@@ -448,6 +452,9 @@ class AxialApplicationBase extends EventTarget
         this.#boundArchiveConfirmedHandler = this.#archiveConfirmedHandler.bind(this);
         this.#boundArchiveErrorHandler = this.#archiveErrorHandler.bind(this);
         this.#boundArchiveSuccessHandler = this.#archiveSuccessHandler.bind(this);
+
+        //AxialThemeManager.restoreTheme();
+        AxialThemeManager.setTheme("light");
     }
 
     get language() { return this.#language; }

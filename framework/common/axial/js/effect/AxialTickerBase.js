@@ -6,7 +6,7 @@ class AxialTickerBase extends AxialComponentBase
 {
 
     /** @type { Number } */
-    #MIN_TICK_TIME = 100; // 60 ++
+    #MIN_TICK_TIME = 1000; // 60 ++
 
     /** @type { Number } */
     #animationId = undefined;
@@ -20,7 +20,10 @@ class AxialTickerBase extends AxialComponentBase
     /** @type { Number } */
     #tickTime = 1000;
 
-    /** */
+    /** @type { Number } */
+    #timeMax = 0;
+
+    /** @type { Boolean } */
     #isRunning = false;
 
     /** @type { Function } */
@@ -36,9 +39,19 @@ class AxialTickerBase extends AxialComponentBase
     {
         super._buildComponent();
 
-        let tempTickTime = Number( this.getAttribute("axial-tick-time") );
+        //let tempTickTime = Number( this.getAttribute("axial-tick-time") );
         // TODO better control here --> default and min tick time for getter setter but no time righjt now to code it
-        this.#tickTime = tempTickTime;
+        //this.#tickTime = tempTickTime;
+    }
+
+    get timeMax() { return this.#timeMax; }
+    set timeMax( value )
+    {
+        if( isNaN( value ) === true || value < this.#MIN_TICK_TIME )
+        {
+            throw new Error(`value must be > ${this.#MIN_TICK_TIME}` );
+        }
+        this.#timeMax = value;
     }
 
     start()
@@ -68,11 +81,21 @@ class AxialTickerBase extends AxialComponentBase
         }
 
         const elapsed = ts - this.#startTime;
-        const currentTick = Math.round( elapsed / this.#tickTime );
-        if( currentTick !== this.#tickCount )
+        if( elapsed < this.#timeMax )
         {
-            this.#tickCount = currentTick;
-            const tickEvent = new CustomEvent( "tick", { detail: { tick: this.#tickCount } } );
+            const currentTick = Math.round( elapsed / this.#tickTime );
+            if( currentTick !== this.#tickCount )
+            {
+                console.log(this.#tickCount);
+                this.#tickCount = currentTick;
+                const tickEvent = new CustomEvent( "tick", { bubbles:true, composed: true, detail: { tick: this.#tickCount } } );
+                this.dispatchEvent( tickEvent );
+            }
+        }
+        else
+        {
+            this.#isRunning = false;
+            const tickEvent = new CustomEvent( "tickFinished", { bubbles:true, composed: true } );
             this.dispatchEvent( tickEvent );
         }
 

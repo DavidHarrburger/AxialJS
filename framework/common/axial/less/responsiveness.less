@@ -24,7 +24,6 @@
         --footer___social___align:     center;
         --footer___social___gap:       20px;
     }
-
     .axial_form_utils_grid
     {
         display: grid;
@@ -43,8 +42,6 @@
     {
         display: flex;
     }
-
-
 }
 
 @media screen and ( min-width: 1200px )
@@ -94,29 +91,69 @@
         --axial___simulator___lineHolderAlign: center;
         --axial___simulator___lineHolderGap: 20px;
 
-        
-    }
+        --axial___simulator___stepTitleFontSize: 64px;
+        --axial___simulator___stepTitleLineHeight: 72px;
+        --axial___simulator___stepParagraphFontSize: 24px;
 
+        --axial___simulator___blockTitleFontSize: 30px;
+        --axial___simulator___blockTitleLineHeight: 36px;
+
+        --axial___simulator___stepFinalDirection: row;
+
+        --axial___simulator___stepFinalPartWidth: 50%;
+        --axial___simulator___stepFinalPartHeight: 100%;
+        --axial___simulator___stepFinalQuotePadding: 24px;
+
+        /* list */
+        --axial___list___headerDisplay: flex;
+
+        /* list item */
+        --axial___listItem___secondaryDisplay: flex;
+
+        /* quote */
+        --axial___quote___itemDirection: row;
+        --axial___quote___itemJustify: space-between;
+        --axial___quote___itemWidth: auto;
+        --axial___quote___itemGap: 0;
+
+        --axial___quoteFooter___direction: row;
+        --axial___quoteFooter___partWidth: 43%;
+        --axial___quoteFooter___legalOrder: 1;
+        --axial___quoteFooter___priceOrder: 2;
+
+        --axial___quoteHeader___leftDisplay: flex;
+        --axial___quoteHeader___rightHeight: auto;
+
+        /* booking */
+        --axial___booking___popupPadding: 20px;
+
+        --axial___bookingAgenda___position: relative;
+        --axial___bookingAgenda___mainDisplay: flex;
+        --axial___bookingAgenda___borderRadius: 14px;
+        --axial___bookingAgenda___filter: drop-shadow(0 3px 6px rgba(26, 27, 29, 0.18));
+        --axial___bookingAgenda___closerVisibility: hidden;
+
+        --axial___bookingAgenda___agendaWidth: auto;
+
+        --axial___bookingAgenda___panelWidth: 720px;
+        --axial___bookingAgenda___panelTransform: none;
+    }
     .axial_form_item-row
     {
         flex-direction: row;
     }
-
-    .axial_admin_burger
+    .axial_module_header_burger
     {
         display: none;
     }
-
     .axial_web_menu_button_holder
     {
         display: none;
     }
-
     .axial_web_desktop_nav
     {
         display: flex;
     }
-
     .axial_module_product_create_popup
     {
         width: 50%;
@@ -124,15 +161,51 @@
         background-color: #fff;
         filter: drop-shadow(-2px 0 4px #000);
     }
-
-    .axial_module_booking_popup
+    .axial_module_user_create_popup
     {
         width: 50%;
         height: 100%;
         background-color: #fff;
         filter: drop-shadow(-2px 0 4px #000);
     }
-    
+    .axial_module_subscription_popup
+    {
+        width: 50%;
+        height: 100%;
+        background-color: #fff;
+        filter: drop-shadow(-2px 0 4px #000);
+    }
+    .axial_module_select_project_popup
+    {
+        width: 50%;
+        height: 100%;
+        background-color: #fff;
+        filter: drop-shadow(-2px 0 4px #000);
+    }
+    .axial_module_booking_param_popup
+    {
+        width: 50%;
+        height: 100%;
+        background-color: #fff;
+        filter: drop-shadow(-2px 0 4px #000);
+    }
+    .axial_module_search_popup
+    {
+        width: 50%;
+        height: 100%;
+        background-color: #fff;
+        filter: drop-shadow(-2px 0 4px #000);
+    }
+    .axial_card_displayer-grid
+    {
+        display: grid;
+        height: 100%;
+    }
+    .axial_module_globals-grid
+    {
+        display: grid;
+        height: 100%;
+    }
 }
 
 @media screen and ( min-width: 1400px )

@@ -13,6 +13,33 @@ class AxialViewer extends AxialComponentBase
     /** @type { Number } */
     #currentIndex = 0;
 
+    /** @type { Number } */
+    #previousIndex = 0;
+
+    /** @type { Function } */
+    #defaultViewClass = AxialView;
+
+    /** @type { String } */
+    #effect = "none";
+
+    /** @type { AxialView } */
+    #oldView;
+
+    /** @type { AxialView } */
+    #newView;
+
+    /** @type { Boolean } */
+    #isSwitching = false;
+
+    /** @type { Number } */
+    #maxSwitch = 2;
+
+    /** @type { Number } */
+    #currentSwitch = 0;
+
+    /** @type { Set.<String> } */
+    #EFFECTS = Object.freeze( new Set( [ "none", "slide", "card", "deep" ] ) );
+
     /// elements
     /** @type { HTMLElement } */
     #holder;
@@ -20,14 +47,20 @@ class AxialViewer extends AxialComponentBase
     /** @type { HTMLSlotElement } */
     #slot;
 
+    /// events
     /** @type { Function } */
-    #defaultViewClass = AxialView;
+    #boundTransitionEndHandler;
+
+    /** @type { Function } */
+    #boundMove;
 
     constructor()
     {
         super();
         this.classList.add("axial_viewer");
         this.template = "axial-viewer-template";
+        this.#boundMove = this.#move.bind(this);
+        this.#boundTransitionEndHandler = this.#transitionEndHandler.bind(this);
     }
 
     /**
@@ -49,6 +82,32 @@ class AxialViewer extends AxialComponentBase
      */
     get currentView() { return this.#views[this.#currentIndex] }
 
+    /**
+     * @type { Number }
+     * @readonly
+     */
+    get currentViewIndex() { return this.#currentIndex; }
+
+    /**
+     * @type { Number }
+     * @readonly
+     */
+    get previousViewIndex() { return this.#previousIndex; }
+
+    get effect() { return this.#effect; }
+    set effect( value )
+    {
+        if( this.#EFFECTS.has( value ) === false )
+        {
+            this.#effect = "none";
+        }
+        else
+        {
+            this.#effect = value;
+        }
+
+    }
+
     get defaultViewClass() { return this.#defaultViewClass; }
     set defaultViewClass( value )
     {
@@ -65,6 +124,18 @@ class AxialViewer extends AxialComponentBase
         super._buildComponent();
 
         this.#holder = this.shadowRoot.getElementById("holder");
+        if( this.#holder )
+        {
+            const cl = this.#holder.children.length;
+            if( cl === 1 && this.#views.length > 0 )
+            {
+                for( const v of this.#views )
+                {
+                    this.#holder.appendChild(v);
+                }
+            }
+            
+        }
 
         this.#slot = this.shadowRoot.getElementById("slot");
         if( this.#slot )
@@ -95,7 +166,6 @@ class AxialViewer extends AxialComponentBase
      */
     addView( view = new this.#defaultViewClass(), label = "label", index = -1 )
     {
-        //view.style.display = "none";
         if( this.#views.length === 0 )
         {
             view.style.display = "block";
@@ -112,32 +182,145 @@ class AxialViewer extends AxialComponentBase
     {
         if( index < 0 || index > (this.#views.length - 1) ) { return; }
         if( index === this.#currentIndex ) { return; }
+        if( this.#isSwitching === true ) { return; }
         
         const oldView = this.#views[this.#currentIndex];
         const newView = this.#views[index];
-        const viewsLength = this.#views.length;
-        if( viewsLength > 0 )
+
+        
+        const dir = index > this.#currentIndex ? "forward" : "backward";
+        const oldViewEventName = `${dir}Leaving`;
+        const newViewEventName = `${dir}Entering`;
+
+        const oldViewEvent = new CustomEvent( oldViewEventName, { bubbles: true } );
+        const newViewEvent = new CustomEvent( newViewEventName, { bubbles: true } );
+
+        oldView.dispatchEvent( oldViewEvent );
+        newView.dispatchEvent( newViewEvent );
+        
+
+        if( this.#effect === "none" )
         {
-            for( let i = 0; i < viewsLength; i++ )
-            {
-                const view = this.#views[i];
-                if( i === index )
-                {
-                    view.style.display = "block";
-                    this.#currentIndex = i;
-                }
-                else
-                {
-                    view.style.display = "none";
-                }
-            }
+            oldView.style.display = "none";
+            newView.style.display = "block";
+
+            this.#previousIndex = this.#currentIndex;
+            this.#currentIndex = index;
+
+            const viewerChangedEvent = new CustomEvent("viewerChanged", { detail: { oldView: oldView, newView: newView } } )
+            this.dispatchEvent(viewerChangedEvent);
         }
-        const viewerChangedEvent = new CustomEvent("viewerChanged", { detail: { oldView: oldView, newView: newView } } )
-        this.dispatchEvent(viewerChangedEvent);
+        else
+        {
+            this.#isSwitching = true;
+            this.#currentSwitch = 0;
+
+            oldView.style.transform = "translateX(0)";
+
+            newView.style.display = "block";
+
+            oldView.style.transitionProperty = "none";
+            newView.style.transitionProperty = "none";
+
+            if( index > this.#currentIndex )
+            {
+                newView.style.transform = "translateX(101%)";
+            }
+            else
+            {
+                newView.style.transform = "translateX(-101%)";
+            }
+
+            oldView.addEventListener("transitionend", this.#boundTransitionEndHandler);
+            newView.addEventListener("transitionend", this.#boundTransitionEndHandler);
+
+            this.#oldView = oldView;
+            this.#newView = newView;
+
+            window.setTimeout( this.#boundMove, 1, this.#currentIndex, index );
+        }
     }
 
-    nextView()
+    /**
+     * 
+     * @param { Number } from 
+     * @param { Number } to 
+     */
+    #move( from, to )
     {
+        //if( this.#isSwitching === true ) { return; }
+        console.log("viewer.move()"); // keep from ATM
+        //const oldView = this.#views[from];
+        //const newView = this.#views[to];
+
+        console.log( from, to );
+
+        this.#oldView.style.transitionProperty = "transform";
+        this.#newView.style.transitionProperty = "transform";
+
+        /*
+        const dir = to > from ? "forward" : "backward";
+        const oldViewEventName = `${dir}Leaving`;
+        const newViewEventName = `${dir}Entering`;
+
+        const oldViewEvent = new CustomEvent( oldViewEventName, { bubbles: true } );
+        const newViewEvent = new CustomEvent( newViewEventName, { bubbles: true } );
+
+        this.#oldView.dispatchEvent( oldViewEvent );
+        this.#newView.dispatchEvent( newViewEvent );
+        */
+
+        if( to > this.#currentIndex )
+        {
+            this.#oldView.style.transform = "translateX(-101%)";
+        }
+        else
+        {
+            this.#oldView.style.transform = "translateX(101%)";
+        }
+        this.#newView.style.transform = "translateX(0)";
+        this.#previousIndex = from;
+        this.#currentIndex = to;
+    }
+
+    /**
+     * 
+     * @param { TransitionEvent } event 
+     */
+    #transitionEndHandler( event )
+    {
+        /** @type { AxialView } */
+        const view = event.target;
+        
+        view.removeEventListener( "transitionend", this.#boundTransitionEndHandler );
+        if( event.propertyName === "transform" )
+        {
+            this.#currentSwitch = this.#currentSwitch + 1;
+            if( this.#currentSwitch === this.#maxSwitch )
+            {
+                //console.log("should happened once");
+                this.#isSwitching = false;
+                this.#currentSwitch = 0;
+
+                const viewerChangedEvent = new CustomEvent("viewerChanged", { detail: { oldView: this.#oldView, newView: this.#newView } } );
+                this.dispatchEvent(viewerChangedEvent);
+            }
+        }
+    }
+    
+    previous()
+    {
+        console.log("previous");
+        const prevIndex = this.#currentIndex - 1 < 0 ? 0 : this.#currentIndex - 1; // see for infinity here
+        if( prevIndex != this.#currentIndex ) // bad check
+        {
+            this.gotoViewByIndex( prevIndex );
+        }
+    }
+
+    next()
+    {
+        console.log("next");
         const nextIndex = this.#currentIndex + 1 < this.#views.length ? this.#currentIndex + 1 : this.#currentIndex;
         if( nextIndex != this.#currentIndex )
         {
@@ -183,7 +366,6 @@ class AxialViewer extends AxialComponentBase
         {
             console.warn("MOVE OPERATION NOT HANDLE");
         }
-        
 
         this.#views.splice( insertIndex+1, 0, copyView );
         this.#views.splice( deleteIndex, 1 );
@@ -192,7 +374,7 @@ class AxialViewer extends AxialComponentBase
         copyView.data = copyViewData;
 
         // fuckin dispatch
-        const viewerEvent = new CustomEvent("viewMoved", {bubbles: true, detail: { movedView: copyView } } );
+        const viewerEvent = new CustomEvent("viewMoved", { bubbles: true, detail: { movedView: copyView } } );
         this.dispatchEvent(viewerEvent);
         //return copyView;
     }
@@ -205,7 +387,7 @@ class AxialViewer extends AxialComponentBase
             const view = this.#views[index];
             this.#views.splice(index, 1);
             view.remove();
-            const viewerEvent = new CustomEvent("viewDeleted", {bubbles: true } );
+            const viewerEvent = new CustomEvent("viewDeleted", { bubbles: true, composed: true } );
             this.dispatchEvent(viewerEvent);
         }
     }

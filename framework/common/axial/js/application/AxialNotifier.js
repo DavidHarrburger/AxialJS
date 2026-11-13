@@ -1,9 +1,14 @@
 "use strict";
 
 import { AxialComponentBase } from "../core/AxialComponentBase.js";
+import { ColorUtils } from "../utils/ColorUtils.js";
 
 class AxialNotifier extends AxialComponentBase
 {
+    /// vars
+    /** @type { Set.<String> } */
+    #NOTIFIER_KINDS = Object.freeze( new Set( [ "none", "info", "success", "error", "warning", "easter", "bronze", "silver", "gold", "star" ] ) );
+    
     /// elements
     /** @type { HTMLElement } */
     #holder;
@@ -44,7 +49,7 @@ class AxialNotifier extends AxialComponentBase
         this.hide();
     }
 
-    show( message = "" )
+    show( message = "", kind = "none" )
     {
         if( message != "" )
         {

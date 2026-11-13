@@ -14,6 +14,9 @@ import { AxialMailTemplateSubscriptionDeleted } from "./mail/AxialMailTemplateSu
 
 import { AxialMailTemplateMeetingRequestUser } from "./mail/AxialMailTemplateMeetingRequestUser.js";
 import { AxialMailTemplateMeetingRequestAdmin } from "./mail/AxialMailTemplateMeetingRequestAdmin.js";
+import { AxialMailTemplateBookingRequestUser } from "./mail/AxialMailTemplateBookingRequestUser.js";
+import { AxialMailTemplateBookingRequestAdmin } from "./mail/AxialMailTemplateBookingRequestAdmin.js";
+import { AxialMailTemplateError } from "./mail/AxialMailTemplateError.js";
 
 import { AxialMailTemplatePasswordChangeRequest } from "./mail/AxialMailTemplatePasswordChangeRequest.js";
 
@@ -47,6 +50,9 @@ class AxialMailer extends EventEmitter
         this.#templates.push( new AxialMailTemplateMeetingRequestUser() );
         this.#templates.push( new AxialMailTemplateMeetingRequestAdmin() );
         this.#templates.push( new AxialMailTemplatePasswordChangeRequest() );
+        this.#templates.push( new AxialMailTemplateError() );
+        this.#templates.push( new AxialMailTemplateBookingRequestUser() );
+        this.#templates.push( new AxialMailTemplateBookingRequestAdmin() );
     }
 
     #getTemplateByName( name )

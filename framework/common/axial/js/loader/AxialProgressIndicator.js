@@ -9,7 +9,7 @@ class AxialProgressIndicator extends AxialComponentBase
     #size = 24;
 
     /** @type { String } */
-    #animation = "axialProgressIndicatorAnimation 2s ease 0s infinite";
+    #animation = "axialProgressIndicatorAnimation 2s cubic-bezier(0.16, 1, 0.3, 1) 0s infinite";
 
     /// elements
     /** @type { HTMLElement } */

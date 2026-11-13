@@ -1,0 +1,18 @@
+<!-- AxialOnboardingViewSubscription -->
+<template id="axial-onboarding-view-subscription-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="holder" class="axial_view-holder">
+        <div class="axial_onboarding_view-holder">
+            <div class="axial_onboarding-title">Abonnement</div>
+            <div class="axial_onboarding-text">Votre abonnement est gratuit pendant 14 jours, vous pouvez l'annuler à tout moment</div>
+            <div class="axial_onboarding-bar">
+                <axial-subscription-bar id="bar"></axial-subscription-bar>
+            </div>
+            <div id="groupsHolder" class="axial_onboarding-groups">
+                <axial-toggle-button-group id="groupMonth" axial-direction="column" axial-gap="30"></axial-toggle-button-group>
+                <axial-toggle-button-group id="groupYear" axial-direction="column" axial-gap="30"></axial-toggle-button-group>
+            </div>
+            <axial-service-button id="nextButton" axial-text="Continuer"></axial-service-button>
+        </div>
+    </div>
+</template>

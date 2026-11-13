@@ -9,6 +9,7 @@ export const CRYPTO_KEY = ""; // 32
 export const CRYPTO_IV = ""; // 16
 
 export const JWT_SECRET_KEY = ""; //32
+export const OTP_SECRET_KEY = ""; //32
 
 export const VAPID_PUBLIC_KEY = "";
 export const VAPID_PRIVATE_KEY = "";
@@ -21,8 +22,6 @@ export const EMAIL_RECIPIENT = "";
 
 export const AUTHORIZED_DOMAINS = [];
 
-export const WEBSOCKET_URL = "ws://localhost:80/";
-
 export const ROLES = [ "master", "admin", "user", "client" ];
 
 export const MEDIAS_FOLDER = "medias";
@@ -32,6 +31,7 @@ export const AUTH_LOGIN_PATH = "/account/login/";
 export const AUTH_VERIFICATION_PATH = "/account/verification/";
 export const AUTH_REGISTER_PATH = "/account/register/";
 export const AUTH_REDIRECT_PATH = "/account/redirect/";
+export const AUTH_ONBOARDING_PATH = "/go/";
 
 export const AUTH_PATHES = 
 [
@@ -68,6 +68,12 @@ export const API_PRIVATE_PATHES =
 
     { path: "/api/auth/code/send", verification: false },
     { path: "/api/auth/code/verify", verification: false },
+
+    //{ path: "/api/auth/onboarding/creation", verification: false },
+    { path: "/api/auth/onboarding/payement", verification: false },
+    { path: "/api/auth/onboarding/database", verification: false },
+    { path: "/api/auth/onboarding/storage", verification: false },
+    { path: "/api/auth/onboarding/connection", verification: false },
 
     { path: "/api/kpi/database/get", verification: true },
     { path: "/api/kpi/storage/get", verification: true },
@@ -107,6 +113,8 @@ export const API_PRIVATE_PATHES =
 
     { path: "/api/files/get/all", verification: true },
 
+    { path: "/api/file/upload", verification: true },
+
     { path: "/api/products/set", verification: true }, // deprecated
 
     { path: "/api/product/list", verification: true },
@@ -133,12 +141,13 @@ export const API_PRIVATE_PATHES =
     { path: "/api/simulation/delete", verification: true },
     { path: "/api/simulation/clone", verification: true },
 
-    { path: "/api/subscriptions/set", verification: true },
-    { path: "/api/subscriptions/get", verification: true },
+    { path: "/api/subscription/create", verification: true },
+    { path: "/api/subscription/list", verification: true },
+    /*{ path: "/api/subscription/user/list", verification: false },*/
 
     { path: "/api/meeting/request", verification: true },
 
-    { path: "/api/checkout/session/create", verification: true }, // create the session
+    /*{ path: "/api/checkout/session/create", verification: false }, // create the session*/
     { path: "/api/checkout/session/status", verification: true }, // check the session
 
     { path: "/api/events/set", verification: true },
@@ -156,8 +165,9 @@ export const SUBSCRIPTION_TYPES =
 
 export const STRIPE_USE = false;
 export const STRIPE_PRIVATE_KEY = "";
+export const STRIPE_PUBLIC_KEY = "";
 export const STRIPE_WEBHOOK_SECRET = "";
 
 // CONST FOR EMAIL AUTOMATION
-export const MAIL_TEMPLATE_SENDER_DOMAIN = "https://dndev.fr";
-export const MAIL_TEMPLATE_SENDER_NAME = "dndev.fr";
+export const MAIL_TEMPLATE_SENDER_DOMAIN = "";
+export const MAIL_TEMPLATE_SENDER_NAME = "";

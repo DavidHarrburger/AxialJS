@@ -1,6 +1,6 @@
 "use strict"
 
-import { AxialWebApplicationBase } from "../../../../axial/js/core/AxialApplicationBase.js";
+import { AxialApplicationBase } from "../../../../axial/js/core/AxialApplicationBase.js";
 
 class MainFrontPage extends AxialApplicationBase
 {

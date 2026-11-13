@@ -22,7 +22,13 @@
         { "name": "events",         "options": { "capped": true, "size": 100000000 } },
         { "name": "projects",       "options": { "capped": true, "size": 100000000 } },
         { "name": "messages",       "options": { "capped": true, "size": 100000000 } },
-        { "name": "notifications",  "options": { "capped": true, "size": 100000000 } }
+        { "name": "notifications",  "options": { "capped": true, "size": 100000000 } },
+        { "name": "errors",         "options": { "capped": true, "size": 100000000 } },
+        { "name": "bookings",       "options": { "capped": true, "size": 100000000 } },
+        { "name": "files",          "options": { "capped": true, "size": 100000000 } },
+        { "name": "subscriptions",  "options": { "capped": true, "size": 100000000 } },
+
+        { "name": "verifications",  "options": { "capped": true, "size": 100000000 }, "withTTL": true }
     ],
     "models":
     [

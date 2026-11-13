@@ -17,6 +17,13 @@ import webpush from "web-push";
 import { execSync } from "node:child_process";
 
 const HTML_COMPONENT_MARKER = "<!--$$$C-->";
+const HTML_HEADER_MARKER = "<!--$$$H-->";
+const HTML_FOOTER_MARKER = "<!--$$$F-->";
+
+const HREF_EXCLUSIONS = 
+[
+    "./assets/favicon/favicon.ico", "./styles.css"
+];
 
 class AxialCommands extends EventEmitter
 {
@@ -496,6 +503,12 @@ class AxialCommands extends EventEmitter
                         const collectionOptions = collectionObject.options;
                         
                         const collection = await newDb.createCollection( collectionName, collectionOptions );
+                        if( collectionObject.withTTL !== undefined && collectionObject.withTTL === true )
+                        {
+                            console.log("TTL ENTRY POINT");
+                            collection.createIndex( { expireAt: 1 }, { expireAfterSeconds: 0 } );
+                            
+                        }
 
                         if( collectionName === "models" ) { modelsCollection = collection; }
                     }
@@ -604,6 +617,11 @@ class AxialCommands extends EventEmitter
                     if( collectionExists === false )
                     {
                         const newCollection = await currentDb.createCollection( lcName, lc.options );
+                        if( lc.withTTL !== undefined && lc.withTTL === true )
+                        {
+                            console.log("TTL ENTRY POINT");
+                            newCollection.createIndex( { expireAt: 1 }, { expireAfterSeconds: 0 } );
+                        }
                     }
                 }
 
@@ -1084,7 +1102,7 @@ class AxialCommands extends EventEmitter
                 if( htmlExists === false ) { continue; } else { console.log("FILE TO WRITE FOUND"); }
                 const jsSource = path.resolve(this.#currentDirectory, config.project_directory, config.pages_directory, page.name, "js/Page.js");
                 const sources = dependencyTree.toList( { filename: jsSource, directory: this.#currentDirectory } ).sort();
-                console.log(sources);
+                //console.log(sources);
 
                 const finalHtmlPath = path.resolve(this.#currentDirectory, config.project_directory, config.pages_directory, page.name, "index-compiled.html" );
                 const finalCompPath = path.resolve(this.#currentDirectory, config.project_directory, config.pages_directory, page.name, "components.html" );
@@ -1109,19 +1127,81 @@ class AxialCommands extends EventEmitter
                 }
 
                 let htmlSourceString = await fsp.readFile(htmlSource, "utf8");
-                if( htmlSourceString.includes(HTML_COMPONENT_MARKER) === false )
-                {
-                    continue;
-                }
-                else
-                {
-                    const sourceArray = htmlSourceString.split(HTML_COMPONENT_MARKER);
-                    const finalHtmlString = sourceArray[0] + allTemplates + sourceArray[1];
+                let finalHtmlString = htmlSourceString;
 
-                    // we don't really need the components.html file but keep t just in case (may be used in SSR)
-                    //const components = await fse.writeFile( finalCompPath, allTemplates );
+                let writeCompiled = false;
+
+                /// write components
+                if( htmlSourceString.includes(HTML_COMPONENT_MARKER) === true )
+                {
+                    writeCompiled = true;
+
+                    const sourceArray = finalHtmlString.split(HTML_COMPONENT_MARKER);
+                    finalHtmlString = "";
+                    finalHtmlString = sourceArray[0] + allTemplates + sourceArray[1];
+                }
+
+                /// write header
+                if( htmlSourceString.includes(HTML_HEADER_MARKER) === true )
+                {
+                    writeCompiled = true;
+
+                    const htmlHeaderPath = path.resolve( this.#currentDirectory, "axial/templates/headers/header.html");
+                    const headerExists = await this.#fileExists( htmlHeaderPath );
+                    if( headerExists === true )
+                    {
+                        const headerString = await fsp.readFile( htmlHeaderPath, "utf8" );
+                        let headerRewritten = "";
+                        if( page.path === "" )
+                        {
+                            headerRewritten = headerString;
+                        }
+                        else
+                        {
+                            headerRewritten = this.#htmlLinksReplacer( headerString, config.site, page.path );
+                            headerRewritten = this.#htmlSourcesReplacer( headerRewritten, config.site, page.path );
+                        }
+                        //console.log( headerRewritten)
+                        const sourceArray = finalHtmlString.split(HTML_HEADER_MARKER);
+                        finalHtmlString = "";
+                        finalHtmlString = sourceArray[0] + headerRewritten + sourceArray[1];
+                    }
+                }
+
+                /// write footer
+                if( htmlSourceString.includes(HTML_FOOTER_MARKER) === true )
+                {
+                    writeCompiled = true;
+
+                    const htmlFooterPath = path.resolve( this.#currentDirectory, "axial/templates/footers/footer.html");
+                    const footerExists = await this.#fileExists( htmlFooterPath );
+
+                    if( footerExists === true )
+                    {
+                        const footerString = await fsp.readFile( htmlFooterPath, "utf8" );
+                        let footerRewritten = "";
+                        if( page.path === "" )
+                        {
+                            footerRewritten = footerString;
+                        }
+                        else
+                        {
+                            footerRewritten = this.#htmlLinksReplacer( footerString, config.site, page.path );
+                            footerRewritten = this.#htmlSourcesReplacer( footerRewritten, config.site, page.path );
+                        }
+                        //console.log( footerRewritten);
+                        const sourceArray = finalHtmlString.split(HTML_FOOTER_MARKER);
+                        finalHtmlString = "";
+                        finalHtmlString = sourceArray[0] + footerRewritten + sourceArray[1];
+                    }
+                }
+                
+
+                if( writeCompiled === true )
+                {
                     const compiled = await fse.writeFile( finalHtmlPath, finalHtmlString );
                 }
+                
             }
             await this.#build( [ compileMode ] );
         }
@@ -1446,6 +1526,232 @@ class AxialCommands extends EventEmitter
         const cleaned = s.replace(/\p{White_Space}+/gu, "");
         const kebab = cleaned.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
         return kebab;
+    }
+
+    #htmlLinksReplacer( htmlString, baseDomain, pagePath )
+    {
+        console.log( "PAGE_PATH", pagePath );
+        const result = htmlString.replace(
+            /href=(["'])(.*?)\1/g, (match, quote, href ) =>
+            {
+                const pageURL = new URL( pagePath, baseDomain );
+                const currentURL = new URL( href, baseDomain );
+                
+                let newHref = "";
+                if( HREF_EXCLUSIONS.includes(href) === true )
+                {
+                    newHref = href;
+                }
+                else if( href.indexOf("#") === 0 )
+                {
+                    newHref = href;
+                }
+                else if( href.indexOf("http") === 0 )
+                {
+                    newHref = href;
+                }
+                else if( href === "" )
+                {
+                    newHref = href;
+                }
+                else
+                {
+                    //console.log( href, pageURL.pathname, currentURL.pathname );
+                    let pagePathname = pageURL.pathname;
+                    if( pagePathname.lastIndexOf("/") === (pagePathname.length - 1) )
+                    {
+                        //console.log("final slash found");
+                        pagePathname = pagePathname.substring(0, pagePathname.length - 1)
+                        //console.log( pagePathname );
+                    }
+
+                    let currentPathname = currentURL.pathname;
+                    if( currentPathname.lastIndexOf("/") === (currentPathname.length - 1) )
+                    {
+                        //console.log("final slash found in current");
+                        currentPathname = currentPathname.substring(0, currentPathname.length - 1)
+                        //console.log( currentPathname );
+                    }
+                    //console.log( newHref );
+                    const pageLevel = this.#countChar( "/", pagePathname );
+                    const currentLevel = this.#countChar( "/", currentPathname );
+                    //console.log( pageLevel, currentLevel );
+                    if( pagePathname === currentPathname )
+                    {
+                        newHref = "./";
+                    }
+                    else if( currentPathname.indexOf(pagePathname) === 0 )
+                    {
+                        newHref = "." + currentPathname.split(pagePathname)[1];
+                    }
+                    else if( pageLevel == currentLevel )
+                    {
+                        newHref = ".." + currentPathname;
+                    }
+                    else if( pageLevel != currentLevel )
+                    {
+                        const delta = pageLevel;
+                        for( let i = 0; i < delta; i++ )
+                        {
+                            newHref = newHref + "..";
+                            if( i != (delta-1) ) { newHref = newHref + "/"; }
+                        }
+                        newHref = newHref + currentPathname;
+                    }
+                    /*
+                    else if( pageLevel > currentLevel )
+                    {
+                        const delta = pageLevel - currentLevel;
+                        for( let i = 0; i < delta; i++ )
+                        {
+                            newHref = newHref + "..";
+                            if( i != (delta-1) ) { newHref = newHref + "/"; }
+                        }
+                        newHref = newHref + currentPathname;
+                    }
+                    else if( currentLevel > pageLevel )
+                    {
+                        const delta = currentLevel - pageLevel;
+                        for( let i = 0; i < delta; i++ )
+                        {
+                            newHref = newHref + "..";
+                            if( i != (delta-1) ) { newHref = newHref + "/"; }
+                        }
+                        newHref = newHref + currentPathname;
+                    }
+                    else
+                    {
+                        console.log( "UNHANDLE REWRITE LINK CASE")
+                    }
+                    */
+                }
+                console.log("FINAL LINK REWRITE ", newHref);
+                return `href=${quote}${newHref}${quote}`;
+            }
+        );
+        return result;
+    }
+
+    #htmlSourcesReplacer( htmlString, baseDomain, pagePath )
+    {
+        //console.log( "PAGE_PATH", pagePath );
+        const result = htmlString.replace(
+            /src=(["'])(.*?)\1/g, (match, quote, href ) =>
+            {
+                const pageURL = new URL( pagePath, baseDomain );
+                
+                const currentURL = new URL( href, baseDomain );
+                //console.log( currentURL.href );
+                //const newHref = "toto";
+                let newHref = "";
+                if( HREF_EXCLUSIONS.includes(href) === true )
+                {
+                    newHref = href;
+                }
+                else if( href.indexOf("#") === 0 )
+                {
+                    newHref = href;
+                }
+                else if( href.indexOf("http") === 0 )
+                {
+                    newHref = href;
+                }
+                else if( href === "" )
+                {
+                    newHref = href;
+                }
+                else
+                {
+                    console.log( href, pageURL.pathname, currentURL.pathname );
+                    let pagePathname = pageURL.pathname;
+                    if( pagePathname.lastIndexOf("/") === (pagePathname.length - 1) )
+                    {
+                        console.log("final slash found");
+                        pagePathname = pagePathname.substring(0, pagePathname.length - 1)
+                        console.log( pagePathname );
+                    }
+
+                    let currentPathname = currentURL.pathname;
+                    if( currentPathname.lastIndexOf("/") === (currentPathname.length - 1) )
+                    {
+                        console.log("final slash found in current");
+                        currentPathname = currentPathname.substring(0, currentPathname.length - 1)
+                        console.log( currentPathname );
+                    }
+                    console.log( newHref );
+                    const pageLevel = this.#countChar( "/", pagePathname );
+                    const currentLevel = this.#countChar( "/", currentPathname );
+                    console.log( pageLevel, currentLevel );
+                    if( pagePathname === currentPathname )
+                    {
+                        newHref = "./";
+                    }
+                    else if( currentPathname.indexOf(pagePathname) === 0 )
+                    {
+                        newHref = "." + currentPathname.split(pagePathname)[1];
+                    }
+                    else if( pageLevel == currentLevel )
+                    {
+                        newHref = ".." + currentPathname;
+                    }
+                    else if( pageLevel != currentLevel )
+                    {
+                        const delta = pageLevel;
+                        for( let i = 0; i < delta; i++ )
+                        {
+                            newHref = newHref + "..";
+                            if( i != (delta-1) ) { newHref = newHref + "/"; }
+                        }
+                        newHref = newHref + currentPathname;
+                    }
+                    /*
+                    else if( pageLevel > currentLevel )
+                    {
+                        const delta = pageLevel - currentLevel;
+                        for( let i = 0; i < delta; i++ )
+                        {
+                            newHref = newHref + "..";
+                            if( i != (delta-1) ) { newHref = newHref + "/"; }
+                        }
+                        newHref = newHref + currentPathname;
+                    }
+                    
+                    else if( currentLevel > pageLevel )
+                    {
+                        const delta = currentLevel - pageLevel;
+                        for( let i = 0; i < delta; i++ )
+                        {
+                            newHref = newHref + "..";
+                            if( i != (delta-1) ) { newHref = newHref + "/"; }
+                        }
+                        newHref = newHref + currentPathname;
+                    }
+                    */
+                    else
+                    {
+                        console.log( "UNHANDLE REWRITE LINK CASE")
+                    }
+                }
+                console.log("FINAL SOURCE REWRITE ", newHref);
+                return `src=${quote}${newHref}${quote}`;
+            }
+        );
+        return result;
+    }
+
+    #countChar( c = "", s = "" )
+    {
+        if( c === undefined || c === null || c === "" || c.length !== 1 )
+        {
+            throw new TypeError("Only one char accepted here");
+        }
+
+        if( s === undefined || s === null )
+        {
+            throw new TypeError("No empty string");
+        }
+        
+        return ( s.match( new RegExp( c, "g" ) ) || [] ).length;
     }
 
     async #listJsFiles( dir )

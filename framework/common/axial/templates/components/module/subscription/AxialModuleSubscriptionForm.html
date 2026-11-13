@@ -1,0 +1,35 @@
+<!-- AxialModuleSubscriptionForm -->
+<template id="axial-module-subscription-form-template">
+    <link rel="stylesheet" href="./styles.css">
+    <form id="holder" class="axial_form-holder">
+        <slot id="slot" name="axial-items"></slot>
+        <axial-form-divider axial-title="Informations obligatoires" ></axial-form-divider>
+        <div class="axial_form_item-row" >
+            <axial-form-item-inputs axial-label="Désignation" axial-field="fname" axial-direction="row" axial-required="">
+                <input type="text" slot="axial-content" name="subscription_name" placeholder="Nom du l'abonnement" minlength="3" maxlength="200" required autocomplete="off">
+            </axial-form-item-inputs>
+        </div>
+        <div class="axial_form_item-row" >
+            <axial-form-item-inputs axial-label="Prix de l'abonnement" axial-field="fprice" axial-direction="row" axial-required="">
+                <input type="number" slot="axial-content" name="price" min="1" required autocomplete="off">
+            </axial-form-item-inputs>
+        </div>
+
+        <div class="axial_form_item-row" >
+            <axial-form-item-uploader axial-label="Télécharger une image" axial-field="image_main" axial-direction="row" axial-required="">
+            </axial-form-item-uploader>
+        </div>
+        
+        <div class="axial_form_item-row">
+            <axial-form-item-toggles slot="axial-items" axial-label="Récurrence de l'abonnement" axial-field="recurrence">
+                <axial-toggle-radio slot="axial-group" axial-text="Quotidien" axial-value="day"></axial-toggle-radio>
+                <axial-toggle-radio slot="axial-group" axial-text="Hebdomadaire" axial-value="week"></axial-toggle-radio>
+                <axial-toggle-radio slot="axial-group" axial-text="Mensuel" axial-value="month"></axial-toggle-radio>
+                <axial-toggle-radio slot="axial-group" axial-text="Annuel" axial-value="year"></axial-toggle-radio>
+            </axial-form-item-toggles>
+        </div>
+    </form>
+    <div class="axial_form-footer">
+        <axial-service-button id="postButton" axial-text="Enregistrer"></axial-service-button>
+    </div>
+</template>

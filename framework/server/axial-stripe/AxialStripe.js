@@ -44,14 +44,22 @@ class AxialStripe extends EventEmitter
         try
         {
             // product object
-            const productName = ObjectUtils.findValueInObject( object, "product_name", "value" );
-            const productImage = ObjectUtils.findValueInObject( object, "image_main", "value" );
-            const productImagePath = AxialServerUtils.getPathFromRelative(productImage);
-            const productObject = 
+            // name
+            const productName = ObjectUtils.findValueInObject( object, "subscription_name", "value" );
+            let productObject = 
             {
                 name: productName,
-                images: new Array( productImagePath )
             }
+            
+            // image
+            const productImage = ObjectUtils.findValueInObject( object, "image_main", "value" );
+            let productImagePath = ""; // entry point for placeholder (sexier in the front)
+            if( productImage )
+            {
+                productImagePath = `${MAIN_DOMAIN}/api/file/get/${productImage}`;
+                productObject.images = new Array( productImagePath );
+            }
+            console.log( productObject)
             stripeProduct = await this.#stripe.products.create( productObject );
             console.log( stripeProduct );
 
@@ -93,14 +101,16 @@ class AxialStripe extends EventEmitter
 
     async createSession( mode = "subscription", customer = "", price = "" )
     {
+        console.log("CREATE_SESSION")
         try
         {
             const sessionObject = 
             {
                 mode: mode,
-                ui_mode: "embedded",
+                ui_mode: "embedded_page",
                 customer: customer,
                 return_url: `${MAIN_DOMAIN}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
+                redirect_on_completion: 'if_required',
                 line_items:
                 [
                     {

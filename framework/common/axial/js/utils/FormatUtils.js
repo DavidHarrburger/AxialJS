@@ -2,6 +2,11 @@
 
 class FormatUtils
 {
+    /**
+     * 
+     * @param { String } s 
+     * @returns { String }
+     */
     static formatPhone( s )
     {
         const a = s.split("");

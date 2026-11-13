@@ -6,6 +6,7 @@ import { AxialServerErrorManager } from "./axial-server/AxialServerErrorManager.
 import
 {
     MAIN_DOMAIN,
+    MAIN_NAME,
 
     DATABASE_URL,
     DATABASE_NAME,
@@ -24,8 +25,6 @@ import
 
     ROLES,
 
-    WEBSOCKET_URL,
-
     MEDIAS_FOLDER,
     UPLOADS_FOLDER,
 
@@ -33,6 +32,7 @@ import
     AUTH_VERIFICATION_PATH,
     AUTH_REGISTER_PATH,
     AUTH_REDIRECT_PATH,
+    AUTH_ONBOARDING_PATH,
     AUTH_PATHES,
 
     API_PRIVATE_PATHES,
@@ -42,6 +42,7 @@ import
     SUBSCRIPTION_CHECKOUT_PATH,
 
     STRIPE_PRIVATE_KEY,
+    STRIPE_PUBLIC_KEY,
     STRIPE_USE,
     STRIPE_WEBHOOK_SECRET
 } from "./axial-server/AxialServerConstants.js";
@@ -78,6 +79,7 @@ import QRCode from "qrcode";
 import { MongoClient, ObjectId, ServerApiVersion } from "mongodb";
 import { AxialStripe } from "./axial-stripe/AxialStripe.js";
 import { AxialServerNotificationManager } from "./axial-server/AxialServerNotificationManager.js";
+import { AxialServerEventSourceDispatcher } from "./axial-server/AxialServerEventSourceDispatcher.js";
 
 const FILENAME = fileURLToPath( import.meta.url );
 const DIRNAME = path.dirname(FILENAME);
@@ -85,34 +87,24 @@ const DIRNAME = path.dirname(FILENAME);
 const BASIC_OK = { status: "ok" };
 const BASIC_KO = { status: "ko" };
 
+const USER_DATABASE_REQUIRED = false; // on doit créer une base de données avec groupID
+const USER_DATABASE_SOURCE = "";
+const USER_DATABASE_PREFIX = "";
+const USER_DATABASE_COLLECTIONS_SOURCES = [ "simulatorItems", "simulatorInfo", "simulatorArticles", "simulatorSteps", "simulatorSubsteps", "simulatorLines" ];
+
 // dev
-const PORT = 2383;
-const MESSAGING_SOCKET_URL = `ws://localhost:${PORT}/ws`;
+
+const PORT = 4114;
+const MESSAGING_SOCKET_URL = `ws://localhost:${PORT}/ws`; // const MESSAGING_SOCKET_URL = `wss://${MAIN_NAME}/ws`;
 const VAPID_PUBLIC_KEY = "";
 const VAPID_PRIVATE_KEY = "";
 const PRELUDE_API_TOKEN = "";
 
-// prod
-/*
-const PORT = 3000;
-const MESSAGING_SOCKET_URL = "wss://srflow.fr/ws";
-const VAPID_PUBLIC_KEY = "";
-const VAPID_PRIVATE_KEY = "";
-const PRELUDE_API_TOKEN = "";
-*/
 
 const MESSAGING_RULES = new Map();
 MESSAGING_RULES.set( "user",  { allow_to: [ { role: "admin", view_as: "group", copy_to: [], display_as: "TO DISPLAY" } ] } );
 MESSAGING_RULES.set( "admin", { allow_to: [ { role: "user",  view_as: "single", copy_to: [ "admin" ], display_as:"user" } ] } );
 
-/*
-const CORS_OPTIONS =
-{
-    origin: [ "http://localhost", "https://localhost", "http://localhost:3000", "https://localhost:3000", "http://localhost:8080", "https://localhost:8080", "http://localhost:8081", "https://localhost:8081" ],
-    credentials: true,
-    optionsSuccessStatus: 200 // Pour certains navigateurs anciens
-};
-*/
 
 const multerUploader = multer();
 const preludeClient = new Prelude( { apiToken: PRELUDE_API_TOKEN } );
@@ -219,7 +211,9 @@ const authMiddleware = async function( request, response, next )
         if( requestedPath === AUTH_LOGIN_PATH ||
             requestedPath === AUTH_LOGIN_PATH + "/" || 
             requestedPath === AUTH_REGISTER_PATH || 
-            requestedPath === AUTH_REGISTER_PATH + "/" )
+            requestedPath === AUTH_REGISTER_PATH + "/" /*||
+            requestedPath === AUTH_ONBOARDING_PATH ||
+            requestedPath === AUTH_ONBOARDING_PATH + "/"*/)
         {
             isSpecialPath = true;
         }
@@ -258,10 +252,12 @@ const authMiddleware = async function( request, response, next )
         {
             if( isSpecialPath === true )
             {
+                console.log("next")
                 next();
             }
             else
             {
+                console.log("redirect")
                 response.redirect( AUTH_LOGIN_PATH ); // TODO integrate the page asked for to do the good routing
             }
             return;
@@ -378,7 +374,7 @@ const authMiddleware = async function( request, response, next )
             // the user does not exist, weird. we redirect to the home
             if( isAPI === false )
             {
-                response.clearCookie( "axial_auth_jwt", { httpOnly: true } );
+                response.clearCookie( "axial_auth_jwt", { httpOnly: true, sameSite: "lax" } );
                 response.redirect( "/" );
             }
             else
@@ -463,7 +459,7 @@ const apiAuthSigninHandler = async function( request, response )
 
                 // here page to redirect
 
-                response.cookie( "axial_auth_jwt", token, { httpOnly: true } );
+                response.cookie( "axial_auth_jwt", token, { httpOnly: true, sameSite: "lax" } );
                 response.json( { status: "ok" } );
             }
         }
@@ -540,16 +536,20 @@ const apiAuthCodeVerifyHandler = async function( request, response )
         const user = response.locals.user;
         const code = request.body.code;
         const method = String(request.body.method);
+        const check = request.body.check;
+        //console.log( check );
         let verified = false;
         if( method === "sms" )
         {
             const decryptedTel = AxialCryptoUtils.decrypt( user.tel );
             const realTel = "+33" + decryptedTel.substring(1);
+            //console.log(realTel);
             const sms_object = 
             {
                 target: { type: "phone_number", value: realTel }, code: code
             };
             const smsCheck = await preludeClient.verification.check( sms_object );
+            //console.log( smsCheck.status )
             if( smsCheck.status && smsCheck.status == "success" )
             {
                 verified = true;
@@ -559,6 +559,7 @@ const apiAuthCodeVerifyHandler = async function( request, response )
         {
             const timeFilter = { timecode: code, timechecker: user.email };
             const timeResult = await AXIAL_MONGO.getData("codes", timeFilter);
+            //console.log(timeResult);
 
             if( timeResult === null || ( Array.isArray(timeResult) === true && timeResult.length === 0 ) )
             {
@@ -588,6 +589,23 @@ const apiAuthCodeVerifyHandler = async function( request, response )
             {
                 redirection = "/" + user.role + "/";
             }
+
+            // stay connected
+            if( check === true )
+            {
+                const payload = 
+                {
+                    first_name: currentUser.first_name,
+                    last_name: currentUser.last_name,
+                    uuid: currentUser.uuid,
+                };
+                const token = jwt.sign( JSON.stringify(payload), JWT_SECRET_KEY );
+
+                // here page to redirect
+
+                response.cookie( "axial_auth_jwt", token, { httpOnly: true, maxAge: 1209600000, sameSite: "lax" } );
+            }
+
             const jsonResponse = { status: "ok", uuid: user.uuid, path: redirection };
             response.json(jsonResponse);
         }
@@ -610,6 +628,9 @@ const apiAuthSignupHandler = async function( request, response )
     let body = request.body;
     const email = body.email;
     const pass = body.password;
+    const firstName = body.first_name ?? "";
+    const lastName = body.last_name ?? "";
+    const fullName = `${firstName} ${lastName}`.trim(); 
     try
     {
         const encryptedEmail = AxialCryptoUtils.encrypt( email );
@@ -619,7 +640,7 @@ const apiAuthSignupHandler = async function( request, response )
         {
             if( STRIPE_USE === true )
             {
-                const stripeName = `${body.first_name} ${body.last_name}`;
+                const stripeName = fullName;
                 const stripeCustomerObject = 
                 {
                     name: stripeName,
@@ -644,7 +665,7 @@ const apiAuthSignupHandler = async function( request, response )
             };
             const token = jwt.sign( JSON.stringify(payload), JWT_SECRET_KEY );
 
-            response.cookie( "axial_auth_jwt", token, { httpOnly: true } );
+            response.cookie( "axial_auth_jwt", token, { httpOnly: true, sameSite: "lax" } );
             response.json(BASIC_OK);
         }
         else
@@ -656,6 +677,192 @@ const apiAuthSignupHandler = async function( request, response )
     catch(err)
     {
         console.log(err);
+        response.json( { status: "ko", error: err } );
+    }
+};
+
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiAuthOnboardingCreationHandler = async function( request, response )
+{
+    console.log("API_AUTH_ONBOARDING_CREATION");
+    let body = request.body;
+    const email = body.email;
+    const pass = body.password;
+    const firstName = body.first_name;
+    const lastName = body.last_name;
+    const fullName = `${firstName} ${lastName}`.trim(); 
+    try
+    {
+        const encryptedEmail = AxialCryptoUtils.encrypt( email );
+        const possibleUsers = await AXIAL_MONGO.getData("users", { model: "user", email: encryptedEmail } );
+        //console.log( possibleUsers );
+        if( possibleUsers === null )
+        {
+            if( STRIPE_USE === true )
+            {
+                const stripeName = fullName;
+                const stripeCustomerObject = 
+                {
+                    name: stripeName,
+                    email: email
+                }
+                const stripeCustomer = await AXIAL_STRIPE.setCustomer( stripeCustomerObject );
+                //console.log(stripeCustomer);
+                if( stripeCustomer !== undefined )
+                {
+                    body.stripe_customer_id = stripeCustomer.id;
+                }
+            }
+
+            body.dbid = USER_DATABASE_PREFIX + AxialServerUtils.generateKey(8);
+
+            const newUserResult = await AXIAL_MONGO.setData("users", body, "user");
+            const newUser = await AXIAL_MONGO.getData("users", { model: "user", email: encryptedEmail } );
+
+            const payload = 
+            {
+                first_name: newUser.first_name,
+                last_name: newUser.last_name,
+                uuid: newUser.uuid,
+            };
+            const token = jwt.sign( JSON.stringify(payload), JWT_SECRET_KEY );
+
+            response.cookie( "axial_auth_jwt", token, { httpOnly: true, sameSite: "lax" } );
+            const json = { status: "ok", uuid: newUser.uuid, scid: newUser.stripe_customer_id };
+            response.json( json );
+        }
+        else
+        {
+            // user already exists
+            response.json(BASIC_KO);
+        }
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( { status: "ko", error: err } );
+    }
+};
+
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiAuthOnboardingPayementHandler = async function ( request, response )
+{
+    try
+    {
+        console.log("API_AUTH_ONBOARDING_PAYEMENT CHECK");
+        const localUser = response.locals.user;
+        console.log( localUser)
+        const user = await AXIAL_MONGO.getData("users", {uuid: localUser.uuid }, "user");
+        if( user.stripe_subscription_status === "active" && user.stripe_subscription_last_payment === true )
+        {
+            // everything good we can return
+            response.json( BASIC_OK );
+            return;
+        }
+        else
+        {
+            response.json( BASIC_KO );
+        }
+    }
+    catch(err)
+    {
+        response.json( { status: "ko", error: err } );
+    }
+};
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiAuthOnboardingDatabaseHandler = async function ( request, response )
+{
+    try
+    {
+        console.log("API_AUTH_ONBOARDING_DATABASE CHECK");
+        // quick check
+        if( USER_DATABASE_REQUIRED === true && USER_DATABASE_SOURCE !== "" && Array.isArray( USER_DATABASE_COLLECTIONS_SOURCES ) === true )
+        {
+            const localUser = response.locals.user;
+            const dbid = localUser.dbid;
+            const localClient = await new MongoClient( DATABASE_URL ).connect();
+            const targetDb = localClient.db(dbid);
+            const sourceDb = localClient.db(USER_DATABASE_SOURCE);
+
+            for( const sourceCollectionName of USER_DATABASE_COLLECTIONS_SOURCES )
+            {
+                const sourceCollection = sourceDb.collection( sourceCollectionName );
+                const sourceDocuments = await sourceCollection.find({}).toArray();
+                const targetCollection = targetDb.collection( sourceCollectionName );
+                const targetDocs = await targetCollection.insertMany(sourceDocuments);
+            }
+
+        }
+        response.json( BASIC_OK );
+    }
+    catch(err)
+    {
+        response.json( { status: "ko", error: err } );
+    }
+};
+
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiAuthOnboardingStorageHandler = async function ( request, response )
+{
+    try
+    {
+        const localUser = response.locals.user;
+        const dbid = localUser.dbid;
+        
+        const folderPath = path.join( DIRNAME, "files", dbid );
+        const folderExists = fs.existsSync(folderPath);
+        if( folderExists === false ) // just in case
+        {
+            await fsp.mkdir(folderPath, { recursive: true } );
+            response.json( BASIC_OK );
+            return;
+        }
+        response.json( BASIC_KO );
+    }
+    catch(err)
+    {
+        response.json( { status: "ko", error: err } );
+    }
+};
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiAuthOnboardingConnectionHandler = async function ( request, response )
+{
+    try
+    {
+        const localUser = response.locals.user;
+        const userUpdated = await AXIAL_MONGO.updateData("users", {email: localUser.email, uuid: localUser.uuid }, { $set: { verified: true } } );
+        const payload = 
+        {
+            first_name: localUser.first_name,
+            last_name: localUser.last_name,
+            uuid: localUser.uuid,
+        };
+        const token = jwt.sign( JSON.stringify(payload), JWT_SECRET_KEY );
+        response.cookie( "axial_auth_jwt", token, { httpOnly: true, maxAge: 1209600000, sameSite: "lax" } );        
+        response.json( BASIC_OK );
+    }
+    catch(err)
+    {
         response.json( { status: "ko", error: err } );
     }
 };
@@ -691,6 +898,160 @@ const apiAuthEmailCheckHandler = async function( request, response )
         response.json( { status: "ko", error: err } );
     }
 };
+
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiAuthEmailCodeSendHandler = async function( request, response )
+{
+    try
+    {
+        const body = request.body;
+        const email = body.email;
+
+        const underVerification = await AXIAL_MONGO.isMailUnderVerification( email );
+        //console.log("underVerification", underVerification);
+
+        // we will see later, I'm a bit late
+        /*
+        if( underVerification === true )
+        {
+            // une vérification est déjà en cours et un autre code a été redemandé
+            // on regarde l'état de la vérification
+
+        }
+        else
+        {
+            // on créer la vérification, si elle n'échoue pas, on peut envoyer le mail
+            // sinon on informe le user
+        }
+        */
+        const crypted = AxialServerUtils.getCryptedVerificationCode();
+        const code = crypted.code;
+        const verification = await AXIAL_MONGO.createVerification( email, crypted.hash, request);
+        const result = await AXIAL_MAILER.sendMail( "Votre code de vérification", email, "sendcode", { code: code } );
+
+        response.json( BASIC_OK );
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( { status: "ko", error: err } );
+    }
+}
+
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiAuthEmailCodeVerifyHandler = async function( request, response )
+{
+    let verified = false;
+    try
+    {
+        const body = request.body;
+        const email = body.email;
+        const code = body.code;
+        const hash = AxialServerUtils.sha256(code);
+        const verified = await AXIAL_MONGO.checkVerification( email, hash, request );
+
+        if( verified === true )
+        {
+            response.json( BASIC_OK );
+        }
+        else
+        {
+            response.json( BASIC_KO );
+        }
+    }
+    catch(err)
+    {
+        console.log(err);
+    }
+}
+
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiAuthPhoneCodeSendHandler = async function( request, response )
+{
+    try
+    {
+        const body = request.body;
+        const phone = body.phone;
+        const realPhone = "+33" + phone.substring(1);
+        const prelude_object = 
+        {
+            target:
+            {
+                type:"phone_number",
+                value: realPhone
+            }
+        };
+        const verification = await preludeClient.verification.create( prelude_object );
+        if( verification )
+        {
+            response.json( BASIC_OK );
+        }
+        else
+        {
+            response.json( BASIC_KO );
+        }
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( BASIC_KO );
+    }
+}
+
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiAuthPhoneCodeVerifyHandler = async function( request, response )
+{
+    let verified = false;
+    try
+    {
+        const body = request.body;
+        const phone = body.phone;
+        const code = body.code;
+        const realPhone = "+33" + phone.substring(1);
+        const sms_object = 
+        {
+            target: { type: "phone_number", value: realPhone }, code: code
+        };
+        const smsCheck = await preludeClient.verification.check( sms_object );
+        //console.log( smsCheck.status )
+        if( smsCheck.status && smsCheck.status == "success" )
+        {
+            verified = true;
+        }
+    }
+    catch(err)
+    {
+        console.log(err);
+        
+    }
+    finally
+    {
+        if( verified === true )
+        {
+            response.json( BASIC_OK );
+        }
+        else
+        {
+            response.json( BASIC_KO );
+        }
+    }
+}
 
 /**
  * POST
@@ -1632,11 +1993,24 @@ const apiUploadFileGetHandler = async function( request, response )
         //response.setHeader('Content-Type', fileObject.mimetype);
         //response.send(fileObject.data);
         //.attachment(fileObject.original_name)
-        return response
-            .status(200)
-            .type(fileObject.mimetype)
-            .set('Content-Length', fileBuffer.length)
-            .send(fileBuffer);
+        if( downloadQuery === true )
+        {
+            return response
+                .status(200)
+                .type(fileObject.mimetype)
+                .set('Content-Length', fileBuffer.length)
+                .attachment(fileObject.original_name)
+                .send(fileBuffer);
+        }
+        else
+        {
+            return response
+                .status(200)
+                .type(fileObject.mimetype)
+                .set('Content-Length', fileBuffer.length)
+                .send(fileBuffer);
+        }
+        
     }
     catch(err)
     {
@@ -2060,25 +2434,30 @@ const apiProductsSet = async function( request, response )
 
 /**
  * Create the subscription product
- * @param {*} request 
- * @param {*} response 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
  */
-const apiSubscriptionsSet = async function( request, response )
+const apiSubscriptionCreate = async function( request, response )
 {
-    console.log("API_SUBSCRIPTIONS_SET");
+    console.log("API_SUBSCRIPTIONS_CREATE");
     try
     {
+        const user = response.locals.user;
+        if( user.role !== "admin" )
+        {
+            response.json( BASIC_KO );
+            return;
+        }
         if( STRIPE_USE === false ) { throw new Error("API SUBSCRIPTION NEED STRIPE READY"); }
         let body = request.body;
         body.is_recurring = true;
-        body.type = "subscription";
 
         const stripeObject = await AXIAL_STRIPE.setProduct( body );
 
         body.stripe_product_id = stripeObject.product;
         body.stripe_price_id = stripeObject.price;
 
-        const subscription = await AXIAL_MONGO.setData("products", body, "product");
+        const subscription = await AXIAL_MONGO.setData("subscriptions", body, "payement_subscription");
         console.log( subscription );
 
         response.json( BASIC_OK );
@@ -2090,17 +2469,29 @@ const apiSubscriptionsSet = async function( request, response )
     }
 };
 
-const apiSubscriptionsGet = async function( request, response )
+/**
+ * List all subscriptions only for ADMINS
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiSubscriptionList = async function( request, response )
 {
-    console.log("API_SUBSCRIPTIONS_GET");
+    console.log("API_SUBSCRIPTIONS_LIST");
     try
     {
-        if( STRIPE_USE === false ) { throw new Error("API SUBSCRIPTION NEED STRIPE READY"); }
         const localUser = response.locals.user;
+        if( localUser.role !== "admin" )
+        {
+            response.json( BASIC_KO );
+            return;
+        }
+
+        if( STRIPE_USE === false ) { throw new Error("API SUBSCRIPTION NEED STRIPE READY"); }
+        
         //console.log( "subscription get local user", localUser);
         //const query = request.query;
-        const subscriptions = await AXIAL_MONGO.getData("products", { type: "subscription" }, "product");
-        console.log(subscriptions);
+        const subscriptions = await AXIAL_MONGO.getData("subscriptions", { model: "payement_subscription" }, "payement_subscription");
+        //console.log(subscriptions);
 
         const result = 
         {
@@ -2117,21 +2508,37 @@ const apiSubscriptionsGet = async function( request, response )
     }
 };
 
-const apiCheckoutSessionCreate = async function( request, response )
+/**
+ * Get active subscriptions ONLY FOR USER
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiSubscriptionUserList = async function( request, response )
 {
-    console.log("API_CHECKOUT_SESSION_CREATE");
+    console.log("API_SUBSCRIPTIONS_USER_LIST");
     try
     {
-        if( STRIPE_USE === false ) { throw new Error("API SUBSCRIPTION NEED STRIPE READY"); }
-        const priceId = request.body.stripe_price_id;
         const localUser = response.locals.user;
-        const customerId = localUser.stripe_customer_id;
+        /*
+        console.log( localUser );
+        if( localUser.role !== "user" )
+        {
+            response.json( BASIC_KO );
+            return;
+        }
+        */
+
+        if( STRIPE_USE === false ) { throw new Error("API SUBSCRIPTION NEED STRIPE READY"); }
         
-        const session = await AXIAL_STRIPE.createSession( "subscription", customerId, priceId );
+        //console.log( "subscription get local user", localUser);
+        //const query = request.query;
+        const subscriptions = await AXIAL_MONGO.getData("subscriptions", { model: "payement_subscription", }, "payement_subscription");
+        //console.log(subscriptions);
+
         const result = 
         {
             status: "ok",
-            content: session.client_secret
+            content: subscriptions
         }
 
         response.json( result );
@@ -2143,21 +2550,65 @@ const apiCheckoutSessionCreate = async function( request, response )
     }
 };
 
+/**
+ * Create the session ;)
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiCheckoutSessionCreate = async function( request, response )
+{
+    console.log("API_CHECKOUT_SESSION_CREATE");
+    try
+    {
+        if( STRIPE_USE === false ) { throw new Error("API SUBSCRIPTION NEED STRIPE READY"); }
+        /*
+        const priceId = request.body.stripe_price_id;
+        const localUser = response.locals.user;
+        const customerId = localUser.stripe_customer_id;
+        */
+
+        const body = request.body;
+        const priceId = body.stripe_price_id;
+        const customerId = body.stripe_customer_id;
+        
+        const session = await AXIAL_STRIPE.createSession( "subscription", customerId, priceId );
+        const result = 
+        {
+            status: "ok",
+            secret: session.client_secret,
+            id: session.id
+        }
+
+        response.json( result );
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( BASIC_KO );
+    }
+};
+
+/**
+ * Create the session ;)
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
 const apiCheckoutSessionStatus = async function( request, response )
 {
     console.log("API_CHECKOUT_SESSION_STATUS");
     try
     {
         if( STRIPE_USE === false ) { throw new Error("API SUBSCRIPTION NEED STRIPE READY"); }
-        const sessionId = request.query.session_id;
+        const sessionId = request.params.id;
         const session = await AXIAL_STRIPE.stripe.checkout.sessions.retrieve(sessionId);
         const customer = await AXIAL_STRIPE.stripe.customers.retrieve(session.customer);
         const user = await AXIAL_MONGO.getData("users", {stripe_customer_id: session.customer}, "user");
-        const subscription = await AXIAL_MONGO.getData("products", {stripe_product_id: user.stripe_subscription_product_id, stripe_price_id: user.stripe_subscription_price_id}, "product");
+        const subscription = await AXIAL_MONGO.getData("subscriptions", {stripe_product_id: user.stripe_subscription_product_id, stripe_price_id: user.stripe_subscription_price_id}, "payement_subscription");
         const result = 
         {
             status: "ok",
             session: session.status,
+            payement: session.payment_status,
             customer: customer,
             user: user,
             subscription: subscription
@@ -2180,7 +2631,46 @@ const apiCheckoutSessionStatus = async function( request, response )
 ///
 /// STRIPE WEBHOOK
 ///
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiStripePkey = async function( request, response )
+{
+    try
+    {   
+        response.json( {status: "ok", key: STRIPE_PUBLIC_KEY } );
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( BASIC_KO );
+    }
+};
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiStripeCustomer = async function( request, response )
+{
+    try
+    {   
+        response.json( {status: "ok", key: STRIPE_PUBLIC_KEY } );
+    }
+    catch(err)
+    {
+        console.log(err);
+        response.json( BASIC_KO );
+    }
+};
 
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
 const apiWebhooksStripe = async function( request, response )
 {
     console.log("API_STRIPE_WEBHOOK");
@@ -2217,6 +2707,7 @@ const apiWebhooksStripe = async function( request, response )
     }
 };
 
+
 const manageStripeWebhooks = async function( stripeEvent )
 {
     if( stripeEvent === undefined || stripeEvent === null )
@@ -2229,6 +2720,7 @@ const manageStripeWebhooks = async function( stripeEvent )
 
     console.log("MANAGE_STRIPE_WEBHOOKS");
 
+    const BASE_IMAGE_PATH = AxialServerUtils.getPathFromRelative("./api/file/get/");
     const TYPE = stripeEvent.type;
     const DATA = stripeEvent.data.object;
     const OBJECT = {}; OBJECT.message = TYPE;
@@ -2238,6 +2730,60 @@ const manageStripeWebhooks = async function( stripeEvent )
     {
         switch( TYPE )
         {
+            case "invoice.paid":
+                console.log("invoice.paid");
+                const ICUSTOMER = DATA.customer;
+                const ISUBSCRIPTION = DATA.parent.subscription_details.subscription;
+                const IFILTER = { stripe_customer_id: ICUSTOMER }
+                // get the user
+                const iuser = await AXIAL_MONGO.getData("users", IFILTER, "user" );
+
+                const IUPDATE =
+                {
+                    _id: iuser._id,
+                    stripe_subscription_last_payment: true
+                }
+                // update the user
+                const iUpdatedUser = await AXIAL_MONGO.setData("users", IUPDATE, "user" );
+
+                const I_EMAIL_OBJECT = 
+                {
+                    title: "Confirmation de paiement",
+                    name: iuser.first_name
+
+                };
+                const i_userMail = await AXIAL_MAILER.sendMail( "Votre paiement a bien été effectué", iuser.email, "subscription_paid", I_EMAIL_OBJECT );
+                // NOTIF ENTRY POINT ???
+            break;
+
+            case "invoice.payment_failed":
+                console.log("invoice.payment_failed");
+
+                const FCUSTOMER = DATA.customer;
+                const FSUBSCRIPTION = DATA.parent.subscription_details.subscription;
+                const FFILTER = { stripe_customer_id: FCUSTOMER }
+                // get the user
+                const fuser = await AXIAL_MONGO.getData("users", FFILTER, "user" );
+
+                const FUPDATE =
+                {
+                    _id: fuser._id,
+                    stripe_subscription_last_payment: false
+                }
+                // update the user
+                const fUpdatedUser = await AXIAL_MONGO.setData("users", FUPDATE, "user" );
+
+                const F_EMAIL_OBJECT = 
+                {
+                    title: "Paiement échoué",
+                    name: fuser.first_name
+
+                };
+                const f_userMail = await AXIAL_MAILER.sendMail( "Votre paiement a échoué", fuser.email, "subscription_failed", F_EMAIL_OBJECT );
+                
+                // NOTIF ENTRY POINT ???
+            break;
+
             case "customer.subscription.created":
                 console.log("customer.subscription.created");
                 const CUSTOMER = DATA.customer;
@@ -2260,18 +2806,18 @@ const manageStripeWebhooks = async function( stripeEvent )
                 // update the user
                 const updatedUser = await AXIAL_MONGO.setData("users", UPDATE, "user" );
                 // get infos for mail
-                const subscription = await AXIAL_MONGO.getData("products", {stripe_product_id: PRODUCT, stripe_price_id: PRICE}, "product");
+                const subscription = await AXIAL_MONGO.getData("subscriptions", {stripe_product_id: PRODUCT, stripe_price_id: PRICE}, "payement_subscription");
 
-                console.log("subscirptio", subscription);
+                console.log("subscirption", subscription);
 
                 // update mail object
-                USER_MAIL_OBJECT.product = subscription.product_name;
+                USER_MAIL_OBJECT.product = subscription.subscription_name;
                 USER_MAIL_OBJECT.price = subscription.price;
-                USER_MAIL_OBJECT.image = AxialServerUtils.getPathFromRelative(subscription.image_main);
+                USER_MAIL_OBJECT.image = BASE_IMAGE_PATH + subscription.image_main;
                 USER_MAIL_OBJECT.name = user.first_name;
                 USER_MAIL_OBJECT.title = "Inscription réussie !";
 
-                const c_userMail = await AXIAL_MAILER.sendMail( "Welcome on Board!", user.email, "subscription_success", USER_MAIL_OBJECT ); 
+                const c_userMail = await AXIAL_MAILER.sendMail( "Welcome on Board!", user.email, "subscription_created", USER_MAIL_OBJECT ); 
             break;
 
             case "customer.subscription.deleted":
@@ -2289,12 +2835,12 @@ const manageStripeWebhooks = async function( stripeEvent )
                 }
                 // update the user
                 const d_updatedUser = await AXIAL_MONGO.setData("users", D_UPDATE, "user" );
-                const d_subscription = await AXIAL_MONGO.getData("products", {stripe_product_id: d_user.stripe_subscription_product_id, stripe_price_id: d_user.stripe_subscription_price_id}, "product");
+                const d_subscription = await AXIAL_MONGO.getData("subscriptions", {stripe_product_id: d_user.stripe_subscription_product_id, stripe_price_id: d_user.stripe_subscription_price_id}, "payement_subscription");
                 console.log("d_subscription", d_subscription)
 
-                USER_MAIL_OBJECT.product = d_subscription.product_name;
+                USER_MAIL_OBJECT.product = d_subscription.subscription_name;
                 USER_MAIL_OBJECT.price = d_subscription.price;
-                USER_MAIL_OBJECT.image = AxialServerUtils.getPathFromRelative(d_subscription.image_main);
+                USER_MAIL_OBJECT.image = BASE_IMAGE_PATH + subscription.image_main;
                 USER_MAIL_OBJECT.name = d_user.first_name;
                 USER_MAIL_OBJECT.title = "Votre abonnement a été annulé";
                 
@@ -3163,6 +3709,42 @@ const apiMessageCreate = async function( request, response )
 };
 
 ///
+/// REALTIME AND WEBHOOKS
+/// 
+
+const eventSourceDispatcher = new AxialServerEventSourceDispatcher();
+
+/**
+ * The function you call from your front end to listen to the events
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiRealtimeSource = function( request, response )
+{
+    eventSourceDispatcher.register( request, response );
+};
+
+/**
+ * 
+ * @param { Express.Request } request 
+ * @param { Express.Response } response 
+ */
+const apiRealtimeEvent = async function( request, response )
+{
+    try
+    {
+        const event = request.body;
+        eventSourceDispatcher.broadcast( event.name, event.data );
+        response.json( BASIC_OK );
+    }
+    catch(err)
+    {
+        console.log(err);
+       
+    }
+};
+
+///
 /// BOOKINGS
 ///
 
@@ -3511,6 +4093,19 @@ const apiMessagingWebSocektUrlGet = function( request, response )
     }
 };
 
+/// 
+const apiSecret = function( request, response )
+{
+    return response.json( { secret: AxialServerUtils.generateKey(32) } );
+
+}
+
+const apiOtp = function( request, response )
+{
+    return response.json( { secret: AxialServerUtils.getCryptedVerificationCode(6) } );
+
+}
+
 ///
 /// SERVER ROUTES
 ///
@@ -3518,6 +4113,7 @@ const apiMessagingWebSocektUrlGet = function( request, response )
 const AXIAL_SERVER_APPLICATION = express();
 
 AXIAL_SERVER_APPLICATION.disable("x-powered-by");
+AXIAL_SERVER_APPLICATION.set("trust proxy", 1);
 //AXIAL_SERVER_APPLICATION.use( cors(CORS_OPTIONS) );
 AXIAL_SERVER_APPLICATION.use( startMiddleware );
 //AXIAL_SERVER_APPLICATION.use( jsonRawMiddleware );
@@ -3558,6 +4154,18 @@ AXIAL_SERVER_APPLICATION.post( "/api/auth/code/verify", apiAuthCodeVerifyHandler
 AXIAL_SERVER_APPLICATION.post( "/api/auth/email/check", apiAuthEmailCheckHandler);
 AXIAL_SERVER_APPLICATION.post( "/api/auth/password/request", apiAuthPasswordRequestHandler);
 AXIAL_SERVER_APPLICATION.post( "/api/auth/password/change", apiAuthPasswordChangeHandler);
+
+AXIAL_SERVER_APPLICATION.post( "/api/auth/email/code/send/", apiAuthEmailCodeSendHandler );
+AXIAL_SERVER_APPLICATION.post( "/api/auth/email/code/verify/", apiAuthEmailCodeVerifyHandler );
+
+AXIAL_SERVER_APPLICATION.post( "/api/auth/phone/code/send/", apiAuthPhoneCodeSendHandler );
+AXIAL_SERVER_APPLICATION.post( "/api/auth/phone/code/verify/", apiAuthPhoneCodeVerifyHandler );
+
+AXIAL_SERVER_APPLICATION.post( "/api/auth/onboarding/creation", apiAuthOnboardingCreationHandler );
+AXIAL_SERVER_APPLICATION.post( "/api/auth/onboarding/payement", apiAuthOnboardingPayementHandler );
+AXIAL_SERVER_APPLICATION.post( "/api/auth/onboarding/database", apiAuthOnboardingDatabaseHandler );
+AXIAL_SERVER_APPLICATION.post( "/api/auth/onboarding/storage", apiAuthOnboardingStorageHandler );
+AXIAL_SERVER_APPLICATION.post( "/api/auth/onboarding/connection", apiAuthOnboardingConnectionHandler );
 
 // ONBOARDING
 AXIAL_SERVER_APPLICATION.post( "/api/onboarding/contact", apiOnboardingContact);
@@ -3659,15 +4267,16 @@ AXIAL_SERVER_APPLICATION.get( "/api/error/test", apiErrorTest);
 
 
 // SUBSCRIPTIONS
-AXIAL_SERVER_APPLICATION.post( "/api/subscriptions/set", apiSubscriptionsSet );
-AXIAL_SERVER_APPLICATION.get( "/api/subscriptions/get", apiSubscriptionsGet );
+AXIAL_SERVER_APPLICATION.post( "/api/subscription/create", apiSubscriptionCreate );
+AXIAL_SERVER_APPLICATION.get( "/api/subscription/list", apiSubscriptionList );
+AXIAL_SERVER_APPLICATION.get( "/api/subscription/user/list", apiSubscriptionUserList );
 
 AXIAL_SERVER_APPLICATION.post( "/api/checkout/session/create", apiCheckoutSessionCreate );
-AXIAL_SERVER_APPLICATION.get( "/api/checkout/session/status", apiCheckoutSessionStatus );
+AXIAL_SERVER_APPLICATION.get( "/api/checkout/session/status/:id", apiCheckoutSessionStatus );
 
 // STRIPE WEBHOOKS
 AXIAL_SERVER_APPLICATION.post( "/api/webhooks/stripe", apiWebhooksStripe );
-
+AXIAL_SERVER_APPLICATION.get( "/api/stripe/pkey", apiStripePkey)
 // EVENTS
 AXIAL_SERVER_APPLICATION.post( "/api/events/set", apiEventSet );
 
@@ -3682,6 +4291,13 @@ AXIAL_SERVER_APPLICATION.post( "/api/message/create", apiMessageCreate );
 
 // MESSAGING
 AXIAL_SERVER_APPLICATION.get( "/api/messaging/socket", apiMessagingWebSocektUrlGet );
+
+AXIAL_SERVER_APPLICATION.get( "/api/secret", apiSecret );
+AXIAL_SERVER_APPLICATION.get( "/api/otp", apiOtp );
+
+// REALTIME / EVENT SOURCE
+AXIAL_SERVER_APPLICATION.get("/api/realtime/source", apiRealtimeSource);
+AXIAL_SERVER_APPLICATION.post("/api/realtime/event", apiRealtimeEvent);
 
 // STATIC
 AXIAL_SERVER_APPLICATION.use( "/", express.static( path.join( DIRNAME, "static" )) );

@@ -13,6 +13,7 @@ import { AxialErrorManager} from "../error/AxialErrorManager.js"
 
 import { AxialAuthBox } from "../auth/AxialAuthBox.js";
 import { AxialAuthManager } from "../auth/AxialAuthManager.js";
+import { AxialAuthBoxOverlay } from "../auth/AxialAuthBoxOverlay.js";
 
 ///
 /// NOTIFICATION
@@ -39,6 +40,7 @@ import { AxialFormItem } from "../forms/AxialFormItem.js";
 import { AxialFormItemInputs } from "../forms/AxialFormItemInputs.js";
 import { AxialFormItemToggles } from "../forms/AxialFormItemToggles.js";
 import { AxialFormItemChecks } from "../forms/AxialFormItemChecks.js";
+import { AxialFormItemUploader } from "../forms/AxialFormItemUploader.js";
 
 ///
 /// HELPERS
@@ -52,15 +54,17 @@ import { AxialNavigationHelper } from "../helpers/AxialNavigationHelper.js";
 
 import { PathUtils } from "../utils/PathUtils.js";
 import { CryptoUtils } from "../utils/CryptoUtils.js";
+import { FetchUtils } from "../utils/FetchUtils.js";
 
 ///
 /// WEBSOCKET
 ///
 
 import { AxialWebSocket } from "../websocket/AxialWebSocket.js";
-import { FetchUtils } from "../utils/FetchUtils.js";
 
-
+/**
+ * @class
+ */
 class AxialWebApplicationBase extends AxialApplicationBase
 {
     /// vars

@@ -1,0 +1,51 @@
+<!-- AxialOnboardingViewFinal -->
+<template id="axial-onboarding-view-final-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="holder" class="axial_view-holder axial_onboarding_view-holder">
+        <div class="axial_onboarding-title">Félicitations</div>
+        <div class="axial_onboarding_final-main">
+            <div class="axial_onboarding_final-heading">Merci ! Nous finalisons la création de votre espace !</div>
+            
+            <div class="axial_onboarding_final-items">
+                <!-- check paiement-->
+                <div class="axial_onboarding_final-item">
+                    <div class="axial_onboarding_final-life">
+                        <axial-fun-check class="axial_onboarding_final-check"></axial-fun-check>
+                        <axial-progress-indicator class="axial_onboarding_final-progress"></axial-progress-indicator>
+                    </div>
+                    <div class="axial_onboarding_final-label">Vérification de vos données</div>
+                </div>
+                
+                <!-- db creation -->
+                <div class="axial_onboarding_final-item">
+                    <div class="axial_onboarding_final-life">
+                        <axial-fun-check class="axial_onboarding_final-check"></axial-fun-check>
+                        <axial-progress-indicator class="axial_onboarding_final-progress"></axial-progress-indicator>
+                    </div>
+                    <div class="axial_onboarding_final-label">Préparation de vos outils</div>
+                </div>
+
+                <!-- dir creation -->
+                <div class="axial_onboarding_final-item">
+                    <div class="axial_onboarding_final-life">
+                        <axial-fun-check class="axial_onboarding_final-check"></axial-fun-check>
+                        <axial-progress-indicator class="axial_onboarding_final-progress"></axial-progress-indicator>
+                    </div>
+                    <div class="axial_onboarding_final-label">Création de votre cloud</div>
+                </div>
+
+                <!-- flag for db -->
+                <div class="axial_onboarding_final-item">
+                    <div class="axial_onboarding_final-life">
+                        <axial-fun-check class="axial_onboarding_final-check"></axial-fun-check>
+                        <axial-progress-indicator class="axial_onboarding_final-progress"></axial-progress-indicator>
+                    </div>
+                    <div class="axial_onboarding_final-label">Connexion à votre espace</div>
+                </div>
+
+            </div>
+            
+        </div>
+        <axial-button id="goButton" class="axial_onboarding_final-button" axial-text="Accéder à mon espace !!!"></axial-button>
+    </div>
+</template>

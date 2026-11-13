@@ -7,6 +7,7 @@ import { ObjectUtils } from "../utils/ObjectUtils.js";
 import { StringUtils } from "../utils/StringUtils.js";
 import { AxialFormItemImage } from "./AxialFormItemImage.js";
 import { AxialFormItemToggles } from "./AxialFormItemToggles.js";
+import { AxialFormItemUploader } from "./AxialFormItemUploader.js";
 
 class AxialForm extends AxialServiceComponentBase
 {
@@ -245,10 +246,15 @@ class AxialForm extends AxialServiceComponentBase
         {
             for( const item of this.#items )
             {
-                if( item instanceof AxialFormItemImage && item.canUpload === true )
+                if( ( item instanceof AxialFormItemImage === true ) && item.canUpload === true )
                 {
                     await item.upload();
                 }
+                else if( item instanceof AxialFormItemUploader === true && item.canUpload === true )
+                {
+                    await item.upload();
+                }
+
             }
         }
         catch(err)

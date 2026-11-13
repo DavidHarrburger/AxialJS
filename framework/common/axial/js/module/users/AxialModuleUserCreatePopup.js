@@ -15,7 +15,7 @@ class AxialModuleUserCreatePopup extends AxialModulePopup
     #form;
 
     /// events
-    /** @type {Function } */
+    /** @type { Function } */
     #boundFormSuccessHandler;
 
     constructor()

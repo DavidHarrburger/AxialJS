@@ -3,7 +3,6 @@
 import { AxialOverlayBase } from "../overlay/AxialOverlayBase.js";
 import { DomUtils } from "../utils/DomUtils.js";
 import { AxialIconButton } from "../button/AxialIconButton.js";
-import { NatAxialTransparentButton } from "../nathan/NatAxialTransparentButton.js";
 
 class AxialHelpOverlay extends AxialOverlayBase
 {

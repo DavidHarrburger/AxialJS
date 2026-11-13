@@ -82,6 +82,15 @@ class StringUtils
         return false;
     }
 
+    static removeWhites( s )
+    {
+        if( typeof s !== "string" )
+        {
+            throw new TypeError("String value required");
+        }
+        return s.replace(/\s+/g, '');
+    }
+
     static formatPrice( price, digit = 2 )
     {
         if( isNaN( price ) === true )

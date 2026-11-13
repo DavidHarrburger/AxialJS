@@ -1,0 +1,50 @@
+<!-- AxialOnboardingViewCompany -->
+<template id="axial-onboarding-view-company-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="holder" class="axial_view-holder">
+        <div class="axial_onboarding_view-holder">
+            <div class="axial_onboarding-title">Mon entreprise</div>
+            <div class="axial_onboarding-text">Entrez le numéro SIREN ou SIRET de votre entreprise. Ce code est obligatoire pour continuer. Ces informations seront vérifiées par un collobarateur d'Estinnov.</div>
+            
+            <div class="axial_onboarding-group">
+                <div class="axial_onboarding-item">
+                    <label for="companyCodeInput">SIREN (9 chiffres) / SIRET (14 chiffres) :</label>
+                    <input name="companyCodeInput" id="companyCodeInput" type="text" autocomplete="off" minlength="9" maxlength="14" pattern="[0-9]+" required>
+                </div>
+                <axial-service-button id="searchButton" axial-text="Rechercher"></axial-service-button>
+            </div>
+
+            <axial-accordion-container id="companyContainer">
+                <div slot="axial-content" class="axial_onboarding-container">
+                    <div class="axial_onboarding-group">
+                        
+                        <div class="axial_onboarding-item">
+                            <label for="companyCodeInput">Raison sociale :</label>
+                            <input name="companyNameInput" id="companyNameInput" type="text" autocomplete="off" minlength="9" maxlength="20" pattern="[0-9]+" required>
+                        </div>
+
+                        <div class="axial_onboarding-item">
+                            <label for="companyAddressInput">Adresse :</label>
+                            <input name="companyAddressInput" id="companyAddressInput" type="text" autocomplete="off" minlength="3" maxlength="140" required>
+                        </div>
+                        <div class="axial_onboarding-row">
+                            <div class="axial_onboarding-item">
+                                <label for="companyZipInput">Code postal :</label>
+                                <input name="companyZipInput" id="companyZipInput" type="text" autocomplete="off" minlength="4" maxlength="5" required>
+                            </div>
+                            <div class="axial_onboarding-item">
+                                <label for="companyCityInput">Ville :</label>
+                                <input name="companyCityInput" id="companyCityInput" type="text" autocomplete="off" minlength="1" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </axial-accordion-container>
+
+            <div class="axial_spacer"></div>
+            <div class="axial_onboarding_actions-row">
+                <axial-service-button id="nextButton" axial-text="Continuer" class="axial_onboarding-next"></axial-service-button>
+            </div>
+        </div>
+    </div>
+</template>

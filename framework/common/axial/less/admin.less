@@ -37,12 +37,12 @@
 }
 .axial_module_body
 {
-    background-color: var(--axial___module___backgroundColor);
-    color: #232323;
+    background-color: var(--background-primary);
+    color: var(--text-primary);
     width: 100%;
     height: 100svh;
 }
-h1, h2, h3, h4, h5, h6 { color: #232323; margin-top: 0; margin-bottom: 20px; }
+h1, h2, h3, h4, h5, h6 { color: var(--text-primary); margin-top: 0; margin-bottom: 20px; }
 
 .axial_admin_fill_theme { fill: var(--themeColor); }
 .axial_main_layer-module
@@ -70,6 +70,7 @@ h1, h2, h3, h4, h5, h6 { color: #232323; margin-top: 0; margin-bottom: 20px; }
     display: flex;
     justify-content: var(--adminHeader___justify);
     align-items: center;
+    gap: 10px;
 
     padding-left:  var(--adminContent___paddingLeft);
     padding-right: var(--adminContent___paddingRight);
@@ -80,7 +81,14 @@ h1, h2, h3, h4, h5, h6 { color: #232323; margin-top: 0; margin-bottom: 20px; }
     height:           var(--adminHeader___height);
     background-color: var(--adminHeader___backgroundColor);
 }
-.axial_admin_burger
+.axial_module_header_actions
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+}
+.axial_module_header_burger
 {
     display: block;
 }

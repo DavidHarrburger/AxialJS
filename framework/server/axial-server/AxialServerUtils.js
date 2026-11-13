@@ -1,6 +1,7 @@
 "use strict";
 
-import { MAIN_DOMAIN } from "./AxialServerConstants.js";
+import { MAIN_DOMAIN, OTP_SECRET_KEY } from "./AxialServerConstants.js";
+import crypto from "node:crypto";
 
 class AxialServerUtils
 {
@@ -23,6 +24,31 @@ class AxialServerUtils
             verificationCode += String( Math.round( Math.random() * 9 ) );
         }
         return verificationCode;
+    }
+
+    static getCryptedVerificationCode( l = 6 )
+    {
+        if( isNaN(l) === true ) { throw new TypeError("Number value required"); }
+        const code = crypto.randomInt(1000000).toString().padStart(6, "0");
+        const hash = AxialServerUtils.sha256( code )
+        return { code: code, hash: hash };
+    }
+
+    /**
+     * 
+     * @param { String } s 
+     * @returns { String }
+     */
+    static sha256( s )
+    {
+        return crypto.createHmac("sha256", OTP_SECRET_KEY).update(s).digest("hex");
+    }
+
+    static generateKey( length = 8 )
+    {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        const bytes = crypto.randomBytes(length);
+        return Array.from(bytes, b => chars[b % chars.length]).join('');
     }
 
     /**

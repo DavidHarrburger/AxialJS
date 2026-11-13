@@ -1,0 +1,33 @@
+<!-- AxialOnboardingViewPhoneVerification -->
+<template id="axial-onboarding-view-phone-verification-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="holder" class="axial_view-holder">
+        <div class="axial_onboarding_view-holder">
+            <div class="axial_onboarding-title">Vérification</div>
+            <div class="axial_onboarding-text">Un code à usage unique vous a été envoyé sur votre mobile :<br><span class="axial_onboarding-recipient" id="recipient"></span></div>
+
+            <div class="axial_onboarding-group">
+                <div class="axial_onboarding-text">Recevoir un nouveau code dans :</div>
+                <axial-service-button id="timeButton" axial-text="2 : 00" class="axial_onboarding-time"></axial-service-button>
+            </div>
+    
+            <div class="axial_onboarding-group">
+                <div class="axial_onboarding-item">
+                    <div class="axial_onboarding-inputs" id="holder">
+                        <input class="axial_onboarding-numinput" type="text" pattern="[0-9]" id="num_1" value="" required minlength="1" maxlength="1" autocomplete="off">
+                        <input class="axial_onboarding-numinput" type="text" pattern="[0-9]" id="num_2" value="" required minlength="1" maxlength="1" autocomplete="off">
+                        <input class="axial_onboarding-numinput" type="text" pattern="[0-9]" id="num_3" value="" required minlength="1" maxlength="1" autocomplete="off">
+                        <input class="axial_onboarding-numinput" type="text" pattern="[0-9]" id="num_4" value="" required minlength="1" maxlength="1" autocomplete="off">
+                        <input class="axial_onboarding-numinput" type="text" pattern="[0-9]" id="num_5" value="" required minlength="1" maxlength="1" autocomplete="off">
+                        <input class="axial_onboarding-numinput" type="text" pattern="[0-9]" id="num_6" value="" required minlength="1" maxlength="1" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+            <div class="axial_spacer"></div>
+            <div class="axial_onboarding_actions-row">
+                <axial-button id="backButton" axial-text="Retour" class="axial_onboarding-back"></axial-button>
+                <axial-service-button id="nextButton" axial-text="Continuer" class="axial_onboarding-next"></axial-service-button>
+            </div>
+        </div>
+    </div>
+</template>

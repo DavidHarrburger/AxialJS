@@ -1,0 +1,47 @@
+<!-- AxialOnboardingViewMail -->
+<template id="axial-onboarding-view-mail-template">
+    <link rel="stylesheet" href="./styles.css">
+    <div id="holder" class="axial_view-holder">
+        <div class="axial_onboarding_view-holder">
+            <div class="axial_onboarding-title">Authentification</div>
+            <div class="axial_onboarding-text">Commençons à paramétrer votre compte</div>
+    
+            <div class="axial_onboarding-group">
+                <div class="axial_onboarding-item">
+                    <label for="emailInput">Votre e-mail :</label>
+                    <input name="emailInput" id="emailInput" type="email" autocomplete="email" placeholder="nom@site.com">
+                    <div id="emailLegend" class="axial_input_legend axial_input_legend-none"></div>
+                </div>
+                
+                <div class="axial_onboarding-item">
+                    <label for="passwordInput">Votre mot de passe :</label>
+                    <div class="axial_onboarding-row">
+                        <div class="axial_onboarding-passholder">
+                            <input class="axial_onboarding-password" name="passwordInput" id="passwordInput" type="password" autocomplete="new-password">
+                            <axial-toggle-password-button id="passwordToggle">
+                                <div slot="axial-icon" class="axial_button-icon_holder">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye preview-icon"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>
+                                </div>
+                                <div slot="axial-icon-toggle" class="axial_button-icon_holder">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-off preview-icon"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></svg>
+                                </div>
+                            </axial-toggle-password-button>
+                        </div>
+                    </div>
+                    <ul id="passwordLegend" class="axial_input_legend axial_onboarding-list">
+                        <li id="liLength" class="axial_onboarding-listitem">X caractères minimum</li>
+                        <li id="liLower" class="axial_onboarding-listitem">1 minuscule</li>
+                        <li id="liUpper" class="axial_onboarding-listitem">1 majuscule</li>
+                        <li id="liNumber" class="axial_onboarding-listitem">1 chiffre</li>
+                        <li id="liSpecial" class="axial_onboarding-listitem">1 caractère spécial parmi </li>
+                    </ul>
+                </div>
+            </div>
+    
+            <div class="axial_spacer"></div>
+            <div class="axial_onboarding_actions-row">
+                <axial-service-button id="nextButton" axial-text="Continuer" class="axial_onboarding-next"></axial-service-button>
+            </div>
+        </div>
+    </div>
+</template>
